@@ -1,0 +1,4 @@
+[submodule "VieNeu-TTS"]
+	path = VieNeu-TTS
+	url = https://github.com/pnnbao97/VieNeu-TTS
+	ignore = untracked

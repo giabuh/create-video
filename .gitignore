@@ -11,3 +11,4 @@ projects/*/preview/
 *.mp3
 *.mov
 out/
+.superpowers/

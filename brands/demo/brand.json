@@ -1,0 +1,6 @@
+{
+  "name": "Demo Academy",
+  "logo": null,
+  "colors": { "primary": "#1E3A8A", "accent": "#FFD400", "text": "#FFFFFF", "background": "#0B1530" },
+  "cta": { "phone": "0900 000 000", "fanpage": "fb.com/demo", "address": "" }
+}
