@@ -20,5 +20,5 @@ export const musicVolumeAt = (t: number, music: Music, scenes: Scene[], total: n
 
 export const MusicTrack: React.FC<{music: Music; scenes: Scene[]; total: number}> = ({music, scenes, total}) => {
   const {fps} = useVideoConfig();
-  return <Audio src={staticFile(music.src)} loop volume={(f: number) => musicVolumeAt(f / fps, music, scenes, total)} />;
+  return <Audio src={staticFile(music.src)} loop loopVolumeCurveBehavior="extend" volume={(f: number) => musicVolumeAt(f / fps, music, scenes, total)} />;
 };

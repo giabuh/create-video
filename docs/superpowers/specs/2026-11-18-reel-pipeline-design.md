@@ -251,6 +251,19 @@ The VieNeu model weights download on first use into the HF cache.
 
 The App reads and writes only these files, whose schemas are defined above: `config.json`, `brands/*/brand.json`, `library/media-index.json`, `library/thumbs/*`, `projects/*/storyboard.json`, `projects/*/timings.json`, `projects/*/reel-v*.mp4`, `voices/*.wav`, `voices/tries/*`. Engine scripts must keep these schemas stable. Any change must be noted in this spec.
 
+Schemas not shown above (as emitted by the engine):
+```jsonc
+// projects/<slug>/timings.json — written by prepare.py; git-ignored, regenerate with prepare.py (cached audio makes it instant)
+{ "scenes": { "s1": { "duration": 2.4, "pauseAfter": 0.3, "voice": "phuong", "ref": "voices/phuong-short.wav",
+                      "tts": { "temperature": 0.8, "top_k": 25, "...": "...", "speed": 1.0 }, "cacheKey": "a1b2c3d4e5f6" },
+              "s3": { "duration": 2.0 } },          // silent scene: duration only
+  "totalSeconds": 13.02, "mix": { "real": 0.62, "motion": 0.15, "other": 0.23 } }
+// voices/tries/tries.json — written by voice_try.py (overwritten each run)
+{ "voice": "phuong", "text": "…", "variants": { "A": { "file": "voices/tries/phuong-A.wav", "ref": "voices/phuong-short.wav",
+                                                    "tts": { "...": "..." }, "seconds": 1.52 } } }
+```
+`projects/*/render-props.json` is also git-ignored and regenerated; its shape is `studio/src/types.ts` `RenderProps`.
+
 ## Testing
 
 - `prepare.py`: pytest for storyboard validation, config layer resolution and cache-key stability (pure functions; the TTS model is not tested).
