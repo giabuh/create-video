@@ -265,7 +265,7 @@ Schemas not shown above (as emitted by the engine):
 `projects/*/render-props.json` is also git-ignored and regenerated; its shape is `studio/src/types.ts` `RenderProps`.
 
 Added by sub-project 2 (see `2026-11-18-reel-app-design.md`):
-- `projects/<slug>/project.json` — `{ "approved": "reel-v2" | null }`, written by the app; absent = nothing approved.
+- `projects/<slug>/project.json` — `{ "approved": "reel-v2" | null, "renders": { "<version>": { "kind": "draft"|"final", "at": "<ISO>" } } }`, written by the app; absent = nothing approved.
 - `projects/<slug>/reel-vN.storyboard.json` — copy of `storyboard.json` taken when `reel-vN.mp4` is rendered.
 - `inbox/` — upload target for the app; consumed by `ingest.py`.
 - `tools/worker.py` + `tools/reel/pipeline.py` — `prepare()` / `try_variants()` extracted from the CLIs (CLI behaviour unchanged); `prepare(synth=False)` writes `render-props.json` without touching `timings.json`.

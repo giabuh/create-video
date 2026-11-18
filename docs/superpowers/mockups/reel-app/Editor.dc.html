@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Sửa video</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0D0E11;color:#ECEEF2;font-family:'Be Vietnam Pro',system-ui,sans-serif;font-size:14px}
+a{color:#F5B83D}a:hover{color:#FFD27A}
+*{box-sizing:border-box}
+.app{display:flex;flex-wrap:wrap;min-height:980px;background:#0D0E11}
+.side{flex:1 1 72px;max-width:72px;background:#121419;border-right:1px solid #23262E;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.main{flex:999 1 560px;min-width:0;display:flex;flex-direction:column}
+.mark{width:36px;height:36px;border-radius:10px;background:#F5B83D;color:#1A1300;display:grid;place-items:center;font-weight:800;margin-bottom:14px}
+.nav{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;color:#A0A6B1}
+.nav:hover{background:#1C1F26;color:#ECEEF2}
+.nav.on{background:#1F2330;color:#F5B83D}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 20px;border-bottom:1px solid #23262E;background:#111317}
+.crumb{display:flex;align-items:center;gap:8px;font-size:15px}
+.crumb a{color:#A0A6B1;text-decoration:none}
+.btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 14px;border-radius:10px;border:1px solid #2F343E;background:#1C1F26;color:#ECEEF2;font:inherit;font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn.pri{background:#F5B83D;border-color:#F5B83D;color:#1A1300}
+.btn.sm{height:32px;padding:0 10px;font-size:13px}
+.btn.warn{background:#F5B83D;border-color:#F5B83D;color:#1A1300}
+.card{background:#15171C;border:1px solid #262A33;border-radius:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 8px;border-radius:999px;font-size:11.5px;font-weight:600;background:#22262F;color:#C9CED6;white-space:nowrap}
+.chip.real{background:#1B2A4A;color:#9DBBFF}
+.chip.motion{background:#3A2E12;color:#F5C866}
+.chip.other{background:#2A2C31;color:#C3C7CF}
+.chip.voice{background:#2A2238;color:#CDB6FF}
+.muted{color:#A0A6B1}
+.dim{color:#8B919C}
+.work{display:flex;flex-wrap:wrap;gap:16px;padding:16px 20px;flex:1}
+.col-l{flex:1 1 270px;max-width:300px;display:flex;flex-direction:column;gap:10px}
+.col-c{flex:999 1 380px;min-width:0;display:flex;flex-direction:column;align-items:center;gap:12px}
+.col-r{flex:1 1 360px;max-width:400px;display:flex;flex-direction:column;gap:0}
+.scene{display:flex;gap:10px;padding:10px;border-radius:12px;background:#15171C;border:1px solid #262A33;cursor:pointer}
+.scene.on{border-color:#F5B83D;background:#1A1C22}
+.sthumb{width:46px;height:82px;border-radius:6px;flex:none;display:grid;place-items:center;font-size:10px;color:#8FA2C4}
+.sec{padding:14px 16px;border-bottom:1px solid #23262E;display:flex;flex-direction:column;gap:10px}
+.sec h3{margin:0;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#8B919C;font-weight:700}
+label.l{font-size:12px;color:#A0A6B1;font-weight:500;display:block;margin-bottom:6px}
+.input{width:100%;background:#0F1115;border:1px solid #2A2E37;border-radius:10px;color:#ECEEF2;font:inherit;padding:9px 11px}
+textarea.input{resize:vertical;line-height:1.45}
+.row{display:flex;gap:10px;align-items:center}
+.seg{display:flex;background:#0F1115;border:1px solid #2A2E37;border-radius:10px;padding:3px}
+.seg button{flex:1;height:32px;border:0;border-radius:7px;background:transparent;color:#A0A6B1;font:inherit;font-weight:600;cursor:pointer}
+.seg button.on{background:#262A33;color:#ECEEF2}
+.tabs{display:flex;gap:4px;padding:10px 12px 0;border-bottom:1px solid #23262E}
+.tabs button{height:40px;padding:0 14px;border:0;background:transparent;color:#A0A6B1;font:inherit;font-weight:600;border-bottom:2px solid transparent;cursor:pointer}
+.tabs button.on{color:#ECEEF2;border-bottom-color:#F5B83D}
+.range{appearance:none;width:100%;height:4px;background:#2A2E37;border-radius:99px;accent-color:#F5B83D}
+.media{display:flex;gap:10px;align-items:center;padding:8px;border:1px solid #2A2E37;border-radius:10px;background:#0F1115}
+.mthumb{width:64px;height:40px;border-radius:6px;background:#2F4268;flex:none}
+.frame{width:342px;height:608px;border-radius:18px;overflow:hidden;position:relative;background:#1A2438;box-shadow:0 20px 50px rgba(0,0,0,.45)}
+.tl{margin:0 20px 18px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.track{display:flex;gap:3px;height:38px}
+.tlab{width:64px;flex:none;font-size:12px;color:#8B919C;display:flex;align-items:center}
+.blk{border-radius:7px;padding:5px 8px;font-size:11.5px;font-weight:600;overflow:hidden;white-space:nowrap}
+.mixrow{display:flex;gap:14px;align-items:center;font-size:12.5px}
+.mixrow b{font-weight:700}
+.banner{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:10px;background:#2E2410;border:1px solid #5A4416;color:#F5D58C;font-size:13px}
+</style>
+</helmet>
+<div class="app">
+  <nav class="side" aria-label="Điều hướng">
+    <span class="mark">R</span>
+    <a class="nav on" href="Main.dc.html" aria-label="Dự án"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></a>
+    <a class="nav" href="Library.dc.html" aria-label="Thư viện"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg></a>
+    <a class="nav" href="Voices.dc.html" aria-label="Giọng đọc"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></a>
+    <a class="nav" href="Brand.dc.html" aria-label="Brand và cài đặt"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></a>
+  </nav>
+
+  <div class="main">
+    <header class="top">
+      <div class="crumb"><a href="Main.dc.html">Dự án</a><span class="dim">/</span><b>_smoke</b></div>
+      <span class="chip" style="background:#173326;color:#7BDDA9">Đã lưu storyboard.json</span>
+      <div class="mixrow" style="margin-left:auto" aria-label="Tỉ lệ mix so với mục tiêu">
+        <span><i style="display:inline-block;width:9px;height:9px;border-radius:3px;background:#6E9BFF;margin-right:6px"></i>Thật <b>62%</b> <span class="dim">/ 60</span></span>
+        <span style="color:#F5C866"><i style="display:inline-block;width:9px;height:9px;border-radius:3px;background:#F5B83D;margin-right:6px"></i>Motion <b>15%</b> / 30 ▲</span>
+        <span style="color:#F5C866"><i style="display:inline-block;width:9px;height:9px;border-radius:3px;background:#5A5F6B;margin-right:6px"></i>Khác <b>23%</b> / 10 ▲</span>
+      </div>
+      <a class="btn" href="Renders.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 3v18M17 3v18M3 8h4M3 16h4M17 8h4M17 16h4"/></svg>Bản render (3)</a>
+      <button class="btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12h2M7 8v8M11 5v14M15 9v6M19 11v2"/></svg>Tạo giọng</button>
+      <button class="btn">Render nháp</button>
+      <button class="btn pri">Render final</button>
+    </header>
+
+    <div class="work">
+      <section class="col-l" aria-label="Danh sách cảnh">
+        <div class="row" style="justify-content:space-between"><b>Cảnh · 4 + CTA</b><span class="dim" style="font-size:12px">kéo để đổi thứ tự</span></div>
+        <sc-for list="{{scenes}}" as="s" hint-placeholder-count="4">
+          <div class="{{s.cls}}">
+            <div class="sthumb" style="background:{{s.bg}}">{{s.thumb}}</div>
+            <div style="min-width:0;display:flex;flex-direction:column;gap:6px">
+              <div class="row" style="gap:6px"><b style="font-size:13px">{{s.id}}</b><span class="{{s.typeCls}}">{{s.type}}</span><span class="dim" style="font-size:12px;margin-left:auto">{{s.dur}}</span></div>
+              <div style="font-size:13px;line-height:1.35;color:#D5D9E0">{{s.caption}}</div>
+              <div class="row" style="gap:6px;flex-wrap:wrap"><span class="chip voice">{{s.voice}}</span><span class="chip">{{s.trans}}</span></div>
+            </div>
+          </div>
+        </sc-for>
+        <button class="btn" style="justify-content:center;border-style:dashed;background:transparent"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Thêm cảnh</button>
+      </section>
+
+      <section class="col-c" aria-label="Xem trước">
+        <div class="frame">
+          <div style="position:absolute;inset:0;background:#22314F"></div>
+          <div style="position:absolute;left:0;right:0;top:170px;height:192px;background:#3A5283;display:grid;place-items:center;color:#C5D3EE;font-size:12px">lop-hoc-ngang.mp4 · zoom-in</div>
+          <div style="position:absolute;left:16px;right:16px;bottom:120px;text-align:center;font-weight:800;font-size:27px;line-height:1.2;text-shadow:0 3px 10px rgba(0,0,0,.7)">Học viên đạt IELTS <span style="color:#FFD400">7.5</span> chỉ sau 3 tháng</div>
+          <div style="position:absolute;left:14px;top:14px;display:flex;gap:6px"><span class="chip" style="background:rgba(13,14,17,.7)">s1</span><span class="chip" style="background:rgba(13,14,17,.7)">Xem trước tức thì</span></div>
+        </div>
+        <div class="row" style="width:342px;justify-content:space-between">
+          <button class="btn sm" aria-label="Phát"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>Phát</button>
+          <span class="muted" style="font-variant-numeric:tabular-nums">00:01,2 / 00:13,0</span>
+          <div class="seg" style="width:120px"><button class="on">Cảnh</button><button>Cả video</button></div>
+        </div>
+        <div class="dim" style="font-size:12px;max-width:342px;text-align:center">Đổi caption, ảnh, hiệu ứng, màu → thấy ngay. Đổi lời đọc → bấm “Tạo giọng” (~2 giây/câu).</div>
+      </section>
+
+      <aside class="col-r card" aria-label="Thuộc tính cảnh">
+        <div class="tabs"><button class="on">Cảnh s1</button><button>Toàn video</button><button>CTA</button></div>
+        <div class="sec">
+          <div class="banner"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 8v5M12 16.5v.5"/><circle cx="12" cy="12" r="9"/></svg><span style="flex:1">Lời đọc đã đổi — đang phát giọng cũ.</span><button class="btn sm warn">Tạo lại giọng</button></div>
+          <div><label class="l" for="say">Lời đọc (đọc theo cách phát âm)</label><textarea id="say" class="input" rows="3">Học viên đạt chứng chỉ ai en tê ét bảy chấm năm chỉ sau ba tháng.</textarea></div>
+          <div><label class="l" for="cap">Caption (hiển thị trên màn hình)</label><textarea id="cap" class="input" rows="2">Học viên đạt IELTS 7.5 chỉ sau 3 tháng</textarea></div>
+          <div><span class="l" style="font-size:12px;color:#A0A6B1;display:block;margin-bottom:6px">Từ nổi bật</span><div class="row" style="gap:6px;flex-wrap:wrap"><span class="chip" style="background:#3A3212;color:#FFD400;height:28px;padding:0 10px">7.5 ×</span><button class="chip" style="border:1px dashed #3A3F4B;background:transparent;height:28px;padding:0 10px;font:inherit;font-size:12px">+ thêm</button></div></div>
+        </div>
+        <div class="sec">
+          <h3>Giọng</h3>
+          <div class="row">
+            <div style="flex:1"><label class="l" for="v">Giọng</label><select id="v" class="input"><option>Phương (mặc định)</option><option>Vy</option></select></div>
+            <div style="flex:1"><label class="l" for="sp">Tốc độ · 1,00×</label><input id="sp" class="range" type="range" min="0.5" max="2" step="0.05" value="1"></div>
+          </div>
+          <div class="row"><button class="btn sm"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>Nghe câu này</button><span class="dim" style="font-size:12px">3,3 s + nghỉ 0,3 s</span><a href="Voices.dc.html" style="font-size:12px;margin-left:auto">Thông số nâng cao</a></div>
+        </div>
+        <div class="sec">
+          <h3>Hình ảnh · cảnh thật</h3>
+          <div class="media"><div class="mthumb"></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">lop-hoc-ngang.mp4</div><div class="dim" style="font-size:12px">từ 1,0 s · ngang → nền mờ</div></div><select class="input" style="width:112px;padding:6px 8px" aria-label="Hiệu ứng"><option>Zoom vào</option><option>Zoom ra</option><option>Lia trái</option><option>Lia phải</option><option>Không</option></select></div>
+          <div class="row"><button class="btn sm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Chọn từ thư viện</button><button class="btn sm">+ Lớp motion</button></div>
+        </div>
+        <div class="sec">
+          <h3>Chuyển cảnh &amp; chữ phủ</h3>
+          <div class="seg"><button class="on">Cắt</button><button>Mờ dần</button><button>Trượt</button></div>
+          <div class="row"><div style="flex:2"><label class="l" for="ov">Chữ phủ (tuỳ chọn)</label><input id="ov" class="input" placeholder="VD: [ƯU ĐÃI]"></div><div style="flex:1"><label class="l" for="pa">Nghỉ sau</label><input id="pa" class="input" value="0,3 s"></div></div>
+        </div>
+      </aside>
+    </div>
+
+    <section class="card tl" aria-label="Dòng thời gian">
+      <div class="row" style="font-size:11px;color:#8B919C;padding-left:67px;justify-content:space-between"><span>0 s</span><span>2</span><span>4</span><span>6</span><span>8</span><span>10</span><span>12</span><span>13,0</span></div>
+      <div class="row" style="gap:3px"><span class="tlab">Cảnh</span>
+        <div class="track" style="flex:1">
+          <sc-for list="{{blocks}}" as="b" hint-placeholder-count="5"><div class="blk" style="flex:{{b.flex}};background:{{b.bg}};color:{{b.fg}};outline:{{b.outline}}">{{b.label}}</div></sc-for>
+        </div>
+      </div>
+      <div class="row" style="gap:3px"><span class="tlab">Giọng</span>
+        <div style="flex:1;display:flex;align-items:center;gap:2px;height:34px;background:#111317;border-radius:7px;padding:0 6px">
+          <sc-for list="{{wave}}" as="w" hint-placeholder-count="40"><i style="flex:1;height:{{w.h}}px;background:{{w.c}};border-radius:2px"></i></sc-for>
+        </div>
+      </div>
+      <div class="row" style="gap:3px"><span class="tlab">Nhạc</span>
+        <div style="flex:1;height:26px;background:#111317;border-radius:7px;display:flex;align-items:center;padding:0 10px;font-size:12px;color:#8B919C;gap:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>_smoke.mp3 · 25% · tự hạ khi có giọng · fade 1,5 s</div>
+      </div>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":980}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const scenes = [
+      { id: 's1', type: 'Thật', typeCls: 'chip real', dur: '3,6 s', caption: 'Học viên đạt IELTS 7.5 chỉ sau 3 tháng', voice: 'Phương', trans: 'Cắt', thumb: 'video', bg: '#2F4268', cls: 'scene on' },
+      { id: 's2', type: 'Thật', typeCls: 'chip real', dur: '2,4 s', caption: 'Lớp học sôi động mỗi ngày', voice: 'Vy', trans: 'Mờ dần', thumb: '2 file', bg: '#2F4268', cls: 'scene' },
+      { id: 's3m', type: 'Motion', typeCls: 'chip motion', dur: '2,0 s', caption: 'Lộ trình 3 bước rõ ràng · Checklist', voice: 'Phương', trans: 'Cắt', thumb: '✓ ✓ ✓', bg: '#0B1530', cls: 'scene' },
+      { id: 's3', type: 'Thật', typeCls: 'chip real', dur: '2,0 s', caption: '(không lời) · ảnh zoom ra', voice: 'im lặng', trans: 'Trượt', thumb: 'ảnh', bg: '#2F4268', cls: 'scene' },
+      { id: 'CTA', type: 'Khác', typeCls: 'chip other', dur: '3,0 s', caption: 'Đăng ký ngay · 0900 000 000', voice: '—', trans: 'Cắt', thumb: 'CTA', bg: '#1E3A8A', cls: 'scene' }
+    ];
+    const blocks = [
+      { label: 's1 · 3,6 s', flex: 36, bg: '#2B3E66', fg: '#C9D8FF', outline: '2px solid #F5B83D' },
+      { label: 's2 · 2,4 s', flex: 24, bg: '#2B3E66', fg: '#C9D8FF', outline: 'none' },
+      { label: 's3m', flex: 20, bg: '#4A3A14', fg: '#F5D58C', outline: 'none' },
+      { label: 's3', flex: 20, bg: '#2B3E66', fg: '#C9D8FF', outline: 'none' },
+      { label: 'CTA · 3,0 s', flex: 30, bg: '#2E3038', fg: '#C3C7CF', outline: 'none' }
+    ];
+    const wave = [];
+    for (let i = 0; i < 130; i++) {
+      const t = i / 130 * 13;
+      const silent = (t > 3.3 && t < 3.6) || (t > 5.7 && t < 6.0) || (t > 7.7 && t < 8.0) || t > 8.0;
+      const h = silent ? 2 : Math.round(6 + 20 * Math.abs(Math.sin(i * 1.7) * Math.cos(i * 0.37)));
+      wave.push({ h, c: t < 1.2 ? '#F5B83D' : (silent ? '#2A2E37' : '#8C79C9') });
+    }
+    return { scenes, blocks, wave };
+  }
+}
+</script>
+</body>
+</html>

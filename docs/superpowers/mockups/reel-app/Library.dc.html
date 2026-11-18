@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Thư viện</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0D0E11;color:#ECEEF2;font-family:'Be Vietnam Pro',system-ui,sans-serif;font-size:14px}
+a{color:#F5B83D}a:hover{color:#FFD27A}
+*{box-sizing:border-box}
+.app{display:flex;flex-wrap:wrap;min-height:980px;background:#0D0E11}
+.side{flex:1 1 232px;background:#121419;border-right:1px solid #23262E;padding:20px 14px;display:flex;flex-direction:column;gap:4px}
+.main{flex:999 1 560px;min-width:0;padding:28px 32px;display:flex;flex-direction:column;gap:20px}
+.logo{display:flex;align-items:center;gap:10px;padding:4px 8px 20px}
+.mark{width:34px;height:34px;border-radius:10px;background:#F5B83D;color:#1A1300;display:grid;place-items:center;font-weight:800}
+.logo small{display:block;color:#8B919C;font-size:12px}
+.nav{display:flex;align-items:center;gap:10px;padding:0 12px;min-height:44px;border-radius:10px;color:#A0A6B1;text-decoration:none;font-weight:500}
+.nav:hover{background:#1C1F26;color:#ECEEF2}
+.nav.on{background:#1F2330;color:#ECEEF2}
+.nav.on svg{color:#F5B83D}
+.status{margin-top:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:#A0A6B1;padding:10px 8px 0}
+.dot{width:8px;height:8px;border-radius:50%;background:#4CC38A}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 16px;border-radius:10px;border:1px solid #2F343E;background:#1C1F26;color:#ECEEF2;font:inherit;font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn.pri{background:#F5B83D;border-color:#F5B83D;color:#1A1300}
+.btn.sm{height:34px;padding:0 10px;font-size:13px}
+.card{background:#15171C;border:1px solid #262A33;border-radius:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:600;background:#22262F;color:#C9CED6;white-space:nowrap}
+.chip.warn{background:#3A2A12;color:#F5C866}
+.pill{height:34px;padding:0 14px;border:1px solid #2A2E37;border-radius:999px;background:transparent;color:#A0A6B1;font:inherit;font-weight:600;cursor:pointer}
+.pill.on{background:#2A2F3B;color:#ECEEF2;border-color:#2A2F3B}
+h1{font-size:26px;margin:0;font-weight:700;letter-spacing:-.01em}
+.muted{color:#A0A6B1}
+.dim{color:#8B919C}
+.input{width:100%;background:#0F1115;border:1px solid #2A2E37;border-radius:10px;color:#ECEEF2;font:inherit;padding:9px 11px}
+label.l{font-size:12px;color:#A0A6B1;font-weight:500;display:block;margin-bottom:6px}
+.drop{border:1.5px dashed #3A4050;border-radius:14px;padding:22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;background:#121419}
+.up{display:flex;align-items:center;gap:10px;font-size:13px}
+.bar{height:6px;background:#262A33;border-radius:99px;overflow:hidden;flex:1}
+.bar i{display:block;height:100%;background:#6E9BFF}
+.tile{display:flex;flex-direction:column;overflow:hidden;cursor:pointer}
+.tile.on{border-color:#F5B83D}
+.tthumb{aspect-ratio:3/2;position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;background:#0F1115}
+.tthumb i{display:block}
+.badge{position:absolute;right:8px;bottom:8px;background:rgba(13,14,17,.8);padding:2px 7px;border-radius:6px;font-size:11.5px;font-weight:600}
+.tabs{display:flex;gap:4px;border-bottom:1px solid #23262E}
+.tabs button{height:40px;padding:0 14px;border:0;background:transparent;color:#A0A6B1;font:inherit;font-weight:600;border-bottom:2px solid transparent;cursor:pointer}
+.tabs button.on{color:#ECEEF2;border-bottom-color:#F5B83D}
+.rng{position:relative;height:28px;background:#0F1115;border:1px solid #2A2E37;border-radius:8px}
+</style>
+</helmet>
+<div class="app">
+  <nav class="side" aria-label="Điều hướng">
+    <div class="logo"><span class="mark">R</span><div><b>Reel Studio</b><small>create-video</small></div></div>
+    <a class="nav" href="Main.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Dự án</a>
+    <a class="nav on" href="Library.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg>Thư viện</a>
+    <a class="nav" href="Voices.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Giọng đọc</a>
+    <a class="nav" href="Brand.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>Brand &amp; cài đặt</a>
+    <div class="status"><span class="dot"></span>Model giọng đã nạp · GPU</div>
+  </nav>
+
+  <div class="main">
+    <div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap">
+      <div style="flex:1 1 300px"><h1>Thư viện</h1><div class="muted" style="margin-top:4px">Ảnh, video học viên và nhạc nền. File gốc không bị sửa — app tạo bản chuẩn hoá trong <code>library/</code>.</div></div>
+    </div>
+
+    <div class="tabs"><button class="on">Ảnh &amp; video · 24</button><button>Nhạc · 3</button></div>
+
+    <section class="drop" aria-label="Tải media lên">
+      <div style="width:52px;height:52px;border-radius:14px;background:#1F2330;display:grid;place-items:center;color:#F5B83D"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg></div>
+      <div style="flex:1 1 260px"><b style="font-size:15px">Kéo-thả ảnh/video vào đây</b><div class="muted" style="font-size:13px;margin-top:2px">MP4, MOV, HEIC, JPG… Tự xoay đúng chiều, đổi về 30 fps, tạo thumbnail.</div></div>
+      <button class="btn pri">Chọn file</button>
+      <div style="flex:1 1 100%;display:flex;flex-direction:column;gap:8px;padding-top:6px">
+        <div class="up"><span style="width:170px">IMG_2041.MOV</span><div class="bar"><i style="width:45%"></i></div><span class="dim" style="width:150px">Đang chuẩn hoá 45%</span></div>
+        <div class="up"><span style="width:170px">IMG_2042.HEIC</span><div class="bar"><i style="width:0%"></i></div><span class="dim" style="width:150px">Chờ</span></div>
+        <div class="up" style="color:#7BDDA9"><span style="width:170px">anh-lop-05.jpg</span><div class="bar"><i style="width:100%;background:#4CC38A"></i></div><span style="width:150px">Xong · cần mô tả</span></div>
+      </div>
+    </section>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <button class="pill on">Tất cả</button><button class="pill">Video</button><button class="pill">Ảnh</button>
+      <span style="width:1px;height:24px;background:#2A2E37;margin:0 4px"></span>
+      <button class="pill">Dọc</button><button class="pill">Ngang</button>
+      <button class="pill">Chưa mô tả · 3</button>
+      <label for="ls" style="position:absolute;left:-9999px">Tìm media</label>
+      <input id="ls" class="input" placeholder="Tìm theo mô tả, tag…" style="width:240px;margin-left:auto">
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+      <div style="flex:999 1 520px;min-width:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px">
+        <sc-for list="{{items}}" as="m" hint-placeholder-count="8">
+          <div class="{{m.cls}}">
+            <div class="tthumb"><i style="background:{{m.c1}}"></i><i style="background:{{m.c2}}"></i><i style="background:{{m.c1}}"></i><i style="background:{{m.c2}}"></i><i style="background:{{m.c1}}"></i><i style="background:{{m.c2}}"></i><span class="badge">{{m.badge}}</span></div>
+            <div style="padding:10px 12px;display:flex;flex-direction:column;gap:6px">
+              <b style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{m.name}}</b>
+              <div class="dim" style="font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{m.desc}}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <aside class="card" style="flex:1 1 300px;max-width:360px;padding:16px;display:flex;flex-direction:column;gap:14px" aria-label="Chi tiết media">
+        <div style="aspect-ratio:16/9;border-radius:10px;background:#3A5283;display:grid;place-items:center;position:relative"><button class="btn sm" style="background:rgba(13,14,17,.75)" aria-label="Phát video"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>Phát</button></div>
+        <div><b>lop-hoc-ngang.mp4</b><div class="dim" style="font-size:12px;margin-top:2px">Video ngang · 1920×1080 · 8,4 s</div></div>
+        <div><label class="l" for="d">Mô tả (giúp Claude chọn đúng cảnh)</label><textarea id="d" class="input" rows="2">Cả lớp giơ tay phát biểu, góc rộng từ cuối lớp</textarea></div>
+        <div><span style="font-size:12px;color:#A0A6B1;display:block;margin-bottom:6px">Tag</span><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip">lớp học ×</span><span class="chip">sôi nổi ×</span><span class="chip">góc rộng ×</span><button class="chip" style="border:1px dashed #3A3F4B;background:transparent;font:inherit;font-size:12px">+ tag</button></div></div>
+        <div>
+          <span style="font-size:12px;color:#A0A6B1;display:block;margin-bottom:6px">Đoạn dùng được</span>
+          <div class="rng"><i style="position:absolute;left:4%;width:52%;top:3px;bottom:3px;background:#2B3E66;border-radius:5px"></i><i style="position:absolute;left:70%;width:26%;top:3px;bottom:3px;background:#2B3E66;border-radius:5px"></i></div>
+          <div class="dim" style="font-size:12px;margin-top:6px">0,3–4,7 s · 5,9–8,1 s (bỏ đoạn rung máy)</div>
+        </div>
+        <div class="muted" style="font-size:13px">Đang dùng trong: <a href="Editor.dc.html">_smoke · s1</a></div>
+        <div style="display:flex;gap:8px"><button class="btn sm pri" style="flex:1">Lưu</button><button class="btn sm">Xoá khỏi thư viện</button></div>
+      </aside>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":980}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const v = (name, badge, desc, c1, c2, on) => ({ name, badge, desc, c1, c2, cls: on ? 'card tile on' : 'card tile' });
+    return {
+      items: [
+        v('lop-hoc-ngang.mp4', '8,4 s', 'Cả lớp giơ tay phát biểu', '#3A5283', '#33496F', true),
+        v('hv-nhan-chung-chi.jpg', 'Ảnh', 'Học viên cầm chứng chỉ', '#4A3F5E', '#423856', false),
+        v('san-truong.mp4', '12,1 s', 'Sân trường buổi sáng', '#2F5249', '#2A4A42', false),
+        v('giao-vien-giang.mp4', '6,0 s', 'Giáo viên giảng bài', '#4E4232', '#463B2D', false),
+        v('anh-lop-05.jpg', 'Ảnh', 'Chưa mô tả', '#2E3443', '#2A303D', false),
+        v('nhom-thao-luan.mp4', '9,7 s', 'Nhóm học viên thảo luận', '#38455E', '#334056', false),
+        v('img-2039.mp4', '4,2 s', 'Chưa mô tả', '#2E3443', '#2A303D', false),
+        v('le-tot-nghiep.jpg', 'Ảnh', 'Lễ tổng kết khoá', '#553A3A', '#4C3434', false)
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Giọng đọc</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0D0E11;color:#ECEEF2;font-family:'Be Vietnam Pro',system-ui,sans-serif;font-size:14px}
+a{color:#F5B83D}a:hover{color:#FFD27A}
+*{box-sizing:border-box}
+.app{display:flex;flex-wrap:wrap;min-height:980px;background:#0D0E11}
+.side{flex:1 1 232px;background:#121419;border-right:1px solid #23262E;padding:20px 14px;display:flex;flex-direction:column;gap:4px}
+.main{flex:999 1 560px;min-width:0;padding:28px 32px;display:flex;flex-direction:column;gap:20px}
+.logo{display:flex;align-items:center;gap:10px;padding:4px 8px 20px}
+.mark{width:34px;height:34px;border-radius:10px;background:#F5B83D;color:#1A1300;display:grid;place-items:center;font-weight:800}
+.logo small{display:block;color:#8B919C;font-size:12px}
+.nav{display:flex;align-items:center;gap:10px;padding:0 12px;min-height:44px;border-radius:10px;color:#A0A6B1;text-decoration:none;font-weight:500}
+.nav:hover{background:#1C1F26;color:#ECEEF2}
+.nav.on{background:#1F2330;color:#ECEEF2}
+.nav.on svg{color:#F5B83D}
+.status{margin-top:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:#A0A6B1;padding:10px 8px 0}
+.dot{width:8px;height:8px;border-radius:50%;background:#4CC38A}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 16px;border-radius:10px;border:1px solid #2F343E;background:#1C1F26;color:#ECEEF2;font:inherit;font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn.pri{background:#F5B83D;border-color:#F5B83D;color:#1A1300}
+.btn.sm{height:34px;padding:0 10px;font-size:13px}
+.card{background:#15171C;border:1px solid #262A33;border-radius:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:600;background:#22262F;color:#C9CED6;white-space:nowrap}
+.chip.ok{background:#173326;color:#7BDDA9}
+h1{font-size:26px;margin:0;font-weight:700;letter-spacing:-.01em}
+h2{font-size:16px;margin:0;font-weight:700}
+.muted{color:#A0A6B1}
+.dim{color:#8B919C}
+.input{width:100%;background:#0F1115;border:1px solid #2A2E37;border-radius:10px;color:#ECEEF2;font:inherit;padding:9px 11px}
+label.l{font-size:12px;color:#A0A6B1;font-weight:500;display:block;margin-bottom:6px}
+.vc{padding:16px;display:flex;flex-direction:column;gap:12px}
+.vc.on{border-color:#F5B83D}
+.avatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:17px}
+.wave{display:flex;align-items:center;gap:2px;height:36px;flex:1}
+.wave i{flex:1;border-radius:2px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:#8B919C;font-weight:600;font-size:12px;padding:6px 8px;border-bottom:1px solid #23262E}
+td{padding:6px 8px;border-bottom:1px solid #1E2128}
+td .input{padding:6px 8px}
+.res{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #2A2E37;border-radius:12px;background:#121419}
+.res.best{border-color:#4CC38A}
+.letter{width:32px;height:32px;border-radius:9px;background:#262A33;display:grid;place-items:center;font-weight:800}
+.prm{display:grid;grid-template-columns:140px 1fr 56px;gap:10px;align-items:center;font-size:13px}
+.prm input{accent-color:#F5B83D;width:100%}
+</style>
+</helmet>
+<div class="app">
+  <nav class="side" aria-label="Điều hướng">
+    <div class="logo"><span class="mark">R</span><div><b>Reel Studio</b><small>create-video</small></div></div>
+    <a class="nav" href="Main.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Dự án</a>
+    <a class="nav" href="Library.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg>Thư viện</a>
+    <a class="nav on" href="Voices.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Giọng đọc</a>
+    <a class="nav" href="Brand.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>Brand &amp; cài đặt</a>
+    <div class="status"><span class="dot"></span>Model giọng đã nạp · GPU</div>
+  </nav>
+
+  <div class="main">
+    <div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap">
+      <div style="flex:1 1 300px"><h1>Giọng đọc</h1><div class="muted" style="margin-top:4px">Nghe thử nhiều cách đọc cùng một câu, chọn cái hay nhất rồi lưu làm mặc định.</div></div>
+      <button class="btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Thêm giọng (mẫu 6–10 s)</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px">
+      <sc-for list="{{voices}}" as="v" hint-placeholder-count="2">
+        <article class="{{v.cls}}">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="avatar" style="background:{{v.bg}};color:{{v.fg}}">{{v.initial}}</div>
+            <div style="flex:1"><b style="font-size:16px">{{v.name}}</b><div class="dim" style="font-size:12px">{{v.ref}}</div></div>
+            <span class="chip ok" style="display:{{v.defDisplay}}">Mặc định</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <button class="btn sm" aria-label="Nghe giọng mẫu {{v.name}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg></button>
+            <div class="wave"><sc-for list="{{v.wave}}" as="w" hint-placeholder-count="40"><i style="height:{{w.h}}px;background:{{v.wc}}"></i></sc-for></div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <label class="l" style="margin:0" for="ref-{{v.initial}}">Mẫu tham chiếu</label>
+            <select id="ref-{{v.initial}}" class="input" style="flex:1;padding:6px 8px"><option>{{v.short}}</option><option>{{v.full}}</option></select>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+      <section class="card" style="flex:999 1 520px;min-width:0;padding:18px;display:flex;flex-direction:column;gap:16px" aria-label="Nghe thử">
+        <h2>Nghe thử</h2>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <div style="flex:3 1 320px"><label class="l" for="tt">Câu thử (viết theo cách đọc)</label><input id="tt" class="input" value="Lớp học sôi động mỗi ngày, đăng ký ngay hôm nay."></div>
+          <div style="flex:1 1 140px"><label class="l" for="tv">Giọng</label><select id="tv" class="input"><option>Phương</option><option>Vy</option></select></div>
+        </div>
+        <table>
+          <thead><tr><th>Bản</th><th>Tốc độ</th><th>Temperature</th><th>top_k</th><th>Mẫu</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><b>A</b></td><td><input class="input" value="1,00" aria-label="Tốc độ A"></td><td><input class="input" value="0,8" aria-label="Temperature A"></td><td><input class="input" value="25" aria-label="top_k A"></td><td class="dim">short</td><td></td></tr>
+            <tr><td><b>B</b></td><td><input class="input" value="1,05" aria-label="Tốc độ B"></td><td><input class="input" value="0,8" aria-label="Temperature B"></td><td><input class="input" value="25" aria-label="top_k B"></td><td class="dim">short</td><td><button class="btn sm" aria-label="Xoá bản B">×</button></td></tr>
+            <tr><td><b>C</b></td><td><input class="input" value="1,00" aria-label="Tốc độ C"></td><td><input class="input" value="0,6" aria-label="Temperature C"></td><td><input class="input" value="25" aria-label="top_k C"></td><td class="dim">full</td><td><button class="btn sm" aria-label="Xoá bản C">×</button></td></tr>
+          </tbody>
+        </table>
+        <div style="display:flex;gap:10px"><button class="btn sm">+ Thêm bản</button><button class="btn pri" style="margin-left:auto"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12h2M7 8v8M11 5v14M15 9v6M19 11v2"/></svg>Tạo 3 bản · ~6 giây</button></div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{results}}" as="r" hint-placeholder-count="3">
+            <div class="{{r.cls}}">
+              <span class="letter">{{r.k}}</span>
+              <button class="btn sm" aria-label="Phát bản {{r.k}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg></button>
+              <div class="wave"><sc-for list="{{r.wave}}" as="w" hint-placeholder-count="40"><i style="height:{{w.h}}px;background:#8C79C9"></i></sc-for></div>
+              <span class="dim" style="font-size:12px;width:52px;text-align:right">{{r.sec}}</span>
+              <button class="btn sm">Lưu làm mặc định</button>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <aside class="card" style="flex:1 1 320px;max-width:400px;padding:18px;display:flex;flex-direction:column;gap:14px" aria-label="Thông số mặc định">
+        <h2>Thông số mặc định</h2>
+        <div class="dim" style="font-size:12px;margin-top:-8px">Áp cho mọi video mới (config.json). Từng video vẫn chỉnh riêng được.</div>
+        <sc-for list="{{params}}" as="p" hint-placeholder-count="6">
+          <div class="prm"><label for="p-{{p.id}}">{{p.label}}</label><input id="p-{{p.id}}" type="range" min="{{p.min}}" max="{{p.max}}" step="{{p.step}}" value="{{p.val}}"><b style="text-align:right">{{p.show}}</b></div>
+        </sc-for>
+        <div style="display:flex;gap:8px;margin-top:4px"><button class="btn sm pri" style="flex:1">Lưu mặc định</button><button class="btn sm">Khôi phục</button></div>
+      </aside>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":980}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const mk = (seed, n) => Array.from({ length: n }, (_, i) => ({ h: Math.round(5 + 26 * Math.abs(Math.sin(i * seed) * Math.cos(i * 0.31 + seed))) }));
+    return {
+      voices: [
+        { name: 'Phương', initial: 'P', ref: 'voices/phuong-short.wav · 6,1 s', short: 'phuong-short.wav (6,1 s)', full: 'phuong-full.wav (7,5 s)', bg: '#3A2E12', fg: '#F5C866', wc: '#F5B83D', defDisplay: 'inline-flex', cls: 'card vc on', wave: mk(1.3, 60) },
+        { name: 'Vy', initial: 'V', ref: 'voices/vy-short.wav · 5,8 s', short: 'vy-short.wav (5,8 s)', full: 'vy-full.wav (7,4 s)', bg: '#2A2238', fg: '#CDB6FF', wc: '#8C79C9', defDisplay: 'none', cls: 'card vc', wave: mk(2.1, 60) }
+      ],
+      results: [
+        { k: 'A', sec: '2,84 s', cls: 'res', wave: mk(1.7, 70) },
+        { k: 'B', sec: '2,71 s', cls: 'res best', wave: mk(1.9, 70) },
+        { k: 'C', sec: '2,90 s', cls: 'res', wave: mk(2.4, 70) }
+      ],
+      params: [
+        { id: 'sp', label: 'Tốc độ', min: 0.5, max: 2, step: 0.05, val: 1, show: '1,00×' },
+        { id: 'tp', label: 'Temperature', min: 0.1, max: 1.5, step: 0.05, val: 0.8, show: '0,80' },
+        { id: 'tk', label: 'top_k', min: 1, max: 100, step: 1, val: 25, show: '25' },
+        { id: 'pp', label: 'top_p', min: 0.5, max: 1, step: 0.01, val: 0.95, show: '0,95' },
+        { id: 'rp', label: 'Chống lặp từ', min: 1, max: 2, step: 0.05, val: 1.2, show: '1,20' },
+        { id: 'pa', label: 'Nghỉ sau mỗi câu', min: 0, max: 1.5, step: 0.05, val: 0.3, show: '0,3 s' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

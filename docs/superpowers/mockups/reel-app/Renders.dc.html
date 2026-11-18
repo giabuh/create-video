@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Các bản render</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0D0E11;color:#ECEEF2;font-family:'Be Vietnam Pro',system-ui,sans-serif;font-size:14px}
+a{color:#F5B83D}a:hover{color:#FFD27A}
+*{box-sizing:border-box}
+.app{display:flex;flex-wrap:wrap;min-height:980px;background:#0D0E11}
+.side{flex:1 1 72px;max-width:72px;background:#121419;border-right:1px solid #23262E;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.main{flex:999 1 560px;min-width:0;display:flex;flex-direction:column}
+.mark{width:36px;height:36px;border-radius:10px;background:#F5B83D;color:#1A1300;display:grid;place-items:center;font-weight:800;margin-bottom:14px}
+.nav{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;color:#A0A6B1}
+.nav:hover{background:#1C1F26;color:#ECEEF2}
+.nav.on{background:#1F2330;color:#F5B83D}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 20px;border-bottom:1px solid #23262E;background:#111317}
+.crumb{display:flex;align-items:center;gap:8px;font-size:15px}
+.crumb a{color:#A0A6B1;text-decoration:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 14px;border-radius:10px;border:1px solid #2F343E;background:#1C1F26;color:#ECEEF2;font:inherit;font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn.pri{background:#F5B83D;border-color:#F5B83D;color:#1A1300}
+.btn.sm{height:34px;padding:0 10px;font-size:13px}
+.card{background:#15171C;border:1px solid #262A33;border-radius:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:600;background:#22262F;color:#C9CED6;white-space:nowrap}
+.chip.ok{background:#173326;color:#7BDDA9}
+.chip.run{background:#1B2A4A;color:#9DBBFF}
+.muted{color:#A0A6B1}
+.dim{color:#8B919C}
+.vcard{display:flex;flex-direction:column;gap:12px;padding:14px}
+.vframe{aspect-ratio:9/16;border-radius:12px;background:#22314F;position:relative;overflow:hidden}
+.vframe .cap{position:absolute;left:12px;right:12px;bottom:22%;text-align:center;font-weight:800;font-size:19px;line-height:1.2;text-shadow:0 2px 8px rgba(0,0,0,.7)}
+.ctrl{position:absolute;left:10px;right:10px;bottom:10px;display:flex;align-items:center;gap:8px}
+.ctrl .p{width:34px;height:34px;border-radius:50%;background:rgba(13,14,17,.75);display:grid;place-items:center;border:0;color:#ECEEF2}
+.seek{flex:1;height:4px;background:rgba(255,255,255,.25);border-radius:99px;overflow:hidden}
+.seek i{display:block;height:100%;background:#F5B83D}
+dl{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:0;font-size:13px}
+dt{color:#8B919C}dd{margin:0;text-align:right}
+.log{font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.6;color:#A9B0BC;background:#0F1115;border-radius:10px;padding:12px;white-space:pre-wrap}
+.bar{height:8px;background:#262A33;border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:#6E9BFF}
+</style>
+</helmet>
+<div class="app">
+  <nav class="side" aria-label="Điều hướng">
+    <span class="mark">R</span>
+    <a class="nav on" href="Main.dc.html" aria-label="Dự án"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></a>
+    <a class="nav" href="Library.dc.html" aria-label="Thư viện"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg></a>
+    <a class="nav" href="Voices.dc.html" aria-label="Giọng đọc"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></a>
+    <a class="nav" href="Brand.dc.html" aria-label="Brand và cài đặt"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></a>
+  </nav>
+
+  <div class="main">
+    <header class="top">
+      <div class="crumb"><a href="Main.dc.html">Dự án</a><span class="dim">/</span><a href="Editor.dc.html">_smoke</a><span class="dim">/</span><b>Bản render</b></div>
+      <span class="dim" style="font-size:13px">Mỗi lần render tạo bản mới, không bao giờ ghi đè.</span>
+      <div style="margin-left:auto;display:flex;gap:10px"><a class="btn" href="Editor.dc.html">← Về trình sửa</a><button class="btn">Phát đồng thời</button></div>
+    </header>
+
+    <div style="display:flex;flex-wrap:wrap;gap:20px;padding:20px">
+      <div style="flex:999 1 640px;min-width:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;align-content:start">
+        <sc-for list="{{versions}}" as="v" hint-placeholder-count="3">
+          <article class="card vcard">
+            <div class="row" style="display:flex;align-items:center;gap:8px"><b style="font-size:18px">{{v.name}}</b><span class="{{v.chipCls}}">{{v.kind}}</span><span class="chip ok" style="display:{{v.okDisplay}}">Đã duyệt</span></div>
+            <div class="vframe">
+              <div style="position:absolute;left:0;right:0;top:28%;height:31%;background:#3A5283"></div>
+              <div class="cap">{{v.capA}}<span style="color:{{v.hl}}">7.5</span>{{v.capB}}</div>
+              <div class="ctrl"><button class="p" aria-label="Phát {{v.name}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg></button><div class="seek"><i style="width:{{v.pos}}%"></i></div><span style="font-size:11px">{{v.dur}}</span></div>
+            </div>
+            <dl><dt>Ngày</dt><dd>{{v.date}}</dd><dt>Chất lượng</dt><dd>{{v.q}}</dd><dt>Dung lượng</dt><dd>{{v.size}}</dd><dt>Ghi chú</dt><dd>{{v.note}}</dd></dl>
+            <div style="display:flex;gap:8px"><button class="btn sm pri" style="flex:1">Duyệt bản này</button><button class="btn sm" aria-label="Mở thư mục chứa file">Mở thư mục</button></div>
+          </article>
+        </sc-for>
+      </div>
+
+      <aside style="flex:1 1 320px;max-width:380px;display:flex;flex-direction:column;gap:16px">
+        <section class="card" style="padding:16px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:8px"><b>Đang render v4</b><span class="chip run">Nháp · 0,5×</span><span style="margin-left:auto;font-weight:700">62%</span></div>
+          <div class="bar"><i style="width:62%"></i></div>
+          <div class="dim" style="font-size:12px">Khung 242 / 390 · còn ~25 giây</div>
+          <div class="log">Bundling… xong
+Rendering frames 242/390
+Encoding…</div>
+          <button class="btn sm">Huỷ</button>
+        </section>
+        <section class="card" style="padding:16px;display:flex;flex-direction:column;gap:10px">
+          <b>“Duyệt bản này” làm gì?</b>
+          <div class="muted" style="font-size:13px;line-height:1.55">Đánh dấu bản đã chốt và lưu storyboard của bản đó vào git, để sau này dựng lại đúng y như vậy. File video vẫn nằm trong thư mục dự án và được đồng bộ lên Drive.</div>
+        </section>
+      </aside>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":980}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      versions: [
+        { name: 'v3', kind: 'Nháp · 0,5×', chipCls: 'chip run', okDisplay: 'none', capA: 'Học viên đạt IELTS ', capB: ' chỉ sau 3 tháng', hl: '#FFD400', pos: 35, dur: '0:13', date: 'Hôm nay 14:20', q: '540×960', size: '3,1 MB', note: 'đổi giọng s2 sang Vy' },
+        { name: 'v2', kind: 'Final', chipCls: 'chip', okDisplay: 'inline-flex', capA: 'Học viên đạt IELTS ', capB: ' sau 3 tháng', hl: '#FFD400', pos: 0, dur: '0:12', date: 'Hôm qua 17:05', q: '1080×1920', size: '9,8 MB', note: '—' },
+        { name: 'v1', kind: 'Nháp · 0,5×', chipCls: 'chip run', okDisplay: 'none', capA: 'Học viên đạt IELTS ', capB: '', hl: '#ECEEF2', pos: 0, dur: '0:11', date: 'Hôm qua 15:40', q: '540×960', size: '2,7 MB', note: 'bản đầu' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -34,7 +34,7 @@ browser (React SPA) ──HTTP/JSON + SSE──► app server (Node, Hono, 127.0
                                                 JSON lines over stdin/stdout; model loaded once, kept warm
 ```
 
-- `npm start` in `app/` builds the frontend and serves it from the same Hono server; `npm run dev` runs Vite with a proxy to the API.
+- The repo root is an npm workspace (`studio`, `app`) so React and Remotion are installed once. `npm start` in `app/` builds the frontend and serves it from the same Hono server; `npm run dev` runs Vite with a proxy to the API.
 - The Player and the renderer use the **same** components from `studio/src` (imported via a Vite alias `@studio` → `../studio/src`, with `resolve.dedupe` for `react`, `react-dom`, `remotion`, `@remotion/*`). `app/package.json` pins the same Remotion version as `studio/` (4.0.544), plus `@remotion/player`, `@remotion/renderer`, `@remotion/bundler` at 4.0.544.
   - Risk: cross-package import of studio source. Plan Task 1 is a spike that proves Player renders `fixtures/smoke-props.json` in the app before anything else is built.
 - Static asset paths: studio components call `staticFile("library/x.mp4")` → `/library/x.mp4`. The server serves those roots, so Player preview needs no copying.
@@ -45,7 +45,7 @@ browser (React SPA) ──HTTP/JSON + SSE──► app server (Node, Hono, 127.0
 - Runs with `VieNeu-TTS/.venv/bin/python`. Reads one JSON object per line from stdin, writes one JSON object per line to stdout; logs go to stderr. Requests carry an `id`; replies echo it.
 - Commands:
   - `{"id","cmd":"ping"}` → `{"id","ok":true,"modelLoaded":bool,"device":"cuda"|"cpu"}`
-  - `{"id","cmd":"prepare","project":"<slug>","synth":true|false}` → `{"id","ok":true,"totalSeconds","mix","stale":["s2"],"errors":[]}` or `{"id","ok":false,"errors":[...]}`
+  - `{"id","cmd":"prepare","project":"<slug>"}` (always synth; instant preview runs `python3 tools/prepare.py <proj> --preview --json` as a short-lived process instead, so it never queues behind voice generation) → `{"id","ok":true,"totalSeconds","mix","stale":["s2"],"errors":[]}` or `{"id","ok":false,"errors":[...]}`
   - `{"id","cmd":"try","voice","text","variants":[{...}]}` → `{"id","ok":true,"tries":<tries.json content>}`
   - Progress events while working: `{"id","event":"progress","done":2,"total":5,"scene":"s2"}`.
 - Model loads lazily on the first synth and stays loaded. The server restarts the worker if it exits and fails the in-flight job with its stderr tail.
@@ -80,7 +80,7 @@ Jobs run one at a time per lane: `gpu` (voice, tries), `render`, `io` (ingest, g
 ## File contract additions
 
 Added to the engine spec's "File contract" in the same commit as this spec:
-- `projects/<slug>/project.json` — `{ "approved": "reel-v2" | null }`, written by the app. Optional; absent = nothing approved.
+- `projects/<slug>/project.json` — `{ "approved": "reel-v2" | null, "renders": { "reel-v2": { "kind": "draft" | "final", "at": "<ISO time>" } } }`, written by the app. Optional; absent = nothing approved, render kinds unknown.
 - `projects/<slug>/reel-vN.storyboard.json` — a copy of `storyboard.json` taken when `reel-vN.mp4` is rendered. Committed only when the user approves that version.
 - `inbox/` — upload target (already used by `ingest.py`).
 

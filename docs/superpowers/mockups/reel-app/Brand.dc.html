@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Brand và cài đặt</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0D0E11;color:#ECEEF2;font-family:'Be Vietnam Pro',system-ui,sans-serif;font-size:14px}
+a{color:#F5B83D}a:hover{color:#FFD27A}
+*{box-sizing:border-box}
+.app{display:flex;flex-wrap:wrap;min-height:1040px;background:#0D0E11}
+.side{flex:1 1 232px;background:#121419;border-right:1px solid #23262E;padding:20px 14px;display:flex;flex-direction:column;gap:4px}
+.main{flex:999 1 560px;min-width:0;padding:28px 32px;display:flex;flex-direction:column;gap:20px}
+.logo{display:flex;align-items:center;gap:10px;padding:4px 8px 20px}
+.mark{width:34px;height:34px;border-radius:10px;background:#F5B83D;color:#1A1300;display:grid;place-items:center;font-weight:800}
+.logo small{display:block;color:#8B919C;font-size:12px}
+.nav{display:flex;align-items:center;gap:10px;padding:0 12px;min-height:44px;border-radius:10px;color:#A0A6B1;text-decoration:none;font-weight:500}
+.nav:hover{background:#1C1F26;color:#ECEEF2}
+.nav.on{background:#1F2330;color:#ECEEF2}
+.nav.on svg{color:#F5B83D}
+.status{margin-top:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:#A0A6B1;padding:10px 8px 0}
+.dot{width:8px;height:8px;border-radius:50%;background:#4CC38A}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 16px;border-radius:10px;border:1px solid #2F343E;background:#1C1F26;color:#ECEEF2;font:inherit;font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn.pri{background:#F5B83D;border-color:#F5B83D;color:#1A1300}
+.btn.sm{height:34px;padding:0 10px;font-size:13px}
+.card{background:#15171C;border:1px solid #262A33;border-radius:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:600;background:#22262F;color:#C9CED6;white-space:nowrap}
+.chip.ok{background:#173326;color:#7BDDA9}
+h1{font-size:26px;margin:0;font-weight:700;letter-spacing:-.01em}
+h2{font-size:16px;margin:0;font-weight:700}
+.muted{color:#A0A6B1}
+.dim{color:#8B919C}
+.input{width:100%;background:#0F1115;border:1px solid #2A2E37;border-radius:10px;color:#ECEEF2;font:inherit;padding:9px 11px}
+label.l{font-size:12px;color:#A0A6B1;font-weight:500;display:block;margin-bottom:6px}
+.blist{display:flex;flex-direction:column;gap:6px}
+.bi{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;border:1px solid transparent;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer;min-height:44px}
+.bi.on{background:#1C1F26;border-color:#2F343E}
+.sw{display:flex;align-items:center;gap:10px;padding:8px;border:1px solid #2A2E37;border-radius:10px;background:#0F1115}
+.sw i{width:28px;height:28px;border-radius:7px;border:1px solid rgba(255,255,255,.12);flex:none}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.prm{display:grid;grid-template-columns:150px 1fr 60px;gap:10px;align-items:center;font-size:13px}
+.prm input{accent-color:#F5B83D;width:100%}
+.set{padding:18px;display:flex;flex-direction:column;gap:14px}
+</style>
+</helmet>
+<div class="app">
+  <nav class="side" aria-label="Điều hướng">
+    <div class="logo"><span class="mark">R</span><div><b>Reel Studio</b><small>create-video</small></div></div>
+    <a class="nav" href="Main.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Dự án</a>
+    <a class="nav" href="Library.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg>Thư viện</a>
+    <a class="nav" href="Voices.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Giọng đọc</a>
+    <a class="nav on" href="Brand.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>Brand &amp; cài đặt</a>
+    <div class="status"><span class="dot"></span>Model giọng đã nạp · GPU</div>
+  </nav>
+
+  <div class="main">
+    <div><h1>Brand &amp; cài đặt</h1><div class="muted" style="margin-top:4px">Màu, logo, thông tin liên hệ của từng thương hiệu và các mặc định cho mọi video.</div></div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+      <section class="card" style="flex:1 1 220px;max-width:240px;padding:12px" aria-label="Danh sách brand">
+        <div class="blist">
+          <button class="bi on"><i style="width:26px;height:26px;border-radius:7px;background:#1E3A8A;display:block"></i><span style="flex:1">Demo Academy</span><span class="chip ok">MĐ</span></button>
+          <button class="bi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Thêm brand</button>
+        </div>
+      </section>
+
+      <section class="card set" style="flex:999 1 420px;min-width:0" aria-label="Sửa brand">
+        <div style="display:flex;align-items:center;gap:12px"><h2 style="flex:1">Demo Academy</h2><span class="dim" style="font-size:12px">brands/demo/brand.json</span></div>
+        <div class="grid2">
+          <div><label class="l" for="bn">Tên</label><input id="bn" class="input" value="Demo Academy"></div>
+          <div><span style="font-size:12px;color:#A0A6B1;display:block;margin-bottom:6px">Logo</span><button class="btn sm" style="width:100%;border-style:dashed;background:transparent"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg>Tải logo (PNG nền trong)</button></div>
+        </div>
+        <div>
+          <span style="font-size:12px;color:#A0A6B1;display:block;margin-bottom:6px">Màu</span>
+          <div class="grid2">
+            <div class="sw"><i style="background:#1E3A8A"></i><div><div style="font-size:12px" class="dim">Chính</div><b>#1E3A8A</b></div></div>
+            <div class="sw"><i style="background:#FFD400"></i><div><div style="font-size:12px" class="dim">Nhấn (từ nổi bật)</div><b>#FFD400</b></div></div>
+            <div class="sw"><i style="background:#FFFFFF"></i><div><div style="font-size:12px" class="dim">Chữ</div><b>#FFFFFF</b></div></div>
+            <div class="sw"><i style="background:#0B1530"></i><div><div style="font-size:12px" class="dim">Nền cảnh motion</div><b>#0B1530</b></div></div>
+          </div>
+        </div>
+        <div class="grid2">
+          <div><label class="l" for="ph">Số điện thoại (CTA)</label><input id="ph" class="input" value="0900 000 000"></div>
+          <div><label class="l" for="fp">Fanpage</label><input id="fp" class="input" value="fb.com/demo"></div>
+        </div>
+        <div><label class="l" for="ad">Địa chỉ</label><input id="ad" class="input" placeholder="[ĐỊA CHỈ] — để trống nếu không hiện"></div>
+        <div style="display:flex;gap:8px"><button class="btn sm pri">Lưu brand</button><button class="btn sm">Đặt làm mặc định</button></div>
+      </section>
+
+      <section style="flex:1 1 220px;max-width:240px;display:flex;flex-direction:column;gap:8px;align-items:center" aria-label="Xem trước CTA">
+        <div style="width:220px;aspect-ratio:9/16;border-radius:14px;background:#0B1530;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px;text-align:center">
+          <div style="width:54px;height:54px;border-radius:14px;background:#1E3A8A;display:grid;place-items:center;font-weight:800;font-size:12px">LOGO</div>
+          <div style="font-weight:800;font-size:24px;line-height:1.15">Đăng ký ngay</div>
+          <div style="background:#FFD400;color:#0B1530;font-weight:800;padding:8px 14px;border-radius:999px;font-size:16px">0900 000 000</div>
+          <div style="font-size:12px;color:#C9D3EA">fb.com/demo</div>
+        </div>
+        <span class="dim" style="font-size:12px">Xem trước thẻ CTA cuối video</span>
+      </section>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px">
+      <section class="card set" aria-label="Mặc định">
+        <h2>Mặc định cho video mới</h2>
+        <div class="grid2">
+          <div><label class="l" for="dv">Giọng</label><select id="dv" class="input"><option>Phương</option><option>Vy</option></select></div>
+          <div><label class="l" for="dt">Mẫu (template)</label><select id="dt" class="input"><option>fast-cut</option></select></div>
+          <div><label class="l" for="db">Brand</label><select id="db" class="input"><option>Demo Academy</option></select></div>
+          <div><label class="l" for="dm">Nhạc nền</label><select id="dm" class="input"><option>Chọn theo video</option><option>Không nhạc</option></select></div>
+        </div>
+        <h2 style="font-size:14px;margin-top:4px">Tỉ lệ nội dung mục tiêu</h2>
+        <div style="display:flex;height:12px;border-radius:99px;overflow:hidden"><i style="width:60%;background:#6E9BFF"></i><i style="width:30%;background:#F5B83D"></i><i style="width:10%;background:#5A5F6B"></i></div>
+        <div class="prm"><label for="mr">Cảnh thật</label><input id="mr" type="range" min="0" max="100" value="60"><b style="text-align:right">60%</b></div>
+        <div class="prm"><label for="mm">Motion</label><input id="mm" type="range" min="0" max="100" value="30"><b style="text-align:right">30%</b></div>
+        <div class="prm"><label for="mo">Khác (CTA…)</label><input id="mo" type="range" min="0" max="100" value="10"><b style="text-align:right">10%</b></div>
+      </section>
+
+      <section class="card set" aria-label="Phụ đề, nhạc và video">
+        <h2>Phụ đề</h2>
+        <div class="prm"><label for="cs">Cỡ chữ</label><input id="cs" type="range" min="40" max="96" value="64"><b style="text-align:right">64</b></div>
+        <div class="prm"><label for="cw">Số từ mỗi dòng</label><input id="cw" type="range" min="2" max="10" value="6"><b style="text-align:right">6</b></div>
+        <div class="grid2"><div class="sw"><i style="background:#FFFFFF"></i><div><div style="font-size:12px" class="dim">Màu chữ</div><b>#FFFFFF</b></div></div><div class="sw"><i style="background:#FFD400"></i><div><div style="font-size:12px" class="dim">Màu nổi bật</div><b>#FFD400</b></div></div></div>
+        <h2 style="margin-top:4px">Nhạc &amp; xuất video</h2>
+        <div class="prm"><label for="mv">Âm lượng nhạc</label><input id="mv" type="range" min="0" max="100" value="25"><b style="text-align:right">25%</b></div>
+        <div class="prm"><label for="md">Khi có giọng hạ còn</label><input id="md" type="range" min="0" max="50" value="8"><b style="text-align:right">8%</b></div>
+        <div class="prm"><label for="mf">Fade cuối</label><input id="mf" type="range" min="0" max="5" step="0.5" value="1.5"><b style="text-align:right">1,5 s</b></div>
+        <div class="dim" style="font-size:12px">Video: 1080×1920 · 30 fps · bản nháp 0,5×</div>
+        <div style="display:flex;gap:8px"><button class="btn sm pri">Lưu cài đặt</button><span class="dim" style="font-size:12px;align-self:center">Ghi vào config.json</span></div>
+      </section>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1040}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>
