@@ -23,7 +23,7 @@ A local web app over the engine's files so the user can do everything visually: 
 ## Architecture
 
 ```
-browser (React SPA) ──HTTP/JSON + SSE──► app server (Node, Hono, 127.0.0.1:5317)
+browser (React SPA via Vite :5317) ──/api proxy, HTTP/JSON + SSE──► app server (Node, Hono, 127.0.0.1:5316)
                                           ├─ static: /library /music /brands /projects /voices (read-only)
                                           ├─ file store: atomic JSON read/write + mtime conflict check
                                           ├─ watcher: fs.watch(recursive) → SSE "changed" events
@@ -34,7 +34,7 @@ browser (React SPA) ──HTTP/JSON + SSE──► app server (Node, Hono, 127.0
                                                 JSON lines over stdin/stdout; model loaded once, kept warm
 ```
 
-- The repo root is an npm workspace (`studio`, `app`) so React and Remotion are installed once. `npm start` in `app/` builds the frontend and serves it from the same Hono server; `npm run dev` runs Vite with a proxy to the API.
+- The repo root is an npm workspace (`studio`, `app`) so React and Remotion are installed once. `npm start` in `app/` runs the API (5316) and Vite (5317, proxying `/api` and media roots); there is no dist build, so edits to `studio/src` hot-reload into the preview. `npm run dev` is the same with API auto-restart.
 - The Player and the renderer use the **same** components from `studio/src` (imported via a Vite alias `@studio` → `../studio/src`, with `resolve.dedupe` for `react`, `react-dom`, `remotion`, `@remotion/*`). `app/package.json` pins the same Remotion version as `studio/` (4.0.544), plus `@remotion/player`, `@remotion/renderer`, `@remotion/bundler` at 4.0.544.
   - Risk: cross-package import of studio source. Plan Task 1 is a spike that proves Player renders `fixtures/smoke-props.json` in the app before anything else is built.
 - Static asset paths: studio components call `staticFile("library/x.mp4")` → `/library/x.mp4`. The server serves those roots, so Player preview needs no copying.
