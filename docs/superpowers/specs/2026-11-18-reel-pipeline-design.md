@@ -91,7 +91,7 @@ Resolution order (later wins): `config.json` → `config.voices.<voice>` → bra
     "vy":     { "ref": "voices/vy-short.wav" }
   },
   "mix":      { "real": 0.6, "motion": 0.3, "other": 0.1 },   // target share of screen time
-  "sync":     { "remote": "gdrive:create-video" },            // rclone remote:path
+  "sync":     { "remote": "video-syn:create-video" },            // rclone remote:path
   "video":    { "fps": 30, "width": 1080, "height": 1920, "draftScale": 0.5 },
   "music":    { "volume": 0.25, "duckTo": 0.08, "fadeOut": 1.5 },
   "captions": { "font": "Be Vietnam Pro", "size": 64, "color": "#FFFFFF",
