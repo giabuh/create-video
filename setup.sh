@@ -19,7 +19,7 @@ else
   warn "No NVIDIA GPU -> VieNeu runs on CPU (ONNX), slower"; (cd VieNeu-TTS && uv sync)
 fi
 
-(cd studio && npm ci)
+npm ci
 mkdir -p inbox library music reference voices/tries projects
 [ -f library/media-index.json ] || echo '{}' > library/media-index.json
 for d in library music brands projects; do

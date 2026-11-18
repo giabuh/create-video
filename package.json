@@ -1,0 +1,1 @@
+{ "name": "create-video", "private": true, "workspaces": ["studio", "app"], "allowScripts": {"esbuild": false} }

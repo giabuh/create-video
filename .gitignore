@@ -15,3 +15,7 @@ out/
 __pycache__/
 projects/*/timings.json
 projects/*/render-props.json
+test-results/
+playwright-report/
+app/.scratch/
+voices/_uploads/
