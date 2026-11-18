@@ -14,10 +14,10 @@ export function safeJoin(rootKey: RootKey, ...parts: string[]): string {
   const base = path.join(repoRoot(), ROOT_DIRS[rootKey]);
   for (const p of parts) {
     if (typeof p !== 'string' || p === '' || p.includes('\0') || path.isAbsolute(p) || p.startsWith('/') || p.startsWith('\\')) throw new PathError(`bad path part: ${JSON.stringify(p)}`);
-    if (p.split(/[\\/]/).includes('..')) throw new PathError(`bad path part: ${JSON.stringify(p)}`);
+    if (p.split(/[\\/]/).some(x => x === '..' || x === '.')) throw new PathError(`bad path part: ${JSON.stringify(p)}`);
   }
   const abs = path.resolve(base, ...parts);
-  if (abs !== base && !abs.startsWith(base + path.sep)) throw new PathError('path escapes root');
+  if (!abs.startsWith(base + path.sep)) throw new PathError('path escapes root');
   return abs;
 }
 

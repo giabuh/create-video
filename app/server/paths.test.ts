@@ -3,7 +3,7 @@ import {MEDIA_EXTS, PathError, SLUG_RE, safeJoin, sanitizeFilename, slugify} fro
 
 describe('paths', () => {
   it('safeJoin ok', () => expect(safeJoin('projects', 'p1', 'storyboard.json')).toMatch(/\/projects\/p1\/storyboard\.json$/));
-  it.each([['..'], ['a/../../x'], ['/etc/passwd'], [''], ['a\0b'], ['a\\..\\x']])('safeJoin rejects %j', p => {
+  it.each([['..'], ['a/../../x'], ['/etc/passwd'], [''], ['a\0b'], ['a\\..\\x'], ['.'], ['a/.']])('safeJoin rejects %j', p => {
     expect(() => safeJoin('projects', p)).toThrow(PathError);
   });
   it('slugify', () => expect(slugify('Ảnh Lớp 05 (đẹp)')).toBe('anh-lop-05-dep'));

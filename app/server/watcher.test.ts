@@ -1,4 +1,4 @@
-import {mkdir, writeFile} from 'node:fs/promises';
+import {mkdir, rm, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {afterEach, describe, expect, it} from 'vitest';
 import {EventBus} from './events.ts';
@@ -40,5 +40,11 @@ describe('watcher', () => {
     await writeFile(path.join(dir, 'voices/_uploads/a.wav'), 'x');
     await sleep(500);
     expect(paths).toEqual([]);
+  });
+  it('survives a removed watched dir', async () => {
+    const {dir} = await setup();
+    await rm(path.join(dir, 'brands'), {recursive: true});
+    await sleep(300);
+    expect(true).toBe(true); // an unhandled watcher error would fail the run
   });
 });

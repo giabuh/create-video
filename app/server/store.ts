@@ -1,4 +1,4 @@
-import {mkdir, readFile, rename, stat, writeFile} from 'node:fs/promises';
+import {mkdir, open, rename, stat, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import type {Versioned} from '../shared/types.ts';
 
@@ -16,8 +16,12 @@ function withLock<T>(file: string, fn: () => Promise<T>): Promise<T> {
 }
 export const mtimeOf = async (file: string) => Math.floor((await stat(file)).mtimeMs);
 export async function readJson<T>(file: string): Promise<Versioned<T>> {
-  const [text, mtime] = await Promise.all([readFile(file, 'utf8'), mtimeOf(file)]);
-  return {data: JSON.parse(text) as T, mtime};
+  // one handle: content and mtime describe the same inode even if a rename lands mid-read
+  const h = await open(file, 'r');
+  try {
+    const mtime = Math.floor((await h.stat()).mtimeMs);
+    return {data: JSON.parse(await h.readFile('utf8')) as T, mtime};
+  } finally { await h.close(); }
 }
 export async function readJsonOr<T>(file: string, fallback: T): Promise<Versioned<T>> {
   try { return await readJson<T>(file); } catch (e) { if ((e as NodeJS.ErrnoException).code === 'ENOENT') return {data: fallback, mtime: 0}; throw e; }

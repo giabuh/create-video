@@ -8,7 +8,7 @@ const WATCH_DIRS = ['projects', 'library', 'music', 'brands', 'voices', 'studio/
 
 function ignored(relPath: string): boolean {
   if (IGNORE_SUFFIX.some(s => relPath.endsWith(s))) return true;
-  return /^projects\/[^/]+\/preview(\/|$)/.test(relPath) || relPath.startsWith('voices/_uploads');
+  return /^projects\/[^/]+\/preview(\/|$)/.test(relPath) || /^voices\/_uploads(\/|$)/.test(relPath);
 }
 
 export function startWatcher(bus: EventBus): () => void {
@@ -21,11 +21,13 @@ export function startWatcher(bus: EventBus): () => void {
     clearTimeout(timers.get(p));
     timers.set(p, setTimeout(() => { timers.delete(p); bus.emit({type: 'changed', path: p}); }, 120));
   };
+  // a removed dir or inotify limit must not crash the server
+  const guarded = (w: FSWatcher) => w.on('error', err => { console.error('watcher error:', err.message); w.close(); });
   for (const d of WATCH_DIRS) {
     const dir = path.join(root, d);
     mkdirSync(dir, {recursive: true});
-    watchers.push(watch(dir, {recursive: true}, (_ev, name) => { if (name) fire(path.join(dir, name.toString())); }));
+    watchers.push(guarded(watch(dir, {recursive: true}, (_ev, name) => { if (name) fire(path.join(dir, name.toString())); })));
   }
-  watchers.push(watch(root, (_ev, name) => { if (name?.toString() === 'config.json') fire(path.join(root, 'config.json')); }));
+  watchers.push(guarded(watch(root, (_ev, name) => { if (name?.toString() === 'config.json') fire(path.join(root, 'config.json')); })));
   return () => { watchers.forEach(w => w.close()); timers.forEach(clearTimeout); timers.clear(); };
 }

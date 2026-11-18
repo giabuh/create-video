@@ -32,4 +32,12 @@ describe('store', () => {
     expect(JSON.parse(await readFile(f, 'utf8'))).toHaveProperty('i');
     expect((await readdir(dir)).filter(n => n.endsWith('.tmp'))).toEqual([]);
   });
+  it('readJson returns data and mtime from the same version', async () => {
+    const dir = await makeTestRoot(); const f = path.join(dir, 'e.json');
+    await writeJsonAtomic(f, {v: 0});
+    const reads = Promise.all(Array.from({length: 50}, () => readJson<{v: number}>(f)));
+    for (let i = 1; i <= 20; i++) await writeJsonAtomic(f, {v: i});
+    const byMtime = new Map<number, number>();
+    for (const r of await reads) { const v = byMtime.get(r.mtime); if (v !== undefined) expect(v).toBe(r.data.v); byMtime.set(r.mtime, r.data.v); }
+  });
 });
