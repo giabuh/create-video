@@ -13,9 +13,13 @@ copy() { # copy <local> <remote-subpath> [filters...]
   local local_dir=$1 sub=$2; shift 2
   mkdir -p "$local_dir"
   if [ "$mode" = push ]; then
-    rclone copy "$local_dir" "$REMOTE/$sub" --update "$@" "${EXTRA[@]}"
+    rclone copy "$local_dir" "$REMOTE/$sub" --update "$@" ${EXTRA[@]+"${EXTRA[@]}"}
   else
-    rclone copy "$REMOTE/$sub" "$local_dir" --update "$@" "${EXTRA[@]}"
+    local rc=0
+    rclone copy "$REMOTE/$sub" "$local_dir" --update "$@" ${EXTRA[@]+"${EXTRA[@]}"} || rc=$?
+    # exit 3 = remote dir not found: nothing to pull yet (e.g. empty reference/ never pushed)
+    if [ "$rc" = 3 ]; then echo "- skip pull $local_dir (not on Drive yet)"; return 0; fi
+    [ "$rc" = 0 ] || return "$rc"
   fi
   echo "✓ $mode $local_dir"
 }
