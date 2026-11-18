@@ -27,11 +27,10 @@ describe('voice routes', () => {
     const {req, jobs} = setup();
     expect((await req('/api/upload-voice/thu/x.exe', {method: 'PUT', body: 'x'})).status).toBe(400);
     expect((await req('/api/upload-voice/phuong/x.wav', {method: 'PUT', body: 'x'})).status).toBe(400);
-    expect((await req('/api/upload-voice/Bad%20Name/x.wav', {method: 'PUT', body: 'x'})).status).toBe(400);
-    const r = await req('/api/upload-voice/thu/Thu%2Fmau.wav', {method: 'PUT', body: 'x'});
-    expect(r.status).toBe(400); // slash in filename
-    const ok = await req('/api/upload-voice/thu/mau.wav', {method: 'PUT', body: 'audio'});
+    expect((await req('/api/upload-voice/thu/Thu%2Fmau.wav', {method: 'PUT', body: 'x'})).status).toBe(400); // slash in filename
+    const ok = await req('/api/upload-voice/Thu/mau.wav', {method: 'PUT', body: 'audio'});
     expect(ok.status).toBe(202);
+    expect((await req('/api/upload-voice/thu/mau.wav', {method: 'PUT', body: 'again'})).status).toBe(400); // pending job
     const job = await ok.json();
     expect(job.kind).toBe('voice-add');
     expect((await settle(jobs, job.id)).state).toBe('done');

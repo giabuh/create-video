@@ -1,4 +1,5 @@
 import {readdir, stat} from 'node:fs/promises';
+import {withSlugLock} from './slugLock.ts';
 import {readJsonOr, writeJsonAtomic} from './store.ts';
 import {safeJoin} from './paths.ts';
 import type {ProjectMeta, ProjectStatus, VersionInfo, Versioned} from '../shared/types.ts';
@@ -42,3 +43,10 @@ export function projectStatus(versions: VersionInfo[], meta: ProjectMeta, render
   if (meta.approved) return 'approved';
   return versions.length ? 'draft' : 'new';
 }
+
+/** Records a finished render in project.json under the slug lock so it cannot interleave with approve. */
+export const recordRender = (slug: string, name: string, kind: 'draft' | 'final'): Promise<number> => withSlugLock(slug, async () => {
+  const meta = (await readMeta(slug)).data;
+  meta.renders[name] = {kind, at: new Date().toISOString()};
+  return writeMeta(slug, meta);
+});

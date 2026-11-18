@@ -20,7 +20,7 @@ for (const sig of ['SIGINT', 'SIGTERM'] as const) process.on(sig, () => { stopWa
 if (process.env.NO_OPEN !== '1' && process.env.REEL_DEV !== '1') {
   void (async () => {
     for (let i = 0; i < 60; i++) {
-      if (await fetch(`http://127.0.0.1:${UI_PORT}`).then(() => true, () => false)) { openFolder(`http://127.0.0.1:${UI_PORT}`); return; } // xdg-open takes URLs too
+      if (await fetch(`http://127.0.0.1:${UI_PORT}`, {signal: AbortSignal.timeout(2000)}).then(() => true, () => false)) { openFolder(`http://127.0.0.1:${UI_PORT}`); return; } // xdg-open takes URLs too
       await new Promise(r => setTimeout(r, 500));
     }
   })();

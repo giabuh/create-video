@@ -1,7 +1,7 @@
 import {readdir, rm, stat} from 'node:fs/promises';
 import {Hono} from 'hono';
 import path from 'node:path';
-import {AUDIO_REF_EXTS, repoRoot, safeJoin, sanitizeFilename} from '../paths.ts';
+import {AUDIO_REF_EXTS, repoRoot, safeJoin, sanitizeFilename, slugify} from '../paths.ts';
 import {convertVoiceRef} from '../procs.ts';
 import {readJson, readJsonOr, writeJsonAtomic} from '../store.ts';
 import type {Config, Tries, VoiceInfo} from '../../shared/types.ts';
@@ -11,6 +11,7 @@ import {saveUpload} from './uploads.ts';
 
 export function voiceRoutes({jobs, worker}: Deps): Hono {
   const app = new Hono();
+  const pending = new Set<string>(); // voice names with an upload/voice-add job in flight
 
   app.get('/voices', async c => {
     const {data: config} = await readConfigV();
@@ -42,13 +43,15 @@ export function voiceRoutes({jobs, worker}: Deps): Hono {
   });
 
   app.put('/upload-voice/:name/:filename', async c => {
-    const name = slugParam(c.req.param('name'), 'voice name');
+    const name = slugParam(slugify(c.req.param('name')), 'voice name');
     const fname = sanitizeFilename(c.req.param('filename'), AUDIO_REF_EXTS);
     const dest = safeJoin('voices', `${name}-short.wav`);
     if (Object.hasOwn((await readConfigV()).data.voices, name) || await stat(dest).then(() => true, () => false)) throw new HttpError(400, 'voice exists');
+    if (pending.has(name)) throw new HttpError(400, 'voice exists');
+    pending.add(name); // no await between check and add
     const upDir = safeJoin('voices', '_uploads');
-    const saved = await saveUpload(c, upDir, `${name}${path.extname(fname)}`);
-    const src = path.join(upDir, saved);
+    let src: string;
+    try { src = path.join(upDir, await saveUpload(c, upDir, `${name}${path.extname(fname)}`)); } catch (e) { pending.delete(name); throw e; }
     return c.json(jobs.enqueue({
       kind: 'voice-add', lane: 'io', label: `Thêm giọng ${name}`, project: null, cancellable: false,
       run: async ctx => {
@@ -62,7 +65,7 @@ export function voiceRoutes({jobs, worker}: Deps): Hono {
           if (Object.hasOwn(cur.data.voices, name)) { ours = false; throw new Error('voice exists'); }
           await writeJsonAtomic(file, {...cur.data, voices: {...cur.data.voices, [name]: {ref: `voices/${name}-short.wav`}}}, cur.mtime);
           return {name};
-        } catch (e) { if (ours) await rm(dest, {force: true}); throw e; } finally { await rm(src, {force: true}); }
+        } catch (e) { if (ours) await rm(dest, {force: true}); throw e; } finally { pending.delete(name); await rm(src, {force: true}); }
       },
     }), 202);
   });

@@ -130,7 +130,11 @@ export function projectRoutes({jobs, worker}: Deps): Hono {
       const prev = (await readMeta(slug)).data;
       const meta = {...prev, approved: version};
       await writeMeta(slug, meta); // approveCommit needs project.json on disk
-      try { return {meta, commit: await approveCommit(slug, version)}; } catch (e) { await writeMeta(slug, prev); throw e; }
+      try { return {meta, commit: await approveCommit(slug, version)}; } catch (e) { // restore only `approved`; renders may have changed
+        const now = (await readMeta(slug)).data;
+        await writeMeta(slug, {...now, approved: prev.approved});
+        throw e;
+      }
     }));
   });
   return app;

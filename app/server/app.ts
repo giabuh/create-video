@@ -27,7 +27,7 @@ export function createApp(deps: Deps): Hono {
   app.onError((e, c) => {
     if (e instanceof Conflict) return c.json({error: 'conflict', details: {data: e.current, mtime: e.mtime}}, 409);
     if (e instanceof HttpError) return c.json({error: e.message, ...(e.details !== undefined && {details: e.details})}, e.status as 400);
-    if (e instanceof PathError || e instanceof SyntaxError) return c.json({error: e.message}, 400);
+    if (e instanceof PathError) return c.json({error: e.message}, 400);
     if (e instanceof HTTPException) return c.json({error: e.message}, e.status);
     console.error(e.stack ?? e);
     return c.json({error: e.message}, 500);
@@ -47,7 +47,11 @@ export function createApp(deps: Deps): Hono {
       let segs: string[];
       try { segs = decodeURIComponent(c.req.path.slice(dir.length + 2)).split(/[\\/]/); } catch { return c.json({error: 'bad path'}, 400); }
       if (segs.some(s => s.startsWith('.') || s === '_uploads') || !exts.includes(path.extname(segs.at(-1)!).toLowerCase())) return c.json({error: 'not found'}, 404);
-      return next();
+      await next();
+      if (exts.length && path.extname(segs.at(-1)!).toLowerCase() === '.svg') { // inline-safe: <img> still renders, scripts cannot run if opened directly
+        c.header('Content-Security-Policy', "sandbox; default-src 'none'; style-src 'unsafe-inline'");
+        c.header('X-Content-Type-Options', 'nosniff');
+      }
     }, serveStatic({root: path.join(repoRoot(), dir), rewriteRequestPath: p => p.replace(new RegExp(`^/${dir}`), '')}));
   }
   return app;

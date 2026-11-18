@@ -19,7 +19,7 @@ export class HttpError extends Error {
 export const isObj = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 
 export async function bodyOf(c: Context): Promise<Record<string, unknown>> {
-  const b: unknown = await c.req.json(); // malformed JSON -> SyntaxError -> 400 in onError
+  const b: unknown = await c.req.json().catch(() => { throw new HttpError(400, 'malformed JSON'); });
   if (!isObj(b)) throw new HttpError(400, 'body must be a JSON object');
   return b;
 }

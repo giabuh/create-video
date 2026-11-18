@@ -26,6 +26,15 @@ describe('static media + guard', () => {
     expect((await req('/voices/_uploads/x.wav')).status).toBe(404);
     expect((await req('/library/missing.mp4')).status).toBe(404);
   });
+  it('svg gets sandbox CSP and nosniff', async () => {
+    const root = await makeTestRoot();
+    await mkdir(path.join(root, 'brands/demo'), {recursive: true});
+    await writeFile(path.join(root, 'brands/demo/l.svg'), '<svg xmlns="http://www.w3.org/2000/svg"/>');
+    const r = await setup().req('/brands/demo/l.svg');
+    expect(r.status).toBe(200);
+    expect(r.headers.get('content-security-policy')).toBe("sandbox; default-src 'none'; style-src 'unsafe-inline'");
+    expect(r.headers.get('x-content-type-options')).toBe('nosniff');
+  });
   it('guard rejects foreign Host on api and media', async () => {
     await makeTestRoot();
     const {req} = setup();

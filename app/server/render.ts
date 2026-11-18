@@ -6,7 +6,7 @@ import type {JobCtx} from './jobs.ts';
 import {readJson} from './store.ts';
 import {repoRoot, safeJoin} from './paths.ts';
 import {withSlugLock} from './slugLock.ts';
-import {nextVersion, readMeta, writeMeta} from './versions.ts';
+import {nextVersion, recordRender} from './versions.ts';
 import type {VoiceWorker} from './voiceWorker.ts';
 import type {Config, Json, RenderProps} from '../shared/types.ts';
 
@@ -86,9 +86,7 @@ export async function renderVersion(slug: string, kind: 'draft' | 'final', ctx: 
     ctx.signal.throwIfAborted();
     await rename(tmp, safeJoin('projects', slug, `${name}.mp4`));
     tmp = null; snapshot = null; // mp4 is final; keep its snapshot even if the meta write fails
-    const meta = (await readMeta(slug)).data;
-    meta.renders[name] = {kind, at: new Date().toISOString()};
-    await writeMeta(slug, meta);
+    await recordRender(slug, name, kind);
     return {version: name, file: `projects/${slug}/${name}.mp4`};
   } catch (e) {
     await Promise.all([tmp as string | null, snapshot as string | null].map(f => f && rm(f, {force: true})));

@@ -3,6 +3,7 @@ import path from 'node:path';
 import {describe, expect, it, vi} from 'vitest';
 import {makeTestRoot} from '../testRoot.ts';
 import {setup, settle} from './testApp.ts';
+import {readMeta, recordRender} from '../versions.ts';
 
 vi.mock('../git.ts', () => ({approveCommit: vi.fn(async () => 'abc123')}));
 
@@ -60,5 +61,19 @@ describe('projects routes', () => {
     const ap = await req('/api/projects/p1/approve', {method: 'POST', json: {version: 'reel-v1'}});
     expect(await ap.json()).toEqual({meta: {approved: 'reel-v1', renders: {}}, commit: 'abc123'});
     expect(JSON.parse(await readFile(path.join(dir, 'project.json'), 'utf8')).approved).toBe('reel-v1');
+  });
+
+  it('render completion and approve interleave without losing either field', async () => {
+    const root = await makeTestRoot();
+    const {req} = setup();
+    await writeFile(path.join(root, 'projects/p1/reel-v1.mp4'), 'x');
+    await Promise.all([
+      recordRender('p1', 'reel-v2', 'draft'),
+      req('/api/projects/p1/approve', {method: 'POST', json: {version: 'reel-v1'}}),
+      recordRender('p1', 'reel-v3', 'final'),
+    ]);
+    const meta = (await readMeta('p1')).data;
+    expect(meta.approved).toBe('reel-v1');
+    expect(Object.keys(meta.renders).sort()).toEqual(['reel-v2', 'reel-v3']);
   });
 });
