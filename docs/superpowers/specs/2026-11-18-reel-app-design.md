@@ -70,7 +70,7 @@ browser (React SPA via Vite :5317) ──/api proxy, HTTP/JSON + SSE──► ap
 | `POST /ingest` | job: `python3 tools/ingest.py` |
 | `GET/PUT /music`, `PUT /upload-music/:filename` | list and upload music |
 | `POST /voices/try` `{voice,text,variants}` | job: worker `try` |
-| `POST /voices` `{name}` + `PUT /upload-voice/:name` | add a voice: ffmpeg-convert the upload to `voices/<name>-short.wav` (mono 24 kHz), register in `config.voices` |
+| `PUT /upload-voice/:name/:filename` | add a voice: ffmpeg-convert the upload to `voices/<name>-short.wav` (mono 48 kHz, like the existing refs), register in `config.voices` |
 | `GET/PUT /config`, `GET/PUT /brands/:id`, `POST /brands` | settings and brands (atomic, mtime-checked) |
 | `GET /jobs`, `POST /jobs/:id/cancel` | job list and cancel |
 | `GET /events` (SSE) | `changed {path}`, `job {id, kind, state, progress, message}`, `worker {modelLoaded, device}` |
