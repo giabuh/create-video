@@ -11,15 +11,15 @@
                   {"text": "chỉ sau 3 tháng", "start": 1.25, "end": 2.5}],
      "highlight": ["7.5"], "overlay": {"text": "GIẢM 50%", "position": "top"},
      "media": [{"src": "library/_smoke-landscape.mp4", "type": "video", "from": 1, "start": 0, "duration": 3, "effect": "zoom-in"}],
-     "motion": [], "transition": "cut"},
+     "motion": [{"component": "CountUp", "props": {"from": 5.5, "to": 7.5, "label": "IELTS"}, "start": 1.5, "duration": 1.5}], "transition": "cut"},
     {"id": "s2", "start": 3, "duration": 2, "voice": null,
      "captions": [{"text": "Lớp học sôi động mỗi ngày", "start": 0, "end": 2}],
      "highlight": [], "overlay": null,
      "media": [{"src": "library/_smoke-portrait.mp4", "type": "video", "from": 0, "start": 0, "duration": 1, "effect": "none"},
                {"src": "library/_smoke.jpg", "type": "image", "from": 0, "start": 1, "duration": 1, "effect": "pan-left"}],
-     "motion": [], "transition": "fade"},
+     "motion": [{"component": "LowerThird", "props": {"title": "Cô Minh Anh", "subtitle": "8.5 IELTS"}, "start": 0, "duration": 2}], "transition": "fade"},
     {"id": "s3", "start": 5, "duration": 2, "voice": null, "captions": [], "highlight": [], "overlay": null,
-     "media": [], "motion": [], "transition": "slide"}
+     "media": [], "motion": [{"component": "Checklist", "props": {"title": "Lộ trình 3 bước", "items": ["Kiểm tra đầu vào", "Học 1 kèm 1", "Thi thử hằng tuần"]}, "start": 0, "duration": 1}, {"component": "PriceTag", "props": {"old": "1.990K", "price": "999K", "note": "Ưu đãi tháng này"}, "start": 1, "duration": 1}], "transition": "slide"}
   ],
   "cta": {"title": "Đăng ký ngay", "phone": "0900 000 000", "fanpage": "fb.com/demo", "duration": 3},
   "totalSeconds": 10

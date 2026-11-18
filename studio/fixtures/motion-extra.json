@@ -1,0 +1,26 @@
+{
+  "template": "fast-cut", "fps": 30, "width": 1080, "height": 1920,
+  "brand": {"name": "Demo Academy", "logo": null,
+            "colors": {"primary": "#1E3A8A", "accent": "#FFD400", "text": "#FFFFFF", "background": "#0B1530"}},
+  "captions": {"font": "Be Vietnam Pro", "size": 64, "color": "#FFFFFF", "highlightColor": "#FFD400"},
+  "music": {"src": "music/_smoke.mp3", "volume": 0.25, "duckTo": 0.08, "fadeOut": 1.5},
+  "scenes": [
+    {"id": "s1", "start": 0, "duration": 3,
+     "voice": {"src": "projects/_smoke/audio/_fixture-voice.wav", "duration": 2.5},
+     "captions": [{"text": "Học viên đạt IELTS 7.5", "start": 0, "end": 1.25},
+                  {"text": "chỉ sau 3 tháng", "start": 1.25, "end": 2.5}],
+     "highlight": ["7.5"], "overlay": {"text": "GIẢM 50%", "position": "top"},
+     "media": [{"src": "library/_smoke-landscape.mp4", "type": "video", "from": 1, "start": 0, "duration": 3, "effect": "zoom-in"}],
+     "motion": [{"component": "CountUp", "props": {"from": 5.5, "to": 7.5, "label": "IELTS"}, "start": 1.5, "duration": 1.5}], "transition": "cut"},
+    {"id": "s2", "start": 3, "duration": 2, "voice": null,
+     "captions": [{"text": "Lớp học sôi động mỗi ngày", "start": 0, "end": 2}],
+     "highlight": [], "overlay": null,
+     "media": [{"src": "library/_smoke-portrait.mp4", "type": "video", "from": 0, "start": 0, "duration": 1, "effect": "none"},
+               {"src": "library/_smoke.jpg", "type": "image", "from": 0, "start": 1, "duration": 1, "effect": "pan-left"}],
+     "motion": [{"component": "LowerThird", "props": {"title": "Cô Minh Anh", "subtitle": "8.5 IELTS"}, "start": 0, "duration": 2}], "transition": "fade"},
+    {"id": "s3", "start": 5, "duration": 2, "voice": null, "captions": [], "highlight": [], "overlay": null,
+     "media": [], "motion": [{"component": "KineticText", "props": {"lines": ["Học thật", "Thi thật", "Điểm thật"]}, "start": 0, "duration": 1}, {"component": "DateBadge", "props": {"label": "Khai giảng", "date": "01/12"}, "start": 1, "duration": 1}], "transition": "slide"}
+  ],
+  "cta": {"title": "Đăng ký ngay", "phone": "0900 000 000", "fanpage": "fb.com/demo", "duration": 3},
+  "totalSeconds": 10
+}
