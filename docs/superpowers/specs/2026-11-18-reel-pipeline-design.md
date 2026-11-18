@@ -56,7 +56,8 @@ create-video/
 │   ├── src/templates/<template>/   # one folder per template (style only)
 │   └── src/motion/          # motion-graphics components (growing library)
 ├── tools/
-│   ├── ingest.sh            # inbox → library (+ thumbs)
+│   ├── ingest.py            # inbox → library (+ thumbs)
+│   ├── make_smoke_media.sh  # throwaway test media for tests and projects/_smoke
 │   ├── prepare.py           # validate + resolve config + TTS + write render-props.json
 │   ├── voice_try.py         # audition variants of a voice
 │   └── sync.sh              # push/pull media to Google Drive (rclone)
@@ -151,12 +152,12 @@ TTS keys map 1:1 onto `Vieneu` v3 Turbo `infer()` kwargs (`src/vieneu/v3turbo.py
 
 ## Components
 
-### `tools/ingest.sh`
+### `tools/ingest.py`
 For each file in `inbox/`:
 - Video → H.264, yuv420p, SDR (tonemap if HDR), constant 30 fps, rotation baked in, AAC audio, written into `library/`.
 - Photo (incl. HEIC) → JPG with EXIF rotation applied.
 
-It also writes `library/thumbs/<file>.jpg` (6-frame grid for clips, a resized copy for photos) and moves the original out of `inbox/` only after success. It does not write descriptions.
+It also writes `library/thumbs/<file>.jpg` (6-frame grid for clips, a resized copy for photos) and moves the original to `inbox/_done/` only after success. It does not write descriptions.
 
 ### Media index (`library/media-index.json`)
 ```jsonc
@@ -180,7 +181,16 @@ Writes `voices/tries/<name>-A.wav`, `-B.wav`, … plus a `tries.json` listing ea
 ### Remotion `studio/`
 - One composition `Reel` (1080×1920 @ 30 fps by default). `calculateMetadata` sets `durationInFrames` from `render-props.json` timings (+ CTA duration).
 - `Reel` dispatches to `src/templates/<template>/`. Each template is built from small components: `MediaShot` (cover/blur-fill, effects), `Captions` (chunking, highlight, auto-fit font size to the safe area), `Overlay`, `CtaCard`, `MusicTrack` (ducking), `VoiceTrack`.
-- Motion library `src/motion/`: one file per component, a typed props interface, branded through the brand colors and font. v1 seeds a few: `KineticText`, `CountUp`, `Checklist`, `PriceTag`, `DateBadge`, `LowerThird`. A `registry.ts` maps names to components; Claude adds an entry when writing a new one.
+- Motion library `src/motion/`: one file per component, a typed props interface, branded through the brand colors and font. v1 seeds a few: `KineticText`, `CountUp`, `Checklist`, `PriceTag`, `DateBadge`, `LowerThird`. A `registry.ts` maps names to components; Claude adds an entry when writing a new one. All components also receive `brand`. Props:
+
+| Component | Props |
+|---|---|
+| `KineticText` | `lines: string[]` |
+| `CountUp` | `from: number`, `to: number`, `decimals?: number`, `label?: string`, `suffix?: string` |
+| `Checklist` | `items: string[]`, `title?: string` |
+| `PriceTag` | `price: string`, `old?: string`, `note?: string` |
+| `DateBadge` | `label: string`, `date: string` |
+| `LowerThird` | `title: string`, `subtitle?: string` |
 - Video tag: `@remotion/media` `<Video>` for rendering, with `<OffthreadVideo>` while previewing in Studio (per current Remotion docs).
 - Brand (`brands/<id>/brand.json`): `{ name, logo, colors: {primary, accent, text}, font?, cta: {phone, fanpage, address} }`.
 - Commands:
@@ -190,7 +200,7 @@ Writes `voices/tries/<name>-A.wav`, `-B.wav`, … plus a `tries.json` listing ea
 
 ## Workflow (`/make-reel`, documented in the skill and CLAUDE.md)
 
-0. New media present in `inbox/` → run `ingest.sh` → index new files.
+0. New media present in `inbox/` → run `tools/ingest.py` → index new files.
 1. Brief: course, offer, length, voice, brand, music yes/no. Ask for any missing facts (price, phone, dates) rather than inventing them.
 2. Create `projects/<date-slug>/storyboard.json` (Mode A: write the script and pick shots from the index; Mode B: transcribe the user's script).
 3. Run `prepare.py`. If the total runs over the target, shorten `say` and rerun (only the changed scenes re-synthesize).
@@ -218,7 +228,11 @@ Saving reusable assets by voice command: "lưu bố cục này thành template X
 
 The VieNeu model weights download on first use into the HF cache.
 
-**`tools/sync.sh push|pull`** wraps `rclone copy` (never `rclone sync`, so a pull or push can never delete files on the other side) between the local folders and `config.sync.remote`. The one-time `rclone config` (Google Drive OAuth) is run by the user interactively on each machine.
+**`tools/sync.sh push|pull`** wraps `rclone copy` (never `rclone sync`, so a pull or push can never delete files on the other side; `pull` skips a Drive folder that does not exist yet, e.g. an empty `reference/` never pushed, instead of aborting) between the local folders and `config.sync.remote`. The one-time `rclone config` (Google Drive OAuth) is run by the user interactively on each machine.
+
+## Deviations found during implementation
+- T6: no API deviation; `@remotion/media` `<Audio>` supports `volume` callbacks and `loop` at 4.0.544.
+- T8: `tools/sync.sh pull` skips remote dirs missing on Drive (rclone exit 3) instead of aborting.
 
 ## Error handling
 
