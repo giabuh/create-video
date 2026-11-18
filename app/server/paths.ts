@@ -16,6 +16,7 @@ export function safeJoin(rootKey: RootKey, ...parts: string[]): string {
     if (typeof p !== 'string' || p === '' || p.includes('\0') || path.isAbsolute(p) || p.startsWith('/') || p.startsWith('\\')) throw new PathError(`bad path part: ${JSON.stringify(p)}`);
     if (p.split(/[\\/]/).some(x => x === '..' || x === '.')) throw new PathError(`bad path part: ${JSON.stringify(p)}`);
   }
+  if (parts.length === 0) return base;
   const abs = path.resolve(base, ...parts);
   if (!abs.startsWith(base + path.sep)) throw new PathError('path escapes root');
   return abs;

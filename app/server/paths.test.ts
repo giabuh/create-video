@@ -6,6 +6,7 @@ describe('paths', () => {
   it.each([['..'], ['a/../../x'], ['/etc/passwd'], [''], ['a\0b'], ['a\\..\\x'], ['.'], ['a/.']])('safeJoin rejects %j', p => {
     expect(() => safeJoin('projects', p)).toThrow(PathError);
   });
+  it('safeJoin with no parts is the root dir', () => expect(safeJoin('projects')).toMatch(/\/projects$/));
   it('slugify', () => expect(slugify('Ảnh Lớp 05 (đẹp)')).toBe('anh-lop-05-dep'));
   it('slugify empty', () => expect(slugify('!!!')).toBe('media'));
   it('sanitizeFilename', () => {
