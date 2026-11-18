@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {fmtBytes, fmtClock, fmtNum, fmtPct, fmtRelTime, fmtSec, parseNum} from './format.ts';
+import {fmtBytes, fmtClock, fmtNum, fmtPct, fmtRelTime, fmtSec, normalizeNum, parseNum} from './format.ts';
 
 describe('format', () => {
   it('fmtNum', () => {
@@ -24,6 +24,8 @@ describe('format', () => {
     expect(fmtRelTime(now - 2 * 3600_000, now)).toBe('2 giờ trước');
     expect(fmtRelTime(now - 30 * 3600_000, now)).toBe('hôm qua');
     expect(fmtRelTime(now - 2 * 86400_000, now)).toBe('2 ngày trước');
+    expect(fmtRelTime(now - 3599_000, now)).toBe('59 phút trước');
+    expect(fmtRelTime(now - 86399_000, now)).toBe('23 giờ trước');
   });
   it('parseNum', () => {
     expect(parseNum('1,5')).toBe(1.5);
@@ -31,5 +33,10 @@ describe('format', () => {
     expect(parseNum('-2')).toBe(-2);
     expect(parseNum('abc')).toBeNull();
     expect(parseNum('')).toBeNull();
+  });
+  it('normalizeNum', () => {
+    expect(normalizeNum(1.05, {decimals: 1})).toBe(1.1);
+    expect(normalizeNum(9, {max: 5, decimals: 0})).toBe(5);
+    expect(normalizeNum(-1, {min: 0, decimals: 1})).toBe(0);
   });
 });

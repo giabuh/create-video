@@ -3,3 +3,5 @@
 .danger { background: var(--danger-soft); color: var(--danger-text); }
 .title { margin: 0; font-size: var(--fs-lg); font-weight: 700; }
 .desc { margin: 0; max-width: 44ch; color: var(--muted); font-size: var(--fs-sm); }
+/* local copies: keyframes in tokens.css are global and CSS modules hash animation names */
+@keyframes fade-in { from { opacity: 0 } to { opacity: 1 } }

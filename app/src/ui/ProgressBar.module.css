@@ -9,3 +9,5 @@
 .indeterminate { position: absolute; width: 40%; animation: slide 1.2s var(--ease) infinite; }
 @keyframes slide { from { left: -40%; } to { left: 100%; } }
 @media (prefers-reduced-motion: reduce) { .indeterminate { width: 100%; animation: pulse 1.6s ease-in-out infinite !important; } }
+/* local copies: keyframes in tokens.css are global and CSS modules hash animation names */
+@keyframes pulse { 0%, 100% { opacity: 1 } 50% { opacity: .45 } }

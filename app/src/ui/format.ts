@@ -23,9 +23,9 @@ export const fmtPct = (f: number): string => `${Math.round(f * 100)}%`;
 export function fmtRelTime(ms: number, now: number = Date.now()): string {
   const s = (now - ms) / 1000;
   if (s < 45) return 'vừa xong';
-  const m = Math.round(s / 60);
+  const m = Math.max(1, Math.floor(s / 60));
   if (m < 60) return `${m} phút trước`;
-  const h = Math.round(s / 3600);
+  const h = Math.floor(s / 3600);
   if (h < 24) return `${h} giờ trước`;
   const d = Math.floor(s / 86400);
   if (d === 1) return 'hôm qua';
@@ -36,4 +36,10 @@ export function fmtRelTime(ms: number, now: number = Date.now()): string {
 export function parseNum(s: string): number | null {
   const t = s.trim().replace(',', '.');
   return /^-?\d+(\.\d+)?$/.test(t) ? Number(t) : null;
+}
+
+/** Final value after editing ends (blur/Enter): clamp to range, round to `decimals`. */
+export function normalizeNum(v: number, o: {min?: number; max?: number; decimals: number}): number {
+  const c = Math.min(o.max ?? Infinity, Math.max(o.min ?? -Infinity, v));
+  return Number(c.toFixed(o.decimals));
 }

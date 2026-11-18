@@ -10,7 +10,9 @@
 .danger { background: var(--danger-soft); color: var(--danger-text); }
 .voice { background: var(--voice-soft); color: var(--voice-text); }
 .remove {
+  position: relative; /* ::after enlarges the hit area to 26px without changing the visual */
   display: inline-grid; place-items: center; width: 18px; height: 18px; margin: 0 -4px 0 0; padding: 0;
   border: 0; border-radius: 50%; background: transparent; color: inherit; cursor: pointer; opacity: .8;
 }
 .remove:hover { opacity: 1; background: color-mix(in srgb, currentColor 18%, transparent); }
+.remove::after { content: ""; position: absolute; inset: -4px; }

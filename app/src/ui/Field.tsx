@@ -1,6 +1,6 @@
-import {Children, cloneElement, useEffect, useId, useLayoutEffect, useRef, useState} from 'react';
+import {Children, cloneElement, useId, useLayoutEffect, useRef, useState} from 'react';
 import {Minus, Plus} from 'lucide-react';
-import {fmtNum, parseNum} from './format.ts';
+import {fmtNum, normalizeNum, parseNum} from './format.ts';
 import s from './Field.module.css';
 
 export function Field({label, hint, error, children}: {label: string; hint?: string; error?: string; children: React.ReactElement}): React.JSX.Element {
@@ -62,11 +62,11 @@ export function NumberField({value, onChange, min, max, step = 1, decimals, suff
   const clamp = (v: number) => Math.min(max ?? Infinity, Math.max(min ?? -Infinity, v));
   const round = (v: number) => Number(v.toFixed(dec));
   const bump = (dir: 1 | -1) => { setDraft(null); onChange(clamp(round((value ?? 0) + dir * step))); };
-  useEffect(() => { setDraft(null); }, [value]);
+  const commit = () => { setDraft(null); if (value != null) { const n = normalizeNum(value, {min, max, decimals: dec}); if (n !== value) onChange(n); } };
 
   return (
     <div className={`${s.num} ${invalid ? s.invalid : ''}`} aria-invalid={invalid || undefined}>
-      <button type="button" className={s.step} aria-label="Giảm" tabIndex={-1} disabled={disabled || (min != null && value != null && value <= min)} onClick={() => bump(-1)}><Minus size={16} aria-hidden /></button>
+      <button type="button" className={s.step} aria-label="Giảm" disabled={disabled || (min != null && value != null && value <= min)} onClick={() => bump(-1)}><Minus size={16} aria-hidden /></button>
       <input
         id={id}
         className={s.numInput}
@@ -82,14 +82,15 @@ export function NumberField({value, onChange, min, max, step = 1, decimals, suff
           if (t === '') onChange(null);
           else { const n = parseNum(t); if (n != null) onChange(n); }
         }}
-        onBlur={() => { setDraft(null); if (value != null && clamp(value) !== value) onChange(clamp(value)); }}
+        onBlur={commit}
         onKeyDown={(e) => {
-          if (e.key === 'ArrowUp') { e.preventDefault(); bump(1); }
+          if (e.key === 'Enter') commit();
+          else if (e.key === 'ArrowUp') { e.preventDefault(); bump(1); }
           else if (e.key === 'ArrowDown') { e.preventDefault(); bump(-1); }
         }}
       />
       {suffix && <span className={s.suffix}>{suffix}</span>}
-      <button type="button" className={s.step} aria-label="Tăng" tabIndex={-1} disabled={disabled || (max != null && value != null && value >= max)} onClick={() => bump(1)}><Plus size={16} aria-hidden /></button>
+      <button type="button" className={s.step} aria-label="Tăng" disabled={disabled || (max != null && value != null && value >= max)} onClick={() => bump(1)}><Plus size={16} aria-hidden /></button>
     </div>
   );
 }

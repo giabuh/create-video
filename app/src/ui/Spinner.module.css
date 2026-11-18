@@ -3,3 +3,5 @@
   border: 2px solid currentColor; border-right-color: transparent;
   animation: spin 700ms linear infinite;
 }
+/* local copies: keyframes in tokens.css are global and CSS modules hash animation names */
+@keyframes spin { to { transform: rotate(360deg) } }
