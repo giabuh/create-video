@@ -1,0 +1,53 @@
+:root, [data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0D0E11; --bg-sunken: #0F1115; --panel: #15171C; --panel-2: #1C1F26; --panel-3: #22262F;
+  --line: #262A33; --line-strong: #2F343E;
+  --text: #ECEEF2; --text-2: #C9CED6; --muted: #A0A6B1; --dim: #8B919C;
+  --accent: #F5B83D; --accent-ink: #1A1300; --accent-text: #F5C866; --accent-soft: #3A2E12;
+  --info: #6E9BFF; --info-text: #9DBBFF; --info-soft: #1B2A4A;
+  --success: #4CC38A; --success-text: #7BDDA9; --success-soft: #173326;
+  --warning-text: #F5C866; --warning-soft: #3A2A12;
+  --danger: #FF6B6B; --danger-text: #FF9B9B; --danger-soft: #3A1A1A;
+  --voice-text: #CDB6FF; --voice-soft: #2A2238;
+  --mix-real: var(--info); --mix-motion: var(--accent); --mix-other: #5A5F6B;
+  --focus: 0 0 0 3px rgba(245,184,61,.45);
+  --shadow-pop: 0 12px 32px rgba(0,0,0,.45);
+  --scrim: rgba(5,6,8,.6);
+}
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #F6F7F9; --bg-sunken: #EEF0F3; --panel: #FFFFFF; --panel-2: #F3F4F7; --panel-3: #E9EBEF;
+  --line: #E2E5EA; --line-strong: #CDD2DA;
+  --text: #14161A; --text-2: #2E333B; --muted: #5A616D; --dim: #6B7280;
+  --accent: #F5B83D; --accent-ink: #1A1300; --accent-text: #8A5A00; --accent-soft: #FDF0D5;
+  --info: #2F5FD0; --info-text: #2550B8; --info-soft: #E3EBFD;
+  --success: #1F8A5B; --success-text: #17714A; --success-soft: #DDF3E8;
+  --warning-text: #8A5A00; --warning-soft: #FDF0D5;
+  --danger: #C93A3A; --danger-text: #B02E2E; --danger-soft: #FBE3E3;
+  --voice-text: #6B4BC4; --voice-soft: #EEE8FB;
+  --mix-other: #9AA0AB;
+  --focus: 0 0 0 3px rgba(183,121,31,.35);
+  --shadow-pop: 0 12px 32px rgba(20,22,26,.14);
+  --scrim: rgba(20,22,26,.35);
+}
+:root {
+  --font: 'Be Vietnam Pro', system-ui, sans-serif;
+  --fs-xs: .8125rem; --fs-sm: .875rem; --fs-md: 1rem; --fs-lg: 1.125rem; --fs-xl: 1.375rem; --fs-2xl: 1.75rem;
+  --r-sm: 8px; --r-md: 10px; --r-lg: 14px; --r-pill: 999px;
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 20px; --sp-6: 24px; --sp-7: 28px; --sp-8: 32px;
+  --dur-fast: 120ms; --dur: 200ms; --dur-slow: 320ms; --ease: cubic-bezier(.2,.8,.2,1);
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-fast: 0ms; --dur: 0ms; --dur-slow: 0ms; }
+  *, *::before, *::after { animation-duration: 0ms !important; transition-duration: 0ms !important; }
+}
+@keyframes fade-in { from { opacity: 0 } to { opacity: 1 } }
+@keyframes fade-out { from { opacity: 1 } to { opacity: 0 } }
+@keyframes pop-in { from { opacity: 0; transform: scale(.96) } to { opacity: 1; transform: scale(1) } }
+@keyframes pop-out { from { opacity: 1; transform: scale(1) } to { opacity: 0; transform: scale(.96) } }
+@keyframes slide-in-right { from { opacity: 0; transform: translateX(24px) } to { opacity: 1; transform: translateX(0) } }
+@keyframes slide-out-right { from { opacity: 1; transform: translateX(0) } to { opacity: 0; transform: translateX(24px) } }
+@keyframes slide-up { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: translateY(0) } }
+@keyframes shimmer { from { background-position: 200% 0 } to { background-position: -200% 0 } }
+@keyframes pulse { 0%, 100% { opacity: 1 } 50% { opacity: .45 } }
+@keyframes spin { to { transform: rotate(360deg) } }

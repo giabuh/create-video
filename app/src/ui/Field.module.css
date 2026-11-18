@@ -1,0 +1,22 @@
+.field { display: flex; flex-direction: column; gap: 6px; }
+.label { font-size: var(--fs-sm); font-weight: 600; color: var(--text-2); }
+.hint { font-size: var(--fs-sm); color: var(--muted); }
+.error { font-size: var(--fs-sm); color: var(--danger-text); }
+.control, .num {
+  background: var(--bg-sunken); border: 1px solid var(--line); border-radius: var(--r-md); color: var(--text);
+  font: 400 var(--fs-md)/1.4 var(--font); transition: border-color var(--dur-fast) var(--ease);
+}
+.control:hover, .num:hover { border-color: var(--line-strong); }
+.control:focus-visible, .num:focus-within { border-color: var(--accent); box-shadow: var(--focus); }
+.control::placeholder, .numInput::placeholder { color: var(--dim); }
+.control:disabled { opacity: .55; cursor: not-allowed; }
+.input { height: 44px; padding: 0 var(--sp-3); width: 100%; }
+.textarea { padding: 10px var(--sp-3); width: 100%; resize: vertical; min-height: 44px; }
+.autosize { resize: none; overflow: hidden; }
+.invalid, .invalid:hover { border-color: var(--danger); }
+.num { display: flex; align-items: center; height: 44px; padding: 0 4px; gap: 2px; }
+.numInput { flex: 1; min-width: 0; height: 100%; text-align: center; border: 0; background: transparent; color: inherit; font: inherit; outline: none; box-shadow: none; }
+.suffix { color: var(--muted); font-size: var(--fs-sm); }
+.step { display: grid; place-items: center; width: 36px; height: 36px; flex: none; padding: 0; border: 0; border-radius: var(--r-sm); background: transparent; color: var(--muted); cursor: pointer; }
+.step:hover:not(:disabled) { background: var(--panel-2); color: var(--text); }
+.step:disabled { opacity: .4; cursor: not-allowed; }

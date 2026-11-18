@@ -7,6 +7,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&subset=vietnamese&display=swap" rel="stylesheet" />
+    <script>
+      // Apply theme and text size before first paint (no flash). Keep in sync with src/ui/theme.tsx.
+      try {
+        var t = localStorage.getItem('reel.theme'), z = localStorage.getItem('reel.textSize');
+        var dark = t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        document.documentElement.style.fontSize = z === 'xl' ? '125%' : z === 'lg' ? '112.5%' : '100%';
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

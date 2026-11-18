@@ -1,0 +1,16 @@
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: var(--r-pill);
+  font: 600 var(--fs-xs)/1 var(--font); white-space: nowrap; background: var(--panel-3); color: var(--text-2);
+}
+.neutral { background: var(--panel-3); color: var(--text-2); }
+.info { background: var(--info-soft); color: var(--info-text); }
+.accent { background: var(--accent-soft); color: var(--accent-text); }
+.success { background: var(--success-soft); color: var(--success-text); }
+.warning { background: var(--warning-soft); color: var(--warning-text); }
+.danger { background: var(--danger-soft); color: var(--danger-text); }
+.voice { background: var(--voice-soft); color: var(--voice-text); }
+.remove {
+  display: inline-grid; place-items: center; width: 18px; height: 18px; margin: 0 -4px 0 0; padding: 0;
+  border: 0; border-radius: 50%; background: transparent; color: inherit; cursor: pointer; opacity: .8;
+}
+.remove:hover { opacity: 1; background: color-mix(in srgb, currentColor 18%, transparent); }

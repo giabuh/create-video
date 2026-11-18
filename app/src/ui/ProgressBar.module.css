@@ -1,0 +1,11 @@
+.track { position: relative; width: 100%; background: var(--line); border-radius: var(--r-pill); overflow: hidden; }
+.sm { height: 4px; }
+.md { height: 8px; }
+.fill { height: 100%; border-radius: inherit; transition: width var(--dur-slow) var(--ease); }
+.info { background: var(--info); }
+.accent { background: var(--accent); }
+.success { background: var(--success); }
+.danger { background: var(--danger); }
+.indeterminate { position: absolute; width: 40%; animation: slide 1.2s var(--ease) infinite; }
+@keyframes slide { from { left: -40%; } to { left: 100%; } }
+@media (prefers-reduced-motion: reduce) { .indeterminate { width: 100%; animation: pulse 1.6s ease-in-out infinite !important; } }
