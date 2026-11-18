@@ -88,6 +88,7 @@ def ingest(inbox: Path, library: Path) -> list[str]:
     index_path = library / "media-index.json"
     index = json.loads(index_path.read_text(encoding="utf-8")) if index_path.exists() else {}
     done, added = inbox / "_done", []
+    inbox.mkdir(parents=True, exist_ok=True)
     for src in sorted(p for p in inbox.iterdir() if p.is_file()):
         ext = src.suffix.lower()
         kind = "video" if ext in VIDEO else "image" if ext in IMAGE else None

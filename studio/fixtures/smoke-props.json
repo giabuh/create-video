@@ -18,9 +18,9 @@
      "media": [{"src": "library/_smoke-portrait.mp4", "type": "video", "from": 0, "start": 0, "duration": 1, "effect": "none"},
                {"src": "library/_smoke.jpg", "type": "image", "from": 0, "start": 1, "duration": 1, "effect": "pan-left"}],
      "motion": [{"component": "LowerThird", "props": {"title": "Cô Minh Anh", "subtitle": "8.5 IELTS"}, "start": 0, "duration": 2}], "transition": "fade"},
-    {"id": "s3", "start": 5, "duration": 2, "voice": null, "captions": [], "highlight": [], "overlay": null,
-     "media": [], "motion": [{"component": "Checklist", "props": {"title": "Lộ trình 3 bước", "items": ["Kiểm tra đầu vào", "Học 1 kèm 1", "Thi thử hằng tuần"]}, "start": 0, "duration": 1}, {"component": "PriceTag", "props": {"old": "1.990K", "price": "999K", "note": "Ưu đãi tháng này"}, "start": 1, "duration": 1}], "transition": "slide"}
+    {"id": "s3", "start": 5, "duration": 3, "voice": null, "captions": [], "highlight": [], "overlay": null,
+     "media": [], "motion": [{"component": "Checklist", "props": {"title": "Lộ trình 3 bước", "items": ["Kiểm tra đầu vào", "Học 1 kèm 1", "Thi thử hằng tuần"]}, "start": 0, "duration": 1.6}, {"component": "PriceTag", "props": {"old": "1.990K", "price": "999K", "note": "Ưu đãi tháng này"}, "start": 1.6, "duration": 1.4}], "transition": "slide"}
   ],
   "cta": {"title": "Đăng ký ngay", "phone": "0900 000 000", "fanpage": "fb.com/demo", "duration": 3},
-  "totalSeconds": 10
+  "totalSeconds": 11
 }

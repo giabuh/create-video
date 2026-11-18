@@ -12,3 +12,6 @@ projects/*/preview/
 *.mov
 out/
 .superpowers/
+__pycache__/
+projects/*/timings.json
+projects/*/render-props.json
