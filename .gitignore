@@ -1,14 +1,13 @@
-VieNeu-TTS/
+VieNeu-TTS/.venv/
 node_modules/
 library/
 music/
-voices/
+voices/tries/
 reference/
 inbox/
 projects/*/audio/
 projects/*/preview/
 *.mp4
 *.mp3
-*.wav
 *.mov
 out/
