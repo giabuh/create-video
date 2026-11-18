@@ -58,7 +58,7 @@ create-video/
     └── reel-v<N>.mp4        # versioned renders (ignored)
 ```
 
-How Remotion reads files outside `studio/`: `studio/public/` contains symlinks `library`, `music`, `brands`, `projects` pointing at the root folders, and the template uses `staticFile()`. **Risk:** if Remotion's bundler does not follow these symlinks, the fallback is that `prepare.py` copies the project's audio and referenced media into `studio/public/_job/` before each render. Task 1 (the smoke test) settles which one we use.
+How Remotion reads files outside `studio/`: `studio/public/` contains symlinks `library`, `music`, `brands`, `projects` pointing at the root folders, and the template uses `staticFile()`. Verified in the 2026-11-18 spike: relative symlinks in `public/` resolve for both `remotion render` and `remotion still` (the Studio preview was not tested).
 
 ## Layered config
 
@@ -202,6 +202,15 @@ The App reads and writes only these files, whose schemas are defined above: `con
 ## Out of scope for v1
 
 Word-level karaoke captions (Whisper alignment), auto-posting to social platforms, a second template, the App (sub-project 2) and in-app chat (sub-project 3).
+
+## Spike results (2026-11-18)
+
+- **VieNeu v3 Turbo cloning works with `ref_audio` only.** Model load takes 8.9 s; each ~8 s line takes ~2 s on the RTX 5060 Ti. Two reference cuts per voice are in `voices/` (`*-short` ~6 s, `*-full` ~7.5 s). Samples are in `voices/tries/spike-*.wav`; the user picks the better cut.
+- **Remotion 4.0.544** (scaffolded with `npx create-video@4.0.544 --yes --blank studio`), React 19.3.1, TS 5.9.3. Chrome Headless Shell downloads itself; no missing system libs on this machine. Render of 3 s at 1080×1920 takes ~18 s. Vietnamese diacritics render correctly in Be Vietnam Pro.
+- **Gotchas:**
+  - `@remotion/media` `<Video>` needs `objectFit` as a prop (ignored inside `style`).
+  - Use `muted` on clips and play voice/music via `@remotion/media` `<Audio>`.
+  - `loadFont("normal", {weights, subsets: ["vietnamese","latin"]})` is required.
 
 ## Notes
 
