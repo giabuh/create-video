@@ -3,7 +3,7 @@ import {Film, GripVertical, MoreHorizontal, Pencil, Plus, Trash2} from 'lucide-r
 import {
   AudioPlayer, Button, Chip, ColorField, ConfirmDialog, Dialog, DropdownMenu, DropZone, Drawer, EmptyState, ErrorState, Field, IconButton, Input,
   NumberField, PageHeader, Popover, ProgressBar, RangeSlider, Segmented, Select, Skeleton, Slider, SortableList, Spinner, Switch, Tabs, TagInput,
-  Textarea, Toaster, Tooltip, VideoThumb, toast, useTheme,
+  Textarea, Tooltip, VideoThumb, toast, useTheme,
 } from '../../ui/index.ts';
 import type {TextSize, ThemeChoice} from '../../ui/index.ts';
 import s from './UiGallery.module.css';
@@ -35,7 +35,6 @@ export function UiGallery(): React.JSX.Element {
 
   return (
     <div className={s.page}>
-      <Toaster />
       <div className={s.top}>
         <PageHeader title="Thư viện giao diện" subtitle="Mọi thành phần UI, cả hai giao diện." />
         <div className={s.row}>

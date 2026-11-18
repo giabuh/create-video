@@ -14,6 +14,7 @@ export function AudioPlayer({src, label, bars = 48, compact, accent = 'accent'}:
   const [dur, setDur] = useState(0);
   const {peaks, error} = useWaveform(src, bars);
 
+  useEffect(() => { setPlaying(false); setT(0); setDur(0); }, [src]);
   useEffect(() => { const a = audio.current; return () => { a?.pause(); if (current === a) current = null; }; }, []);
 
   const toggle = () => {
@@ -39,7 +40,7 @@ export function AudioPlayer({src, label, bars = 48, compact, accent = 'accent'}:
       {label && !compact && <span className={s.label}>{label}</span>}
       {error ? <span className={`${s.wave} ${s.err}`}>Không đọc được sóng âm</span> : (
         <div
-          className={s.wave} role="slider" tabIndex={0} aria-label={label ? `Tua ${label}` : 'Tua'} aria-valuemin={0} aria-valuemax={Math.round(dur)} aria-valuenow={Math.round(t)}
+          className={s.wave} role="slider" tabIndex={0} aria-label={label ? `Tua ${label}` : 'Tua'} aria-valuemin={0} aria-valuemax={Math.round(dur)} aria-valuenow={Math.round(t)} aria-valuetext={`${mmss(t)} / ${mmss(dur)}`}
           onClick={(e) => { const r = e.currentTarget.getBoundingClientRect(); seek((e.clientX - r.left) / r.width); }}
           onKeyDown={(e) => {
             const a = audio.current;

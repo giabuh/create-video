@@ -8,8 +8,17 @@ export function Tabs<T extends string>({value, onChange, tabs, ...aria}: {
   const list = useRef<HTMLDivElement>(null);
   const [box, setBox] = useState<{x: number; w: number} | null>(null);
   useLayoutEffect(() => {
-    const el = list.current?.querySelector<HTMLElement>('[data-state="active"]');
-    if (el) setBox({x: el.offsetLeft, w: el.offsetWidth});
+    const r = list.current;
+    if (!r) return;
+    const measure = () => {
+      const el = r.querySelector<HTMLElement>('[data-state="active"]');
+      if (el) setBox((b) => (b && b.x === el.offsetLeft && b.w === el.offsetWidth ? b : {x: el.offsetLeft, w: el.offsetWidth}));
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(r);
+    Array.from(r.children).forEach((c) => ro.observe(c)); // tab widths change with text size even when the list does not
+    return () => ro.disconnect();
   }, [value, tabs]);
   return (
     <RTabs.Root value={value} onValueChange={(v) => onChange(v as T)}>

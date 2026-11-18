@@ -2,9 +2,11 @@
 .voice { --c: var(--voice-text); }
 .info { --c: var(--info); }
 .compact { padding: 4px var(--sp-2); gap: var(--sp-2); }
-.play { width: 40px; height: 40px; flex: none; display: grid; place-items: center; border-radius: 50%; border: 0; cursor: pointer; background: var(--c); color: var(--accent-ink); transition: transform var(--dur-fast) var(--ease); padding: 0; }
+.play { position: relative; width: 40px; height: 40px; flex: none; display: grid; place-items: center; border-radius: 50%; border: 0; cursor: pointer; background: var(--c); color: var(--accent-ink); transition: transform var(--dur-fast) var(--ease); padding: 0; }
 .play:hover { transform: scale(1.06); }
+.play::after { content: ''; position: absolute; inset: -2px; } /* 44px hit area */
 .compact .play { width: 32px; height: 32px; }
+.compact .play::after { inset: -6px; }
 .label { font-size: var(--fs-sm); font-weight: 600; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .wave { flex: 1; min-width: 80px; height: 40px; display: flex; align-items: center; gap: 2px; cursor: pointer; border-radius: var(--r-sm); position: relative; touch-action: none; }
 .compact .wave { height: 28px; }

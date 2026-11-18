@@ -9,8 +9,17 @@ export function Segmented<T extends string>({value, onChange, options, size = 'm
   const root = useRef<HTMLDivElement>(null);
   const [box, setBox] = useState<{x: number; w: number} | null>(null);
   useLayoutEffect(() => {
-    const el = root.current?.querySelector<HTMLElement>('[data-state="on"]');
-    if (el) setBox({x: el.offsetLeft, w: el.offsetWidth});
+    const r = root.current;
+    if (!r) return;
+    const measure = () => {
+      const el = r.querySelector<HTMLElement>('[data-state="on"]');
+      if (el) setBox((b) => (b && b.x === el.offsetLeft && b.w === el.offsetWidth ? b : {x: el.offsetLeft, w: el.offsetWidth}));
+    };
+    measure();
+    const ro = new ResizeObserver(measure); // text-size / font changes
+    ro.observe(r);
+    Array.from(r.children).forEach((c) => ro.observe(c)); // tab widths change with text size even when the list does not
+    return () => ro.disconnect();
   }, [value, options, size]);
   return (
     <ToggleGroup.Root ref={root} type="single" value={value} aria-label={aria['aria-label']} className={`${s.root} ${s[size]}`}
