@@ -62,6 +62,9 @@ class Worker:
             res = pipeline.prepare(pipeline.ROOT / "projects" / slug, self.get_model, synth=True, on_progress=progress)
             return {"id": rid, **res}
         if cmd == "try":
+            for k in ("voice", "text"):
+                if k not in req:
+                    return {"id": rid, "ok": False, "errors": [f"missing field: {k}"]}
             tries = pipeline.try_variants(self.get_model(), req["voice"], req["text"], req.get("variants") or [{}], on_progress=progress)
             return {"id": rid, "ok": True, "tries": tries}
         return {"id": rid, "ok": False, "errors": [f"unknown cmd: {cmd}"]}
@@ -74,6 +77,9 @@ class Worker:
             req = json.loads(line)
         except json.JSONDecodeError as e:
             self.send({"id": None, "ok": False, "errors": [f"bad json: {e}"]})
+            return
+        if not isinstance(req, dict):
+            self.send({"id": None, "ok": False, "errors": ["request must be a JSON object"]})
             return
         try:
             self.send(self.handle(req))

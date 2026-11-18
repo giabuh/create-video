@@ -66,3 +66,10 @@ def test_prepare_streams_progress_and_loads_model_once(proj, monkeypatch):  # pr
 def test_prepare_rejects_path_escape(monkeypatch):
     msgs = run(['{"id":"x","cmd":"prepare","project":"../etc"}'], monkeypatch)
     assert msgs[0]["ok"] is False
+
+
+def test_non_object_request_and_missing_field(monkeypatch):
+    msgs = run(['[]', '5', 'null', '{"id":"t","cmd":"try","text":"x"}', '{"id":"1","cmd":"ping"}'], monkeypatch)
+    assert [m["ok"] for m in msgs] == [False, False, False, False, True]
+    assert msgs[0]["id"] is None
+    assert msgs[3] == {"id": "t", "ok": False, "errors": ["missing field: voice"]}
