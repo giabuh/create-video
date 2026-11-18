@@ -12,8 +12,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from reel.config import ROOT, load_json, resolve_scene_voice  # noqa: E402
-from reel.tts import load_model, synth_to_file  # noqa: E402
+from reel.config import ROOT, load_json  # noqa: E402
+from reel.pipeline import try_variants  # noqa: E402
+from reel.tts import load_model  # noqa: E402
 
 
 def main() -> int:
@@ -26,22 +27,9 @@ def main() -> int:
     if a.voice not in cfg["voices"]:
         print(f"Unknown voice '{a.voice}'. Known: {', '.join(cfg['voices'])}")
         return 1
-    variants = json.loads(a.variants)
-    model = load_model()
-    out_dir = ROOT / "voices/tries"
-    report = {}
-    for i, over in enumerate(variants):
-        over = dict(over)
-        ref = over.pop("ref", None)
-        v = resolve_scene_voice(cfg, {}, {"voice": a.voice, "tts": over})
-        ref = ref or v["ref"]
-        letter = chr(65 + i)
-        out = out_dir / f"{a.voice}-{letter}.wav"
-        dur = synth_to_file(model, a.text, ROOT / ref, v["tts"], out)
-        report[letter] = {"file": str(out.relative_to(ROOT)), "ref": ref, "tts": v["tts"], "seconds": round(dur, 2)}
-        print(f"{letter}: {out}  ({dur:.1f}s)  {over or 'defaults'}")
-    (out_dir / "tries.json").write_text(json.dumps({"voice": a.voice, "text": a.text, "variants": report},
-                                                   ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    report = try_variants(load_model(), a.voice, a.text, json.loads(a.variants))
+    for k, v in report["variants"].items():
+        print(f"{k}: {ROOT / v['file']}  ({v['seconds']:.1f}s)  {v['tts']}")
     return 0
 
 
