@@ -1,0 +1,12 @@
+.box { position: relative; overflow: hidden; border-radius: var(--r-md); background: var(--panel-3); aspect-ratio: var(--ar, 9 / 16); width: 100%; }
+.video { width: 100%; height: 100%; display: block; object-fit: cover; opacity: 0; transition: opacity var(--dur) var(--ease); }
+.contain { object-fit: contain; background: #000; }
+.ready .video { opacity: 1; }
+.shim { position: absolute; inset: 0; background: linear-gradient(100deg, var(--panel-3) 30%, var(--panel-2) 50%, var(--panel-3) 70%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
+@keyframes shimmer { from { background-position: 200% 0 } to { background-position: -200% 0 } }
+.ph { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: var(--sp-2); text-align: center; color: var(--muted); font-size: var(--fs-sm); background: var(--panel-2); }
+.name { max-width: 100%; overflow-wrap: anywhere; }
+.over { position: absolute; inset: 0; }
+.play { position: absolute; inset: 0; display: grid; place-items: center; border: 0; background: transparent; color: #fff; cursor: pointer; padding: 0; }
+.play span { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: rgba(0,0,0,.55); transition: transform var(--dur-fast) var(--ease); }
+.play:hover span { transform: scale(1.1); }

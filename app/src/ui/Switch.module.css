@@ -1,0 +1,9 @@
+.row { display: inline-flex; align-items: center; gap: var(--sp-3); min-height: 44px; cursor: pointer; font-size: var(--fs-md); }
+.root {
+  flex: none; width: 44px; height: 26px; padding: 0; border-radius: var(--r-pill); border: 1px solid var(--line-strong);
+  background: var(--panel-3); cursor: pointer; transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.root[data-state="checked"] { background: var(--accent); border-color: var(--accent); }
+.thumb { display: block; width: 20px; height: 20px; border-radius: 50%; background: var(--text-2); translate: 2px 0; transition: translate var(--dur) var(--ease), background var(--dur); }
+.root[data-state="checked"] .thumb { translate: 20px 0; background: var(--accent-ink); }
+.root:disabled { opacity: .55; cursor: not-allowed; }

@@ -1,0 +1,14 @@
+.box { position: relative; }
+.wrap {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: 44px; padding: 6px var(--sp-2);
+  background: var(--bg-sunken); border: 1px solid var(--line); border-radius: var(--r-md); cursor: text;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+.wrap:hover { border-color: var(--line-strong); }
+.wrap:focus-within { border-color: var(--accent); box-shadow: var(--focus); }
+.input { flex: 1; min-width: 120px; height: 30px; border: 0; background: transparent; color: var(--text); font: 400 var(--fs-md)/1 var(--font); outline: none; box-shadow: none; }
+.input::placeholder { color: var(--dim); }
+.list { position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% + 6px); max-height: 220px; overflow: auto; margin: 0; list-style: none; }
+.list[data-open] { animation: pop 200ms var(--ease); transform-origin: top; }
+@keyframes pop { from { opacity: 0; transform: scale(.97) } to { opacity: 1; transform: scale(1) } }
+.opt[aria-selected="true"] { background: var(--panel-3); }
