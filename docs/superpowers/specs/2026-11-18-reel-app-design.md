@@ -64,7 +64,7 @@ browser (React SPA) ──HTTP/JSON + SSE──► app server (Node, Hono, 127.0
 | `POST /projects/:slug/preview` | worker `prepare synth=false` → new render-props |
 | `POST /projects/:slug/voice` | job: worker `prepare synth=true` |
 | `POST /projects/:slug/render` `{kind:"draft"|"final"}` | job: snapshot storyboard to `reel-vN.storyboard.json`, render `reel-vN.mp4` |
-| `POST /projects/:slug/approve` `{version}` | write `project.json`, `git add` + `git commit` storyboard (+ project.json) |
+| `POST /projects/:slug/approve` `{version}` | write `project.json`, `git add` + `git commit` the version snapshot (see Security) |
 | `GET /library`, `PUT /library/:name` `{entry, baseMtime}`, `DELETE /library/:name` | media index read/edit/delete (delete refused while referenced) |
 | `PUT /upload/:filename` (raw body stream) | stream into `inbox/<sanitized name>`; then `POST /ingest` |
 | `POST /ingest` | job: `python3 tools/ingest.py` |
@@ -81,7 +81,7 @@ Jobs run one at a time per lane: `gpu` (voice, tries), `render`, `io` (ingest, g
 
 Added to the engine spec's "File contract" in the same commit as this spec:
 - `projects/<slug>/project.json` — `{ "approved": "reel-v2" | null }`, written by the app. Optional; absent = nothing approved.
-- `projects/<slug>/reel-vN.storyboard.json` — a copy of `storyboard.json` taken when `reel-vN.mp4` is rendered. Committed only if the user approves that version (it is then also the committed `storyboard.json`).
+- `projects/<slug>/reel-vN.storyboard.json` — a copy of `storyboard.json` taken when `reel-vN.mp4` is rendered. Committed only when the user approves that version.
 - `inbox/` — upload target (already used by `ingest.py`).
 
 Project status shown in the UI is derived: rendering (job running) → "Đang render"; `project.json.approved` → "Đã duyệt vN"; any `reel-v*.mp4` → "Bản nháp vN"; else "Chưa render".
@@ -137,7 +137,7 @@ As in the approved mockup (one artboard each). Behaviour notes:
 - Bind `127.0.0.1` only. Reject requests whose `Host` is not `127.0.0.1:<port>`/`localhost:<port>` and state-changing requests whose `Origin` is present and different (blocks DNS rebinding and cross-site requests from other tabs).
 - All path params resolved under their root and rejected if they escape it (`..`, absolute paths, symlinks out of the root except the known studio symlinks).
 - The app never reads or serves `~/.config/rclone`, `.git`, `VieNeu-TTS/` or anything outside the listed roots.
-- Git commit runs only on the explicit "Duyệt bản này" click, with a single-line message `Approve <slug> reel-vN`, staging only that project's `storyboard.json`, `project.json` and the version snapshot.
+- Git commit runs only on the explicit "Duyệt bản này" click, with a single-line message `Approve <slug> reel-vN`, staging only that project's `project.json` and `reel-vN.storyboard.json`, plus `storyboard.json` only if it is byte-identical to that snapshot (approving an older version never touches the user's current edits).
 
 ## Testing
 
