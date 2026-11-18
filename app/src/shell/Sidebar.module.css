@@ -1,0 +1,5 @@
+.side { width: 248px; flex: none; overflow-y: auto; background: var(--panel); border-right: 1px solid var(--line); padding: 20px 14px; display: flex; flex-direction: column; gap: 4px; }
+.logo { display: flex; align-items: center; gap: 10px; padding: 4px 8px 20px; }
+.logo small { display: block; color: var(--dim); font-size: var(--fs-xs); }
+.mark { width: 34px; height: 34px; flex: none; border-radius: 10px; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font-weight: 800; }
+.bottom { margin-top: auto; padding-top: 16px; display: flex; flex-direction: column; gap: 12px; }

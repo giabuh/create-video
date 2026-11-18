@@ -1,0 +1,14 @@
+.nav { position: relative; display: flex; flex-direction: column; gap: 4px; }
+.item {
+  position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 12px;
+  border-radius: var(--r-md); color: var(--muted); text-decoration: none; font-weight: 500;
+  transition: color var(--dur-fast), background var(--dur-fast);
+}
+.item:hover { background: var(--panel-2); color: var(--text); }
+.item[data-active='true'] { color: var(--text); background: transparent; }
+.item[data-active='true'] svg { color: var(--accent-text); }
+.ind { position: absolute; left: 0; right: 0; top: 0; background: var(--panel-3); border-radius: var(--r-md); transition: transform var(--dur) var(--ease), height var(--dur) var(--ease); }
+.compact { align-items: center; }
+.compact .item { width: 48px; min-height: 48px; justify-content: center; padding: 0; }
+.compact .ind { left: 0; right: auto; width: 48px; }
+@media (prefers-reduced-motion: reduce) { .ind, .item { transition: none; } }

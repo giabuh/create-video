@@ -1,0 +1,3 @@
+.banner { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 10px 16px; background: var(--warning-soft); color: var(--warning-text); font-size: var(--fs-sm); font-weight: 600; border-bottom: 1px solid var(--line); animation: drop var(--dur) var(--ease); }
+@keyframes drop { from { opacity: 0; transform: translateY(-100%); } }
+@media (prefers-reduced-motion: reduce) { .banner { animation: none; } }
