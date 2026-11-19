@@ -16,7 +16,7 @@ Part B (later, separate spec/plan): a `codex exec --json` backend behind the sam
 - **Permissions: `--dangerously-skip-permissions`**, same as the user's `claude2`/`claude3` shell functions. Protection is the existing `hostGuard` + binding to 127.0.0.1. The app must never be exposed beyond localhost.
 - **UI: a global slide-over panel**, opened from a Chat button in the top bar, available on every screen.
 - **History: only chats created in the app**, stored by the app. Terminal sessions are not listed (no parsing of Claude Code's internal transcript format).
-- **Usage limit: notify + one-click switch.** No automatic failover.
+- **Usage limit: the turn stops and the app says so (account + reset time). Nothing more.** No auto failover and no "continue on another account" button: if the user wants to go on, they change the account picker themselves and send again; the next turn `--resume`s the same session on that account (all accounts share `~/.claude/projects`).
 - **One running turn at a time across the whole app.** Other chats can be viewed but not sent to while a turn runs.
 
 ## Accounts
@@ -83,7 +83,7 @@ runTurn(opts: {sessionId: string; resume: boolean; account: Account; prompt: str
 - Header: chat picker (list + "Phiên mới") and account picker (detected accounts with last utilization %).
 - Body: messages as `pre-wrap` text (no markdown rendering), tool events as one dim line each, live `delta` text appended to the current assistant bubble, interrupted/stopped/error states inline.
 - Composer: textarea, Enter sends, Shift+Enter newline; disabled with a Stop button while any turn runs.
-- Limit hit: banner "`<account>` hết limit (reset HH:mm)" with one button per other account: "Tiếp tục bằng `<other>`" → sets the chat's account and sends `Tiếp tục` on `--resume` of the same session.
+- Limit hit: the turn ends with an inline error "`<account>` hết limit (reset HH:mm)". No switch button. The account picker stays editable; the next send uses whatever account is picked and resumes the same session.
 - New chat records the current slug (if in the Editor) for display; each turn sends the screen/slug the user is on at send time.
 
 ## Testing
@@ -92,7 +92,7 @@ runTurn(opts: {sessionId: string; resume: boolean; account: Account; prompt: str
 - Runner: fake `claude` script via `REEL_CLAUDE_BIN` (prints fixture lines, checks it received the prompt on stdin and the expected `--session-id`/`--resume`/`CLAUDE_CONFIG_DIR`); abort kills it.
 - Accounts: temp home with valid, missing-credentials and non-symlinked `projects` dirs.
 - Routes: 409 while busy, validation errors, persisted jsonl excludes `delta`.
-- E2E (Playwright, fake binary): open panel, send, see streamed text and a tool line, stop, limit banner → continue on another account.
+- E2E (Playwright, fake binary): open panel, send, see streamed text and a tool line, stop, limit error shown → pick another account manually → next send resumes the same session with the new `CLAUDE_CONFIG_DIR`.
 - No test spends real quota.
 
 ## Out of scope
