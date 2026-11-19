@@ -28,4 +28,3 @@ EXTRA=("$@")
 copy library library
 copy music music
 copy reference reference
-copy projects projects --include "*/reel-v*.mp4"
