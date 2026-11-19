@@ -1,6 +1,6 @@
 import {createContext, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
 import type {PlayerRef} from '@remotion/player';
-import type {ProjectDetail, RenderProps, Storyboard} from '../../../shared/types.ts';
+import type {MotionSpec, ProjectDetail, RenderProps, Storyboard} from '../../../shared/types.ts';
 import type {SaveState} from '../../api/autosave.ts';
 import {api} from '../../api/client.ts';
 import {useAutosave} from '../../api/autosave.ts';
@@ -9,12 +9,26 @@ import {useJobs} from '../../api/events.ts';
 import {toast} from '../../ui/index.ts';
 import {addScene, sceneStart, shouldAdopt} from './editorState.ts';
 
+/** A motion layer in the storyboard: in a scene, or on the video-wide track. */
+export type LayerRef = {scope: 'scene'; sceneId: string; index: number} | {scope: 'track'; index: number};
+
+export function layerAt(sb: Storyboard, ref: LayerRef | null): MotionSpec | undefined {
+  if (!ref) return undefined;
+  return ref.scope === 'track' ? sb.motion?.[ref.index] : sb.scenes.find((x) => x.id === ref.sceneId)?.motion?.[ref.index];
+}
+
+export function withLayer(sb: Storyboard, ref: LayerRef, next: MotionSpec): Storyboard {
+  if (ref.scope === 'track') return {...sb, motion: (sb.motion ?? []).map((m, i) => (i === ref.index ? next : m))};
+  return {...sb, scenes: sb.scenes.map((sc) => (sc.id !== ref.sceneId ? sc : {...sc, motion: (sc.motion ?? []).map((m, i) => (i === ref.index ? next : m))}))};
+}
+
 export type EditorCtx = {
   slug: string; storyboard: Storyboard; setStoryboard(next: Storyboard): void;   // triggers autosave -> preview
   detail: ProjectDetail; renderProps: RenderProps | null; stale: string[]; errors: string[];
   selectedId: string | null; select(id: string | null): void;                    // 'cta' selects the CTA
   playerRef: React.RefObject<PlayerRef | null>; seekToScene(id: string): void;
   save: SaveState & {flush(): Promise<void>; retry(): Promise<void>; dirty: boolean};
+  layer: LayerRef | null; selectLayer(ref: LayerRef | null): void;                 // motion layer shown with handles on the Player
   // extras for the screen itself
   previewing: boolean; previewOk: boolean; addSceneAt(afterIndex: number | null): void;
 };
@@ -34,6 +48,7 @@ export function EditorProvider({slug, detail, children}: {slug: string; detail: 
   const [preview, setPreview] = useState<Preview>({renderProps: detail.renderProps, stale: detail.stale, errors: [], ok: true});
   const [inflight, setInflight] = useState(0);
   const [sel, setSel] = useState<string | null>(null);
+  const [layer, selectLayer] = useState<LayerRef | null>(null);
   const playerRef = useRef<PlayerRef | null>(null);
   const seq = useRef(0);
   const {mutateAsync} = usePreview(slug);
@@ -90,7 +105,8 @@ export function EditorProvider({slug, detail, children}: {slug: string; detail: 
   const value = useMemo<EditorCtx>(() => ({
     slug, storyboard, setStoryboard, detail, renderProps: preview.renderProps, stale: preview.stale, errors: preview.errors,
     selectedId, select: setSel, playerRef, seekToScene, save, previewing: inflight > 0, previewOk: preview.ok, addSceneAt,
-  }), [slug, storyboard, detail, preview, selectedId, seekToScene, save, inflight, addSceneAt]);
+    layer: layerAt(storyboard, layer) ? layer : null, selectLayer,
+  }), [slug, storyboard, detail, preview, selectedId, seekToScene, save, inflight, addSceneAt, layer]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 

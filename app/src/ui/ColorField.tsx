@@ -5,10 +5,10 @@ import s from './ColorField.module.css';
 
 const HEX = /^#[0-9a-fA-F]{6}$/;
 
-export function ColorField({value, onChange, label, presets = []}: {value: string; onChange(v: string): void; label: string; presets?: string[]}): React.JSX.Element {
+export function ColorField({value, onChange, label, presets = [], optional = false}: {value: string; onChange(v: string): void; label: string; presets?: string[]; optional?: boolean}): React.JSX.Element {
   const [draft, setDraft] = useState<string | null>(null);
   const text = draft ?? value;
-  const valid = HEX.test(text);
+  const valid = HEX.test(text) || (optional && text === '');
   return (
     <div className={s.row}>
       <Popover trigger={<button type="button" className={s.swatch} style={{background: HEX.test(value) ? value : 'transparent'}} aria-label={`${label}: chọn màu`} />}>

@@ -32,4 +32,5 @@ if command -v rclone >/dev/null && rclone listremotes | grep -qx "$REMOTE:"; the
 else
   warn "rclone remote '$REMOTE' not set up: run 'rclone config', create a Google Drive remote named $REMOTE"
 fi
+[ -x .whisper/whisper.cpp/build/bin/whisper-cli ] && ok "whisper.cpp ready" || warn "optional: node tools/whisper/setup.mjs  (word timings for motion \"at\"; builds whisper.cpp + downloads the model ~1.6 GB)"
 ok "setup done"

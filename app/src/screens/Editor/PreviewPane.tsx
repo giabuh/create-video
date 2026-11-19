@@ -3,6 +3,7 @@ import {Player} from '@remotion/player';
 import {Expand, Film, Pause, Play, Plus, Volume2, VolumeX} from 'lucide-react';
 import {Reel} from '@studio/Reel';
 import {Button, EmptyState, IconButton, Popover, Segmented, Skeleton} from '../../ui/index.ts';
+import {BoxOverlay} from './BoxOverlay.tsx';
 import {useEditor} from './EditorContext.tsx';
 import {sceneRange} from './editorState.ts';
 import {useVoiceAction} from './TopBar.tsx';
@@ -69,6 +70,7 @@ export function PreviewPane(): React.JSX.Element {
           inFrame={loopOk ? inFrame : null} outFrame={loopOk ? outFrame : null} spaceKeyToPlayOrPause={false}
           acknowledgeRemotionLicense errorFallback={mediaError} style={{width: '100%'}} />
         {previewing && <div className={s.shimmer} aria-hidden />}
+        <BoxOverlay />
       </div>
     );
   }

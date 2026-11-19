@@ -8,3 +8,14 @@ def test_mix_fractions():
 
 def test_mix_empty():
     assert mix([], 0) == {"real": 0, "motion": 0, "other": 0}
+
+
+def test_motion_on_footage_counts_as_motion():
+    # 6 s of footage with a 2 s overlay + 1.5 s overlapping overlay (union 2.5 s), and a 3 s motion-only scene
+    scenes = [{"duration": 6, "hasMedia": True, "motion": [(1, 2), (2.5, 1)]}, {"duration": 3, "hasMedia": False}]
+    assert mix(scenes, 1.0) == {"real": 0.35, "motion": 0.55, "other": 0.1}
+
+
+def test_overlay_is_clipped_to_the_scene():
+    scenes = [{"duration": 4, "hasMedia": True, "motion": [(3, 5)]}]
+    assert mix(scenes, 0) == {"real": 0.75, "motion": 0.25, "other": 0}

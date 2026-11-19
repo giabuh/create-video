@@ -49,6 +49,9 @@ describe('editorState', () => {
     expect(sceneStart(props, 'nope')).toBeNull();
     expect(sceneStart(null, 's1')).toBeNull();
     expect(mixOf(props)).toEqual({real: 0.5, motion: 0.25, other: 0.25});
+    // overlays on footage count as motion (union of spans: 0-1 and 0.5-1.5 cover 1.5 s of the 4 s scene)
+    const over = {...props, scenes: props.scenes.map((sc, i) => (i === 0 ? {...sc, motion: [{start: 0, duration: 1}, {start: 0.5, duration: 1}]} : sc))} as unknown as RenderProps;
+    expect(mixOf(over)).toEqual({real: 0.3125, motion: 0.4375, other: 0.25});
   });
   it('an older server copy is ignored', () => {
     const ok = {baseMtime: 200, dirty: false, saving: false};

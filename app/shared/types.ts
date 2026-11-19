@@ -5,7 +5,22 @@ export type Json = Record<string, unknown>;
 export type Effect = 'none' | 'zoom-in' | 'zoom-out' | 'pan-left' | 'pan-right';
 export type TransitionName = 'cut' | 'fade' | 'slide';
 export type MediaSpec = {src: string; from?: number; duration?: number; effect?: Effect};
-export type MotionSpec = {component: string; props?: Json; start?: number; duration?: number};
+export type MotionPosition = 'full' | 'top' | 'center' | 'bottom' | 'free';
+export type MotionBackdrop = 'auto' | 'scrim' | 'none';
+export type AnimName = 'none' | 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'pop' | 'zoom' | 'wipe' | 'blur';
+export type AnimSpec = AnimName | {type: AnimName; duration?: number};
+export type BoxSpec = {x: number; y: number; w: number; h: number};
+export type KeyframeSpec = {t: number; x?: number; y?: number; scale?: number; rotate?: number; opacity?: number};
+export type WordRef = string | {word: string; occurrence?: number; offset?: number};
+/** Video-track time: seconds, a scene (optionally a spoken word in it), or "video" (end only). */
+export type TrackTime = number | 'video' | {scene: string; at?: WordRef; offset?: number; edge?: 'start' | 'end'};
+export type MotionSpec = {
+  component: string; props?: Json;
+  start?: number | TrackTime; duration?: number; end?: TrackTime;   // end: video track only
+  at?: WordRef; until?: WordRef;                                     // scene layers: start/end on a spoken word
+  position?: MotionPosition; box?: BoxSpec; backdrop?: MotionBackdrop; scale?: number; rotate?: number; opacity?: number;
+  enter?: AnimSpec; exit?: AnimSpec; keyframes?: KeyframeSpec[]; colors?: Partial<Record<'primary' | 'accent' | 'text' | 'background', string>>;
+};
 export type SceneSpec = {
   id: string; say?: string; caption?: string; duration?: number; voice?: string; tts?: Json;
   highlight?: string[]; overlay?: {text: string; position: 'top' | 'center' | 'bottom'} | null;
@@ -16,6 +31,7 @@ export type Storyboard = {
   template?: string; brand?: string; voice?: string; tts?: Json;
   music?: {file: string; volume?: number} | null; targetSeconds?: number;
   captions?: Json; video?: Json; scenes: SceneSpec[]; cta?: CtaSpec | null;
+  motion?: MotionSpec[];   // video-wide motion track
 };
 export type Versioned<T> = {data: T; mtime: number};           // mtime = Math.floor(stat.mtimeMs)
 export type Mix = {real: number; motion: number; other: number};

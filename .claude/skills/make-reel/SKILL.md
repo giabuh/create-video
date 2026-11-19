@@ -11,7 +11,9 @@ Follow CLAUDE.md rules. Steps:
 2. **Brief:** get course, offer, target length, voice (default from config), brand, music yes/no.
    Ask for any missing fact (price, phone, dates); never invent them.
 3. **Project:** create `projects/<YYYY-MM-DD>-<slug>/storyboard.json` (format: spec "Storyboard format").
-   - Mode A (default): write the script yourself; choose shots from `media-index.json` (`description`, `goodRanges`); add motion scenes/layers to reach ~60/30/10.
+   - Mode A (default): write the script yourself; choose shots from `media-index.json` (`description`, `goodRanges`); add motion layers to reach ~60/30/10 —
+     mostly on top of footage (bands/boxes), timed on the voice with `at`/`until`, plus a video-wide `motion` track when something spans scenes.
+     Write a new motion component (with its schema) when the idea needs one.
    - Mode B: the user dictated script/shots — transcribe faithfully, don't rewrite.
 4. **Prepare:** `VieNeu-TTS/.venv/bin/python tools/prepare.py projects/<slug>`. Fix any reported errors.
    Over `targetSeconds` -> shorten `say` and rerun (only changed scenes re-synthesize).

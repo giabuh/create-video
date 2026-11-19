@@ -53,3 +53,28 @@ def test_missing_voice_ref(root, cfg):
 
 def test_empty_scenes(root, cfg):
     assert validate({"scenes": []}, cfg, root) == ["scenes: storyboard has no scenes"]
+
+
+def test_motion_placement_and_loudness(root, cfg):
+    cfg["tts"]["loudness"] = -50
+    sb = {"scenes": [{"id": "s1", "say": "x", "media": [{"src": "a.mp4"}],
+                      "motion": [{"component": "CountUp", "position": "left", "backdrop": "blur", "scale": 5}]}]}
+    text = "\n".join(validate(sb, cfg, root))
+    for needle in ["motion position 'left'", "motion backdrop 'blur'", "motion scale 5", "loudness -50"]:
+        assert needle in text, needle
+
+
+def test_flexible_layers_and_track(root, cfg):
+    sb = {"scenes": [
+        {"id": "s1", "duration": 2, "media": [{"src": "a.mp4"}], "motion": [
+            {"component": "CountUp", "position": "free", "enter": "spin", "keyframes": [{"x": 3}], "colors": {"glow": "#fff"}, "at": "x"}]},
+    ], "motion": [{"component": "CountUp", "start": {"scene": "nope"}, "end": "later", "box": {"x": 0, "y": 0, "w": 0, "h": 5}}]}
+    text = "\n".join(validate(sb, cfg, root))
+    for needle in ["needs a box", "enter must be", "keyframes must be", "colors may override", "at needs a spoken scene",
+                   "track[0].start: unknown scene 'nope'", "track[0].end: seconds", "track[0]: box must be"]:
+        assert needle in text, needle
+    ok = {"scenes": [{"id": "s1", "say": "xin chào", "media": [{"src": "a.mp4"}], "motion": [
+        {"component": "CountUp", "box": {"x": 5, "y": 5, "w": 40, "h": 20}, "enter": {"type": "pop", "duration": 0.4},
+         "keyframes": [{"t": 0, "x": 0}, {"t": 1, "x": 5, "rotate": 10}], "at": {"word": "chào", "offset": -0.1}}]}],
+          "motion": [{"component": "CountUp", "start": {"scene": "s1", "at": "xin"}, "end": "video"}]}
+    assert validate(ok, cfg, root) == []

@@ -3,7 +3,22 @@ export type Effect = 'none' | 'zoom-in' | 'zoom-out' | 'pan-left' | 'pan-right';
 export type Transition = 'cut' | 'fade' | 'slide';
 export type CaptionChunk = {text: string; start: number; end: number};
 export type MediaItem = {src: string; type: 'video' | 'image'; from: number; start: number; duration: number; effect: Effect};
-export type MotionItem = {component: string; props: Record<string, unknown>; start: number; duration: number};
+// Placement: 'full' = the component lays itself out on the whole frame; top/center/bottom = preset bands;
+// 'free' = `box` (percent of the frame: x/y = top-left corner, w/h = size).
+export type MotionPosition = 'full' | 'top' | 'center' | 'bottom' | 'free';
+export type MotionBackdrop = 'none' | 'scrim';
+export type Box = {x: number; y: number; w: number; h: number};
+export type AnimType = 'none' | 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'pop' | 'zoom' | 'wipe' | 'blur';
+export type Anim = {type: AnimType; duration: number};
+// Keyframes: t = seconds from the layer start; x/y = offset in percent of the frame; values are eased in between.
+export type Keyframe = {t: number; x?: number; y?: number; scale?: number; rotate?: number; opacity?: number};
+export type MotionItem = {
+  component: string; props: Record<string, unknown>; start: number; duration: number;
+  position: MotionPosition; box: Box | null; backdrop: MotionBackdrop;
+  scale: number; rotate: number; opacity: number;
+  enter: Anim; exit: Anim; keyframes: Keyframe[];
+  colors: Partial<Brand['colors']> | null;
+};
 export type Overlay = {text: string; position: 'top' | 'center' | 'bottom'};
 export type Scene = {
   id: string; start: number; duration: number;
@@ -19,4 +34,5 @@ export type RenderProps = {
   template: string; fps: number; width: number; height: number;
   brand: Brand; captions: CaptionStyle; music: Music | null;
   scenes: Scene[]; cta: Cta | null; totalSeconds: number;
+  overlays?: MotionItem[]; // video-wide motion track; start is absolute (seconds from the beginning)
 };
