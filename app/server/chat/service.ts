@@ -1,5 +1,5 @@
 import {randomUUID} from 'node:crypto';
-import type {ChatAccount, ChatDetail, ChatEvent, ChatMeta, LimitInfo} from '../../shared/types.ts';
+import type {ChatAccount, ChatDetail, ChatEvent, ChatMeta, Engine, LimitInfo} from '../../shared/types.ts';
 import type {EventBus} from '../events.ts';
 import {HttpError} from '../routes/util.ts';
 import {listAccounts} from './accounts.ts';
@@ -10,7 +10,7 @@ export const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f
 export const NEW_TITLE = 'Phiên mới';
 const titleOf = (t: string) => { const s = t.replace(/\s+/g, ' ').trim(); return s.length > 60 ? s.slice(0, 59) + '…' : s; };
 const systemAppend = (screen: string, slug: string | null) =>
-  `The user is chatting with you from the reel app's chat panel; the app is running (CLAUDE.md rule 10: point them to the app instead of describing frames). ` +
+  `The user is chatting with you from the reel app's chat panel; the app is running (project rule 10 in CLAUDE.md/AGENTS.md: point them to the app instead of describing frames). ` +
   `They are on app screen "${screen}"${slug ? `, working on projects/${slug}` : ''}.`;
 
 export class ChatService {
@@ -23,13 +23,15 @@ export class ChatService {
   idle(): Promise<void> { return this.#active?.done ?? Promise.resolve(); }
 
   async accounts(): Promise<ChatAccount[]> {
-    return (await listAccounts()).map(a => ({name: a.name, limit: this.#limits.get(a.name) ?? null}));
+    return (await listAccounts()).map(a => ({name: a.name, engine: a.engine, limit: this.#limits.get(a.name) ?? null}));
   }
   async list(): Promise<ChatMeta[]> { return (await readIndex()).sort((a, b) => b.updatedAt - a.updatedAt); }
 
-  async create(slug: string | null): Promise<ChatMeta> {
+  async create(slug: string | null, engine: Engine): Promise<ChatMeta> {
+    const account = (await listAccounts()).find(a => a.engine === engine);
+    if (!account) throw new HttpError(400, `no ${engine} account`);
     const now = Date.now();
-    const chat: ChatMeta = {id: randomUUID(), title: NEW_TITLE, account: (await listAccounts())[0]?.name ?? 'claude', slug, started: false, createdAt: now, updatedAt: now};
+    const chat: ChatMeta = {id: randomUUID(), title: NEW_TITLE, engine, account: account.name, slug, started: false, threadId: null, createdAt: now, updatedAt: now};
     await updateIndex(l => [...l, chat]);
     return chat;
   }
@@ -49,6 +51,7 @@ export class ChatService {
       if (!chat) throw new HttpError(404, 'chat not found');
       const account = (await listAccounts()).find(a => a.name === m.account);
       if (!account) throw new HttpError(400, 'unknown account');
+      if (account.engine !== chat.engine) throw new HttpError(400, 'account does not match the chat engine');
 
       let w: Promise<void> = Promise.resolve();
       const persist = (e: ChatEvent) => { // write, then emit: a client refetch after the event sees it
@@ -58,10 +61,16 @@ export class ChatService {
       await updateIndex(l => l.map(c => c.id === id ? {...c, account: account.name, title: c.title === NEW_TITLE ? titleOf(m.text) : c.title, updatedAt: Date.now()} : c));
       this.#bus.emit({type: 'chatBusy', chatId: id});
 
+      const codex = chat.engine === 'codex';
       void runTurn({
-        sessionId: id, resume: chat.started, account, prompt: m.text, systemAppend: systemAppend(m.screen, m.slug), signal: ac.signal,
+        sessionId: codex ? chat.threadId ?? '' : id, resume: codex ? chat.threadId !== null : chat.started, account, prompt: m.text, systemAppend: systemAppend(m.screen, m.slug), signal: ac.signal,
         onEvent: e => { if (e.kind === 'delta') this.#bus.emit({type: 'chat', chatId: id, event: e}); else persist(e); },
-        onInit: () => { if (!chat.started) { chat.started = true; void updateIndex(l => l.map(c => c.id === id ? {...c, started: true} : c)); } },
+        onInit: tid => {
+          if (chat.started && (tid === null || tid === chat.threadId)) return;
+          chat.started = true;
+          if (tid !== null) chat.threadId = tid;
+          void updateIndex(l => l.map(c => c.id === id ? {...c, started: true, threadId: chat.threadId} : c));
+        },
         onLimit: l => { this.#limits.set(account.name, l); },
       }).then(async () => {
         await w;

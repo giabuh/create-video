@@ -11,6 +11,7 @@ beforeEach(async () => {
   await makeTestRoot(); // chat dir = <temp root>/app/.data/chats
   delete process.env.REEL_CHAT_DIR;
   process.env.REEL_CLAUDE_BIN = FAKE;
+  process.env.REEL_CODEX_BIN = path.join(import.meta.dirname, '../chat/fake-codex.mjs');
   process.env.REEL_CLAUDE_HOME = await makeClaudeHome();
 });
 
@@ -25,7 +26,7 @@ const send = (req: ReturnType<typeof setup>['req'], id: string, text: string, ac
 describe('chat routes', () => {
   it('accounts come from the claude home', async () => {
     const {req} = setup();
-    expect((await (await req('/api/chat/accounts')).json()).map((a: {name: string}) => a.name)).toEqual(['claude', 'claude2', 'claude10']);
+    expect((await (await req('/api/chat/accounts')).json()).map((a: {name: string}) => a.name)).toEqual(['claude', 'claude2', 'claude10', 'codex']);
   });
 
   it('two turns: new then resume, persisted without deltas, title set, busy events', async () => {
@@ -93,5 +94,31 @@ describe('chat routes', () => {
     expect((await req('/api/chats/not-a-uuid')).status).toBe(404);
     expect((await req('/api/chats/00000000-0000-4000-8000-000000000000')).status).toBe(404);
     expect((await send(req, '00000000-0000-4000-8000-000000000000', 'hi')).status).toBe(404);
+  });
+
+  it('codex chat: engine on create, account must match, second turn resumes the stored thread', async () => {
+    const {req, chat} = setup();
+    const r = await req('/api/chats', {method: 'POST', json: {slug: null, engine: 'codex'}});
+    expect(r.status).toBe(201);
+    const c: ChatMeta = await r.json();
+    expect(c).toMatchObject({engine: 'codex', account: 'codex', threadId: null});
+    expect((await send(req, c.id, 'hi', 'claude')).status).toBe(400);
+    expect((await send(req, c.id, 'hi', 'codex')).status).toBe(202);
+    await chat.idle();
+    const d1: ChatDetail = await (await req(`/api/chats/${c.id}`)).json();
+    expect(d1.chat.threadId).toMatch(/^[0-9a-f-]{36}$/);
+    expect(d1.events.map(e => e.kind)).toEqual(['user', 'tool', 'text', 'done']);
+    expect((await send(req, c.id, 'again', 'codex')).status).toBe(202);
+    await chat.idle();
+    const d2: ChatDetail = await (await req(`/api/chats/${c.id}`)).json();
+    expect(d2.events.filter(e => e.kind === 'text').at(-1)).toEqual({kind: 'text', text: `engine=codex mode=resume thread=${d1.chat.threadId} dev=yes prompt=again`});
+  });
+
+  it('claude account cannot be used on a codex chat and vice versa; bad engine → 400', async () => {
+    const {req} = setup();
+    expect((await req('/api/chats', {method: 'POST', json: {engine: 'gpt'}})).status).toBe(400);
+    const c = await newChat(req); // claude chat
+    expect(c.engine).toBe('claude');
+    expect((await send(req, c.id, 'hi', 'codex')).status).toBe(400);
   });
 });

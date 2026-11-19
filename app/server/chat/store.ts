@@ -9,7 +9,8 @@ const indexFile = () => path.join(chatDir(), 'index.json');
 
 export async function readIndex(): Promise<ChatMeta[]> {
   const {data} = await readJsonOr<ChatMeta[]>(indexFile(), []);
-  return Array.isArray(data) ? data : [];
+  // part-A entries predate engine/threadId
+  return Array.isArray(data) ? data.map(c => ({...c, engine: c.engine ?? 'claude', threadId: c.threadId ?? null})) : [];
 }
 
 let chain: Promise<unknown> = Promise.resolve();

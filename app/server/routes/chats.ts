@@ -17,7 +17,12 @@ export function chatRoutes({chat}: Deps): Hono {
   const app = new Hono();
   app.get('/chat/accounts', async c => c.json(await chat.accounts()));
   app.get('/chats', async c => c.json(await chat.list()));
-  app.post('/chats', async c => c.json(await chat.create(slugOf((await bodyOf(c)).slug)), 201));
+  app.post('/chats', async c => {
+    const b = await bodyOf(c);
+    const engine = b.engine ?? 'claude';
+    if (engine !== 'claude' && engine !== 'codex') throw new HttpError(400, 'engine must be claude or codex');
+    return c.json(await chat.create(slugOf(b.slug), engine), 201);
+  });
   app.get('/chats/:id', async c => {
     const d = await chat.get(idOf(c.req.param('id')));
     if (!d) throw new HttpError(404, 'chat not found');
