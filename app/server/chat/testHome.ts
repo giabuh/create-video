@@ -19,5 +19,7 @@ export async function makeClaudeHome(): Promise<string> {
   await acc(3, {creds: false});
   await acc(4, {link: false});
   await acc(10);
+  await mkdir(path.join(home, '.codex'), {recursive: true});
+  await writeFile(path.join(home, '.codex', 'auth.json'), '{}');
   return home;
 }

@@ -3,18 +3,27 @@ import readline from 'node:readline';
 import type {ChatEvent, LimitInfo} from '../../shared/types.ts';
 import {repoRoot} from '../paths.ts';
 import {childEnv, type Account} from './accounts.ts';
+import {parseCodexLine} from './codexStream.ts';
 import {parseLine} from './stream.ts';
 
 export const claudeBin = (): string => process.env.REEL_CLAUDE_BIN ?? 'claude';
 
+export const codexBin = (): string => process.env.REEL_CODEX_BIN ?? 'codex';
+
 export type TurnOpts = {
   sessionId: string; resume: boolean; account: Account; prompt: string; systemAppend: string; signal: AbortSignal;
-  onEvent(e: ChatEvent): void; onInit?(): void; onLimit?(l: LimitInfo): void;
+  onEvent(e: ChatEvent): void; onInit?(threadId: string | null): void; onLimit?(l: LimitInfo): void;
 };
 
 export function turnArgs(o: Pick<TurnOpts, 'sessionId' | 'resume' | 'systemAppend'>): string[] {
   return ['-p', '--output-format', 'stream-json', '--verbose', '--include-partial-messages', '--dangerously-skip-permissions',
     o.resume ? '--resume' : '--session-id', o.sessionId, '--append-system-prompt', o.systemAppend];
+}
+
+export function codexArgs(o: Pick<TurnOpts, 'sessionId' | 'resume' | 'systemAppend'>): string[] {
+  // JSON string escapes are valid TOML basic-string escapes
+  const common = ['--json', '--yolo', '--skip-git-repo-check', '-c', `developer_instructions=${JSON.stringify(o.systemAppend)}`];
+  return o.resume ? ['exec', 'resume', ...common, o.sessionId, '-'] : ['exec', ...common, '-'];
 }
 
 const STOPPED = 'Đã dừng';
@@ -24,10 +33,11 @@ export function runTurn(o: TurnOpts): Promise<void> {
     let ended = false, lastErr = '';
     let limit: LimitInfo | null = null;
     const end = (e: ChatEvent) => { if (!ended) { ended = true; o.onEvent(e); } };
+    const t0 = Date.now(); const codex = o.account.engine === 'codex'; const parse = codex ? parseCodexLine : parseLine;
     if (o.signal.aborted) { end({kind: 'error', message: STOPPED}); resolve(); return; }
 
     let p: ReturnType<typeof spawn>;
-    try { p = spawn(claudeBin(), turnArgs(o), {cwd: repoRoot(), env: childEnv(o.account), stdio: ['pipe', 'pipe', 'pipe']}); } catch (err) { // e.g. NUL in argv throws synchronously
+    try { p = spawn(codex ? codexBin() : claudeBin(), codex ? codexArgs(o) : turnArgs(o), {cwd: repoRoot(), env: childEnv(o.account), stdio: ['pipe', 'pipe', 'pipe']}); } catch (err) { // e.g. NUL in argv throws synchronously
       end({kind: 'error', message: String(err)}); resolve(); return;
     }
     let killTimer: ReturnType<typeof setTimeout> | undefined;
@@ -40,15 +50,16 @@ export function runTurn(o: TurnOpts): Promise<void> {
     const outRl = readline.createInterface({input: p.stdout!});
     const errRl = readline.createInterface({input: p.stderr!});
     outRl.on('line', line => {
-      const r = parseLine(line);
+      const r = parse(line);
       if (!r) return;
-      if (r.init) o.onInit?.();
+      if (r.init) o.onInit?.(r.threadId ?? null);
       if (r.limit) { o.onLimit?.(r.limit); if (r.limit.status === 'rejected') limit = r.limit; }
+      if (r.note) lastErr = r.note;
       for (const ev of r.events) if (!ended) o.onEvent(ev);
       if (r.result) {
         const res = r.result;
         if (o.signal.aborted) end({kind: 'error', message: STOPPED});
-        else if (!res.isError && !limit) end({kind: 'done', costUsd: res.costUsd, durationMs: res.durationMs});
+        else if (!res.isError && !limit) end({kind: 'done', costUsd: res.costUsd, durationMs: res.durationMs ?? Date.now() - t0});
         else end({kind: 'error', message: res.message ?? 'Claude báo lỗi',
           ...((limit || res.http429) && {limit: {account: o.account.name, resetsAt: limit?.resetsAt ?? null}})});
       }

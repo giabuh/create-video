@@ -1,13 +1,13 @@
 import path from 'node:path';
 import {beforeAll, describe, expect, it} from 'vitest';
 import type {ChatEvent, LimitInfo} from '../../shared/types.ts';
-import {runTurn, turnArgs} from './runner.ts';
+import {codexArgs, runTurn, turnArgs} from './runner.ts';
 import {makeTestRoot} from '../testRoot.ts';
 
 const FAKE = path.join(import.meta.dirname, 'fake-claude.mjs');
 import type {Account} from './accounts.ts';
-const def: Account = {name: 'claude', configDir: null};
-const acc2: Account = {name: 'claude2', configDir: '/tmp/h/.claude-acc2'};
+const def: Account = {name: 'claude', engine: 'claude', configDir: null};
+const acc2: Account = {name: 'claude2', engine: 'claude', configDir: '/tmp/h/.claude-acc2'};
 
 async function turn(prompt: string, o: {resume?: boolean; account?: Account; signal?: AbortSignal} = {}) {
   const events: ChatEvent[] = []; const limits: LimitInfo[] = []; let init = 0;
@@ -71,5 +71,48 @@ describe('runTurn (fake CLI)', () => {
   it('missing binary → error, no throw', async () => {
     process.env.REEL_CLAUDE_BIN = '/nope/claude';
     try { expect((await turn('x')).events.at(-1)).toMatchObject({kind: 'error'}); } finally { process.env.REEL_CLAUDE_BIN = FAKE; }
+  });
+});
+
+const FAKE_CODEX = path.join(import.meta.dirname, 'fake-codex.mjs');
+const cdx: Account = {name: 'codex', engine: 'codex', configDir: null};
+
+describe('codexArgs', () => {
+  it('new vs resume', () => {
+    expect(codexArgs({sessionId: '', resume: false, systemAppend: 'a "b"'})).toEqual(['exec', '--json', '--yolo', '--skip-git-repo-check', '-c', 'developer_instructions="a \\"b\\""', '-']);
+    expect(codexArgs({sessionId: 'T', resume: true, systemAppend: 'x'})).toEqual(['exec', 'resume', '--json', '--yolo', '--skip-git-repo-check', '-c', 'developer_instructions="x"', 'T', '-']);
+  });
+});
+
+describe('runTurn codex (fake CLI)', () => {
+  beforeAll(() => { process.env.REEL_CODEX_BIN = FAKE_CODEX; });
+  async function cturn(prompt: string, thread: string | null) {
+    const events: ChatEvent[] = []; const inits: (string | null)[] = [];
+    await runTurn({sessionId: thread ?? '', resume: thread !== null, account: cdx, prompt, systemAppend: 'ctx',
+      signal: new AbortController().signal, onEvent: e => events.push(e), onInit: t => inits.push(t)});
+    return {events, inits};
+  }
+  it('new turn: thread id, tool, text, done with measured duration', async () => {
+    const r = await cturn('hello', null);
+    expect(r.inits).toHaveLength(1);
+    expect(r.inits[0]).toMatch(/^[0-9a-f-]{36}$/);
+    expect(r.events[0]).toEqual({kind: 'tool', name: 'Bash', summary: 'ls projects'});
+    expect(r.events[1]).toEqual({kind: 'text', text: `engine=codex mode=new thread=${r.inits[0]} dev=yes prompt=hello`});
+    expect(r.events[2]).toMatchObject({kind: 'done', costUsd: null});
+    expect((r.events[2] as {durationMs: number}).durationMs).toBeGreaterThanOrEqual(0);
+  });
+  it('resume keeps the thread', async () => {
+    const t = '01a1f20b-c273-7340-b1d8-e82e51082ee7';
+    const r = await cturn('again', t);
+    expect(r.inits).toEqual([t]);
+    expect(r.events.find(e => e.kind === 'text')).toEqual({kind: 'text', text: `engine=codex mode=resume thread=${t} dev=yes prompt=again`});
+  });
+  it('limit → error with limit for account codex', async () => {
+    const r = await cturn('LIMIT', null);
+    expect(r.events.at(-1)).toEqual({kind: 'error', message: "You've hit your usage limit.", limit: {account: 'codex', resetsAt: null}});
+  });
+  it('unknown thread → error with the stderr line', async () => {
+    const r = await cturn('NOTHREAD', '01a1f20b-c273-7340-b1d8-e82e51082ee7');
+    expect(r.events).toEqual([{kind: 'error', message: expect.stringContaining('no rollout found')}]);
   });
 });
