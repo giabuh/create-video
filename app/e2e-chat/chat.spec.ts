@@ -37,3 +37,21 @@ test('chat with the fake claude CLI', async ({page}) => {
   await page.getByRole('button', {name: 'Chat với Claude'}).first().click();
   await expect(page.getByRole('dialog').getByText('prompt=Xin chào')).toBeVisible();
 });
+
+test('codex chat with the fake codex CLI', async ({page}) => {
+  await page.goto('/');
+  await page.getByRole('button', {name: 'Chat với Claude'}).first().click();
+  const dialog = page.getByRole('dialog');
+  await dialog.getByRole('button', {name: 'Phiên mới'}).click();
+  await page.getByRole('menuitem', {name: 'Phiên Codex'}).click();
+  await expect(dialog.getByRole('heading', {name: 'Chat với Codex'})).toBeVisible();
+  const box = page.getByLabel('Tin nhắn cho Claude');
+  await box.fill('xin chào codex'); await box.press('Enter');
+  const first = dialog.getByText(/engine=codex mode=new thread=[0-9a-f-]{36} dev=yes prompt=xin chào codex/);
+  await expect(first).toBeVisible();
+  await expect(dialog.getByText('Bash: ls projects')).toBeVisible();
+  const thread = /thread=([0-9a-f-]{36})/.exec(await first.innerText())![1];
+  await expect(box).toBeEnabled();
+  await box.fill('lần hai'); await box.press('Enter');
+  await expect(dialog.getByText(`engine=codex mode=resume thread=${thread} dev=yes prompt=lần hai`)).toBeVisible();
+});

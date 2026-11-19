@@ -13,10 +13,12 @@ writeFileSync(path.join(home, '.claude', '.credentials.json'), '{}');
 mkdirSync(path.join(home, '.claude-acc2'));
 writeFileSync(path.join(home, '.claude-acc2', '.credentials.json'), '{}');
 symlinkSync(path.join(home, '.claude', 'projects'), path.join(home, '.claude-acc2', 'projects'));
+mkdirSync(path.join(home, '.codex'));
+writeFileSync(path.join(home, '.codex', 'auth.json'), '{}');
 
 const child = spawn('npm', ['start'], {cwd: root, stdio: 'inherit', env: {
   ...process.env, NO_OPEN: '1', REEL_API_PORT: '5336', REEL_UI_PORT: '5337',
-  REEL_CLAUDE_BIN: path.join(root, 'server/chat/fake-claude.mjs'), REEL_CLAUDE_HOME: home, REEL_CHAT_DIR: chats,
+  REEL_CLAUDE_BIN: path.join(root, 'server/chat/fake-claude.mjs'), REEL_CODEX_BIN: path.join(root, 'server/chat/fake-codex.mjs'), REEL_CLAUDE_HOME: home, REEL_CHAT_DIR: chats,
 }});
 // Playwright signals our whole process group, so npm's grandchildren (api, vite) get the signal too
 const stop = (sig) => () => child.kill(sig);
