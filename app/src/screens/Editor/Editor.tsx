@@ -6,7 +6,7 @@ import {EditorProvider, useEditor} from './EditorContext.tsx';
 import {Inspector} from './Inspector.tsx';
 import {PreviewPane} from './PreviewPane.tsx';
 import {SceneList} from './SceneList.tsx';
-import {TimelinePlaceholder} from './TimelinePlaceholder.tsx';
+import {Timeline} from './Timeline.tsx';
 import {TopBar} from './TopBar.tsx';
 import s from './Editor.module.css';
 
@@ -45,7 +45,7 @@ function EditorBody(): React.JSX.Element {
         <div className={s.center}><PreviewPane /></div>
         <div className={s.right}><Inspector /></div>
       </div>
-      <div id="editor-timeline" className={s.timeline}><TimelinePlaceholder /></div>
+      <div id="editor-timeline" className={s.timeline}><Timeline /></div>
     </div>
   );
 }
