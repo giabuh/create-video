@@ -43,7 +43,8 @@
   },
   "sfx": { "volume": 0.5, "minGap": 0.8, "scene": "whoosh", "cta": "impact",
            "motion": { "default": "pop", "Text": "ting", "KineticText": "ting", "PriceTag": "ting", "CountUp": "ting",
-                       "DateBadge": "pop", "Picture": "pop", "Annotate": "pop", "LowerThird": "click", "Checklist": "click", "ProgressBar": "click" } },
+                       "DateBadge": "pop", "Picture": "pop", "Annotate": "pop", "LowerThird": "click", "Checklist": "click", "ProgressBar": "click",
+                       "Ribbon": "whoosh", "TwoTier": "whoosh", "Callout": "click", "PinLabel": "pop", "GlossyPill": "ting", "GiantText": "whoosh" } },
   "captions": {
     "font": "Be Vietnam Pro",
     "size": 64,

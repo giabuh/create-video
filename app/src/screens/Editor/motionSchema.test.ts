@@ -1,3 +1,5 @@
+import {readFileSync} from 'node:fs';
+import {MOTION} from '@studio/motion/registry';
 import {describe, expect, it} from 'vitest';
 import {motionErrors, motionFields, motionNames, motionTitle} from './motionSchema.ts';
 
@@ -6,6 +8,12 @@ describe('motion forms from zod schemas', () => {
     expect(motionNames()).toEqual(expect.arrayContaining(['Text', 'KineticText', 'CountUp', 'Checklist', 'PriceTag', 'DateBadge', 'LowerThird', 'Annotate', 'Picture', 'ProgressBar']));
     expect(motionTitle('PriceTag')).toBe('Thẻ giá');
     expect(motionTitle('Whatever')).toBe('Whatever');
+  });
+  it('registers the new cards and keeps props.py OWNS_EXIT in sync with ownsExit', () => {
+    expect(motionNames()).toEqual(expect.arrayContaining(['Ribbon', 'TwoTier', 'Callout', 'PinLabel', 'GlossyPill', 'GiantText']));
+    const py = readFileSync(new URL('../../../../tools/reel/props.py', import.meta.url), 'utf8');
+    const set = /OWNS_EXIT = \{([^}]*)\}/.exec(py)![1].match(/"(\w+)"/g)!.map((s) => s.slice(1, -1)).sort();
+    expect(set).toEqual(Object.entries(MOTION).filter(([, d]) => d.ownsExit).map(([n]) => n).sort());
   });
   it('derives widgets, bounds, defaults and labels', () => {
     const f = Object.fromEntries((motionFields('Text') ?? []).map((x) => [x.key, x]));

@@ -24,3 +24,18 @@ Follow CLAUDE.md rules. Steps:
    - total length and mix.
 7. **Iterate:** apply feedback per CLAUDE.md rule 2. Re-run prepare -> stills -> next `reel-v<N>`.
 8. **Approve:** on approval, commit `storyboard.json` (no sync push of the mp4).
+
+## Thẻ và hiệu ứng chữ
+
+Motion cards, pick by purpose:
+- `Ribbon`: a key benefit line.
+- `TwoTier`: who it is for (audience plus field).
+- `Callout`: pointing at a person or a screen; set `targetX`/`targetY` on the subject and verify on a still.
+- `PinLabel`: a place.
+- `GlossyPill`: an offer or gift.
+- `GiantText`: one big statement, at most one per video.
+
+Rules:
+- Vary `fx` (`none, typewriter, words, pop, scramble, mask, wave`) between consecutive cards; never use one effect for the whole video.
+- Brand colors are a starting point: per-layer `colors` (now including `accent2`/`surface`) and new components stay allowed.
+- Choreographed cards need a layer of at least about 2.5 s at `pace: normal`, or they exit before they finish; use `pace: fast` for short layers.
