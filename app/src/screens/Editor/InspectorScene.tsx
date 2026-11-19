@@ -10,6 +10,8 @@ import {MotionForm} from './MotionForm.tsx';
 import {useVoiceAction} from './TopBar.tsx';
 import s from './Inspector.module.css';
 
+type Section = 'content' | 'media' | 'transition';
+
 const EFFECTS = [{value: 'zoom-in', label: 'Zoom vào'}, {value: 'zoom-out', label: 'Zoom ra'}, {value: 'pan-left', label: 'Lia trái'}, {value: 'pan-right', label: 'Lia phải'}, {value: 'none', label: 'Không'}] as const;
 const stem = (n: string) => n.replace(/\.[^.]+$/, '');
 
@@ -42,6 +44,7 @@ export function InspectorScene(): React.JSX.Element {
   const lib = useLibrary();
   const motionNames = useMotionNames();
   const voiceAction = useVoiceAction();
+  const [section, setSection] = useState<Section>('content');
   const [picker, setPicker] = useState(false);
   const [stash, setStash] = useState<Record<string, string>>({}); // say text kept while the switch is off
   const scene = sb.scenes.find((x) => x.id === selectedId);
@@ -63,68 +66,80 @@ export function InspectorScene(): React.JSX.Element {
 
   return (
     <div className={s.stack}>
-      {stale.includes(scene.id) && (
-        <div className={s.banner} role="status">
-          <TriangleAlert size={18} aria-hidden />
-          <span className={s.grow}>Lời đọc đã đổi — đang phát giọng cũ.</span>
-          <Button size="sm" loading={voiceAction.loading} loadingText={voiceAction.label} disabled={voiceAction.disabled} onClick={voiceAction.start}>Tạo lại giọng</Button>
-        </div>
-      )}
-
-      <Switch checked={hasSay} onChange={(on) => (on ? up({say: stash[scene.id] ?? '', duration: undefined}) : (setStash({...stash, [scene.id]: scene.say ?? ''}), up({say: undefined, duration: scene.duration ?? 3})))} label="Cảnh có lời đọc" />
-      {hasSay
-        ? <Field label="Lời đọc (đọc theo cách phát âm)" hint="Viết số, giá, số điện thoại, từ tiếng Anh đúng như cần đọc."><Textarea autosize value={scene.say ?? ''} onChange={(e) => up({say: e.target.value})} /></Field>
-        : <Field label="Thời lượng (giây)"><NumberField value={scene.duration ?? null} min={0.5} step={0.5} onChange={(v) => up({duration: v ?? undefined})} /></Field>}
-      <Field label="Caption (hiển thị trên màn hình)"><Textarea autosize rows={2} value={scene.caption ?? ''} onChange={(e) => up({caption: e.target.value})} /></Field>
-      <Field label="Từ nổi bật"><TagInput tone="accent" value={scene.highlight ?? []} suggestions={words} placeholder="Gõ từ trong caption…" onChange={(v) => up({highlight: v.length ? v : undefined})} /></Field>
-
-      {hasSay && (
-        <section className={s.stack} aria-label="Giọng">
-          <Field label="Giọng"><Select value={scene.voice ?? ''} onChange={(v) => up({voice: v || undefined})} options={voiceOpts} /></Field>
-          <Field label={`Tốc độ (${scene.tts?.speed == null ? 'theo video' : 'riêng cảnh'})`}>
-            <Slider aria-label="Tốc độ đọc" min={0.5} max={2} step={0.05} value={speed} format={(v) => `${v.toFixed(2)}×`}
-              onChange={(v) => up({tts: {...scene.tts, speed: v}})} />
-          </Field>
-          {scene.tts?.speed != null && <Button size="sm" variant="ghost" onClick={() => { const {speed: _, ...rest} = scene.tts ?? {}; up({tts: Object.keys(rest).length ? rest : undefined}); }}>Theo tốc độ video</Button>}
-          {audio ? <AudioPlayer src={`/${audio}`} label="Nghe câu này" />
-            : <Tooltip content="Chưa có giọng"><span><Button size="sm" disabled>Nghe câu này</Button></span></Tooltip>}
-        </section>
-      )}
-
-      <section className={s.stack} aria-label="Media">
-        <h3 className={s.h}>Media</h3>
-        {items.length > 0 && (
-          <SortableList aria-label="Danh sách media" items={items} getId={(x) => `${x.i}-${x.m.src}`} onReorder={(n) => setMedia(n.map((x) => x.m))}
-            renderItem={({m, i}, h) => <MediaRow m={m} handle={h.handleProps} missing={!!lib.data && !(m.src in lib.data.data)}
-              onChange={(p) => setMedia(media.map((x, j) => (j === i ? {...x, ...p} : x)))} onRemove={() => setMedia(media.filter((_, j) => j !== i))} />} />
+      <Segmented<Section> className={s.groups} aria-label="Nhóm chỉnh cảnh" value={section} onChange={setSection} options={[
+        {value: 'content', label: 'Nội dung'}, {value: 'media', label: 'Media & Motion'}, {value: 'transition', label: 'Chuyển cảnh'},
+      ]} />
+      <section className={s.stack} hidden={section !== 'content'} aria-label="Nội dung cảnh">
+        {stale.includes(scene.id) && (
+          <div className={s.banner} role="status">
+            <TriangleAlert size={18} aria-hidden />
+            <span className={s.grow}>Lời đọc đã đổi — đang phát giọng cũ.</span>
+            <Button size="sm" loading={voiceAction.loading} loadingText={voiceAction.label} disabled={voiceAction.disabled} onClick={voiceAction.start}>Tạo lại giọng</Button>
+          </div>
         )}
-        <Button icon={<Plus size={16} aria-hidden />} onClick={() => setPicker(true)}>Chọn từ thư viện</Button>
-        <MediaPicker open={picker} onOpenChange={setPicker} onAdd={(ns) => setMedia([...media, ...ns.map((src) => ({src}))])} />
+
+        <Field label="Caption (hiển thị trên màn hình)"><Textarea autosize rows={2} value={scene.caption ?? ''} onChange={(e) => up({caption: e.target.value})} /></Field>
+        <Switch checked={hasSay} onChange={(on) => (on ? up({say: stash[scene.id] ?? '', duration: undefined}) : (setStash({...stash, [scene.id]: scene.say ?? ''}), up({say: undefined, duration: scene.duration ?? 3})))} label="Cảnh có lời đọc" />
+        {hasSay
+          ? <Field label="Lời đọc (đọc theo cách phát âm)" hint="Viết số, giá, số điện thoại, từ tiếng Anh đúng như cần đọc."><Textarea autosize value={scene.say ?? ''} onChange={(e) => up({say: e.target.value})} /></Field>
+          : <Field label="Thời lượng (giây)"><NumberField value={scene.duration ?? null} min={0.5} step={0.5} onChange={(v) => up({duration: v ?? undefined})} /></Field>}
+        <details className={s.advanced}>
+          <summary>Giọng và từ nổi bật</summary>
+          <section className={s.stack}>
+            <Field label="Từ nổi bật"><TagInput tone="accent" value={scene.highlight ?? []} suggestions={words} placeholder="Gõ từ trong caption…" onChange={(v) => up({highlight: v.length ? v : undefined})} /></Field>
+
+            {hasSay && (
+              <section className={s.stack} aria-label="Giọng">
+                <Field label="Giọng"><Select value={scene.voice ?? ''} onChange={(v) => up({voice: v || undefined})} options={voiceOpts} /></Field>
+                <Field label={`Tốc độ (${scene.tts?.speed == null ? 'theo video' : 'riêng cảnh'})`}>
+                  <Slider aria-label="Tốc độ đọc" min={0.5} max={2} step={0.05} value={speed} format={(v) => `${v.toFixed(2)}×`}
+                    onChange={(v) => up({tts: {...scene.tts, speed: v}})} />
+                </Field>
+                {scene.tts?.speed != null && <Button size="sm" variant="ghost" onClick={() => { const {speed: _, ...rest} = scene.tts ?? {}; up({tts: Object.keys(rest).length ? rest : undefined}); }}>Theo tốc độ video</Button>}
+                {audio ? <AudioPlayer src={`/${audio}`} label="Nghe câu này" />
+                  : <Tooltip content="Chưa có giọng"><span><Button size="sm" disabled>Nghe câu này</Button></span></Tooltip>}
+              </section>
+            )}
+          </section>
+        </details>
       </section>
 
-      <section className={s.stack} aria-label="Lớp motion">
-        <h3 className={s.h}>Lớp motion</h3>
-        {motion.map((m, i) => {
-          const set = (p: Partial<MotionSpec>) => setMotion(motion.map((x, j) => (j === i ? updateKeys(x, p) : x)));
-          const opts = [...new Set([...names, m.component])].map((n) => ({value: n, label: n}));
-          return (
-            <div key={i} className={s.card}>
-              <div className={s.row}>
-                <span className={s.grow}><Select aria-label="Component motion" value={m.component} options={opts} onChange={(c) => set({component: c, props: {}})} /></span>
-                <IconButton label="Xoá lớp motion" icon={<Trash2 size={18} aria-hidden />} onClick={() => setMotion(motion.filter((_, j) => j !== i))} />
-              </div>
-              <MotionForm key={m.component} component={m.component} value={m.props ?? {}} onChange={(props) => set({props})} />
-              <div className={s.grid2}>
-                <Field label="Bắt đầu (giây)"><NumberField value={m.start ?? null} min={0} step={0.5} onChange={(v) => set({start: v ?? undefined})} /></Field>
-                <Field label="Dài (giây)"><NumberField value={m.duration ?? null} min={0.5} step={0.5} onChange={(v) => set({duration: v ?? undefined})} /></Field>
-              </div>
-            </div>
-          );
-        })}
-        <Button icon={<Plus size={16} aria-hidden />} disabled={!names.length} onClick={() => setMotion([...motion, {component: names[0], props: {}}])}>Lớp motion</Button>
-      </section>
+      <section className={s.stack} hidden={section !== 'media'} aria-label="Media và motion">
+        <section className={s.stack} aria-label="Media">
+          <h3 className={s.h}>Media</h3>
+          {items.length > 0 && (
+            <SortableList aria-label="Danh sách media" items={items} getId={(x) => `${x.i}-${x.m.src}`} onReorder={(n) => setMedia(n.map((x) => x.m))}
+              renderItem={({m, i}, h) => <MediaRow m={m} handle={h.handleProps} missing={!!lib.data && !(m.src in lib.data.data)}
+                onChange={(p) => setMedia(media.map((x, j) => (j === i ? {...x, ...p} : x)))} onRemove={() => setMedia(media.filter((_, j) => j !== i))} />} />
+          )}
+          <Button icon={<Plus size={16} aria-hidden />} onClick={() => setPicker(true)}>Chọn từ thư viện</Button>
+          <MediaPicker open={picker} onOpenChange={setPicker} onAdd={(ns) => setMedia([...media, ...ns.map((src) => ({src}))])} />
+        </section>
 
-      <section className={s.stack} aria-label="Chữ phủ và chuyển cảnh">
+        <section className={s.stack} aria-label="Lớp motion">
+          <h3 className={s.h}>Lớp motion</h3>
+          {motion.map((m, i) => {
+            const set = (p: Partial<MotionSpec>) => setMotion(motion.map((x, j) => (j === i ? updateKeys(x, p) : x)));
+            const opts = [...new Set([...names, m.component])].map((n) => ({value: n, label: n}));
+            return (
+              <div key={i} className={s.card}>
+                <div className={s.row}>
+                  <span className={s.grow}><Select aria-label="Component motion" value={m.component} options={opts} onChange={(c) => set({component: c, props: {}})} /></span>
+                  <IconButton label="Xoá lớp motion" icon={<Trash2 size={18} aria-hidden />} onClick={() => setMotion(motion.filter((_, j) => j !== i))} />
+                </div>
+                <MotionForm key={m.component} component={m.component} value={m.props ?? {}} onChange={(props) => set({props})} />
+                <div className={s.grid2}>
+                  <Field label="Bắt đầu (giây)"><NumberField value={m.start ?? null} min={0} step={0.5} onChange={(v) => set({start: v ?? undefined})} /></Field>
+                  <Field label="Dài (giây)"><NumberField value={m.duration ?? null} min={0.5} step={0.5} onChange={(v) => set({duration: v ?? undefined})} /></Field>
+                </div>
+              </div>
+            );
+          })}
+          <Button icon={<Plus size={16} aria-hidden />} disabled={!names.length} onClick={() => setMotion([...motion, {component: names[0], props: {}}])}>Lớp motion</Button>
+        </section>
+
+      </section>
+      <section className={s.stack} hidden={section !== 'transition'} aria-label="Chữ phủ và chuyển cảnh">
         <Field label="Chữ phủ (tuỳ chọn)"><Input placeholder="VD: [ƯU ĐÃI]" value={scene.overlay?.text ?? ''}
           onChange={(e) => up({overlay: e.target.value ? {text: e.target.value, position: scene.overlay?.position ?? 'bottom'} : undefined})} /></Field>
         <Segmented aria-label="Vị trí chữ phủ" value={scene.overlay?.position ?? 'bottom'} options={[{value: 'top', label: 'Trên', disabled: !scene.overlay}, {value: 'center', label: 'Giữa', disabled: !scene.overlay}, {value: 'bottom', label: 'Dưới', disabled: !scene.overlay}]}

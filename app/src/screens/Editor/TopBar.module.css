@@ -1,11 +1,32 @@
 .top { display: flex; align-items: center; gap: var(--sp-3) var(--sp-4); flex-wrap: wrap; padding: var(--sp-3) var(--sp-5); border-bottom: 1px solid var(--line); background: var(--panel); }
-.crumb { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-md); color: var(--dim); }
+.identity { display: flex; align-items: center; gap: var(--sp-2); min-width: 0; }
+.crumb { min-width: 0; display: flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-md); color: var(--dim); }
 .crumb a { color: var(--muted); text-decoration: none; border-radius: var(--r-sm); }
 .crumb a:hover { color: var(--text); }
-.crumb b { color: var(--text); }
+.crumb b { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pill { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 var(--sp-3); border-radius: var(--r-pill); font-size: var(--fs-xs); font-weight: 600; background: var(--panel-3); color: var(--text-2); white-space: nowrap; }
 .ok { background: var(--success-soft); color: var(--success-text); }
 .mixWrap { margin-left: auto; }
 .actions { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
 .progress { display: flex; align-items: center; gap: var(--sp-2); width: 10rem; font-size: var(--fs-sm); font-variant-numeric: tabular-nums; color: var(--text-2); }
 .progress > :first-child { flex: 1; }
+
+.compactActions, .mixMenu { display: none; }
+@media (max-width: 1540px) {
+  .mixWrap { display: none; }
+  .mixMenu { display: block; margin-left: auto; }
+}
+@media (min-width: 851px) and (max-width: 1210px) {
+  .top { gap: var(--sp-2); }
+  .actions > button { padding-inline: var(--sp-2); font-size: var(--fs-sm); }
+}
+@media (max-width: 850px) {
+  .top { gap: var(--sp-1) var(--sp-2); padding: var(--sp-1) var(--sp-2); }
+  .identity { flex: 1; flex-direction: column; align-items: start; gap: 0; }
+  .crumb { font-size: var(--fs-sm); max-width: 100%; }
+  .pill { height: auto; min-height: 22px; padding-inline: var(--sp-2); }
+  .mixWrap, .actions { display: none; }
+  .mixMenu { margin-left: 0; }
+  .compactActions { display: flex; gap: var(--sp-1); align-items: center; }
+  .progress { flex-basis: 100%; }
+}

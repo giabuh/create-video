@@ -105,7 +105,7 @@ export function ProjectsScreen(): React.JSX.Element {
   else body = (
     <>
       <div className={s.tools}>
-        <Segmented<Filter> aria-label="Lọc dự án" value={filter} onChange={setFilter} options={[
+        <Segmented<Filter> className={s.statusFilter} aria-label="Lọc dự án" value={filter} onChange={setFilter} options={[
           {value: 'all', label: `Tất cả · ${count('all')}`}, {value: 'doing', label: `Đang làm · ${count('doing')}`},
           {value: 'approved', label: `Đã duyệt · ${count('approved')}`}, {value: 'new', label: `Chưa render · ${count('new')}`}]} />
         <div className={s.legend}>
@@ -126,7 +126,7 @@ export function ProjectsScreen(): React.JSX.Element {
 
   return (
     <>
-      <PageHeader title="Dự án" subtitle={<>Mỗi dự án là một thư mục trong <code>projects/</code> — tự cập nhật khi Claude hoặc bạn sửa file.</>}
+      <PageHeader title="Dự án" subtitle="Mở lại video đang làm hoặc tạo dự án mới."
         actions={<><Input className={s.search} type="search" aria-label="Tìm dự án" placeholder="Tìm dự án…" value={q} onChange={(e) => setQ(e.target.value)} />{newBtn}</>} />
       {body}
       <NewDialog key={gen} open={open} onOpenChange={setOpen} />

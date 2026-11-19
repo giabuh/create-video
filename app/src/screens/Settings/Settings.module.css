@@ -1,4 +1,4 @@
-.page { max-width: 1200px; margin: 0 auto; padding: var(--sp-6) var(--sp-4) 96px; display: flex; flex-direction: column; gap: var(--sp-5); }
+.page { width: 100%; max-width: 1200px; margin: 0 auto; padding: var(--sp-3) 0 var(--sp-1); display: flex; flex-direction: column; gap: var(--sp-5); }
 .brandRow { display: flex; flex-wrap: wrap; gap: var(--sp-5); align-items: flex-start; }
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-lg); padding: var(--sp-5); display: flex; flex-direction: column; gap: var(--sp-4); min-width: 0; }
 .card h2 { margin: 0; font: 700 var(--fs-lg)/1.3 var(--font); }
@@ -6,7 +6,7 @@
 .list { flex: 1 1 240px; max-width: 280px; padding: var(--sp-3); gap: var(--sp-2); }
 .editor { flex: 999 1 420px; }
 .preview { flex: 1 1 220px; max-width: 260px; display: flex; flex-direction: column; align-items: center; gap: var(--sp-2); }
-.previewBox { width: 14rem; aspect-ratio: 9 / 16; border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--line); background: var(--bg-sunken); }
+.previewBox { width: min(100%, 13rem, 30dvh); aspect-ratio: 9 / 16; border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--line); background: var(--bg-sunken); }
 .item { flex-wrap: wrap; display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-2) var(--sp-3); min-height: 44px; border-radius: var(--r-md); border: 1px solid transparent; background: transparent; color: var(--text); font: 500 var(--fs-md)/1.3 var(--font); text-align: left; cursor: pointer; width: 100%; }
 .item:hover { background: var(--panel-2); }
 .item:focus-visible { outline: none; box-shadow: var(--focus); }
@@ -15,19 +15,36 @@
 .dot { width: 26px; height: 26px; border-radius: 7px; flex: none; border: 1px solid var(--line-strong); }
 .head { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
 .head h2 { flex: 1; }
-.path { color: var(--dim); font-size: var(--fs-xs); }
 .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--sp-4); }
 .label { font: 500 var(--fs-sm)/1.3 var(--font); color: var(--muted); display: block; margin-bottom: var(--sp-2); }
 .logoBox { display: flex; align-items: center; gap: var(--sp-3); }
 .logoImg { width: 64px; height: 64px; object-fit: contain; border-radius: var(--r-md); background: var(--bg-sunken); border: 1px solid var(--line); flex: none; }
 .logoNone { display: grid; place-items: center; color: var(--dim); font-size: var(--fs-xs); text-align: center; }
 .colors { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: var(--sp-4); }
-.actions { display: flex; flex-wrap: wrap; gap: var(--sp-2); align-items: center; }
 .dirty { color: var(--accent-text); font-size: var(--fs-sm); font-weight: 600; }
 .muted { color: var(--muted); font-size: var(--fs-sm); }
-.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--sp-5); align-items: start; }
+.cards { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--sp-5); align-items: start; }
 .bar { display: flex; height: 12px; border-radius: var(--r-pill); overflow: hidden; background: var(--bg-sunken); }
 .bar i { display: block; transition: width var(--dur) var(--ease); }
 .prm { display: grid; grid-template-columns: minmax(7rem, 10rem) minmax(0, 1fr) 4rem; gap: var(--sp-3); align-items: center; font-size: var(--fs-sm); }
 .prm b { text-align: right; font-variant-numeric: tabular-nums; }
 .skel { display: flex; flex-direction: column; gap: var(--sp-3); }
+
+.settingsTabs { position: sticky; top: 0; z-index: 3; padding-block: var(--sp-1); background: var(--bg); }
+.tabList { max-width: 100%; }
+.saveBar { position: sticky; bottom: 0; z-index: 2; display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; padding-block: var(--sp-2); border-top: 1px solid var(--line); background: var(--panel); }
+.mobilePreview { display: none; }
+.dialogPreview { display: grid; place-items: center; }
+@media (max-width: 850px) {
+  .settingsTabs { position: static; }
+  .tabList { display: flex; width: 100%; }
+  .tabList > button { flex: 1; min-width: 0; white-space: normal; padding-inline: var(--sp-1); font-size: var(--fs-sm); }
+  .brandRow { flex-direction: column; gap: var(--sp-3); }
+  .brandRow > .card { width: 100%; flex: auto; max-width: none; }
+  .card { padding: var(--sp-3); }
+  .preview { display: none; }
+  .mobilePreview { display: inline-flex; }
+  .prm { grid-template-columns: minmax(0, 1fr) auto; gap: var(--sp-1) var(--sp-2); }
+  .prm > :nth-child(2) { grid-row: 2; grid-column: 1 / -1; }
+  .grid2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+}

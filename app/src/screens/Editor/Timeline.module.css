@@ -1,4 +1,4 @@
-.root { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-lg); padding: var(--sp-3); min-width: 0; }
+.root { background: var(--panel); padding: var(--sp-2) var(--sp-3); min-width: 0; }
 .empty { margin: 0; color: var(--dim); font-size: var(--fs-sm); }
 .scroll { overflow-x: auto; padding-bottom: var(--sp-2); }
 .canvas { position: relative; display: flex; flex-direction: column; gap: var(--sp-2); min-width: 100%; }
@@ -36,3 +36,14 @@
 .music[data-off] { color: var(--dim); }
 .head { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--danger); pointer-events: none; z-index: 2; }
 @media (prefers-reduced-motion: reduce) { .block, .voice, .wave, .waveWait { transition: none; animation: none; } }
+
+.title { display: flex; gap: var(--sp-2); align-items: baseline; }
+.title span { color: var(--muted); font-size: var(--fs-xs); }
+.scroll { margin-top: var(--sp-1); }
+@media (min-width: 851px) and (max-height: 850px) {
+  .ruler { height: 32px; }
+  .canvas { gap: var(--sp-1); }
+  .row { height: 36px; }
+  .row[data-track="voice"] { height: 25px; }
+  .row[data-track="music"] { height: 25px; }
+}

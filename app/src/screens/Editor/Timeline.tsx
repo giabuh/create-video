@@ -46,6 +46,7 @@ export function Timeline(): React.JSX.Element {
   const fps = renderProps?.fps ?? 30;
   const t = usePlayhead(fps);
 
+  const ready = renderProps !== null;
   useLayoutEffect(() => {
     const el = outer.current;
     if (!el) return;
@@ -53,7 +54,7 @@ export function Timeline(): React.JSX.Element {
     ro.observe(el);
     setWidth(el.clientWidth);
     return () => ro.disconnect();
-  }, []);
+  }, [ready]);
 
   if (!renderProps) return <div className={s.root}><p className={s.empty}>Chưa có bản xem trước để dựng timeline.</p></div>;
 
@@ -78,6 +79,7 @@ export function Timeline(): React.JSX.Element {
 
   return (
     <section className={s.root} aria-label="Timeline">
+      <div className={s.title}><b>Timeline</b><span>{fmtSec(total)} giây</span></div>
       <div className={s.scroll} ref={outer}>
         <div className={s.canvas} style={{width: total * pps}}>
           <div className={s.ruler} role="slider" tabIndex={0} aria-label="Vị trí phát" aria-valuemin={0} aria-valuemax={total} aria-valuenow={Math.round(t * 10) / 10}

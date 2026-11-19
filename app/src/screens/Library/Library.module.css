@@ -45,3 +45,9 @@
 .mname { flex: 0 1 14rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .msize { color: var(--muted); font-size: var(--fs-sm); width: 5rem; text-align: right; }
 .ups:empty { display: none; }
+
+@media (max-width: 850px) {
+  .filters .search { order: -1; width: 100%; margin-left: 0; }
+  .up { flex-wrap: wrap; }
+  .upState { width: auto; max-width: 100%; overflow-wrap: anywhere; }
+}

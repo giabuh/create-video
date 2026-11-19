@@ -1,4 +1,4 @@
 .header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-4); flex-wrap: wrap; margin-bottom: var(--sp-6); }
 .title { margin: 0; font-size: var(--fs-2xl); font-weight: 800; line-height: 1.2; letter-spacing: -.01em; }
 .subtitle { margin-top: var(--sp-1); color: var(--muted); font-size: var(--fs-sm); }
-.actions { display: flex; align-items: center; gap: var(--sp-2); }
+.actions { display: flex; flex-wrap: wrap; max-width: 100%; align-items: center; gap: var(--sp-2); }

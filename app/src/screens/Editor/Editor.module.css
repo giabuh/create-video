@@ -1,8 +1,27 @@
-.root { display: flex; flex-direction: column; min-height: 100%; }
+.root { display: grid; flex: 1 0 auto; height: 100%; min-height: 430px; grid-template-rows: auto minmax(0, 1fr) auto; grid-template-columns: minmax(0, 1fr); }
 .top { padding: var(--sp-3) var(--sp-5); border-bottom: 1px solid var(--line); }
 .state { padding: var(--sp-6); }
-.work { display: flex; flex-wrap: wrap; gap: var(--sp-4); padding: var(--sp-4) var(--sp-5); flex: 1; align-items: flex-start; }
-.left { flex: 1 1 17rem; max-width: 20rem; min-width: 0; display: flex; flex-direction: column; gap: var(--sp-3); }
-.center { flex: 999 1 22rem; min-width: 0; }
-.right { flex: 1 1 22rem; max-width: 26rem; min-width: 0; }
-.timeline { margin: 0 var(--sp-5) var(--sp-5); }
+.work { display: grid; grid-template-columns: clamp(13rem, 19vw, 20rem) minmax(0, 1fr) clamp(17rem, 27vw, 25rem); min-width: 0; min-height: 0; }
+.left, .right { min-width: 0; min-height: 0; background: var(--panel); }
+.left { border-right: 1px solid var(--line); }
+.right { border-left: 1px solid var(--line); }
+.center { display: flex; min-height: 0; min-width: 0; align-items: stretch; background: radial-gradient(ellipse at center, #2c394e, #151d2b 80%); }
+.timeline { min-width: 0; background: var(--panel); border-top: 1px solid var(--line); }
+.dock { display: none; }
+@media (max-width: 850px) {
+  .root { grid-template-rows: auto clamp(9rem, 36dvh, 23rem) auto minmax(0, 1fr); }
+  .work { display: contents; }
+  .center { grid-row: 2; }
+  .dock { display: block; grid-row: 3; padding: var(--sp-1); border-bottom: 1px solid var(--line); background: var(--panel); }
+  .panels { width: 100%; }
+  .panels > button { flex: 1; padding-inline: var(--sp-1); min-width: 0; }
+  .left, .right, .timeline { grid-row: 4; border: 0; }
+  .timeline { overflow-y: auto; }
+  .root[data-panel="scenes"] :is(.right, .timeline),
+  .root[data-panel="edit"] :is(.left, .timeline),
+  .root[data-panel="timeline"] :is(.left, .right) { display: none; }
+  .root:not([data-panel]) .right { display: none; }
+}
+@media (max-height: 540px) and (max-width: 850px) {
+  .root { grid-template-rows: auto 9rem auto minmax(0, 1fr); }
+}
