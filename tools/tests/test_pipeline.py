@@ -89,3 +89,26 @@ def test_try_variants_writes_tries_json(proj, monkeypatch):
     assert list(rep["variants"]) == ["A", "B"] and rep["variants"]["A"]["tts"]["speed"] == 1.05
     saved = json.loads((pipeline.ROOT / "voices/tries/tries.json").read_text(encoding="utf-8"))
     assert saved == rep and calls == ["Câu thử", "Câu thử"]
+
+
+def _anchor(proj, at):
+    sb = json.loads((proj / "storyboard.json").read_text(encoding="utf-8"))
+    (proj.parents[1] / "studio/src/motion").mkdir(parents=True, exist_ok=True)
+    (proj.parents[1] / "studio/src/motion/Text.tsx").write_text("")
+    sb["scenes"][0]["motion"] = [{"component": "Text", "props": {"text": "x"}, "at": at}]
+    (proj / "storyboard.json").write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+
+
+def test_anchor_resolves_with_the_estimate_when_whisper_is_missing(proj, monkeypatch):
+    _anchor(proj, "các bạn")
+    monkeypatch.setattr(pipeline, "synth_to_file", fake_synth([]))
+    res = pipeline.prepare(proj, get_model=lambda: "model", synth=True)
+    assert res["ok"] and res["words"] == {"s1": "estimate"}
+    m = json.loads((proj / "render-props.json").read_text(encoding="utf-8"))["scenes"][0]["motion"][0]
+    assert 0.5 < m["start"] < 1.5  # 'các bạn' is the second half of 'Xin chào các bạn' (1.5 s)
+
+
+def test_unknown_anchor_word_is_reported_not_raised(proj, monkeypatch):
+    _anchor(proj, "không có")
+    res = pipeline.prepare(proj, synth=False)
+    assert not res["ok"] and res["stage"] == "anchor" and "'không có' not found" in res["errors"][0]

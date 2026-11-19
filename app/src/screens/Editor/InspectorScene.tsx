@@ -1,12 +1,13 @@
 import {useMemo, useState} from 'react';
 import {GripVertical, Plus, Trash2, TriangleAlert} from 'lucide-react';
 import type {Effect, MediaSpec, MotionSpec, SceneSpec, TransitionName} from '../../../shared/types.ts';
-import {useConfig, useLibrary, useMotionNames, useVoices} from '../../api/hooks.ts';
+import {useConfig, useLibrary, useVoices} from '../../api/hooks.ts';
 import {AudioPlayer, Button, Field, IconButton, Input, NumberField, Segmented, Select, Slider, SortableList, Switch, TagInput, Textarea, Tooltip} from '../../ui/index.ts';
 import {useEditor} from './EditorContext.tsx';
 import {updateScene} from './editorState.ts';
 import {MediaPicker} from './MediaPicker.tsx';
-import {MotionForm} from './MotionForm.tsx';
+import {MotionLayerEditor} from './MotionLayerEditor.tsx';
+import {motionNames} from './motionSchema.ts';
 import {useVoiceAction} from './TopBar.tsx';
 import s from './Inspector.module.css';
 
@@ -38,11 +39,10 @@ function MediaRow({m, onChange, onRemove, handle, missing}: {m: MediaSpec; onCha
 }
 
 export function InspectorScene(): React.JSX.Element {
-  const {storyboard: sb, setStoryboard, selectedId, renderProps, stale} = useEditor();
+  const {storyboard: sb, setStoryboard, selectedId, renderProps, stale, layer, selectLayer} = useEditor();
   const voices = useVoices();
   const cfg = useConfig();
   const lib = useLibrary();
-  const motionNames = useMotionNames();
   const voiceAction = useVoiceAction();
   const [section, setSection] = useState<Section>('content');
   const [picker, setPicker] = useState(false);
@@ -58,7 +58,7 @@ export function InspectorScene(): React.JSX.Element {
   const motion = scene.motion ?? [];
   const setMedia = (next: MediaSpec[]) => up({media: next.length ? next : undefined});
   const setMotion = (next: MotionSpec[]) => up({motion: next.length ? next : undefined});
-  const names = motionNames.data ?? [];
+  const names = motionNames();
   const speedDefault = Number(sb.tts?.speed ?? cfg.data?.data.tts.speed ?? 1);
   const speed = Number(scene.tts?.speed ?? speedDefault);
   const voiceOpts = [{value: '', label: 'Theo video'}, ...(voices.data ?? []).map((v) => ({value: v.name, label: v.name}))];
@@ -118,24 +118,16 @@ export function InspectorScene(): React.JSX.Element {
 
         <section className={s.stack} aria-label="Lớp motion">
           <h3 className={s.h}>Lớp motion</h3>
-          {motion.map((m, i) => {
-            const set = (p: Partial<MotionSpec>) => setMotion(motion.map((x, j) => (j === i ? updateKeys(x, p) : x)));
-            const opts = [...new Set([...names, m.component])].map((n) => ({value: n, label: n}));
-            return (
-              <div key={i} className={s.card}>
-                <div className={s.row}>
-                  <span className={s.grow}><Select aria-label="Component motion" value={m.component} options={opts} onChange={(c) => set({component: c, props: {}})} /></span>
-                  <IconButton label="Xoá lớp motion" icon={<Trash2 size={18} aria-hidden />} onClick={() => setMotion(motion.filter((_, j) => j !== i))} />
-                </div>
-                <MotionForm key={m.component} component={m.component} value={m.props ?? {}} onChange={(props) => set({props})} />
-                <div className={s.grid2}>
-                  <Field label="Bắt đầu (giây)"><NumberField value={m.start ?? null} min={0} step={0.5} onChange={(v) => set({start: v ?? undefined})} /></Field>
-                  <Field label="Dài (giây)"><NumberField value={m.duration ?? null} min={0.5} step={0.5} onChange={(v) => set({duration: v ?? undefined})} /></Field>
-                </div>
-              </div>
-            );
-          })}
-          <Button icon={<Plus size={16} aria-hidden />} disabled={!names.length} onClick={() => setMotion([...motion, {component: names[0], props: {}}])}>Lớp motion</Button>
+          {motion.map((m, i) => (
+            <MotionLayerEditor key={i} m={m} scope="scene" spoken={hasSay}
+              editing={layer?.scope === 'scene' && layer.sceneId === scene.id && layer.index === i}
+              onEdit={() => selectLayer({scope: 'scene', sceneId: scene.id, index: i})}
+              onChange={(next) => setMotion(motion.map((x, j) => (j === i ? next : x)))}
+              onRemove={() => { setMotion(motion.filter((_, j) => j !== i)); selectLayer(null); }}
+              onMove={(d) => { const j = i + d; if (j < 0 || j >= motion.length) return; const n = [...motion]; [n[i], n[j]] = [n[j], n[i]]; setMotion(n); }} />
+          ))}
+          <p className={s.muted}>Lớp sau vẽ đè lên lớp trước. Bấm biểu tượng ✥ để kéo thả lớp ngay trên khung xem trước.</p>
+          <Button icon={<Plus size={16} aria-hidden />} disabled={!names.length} onClick={() => setMotion([...motion, {component: names.includes('Text') ? 'Text' : names[0], props: {}, ...(media.length ? {position: 'center' as const} : {})}])}>Lớp motion</Button>
         </section>
 
       </section>
@@ -150,10 +142,4 @@ export function InspectorScene(): React.JSX.Element {
       </section>
     </div>
   );
-}
-
-function updateKeys(m: MotionSpec, p: Partial<MotionSpec>): MotionSpec {
-  const n: Record<string, unknown> = {...m, ...p};
-  for (const k of Object.keys(n)) if (n[k] === undefined) delete n[k];
-  return n as MotionSpec;
 }

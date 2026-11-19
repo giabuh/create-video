@@ -31,7 +31,7 @@ def main(argv: list[str]) -> int:
         print(json.dumps(res, ensure_ascii=False))
         return 0 if res["ok"] else 1
     if not res["ok"]:
-        print("Storyboard errors:" if res["stage"] == "validate" else "TTS failed:")
+        print({"validate": "Storyboard errors:", "anchor": "Motion anchors not found:"}.get(res["stage"], "TTS failed:"))
         for e in res["errors"]:
             print(f"  - {e}")
         return 1
@@ -39,6 +39,8 @@ def main(argv: list[str]) -> int:
     print(f"Total: {res['totalSeconds']:.1f}s" + (f" (target {t}s)" if t else ""))
     print(f"Mix: real {m['real']:.0%} / motion {m['motion']:.0%} / other {m['other']:.0%}"
           f"  (target {tg['real']:.0%}/{tg['motion']:.0%}/{tg['other']:.0%})")
+    for sid, engine in (res.get("words") or {}).items():
+        print(f"Word timings {sid}: {engine}")
     if res["stale"]:
         print(f"Stale (no voice yet): {', '.join(res['stale'])}")
     print(f"Wrote {proj / 'render-props.json'}")

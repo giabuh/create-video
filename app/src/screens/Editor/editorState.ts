@@ -48,10 +48,25 @@ export function sceneRange(props: RenderProps | null, id: string): [number, numb
 }
 export const sceneStart = (props: RenderProps | null, id: string): number | null => sceneRange(props, id)?.[0] ?? null;
 
-/** Share of screen time, as tools/reel/mix.py: media = real, motion-only = motion, CTA = other. */
+/** Length of the union of [start, start + duration) spans, clipped to [0, length]. */
+function covered(spans: {start: number; duration: number}[], length: number): number {
+  const iv = spans.map((m) => [Math.max(0, m.start), Math.min(length, m.start + m.duration)] as const).filter(([a, b]) => b > a).sort((x, y) => x[0] - y[0]);
+  let total = 0, a = -1, b = -1;
+  for (const [x, y] of iv) {
+    if (x > b) { if (b > a) total += b - a; a = x; b = y; } else b = Math.max(b, y);
+  }
+  return total + (b > a ? b - a : 0);
+}
+
+/** Share of screen time, as tools/reel/mix.py: motion-only scenes = motion; in scenes with media the time motion
+ *  layers cover the footage = motion, the rest = real; CTA = other. The video-wide track is not counted. */
 export function mixOf(props: RenderProps): Mix {
-  const real = props.scenes.reduce((a, s) => a + (s.media.length ? s.duration : 0), 0);
-  const motion = props.scenes.reduce((a, s) => a + (s.media.length ? 0 : s.duration), 0);
+  let real = 0, motion = 0;
+  for (const s of props.scenes) {
+    if (!s.media.length) { motion += s.duration; continue; }
+    const c = covered(s.motion ?? [], s.duration);
+    motion += c; real += s.duration - c;
+  }
   const other = props.cta?.duration ?? 0;
   const t = real + motion + other;
   return t > 0 ? {real: real / t, motion: motion / t, other: other / t} : {real: 0, motion: 0, other: 0};

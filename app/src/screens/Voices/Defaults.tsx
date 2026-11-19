@@ -10,6 +10,7 @@ const PARAMS = [
   {k: 'top_p', label: 'top_p', min: 0.5, max: 1, step: 0.01, show: (v: number) => fmtNum(v, 2)},
   {k: 'repetition_penalty', label: 'Chống lặp từ', min: 1, max: 2, step: 0.05, show: (v: number) => fmtNum(v, 2)},
   {k: 'pauseAfter', label: 'Nghỉ sau mỗi câu', min: 0, max: 1.5, step: 0.05, show: (v: number) => `${fmtNum(v, 2)} s`},
+  {k: 'loudness', label: 'Độ lớn giọng (LUFS)', min: -30, max: -8, step: 1, show: (v: number) => fmtNum(v)},
 ] as const;
 type Key = typeof PARAMS[number]['k'];
 

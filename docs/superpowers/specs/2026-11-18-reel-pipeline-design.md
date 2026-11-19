@@ -32,7 +32,7 @@ Produce vertical course-promotion reels (Facebook/TikTok/Shorts, 9:16, ~15–60 
 - **Portable via GitHub (private repo):** clone on another Linux machine, run `./setup.sh`, then `tools/sync.sh pull` to fetch media from Google Drive.
 - **Music:** from `music/` (user-supplied royalty-free tracks, filenames hint at mood); `music: null` renders without music.
 - **Landscape media in 9:16:** centered, with a blurred, scaled-up copy of itself filling the background (never crop students out).
-- **Font:** Be Vietnam Pro (full Vietnamese diacritics), via `@remotion/google-fonts`.
+- **Font:** Be Vietnam Pro (full Vietnamese diacritics), bundled in `studio/src/assets/fonts/be-vietnam-pro/` (woff2, latin + latin-ext + vietnamese subsets, SIL OFL 1.1) and loaded with `@remotion/fonts`, so renders and the app work offline. (Was `@remotion/google-fonts`, which fetched at render time and timed out without internet.) The app UI uses the same files via `app/src/ui/fonts.css`.
 - **Never invent facts in ad copy:** price, phone, dates, address. If missing, Claude asks.
 
 ## Directory layout
@@ -85,7 +85,9 @@ Resolution order (later wins): `config.json` → `config.voices.<voice>` → bra
     "repetition_penalty": 1.2, "max_chars": 256, "batch_size": 16,
     "silence_p": 0.15, "denoise": true,
     "speed": 1.0,        // applied after TTS with ffmpeg atempo (VieNeu has no speed param)
-    "pauseAfter": 0.3    // seconds of silence after each spoken scene
+    "pauseAfter": 0.3,   // seconds of silence after each spoken scene
+    "trimSilence": true, // cut the silence VieNeu leaves at both ends of a take (keeps 40 ms / 80 ms)
+    "loudness": -16      // LUFS every take is normalized to (two-pass loudnorm, linear); null = off
   },
   "voices": {
     "phuong": { "ref": "voices/phuong-short.wav" },
@@ -100,7 +102,7 @@ Resolution order (later wins): `config.json` → `config.voices.<voice>` → bra
 }
 ```
 
-TTS keys map 1:1 onto `Vieneu` v3 Turbo `infer()` kwargs (`src/vieneu/v3turbo.py:600`), except `speed` and `pauseAfter`, which are ours.
+TTS keys map 1:1 onto `Vieneu` v3 Turbo `infer()` kwargs (`src/vieneu/v3turbo.py:600`), except `speed`, `pauseAfter`, `trimSilence` and `loudness`, which are ours (post-processing in `tools/reel/tts.py`). Because they are part of the resolved TTS params they are part of the cache key: changing them re-synthesizes.
 
 **Rule for Claude (written into CLAUDE.md):**
 - "từ giờ / mặc định / lần sau cũng…" → edit `config.json`.
@@ -146,9 +148,18 @@ TTS keys map 1:1 onto `Vieneu` v3 Turbo `infer()` kwargs (`src/vieneu/v3turbo.py
 - Scene length is the spoken audio length plus `pauseAfter`, or `duration` for silent scenes. Several media in one scene split the time evenly unless one has an explicit `duration`.
 - `media[].src` is relative to `library/`. `effect` ∈ {`none`, `zoom-in`, `zoom-out`, `pan-left`, `pan-right`}; `transition` ∈ {`cut`, `fade`, `slide`}. New effects are added to the template code and become new enum values.
 - `motion[]`: `component` is a file name in `studio/src/motion/`; `props` are its typed props; `start`/`duration` (seconds, relative to the scene) are optional and default to the whole scene. A scene with `motion` but no `media` is a pure motion scene, drawn on the brand background.
-- Mix accounting: a scene counts as `real` if it has `media`, as `motion` if it has only `motion`, and the CTA counts as `other`. `prepare.py` prints the actual mix against `config.mix`.
-- Captions are split into chunks of ≤ `captions.maxWords` words, timed proportionally to character count within the scene's audio. (Shortcut: no word-level alignment. Upgrade later with Whisper for karaoke-style highlighting.)
-- Music ducks to `duckTo` while a spoken scene plays, ramps back between scenes, and fades out over `fadeOut` at the end. All of this is computed in Remotion from known timings, with no FFmpeg sidechain.
+  - Every layer (scene or video track) also takes, all optional:
+    - **Placement:** `position` ∈ {`full` (default: the component lays itself out on the whole frame), `top`, `center`, `bottom` (preset bands, fractions of the height: top 0.09–0.42, center 0.30–0.70, bottom 0.46–0.72, above the captions), `free`}; `box: {x, y, w, h}` in percent of the frame (x/y = top-left; giving a box implies `free`); `scale` (0.3–2), `rotate` (degrees), `opacity` (0–1).
+    - **Backdrop:** `backdrop` ∈ {`auto` (default: a dark scrim behind a band/box when there is footage under it), `scrim`, `none`}; the scrim eases in over ≥ 0.4 s so no empty panel shows before the content.
+    - **Enter/exit:** `enter`/`exit` = a name or `{type, duration}`; names: `none`, `fade`, `slide-up|down|left|right`, `pop`, `zoom`, `wipe`, `blur`. Default enter `none` (the component's own animation); default exit `fade` 0.25 s for bands/boxes, `none` for full-frame.
+    - **Keyframes:** `keyframes: [{t, x?, y?, scale?, rotate?, opacity?}]` — `t` seconds from the layer start, `x`/`y` offsets in percent of the frame, `scale`/`rotate`/`opacity` multiply/add to the layer's values; eased (in-out cubic) between keys.
+    - **Colors:** `colors: {primary?, accent?, text?, background?}` overrides the brand for this layer only.
+  - **Timing on the voice (scene layers):** `at` = a word/phrase (or `{word, occurrence?, offset?}`) — the layer starts when it is spoken; `until` = same, the layer ends when that word ends. Words are looked up in `say`; a phrase only in `caption` (e.g. `999K` read as "chín trăm chín mươi chín nghìn") is placed between its matched neighbours. Unknown words are reported by `prepare.py` (stage `anchor`) and nothing renders.
+  - **Video-wide track:** top-level `motion: [...]` — layers that run across scenes and draw on top of everything (progress bar, sticker, a line bridging two scenes). `start` = seconds or `{scene, at?, offset?, edge?}` (default 0); `end` = seconds, `"video"` (end incl. CTA), or `{scene, at?, offset?, edge?}` (scene default edge `end`); or `duration`; default = end of the last scene. Not counted in the mix.
+  - Prefer bands/boxes over footage for text/price/checklist moments; keep `full` for pure motion scenes and for components that carry their own panel (`LowerThird`).
+- Mix accounting: a motion-only scene counts as `motion`; in a scene with `media`, the time covered by its motion layers (union of their spans) counts as `motion` and the rest as `real`; the CTA counts as `other`; the video-wide track is not counted. (The app's top bar computes the same in `editorState.ts mixOf`.) `prepare.py` prints the actual mix against `config.mix`.
+- Captions (`tools/reel/captions.py`) are split at punctuation first (`, . ; : ! ? …` and standalone dashes), then each phrase into the fewest chunks of ≤ `captions.maxWords` words, cut where it reads best: never inside a known two-word term (`VI_COMPOUNDS`: tin học, khai giảng, học viên…), not right after a function word (và, của, cho…), sizes as even as possible; a 1–2 word chunk joins a neighbour that still fits. Each chunk starts when its first word is spoken (word timings from align.py — whisper or the estimate; caption-only tokens such as `999K` are placed between their spoken neighbours). The template measures each chunk with the real font (`@remotion/layout-utils`, `studio/src/fit.ts`) and shrinks it to fit two lines.
+- Music ducks to `duckTo` while a spoken scene plays and fades out over `fadeOut` at the end. Gaps between two voice clips shorter than 1 s stay ducked (no swell at every scene change); it ramps back up only for longer silent stretches. All of this is computed in Remotion from known timings (`studio/src/components/duck.ts`), with no FFmpeg sidechain.
 
 ## Components
 
@@ -170,10 +181,13 @@ Claude fills `description`/`tags`/`goodRanges` by viewing the thumbnail once per
 ### `tools/prepare.py <project-dir>` (runs with `VieNeu-TTS/.venv/bin/python`)
 1. Validate the storyboard: template/brand/voice exist, media files exist in `library/`, spoken scenes have non-empty `say`, ids are unique. All errors are reported at once, keyed by scene id. Exit non-zero before loading the model.
 2. Resolve the layered config per scene.
-3. TTS: load the model once. For each spoken scene, compute the cache key = hash(voice ref file content + `say` + all resolved TTS params incl. speed). Reuse `audio/<id>-<hash>.wav` if present, else synthesize, apply `atempo` if speed ≠ 1, and save. Failures are reported per scene; other scenes still complete.
+3. TTS: load the model once. For each spoken scene, compute the cache key = hash(voice ref file content + `say` + all resolved TTS params incl. speed). Reuse `audio/<id>-<hash>.wav` if present, else synthesize, then post-process in one ffmpeg pass (`atempo` if speed ≠ 1, trim leading/trailing silence with a threshold 25 dB under the take's own loudness, loudness-normalize to `loudness`), and save. Failures are reported per scene; other scenes still complete.
 4. Write `timings.json` (per-scene duration + resolved params) and `render-props.json` (storyboard + resolved config + brand + timings, with all paths relative to the Remotion public dir). Print the total duration vs `targetSeconds`, and the real/motion/other mix vs `config.mix`.
 
-Validation also checks that every `motion[].component` exists in `studio/src/motion/`.
+Validation also checks that every `motion[].component` exists in `studio/src/motion/`, and the placement/animation/anchor fields above (props themselves are checked by the component's zod schema at preview/render time).
+
+### Word timings (`tools/reel/align.py`, `tools/whisper/`)
+Only for scenes something is anchored to (`at`/`until`/track anchors). With whisper.cpp installed (`node tools/whisper/setup.mjs`, Remotion's `@remotion/install-whisper-cpp`; `config.align`: `{enabled, model: "large-v3-turbo", version: "1.9.5", language: "vi"}`; files in `.whisper/`, git-ignored), each clip is transcribed with word timestamps and the result is aligned back onto the words of `say` (difflib; unmatched runs, e.g. numbers ASR writes as digits, are spread over their gap) and cached as `audio/<id>-<key>.words.json`. Without whisper (other machines, the app's instant preview before voice exists) the words are spread over the clip by length — anchors still work, less precisely. `prepare.py` prints which source each anchored scene used. Measured in the sandbox (CPU): large-v3-turbo ≈ 20 s per 3 s clip; whisper.cpp is built for CPU by Remotion's installer.
 
 ### `tools/voice_try.py --voice <name> --text "<line>" --variants '<json list of tts overrides>'`
 Writes `voices/tries/<name>-A.wav`, `-B.wav`, … plus a `tries.json` listing each variant's params, so the user can listen and say "lấy B" → Claude copies those params into `config.voices.<name>`.
@@ -181,16 +195,8 @@ Writes `voices/tries/<name>-A.wav`, `-B.wav`, … plus a `tries.json` listing ea
 ### Remotion `studio/`
 - One composition `Reel` (1080×1920 @ 30 fps by default). `calculateMetadata` sets `durationInFrames` from `render-props.json` timings (+ CTA duration).
 - `Reel` dispatches to `src/templates/<template>/`. Each template is built from small components: `MediaShot` (cover/blur-fill, effects), `Captions` (chunking, highlight, auto-fit font size to the safe area), `Overlay`, `CtaCard`, `MusicTrack` (ducking), `VoiceTrack`.
-- Motion library `src/motion/`: one file per component, a typed props interface, branded through the brand colors and font. v1 seeds a few: `KineticText`, `CountUp`, `Checklist`, `PriceTag`, `DateBadge`, `LowerThird`. A `registry.ts` maps names to components; Claude adds an entry when writing a new one. All components also receive `brand`. Props:
-
-| Component | Props |
-|---|---|
-| `KineticText` | `lines: string[]` |
-| `CountUp` | `from: number`, `to: number`, `decimals?: number`, `label?: string`, `suffix?: string` |
-| `Checklist` | `items: string[]`, `title?: string` |
-| `PriceTag` | `price: string`, `old?: string`, `note?: string` |
-| `DateBadge` | `label: string`, `date: string` |
-| `LowerThird` | `title: string`, `subtitle?: string` |
+- Motion library `src/motion/`: one file per component `<Name>.tsx` exporting `<Name>` and `<Name>Schema` (zod, built with the helpers in `motion/schema.ts`: `text`, `longText`, `lines`, `num`, `numDefault`, `color`, `bool`, `choice`, `media` — each with a Vietnamese `title`). `registry.ts` registers it with `defineMotion({component, schema, title, description})`. The schema is the single source of truth: `MotionLayer` parses the storyboard props with it (defaults applied; invalid props fail with every problem listed) and the app generates the component's form from it (`z.toJSONSchema`), so a component written for one video is editable in the app with no app code. Components receive their parsed props plus `brand` (with the layer's color overrides), `layerSeconds` and `area` (px size of the full frame/band/box they are placed in); text components (`Text`, `KineticText`, `Checklist`) shrink their font to fit `area`, measured with the real font (`fit.ts`: `fitFontSize`, `useFontsLoaded` holds the frame until the bundled fonts are ready); `MotionLayer` does placement, enter/exit, keyframes and the backdrop for every component.
+  - Built in: `Text` (free text: size, weight, color, background pill, align, reveal typewriter/word-by-word), `KineticText`, `CountUp`, `Checklist`, `PriceTag`, `DateBadge`, `LowerThird`, `Annotate` (hand-drawn circle/box/underline/highlight via `@remotion/rough-notation`, around a word or the layer box), `Picture` (image/video from `library/` as a layer: logo, sticker, picture-in-picture), `ProgressBar` (fills over the layer length; for the video track). Their props are documented by their schemas (and shown in the app).
 - Video tag: `@remotion/media` `<Video>` for rendering, with `<OffthreadVideo>` while previewing in Studio (per current Remotion docs).
 - Brand (`brands/<id>/brand.json`): `{ name, logo, colors: {primary, accent, text}, font?, cta: {phone, fanpage, address} }`.
 - Commands:
@@ -230,6 +236,8 @@ The VieNeu model weights download on first use into the HF cache.
 **`tools/sync.sh push|pull`** wraps `rclone copy` (never `rclone sync`, so a pull or push can never delete files on the other side; `pull` skips a Drive folder that does not exist yet, e.g. an empty `reference/` never pushed, instead of aborting) between the local folders and `config.sync.remote`. The one-time `rclone config` (Google Drive OAuth) is run by the user interactively on each machine.
 
 ## Deviations found during implementation
+- 2026-11-19: voice post-processing (trim + loudness), music duck hold, motion placement bands, overlay-aware mix, bundled font (see the sections above).
+- 2026-11-19: flexible motion layers (free box, enter/exit, keyframes, colors), schema-driven components, word-anchored timing with whisper.cpp, video-wide motion track, app layer editor with drag/resize on the preview. Demo: `projects/_motion-demo` (needs `tools/make_smoke_media.sh`).
 - T6: no API deviation; `@remotion/media` `<Audio>` supports `volume` callbacks and `loop` at 4.0.544.
 - T8: `tools/sync.sh pull` skips remote dirs missing on Drive (rclone exit 3) instead of aborting.
 
@@ -287,7 +295,7 @@ Word-level karaoke captions (Whisper alignment), auto-posting to social platform
 - **Gotchas:**
   - `@remotion/media` `<Video>` needs `objectFit` as a prop (ignored inside `style`).
   - Use `muted` on clips and play voice/music via `@remotion/media` `<Audio>`.
-  - `loadFont("normal", {weights, subsets: ["vietnamese","latin"]})` is required.
+  - `loadFont("normal", {weights, subsets: ["vietnamese","latin"]})` was required with `@remotion/google-fonts` (now replaced by bundled files, see Decisions).
 
 ## Notes
 

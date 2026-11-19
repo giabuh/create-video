@@ -20,3 +20,4 @@ playwright-report/
 app/.scratch/
 voices/_uploads/
 app/.data/
+.whisper/

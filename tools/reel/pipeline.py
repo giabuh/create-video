@@ -3,10 +3,11 @@ import json
 import os
 from pathlib import Path
 
+from .align import estimate_words, scene_words
 from .cache import cache_key
 from .config import ROOT, load_json, resolve_names, resolve_scene_voice, resolve_video
 from .mix import mix
-from .props import build_render_props
+from .props import AnchorError, build_render_props
 from .tts import probe_duration, synth_to_file
 from .validate import validate
 
@@ -75,14 +76,45 @@ def prepare(proj: Path, get_model=None, synth: bool = True, on_progress=None) ->
         return {"ok": False, "stage": "tts", "errors": failed, "stale": stale, "totalSeconds": None, "mix": None,
                 "target": target, "targetSeconds": sb.get("targetSeconds")}
 
-    props = build_render_props({**sb, "scenes": scenes}, settings, brand, audio)
+    # word timings: whisper (when installed, only for scenes something is anchored to), else an estimate
+    needed = _anchored_scenes(sb)
+    words, engines = {}, {}
+    for sc in scenes:
+        a = audio.get(sc["id"])
+        if not a:
+            if sc["id"] in stale:  # preview without audio yet: anchor on the estimated length
+                words[sc["id"]], engines[sc["id"]] = estimate_words(sc["say"], sc["duration"]), "estimate (no voice yet)"
+            continue
+        try:
+            words[sc["id"]], engines[sc["id"]] = scene_words(ROOT, cfg, ROOT / a["src"], sc["say"], a["duration"],
+                                                             allow_asr=synth and sc["id"] in needed)
+        except Exception as e:  # whisper missing/broken must never block a render: fall back to the estimate
+            engines[sc["id"]] = f"estimate (whisper failed: {e})"
+    try:
+        props = build_render_props({**sb, "scenes": scenes}, settings, brand, audio, words)
+    except AnchorError as e:
+        return {"ok": False, "stage": "anchor", "errors": e.problems, "stale": stale, "totalSeconds": None, "mix": None,
+                "target": target, "targetSeconds": sb.get("targetSeconds")}
     cta_s = props["cta"]["duration"] if props["cta"] else 0
-    actual = mix([{"duration": s["duration"], "hasMedia": bool(s["media"])} for s in props["scenes"]], cta_s)
+    actual = mix([{"duration": s["duration"], "hasMedia": bool(s["media"]),
+                  "motion": [(m["start"], m["duration"]) for m in s["motion"]]} for s in props["scenes"]], cta_s)
     write_json(proj / "render-props.json", props)
     if synth:
         write_json(proj / "timings.json", {"scenes": timings, "totalSeconds": props["totalSeconds"], "mix": actual})
     return {"ok": True, "stage": None, "errors": [], "stale": stale, "totalSeconds": props["totalSeconds"],
-            "mix": actual, "target": target, "targetSeconds": sb.get("targetSeconds")}
+            "mix": actual, "target": target, "targetSeconds": sb.get("targetSeconds"),
+            "words": {k: v for k, v in engines.items() if k in needed}}
+
+
+def _anchored_scenes(sb: dict) -> set:
+    """Scene ids that some motion layer is anchored to by a spoken word."""
+    out = {sc["id"] for sc in sb["scenes"] if any(m.get("at") not in (None, "") or m.get("until") not in (None, "") for m in sc.get("motion") or [])}
+    for m in sb.get("motion") or []:
+        for k in ("start", "end"):
+            v = m.get(k)
+            if isinstance(v, dict) and v.get("at") not in (None, ""):
+                out.add(v.get("scene"))
+    return out
 
 
 def try_variants(model, voice: str, text: str, variants: list[dict], on_progress=None) -> dict:

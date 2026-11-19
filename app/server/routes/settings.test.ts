@@ -33,9 +33,9 @@ describe('settings routes', () => {
     const root = await makeTestRoot();
     await mkdir(path.join(root, 'studio/src/templates/fast-cut'), {recursive: true});
     await mkdir(path.join(root, 'studio/src/motion'), {recursive: true});
-    await writeFile(path.join(root, 'studio/src/motion/registry.ts'), "export const MOTION: Record<string, React.ComponentType<any>> = {\n  KineticText, CountUp: X,\n  Checklist,\n};\n");
+    for (const f of ['KineticText.tsx', 'CountUp.tsx', 'Checklist.tsx', 'registry.ts', 'schema.ts']) await writeFile(path.join(root, 'studio/src/motion', f), '');
     const {req} = setup();
     expect(await (await req('/api/templates')).json()).toEqual(['fast-cut']);
-    expect(await (await req('/api/motion')).json()).toEqual(['KineticText', 'CountUp', 'Checklist']);
+    expect(await (await req('/api/motion')).json()).toEqual(['Checklist', 'CountUp', 'KineticText']);
   });
 });

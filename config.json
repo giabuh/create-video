@@ -5,7 +5,9 @@
     "repetition_penalty": 1.2, "max_chars": 256, "batch_size": 16,
     "silence_p": 0.15, "denoise": true,
     "speed": 1.0,
-    "pauseAfter": 0.3
+    "pauseAfter": 0.3,
+    "trimSilence": true,
+    "loudness": -16
   },
   "voices": {
     "phuong": { "ref": "voices/phuong-short.wav" },
@@ -15,5 +17,6 @@
   "music": { "volume": 0.25, "duckTo": 0.08, "fadeOut": 1.5 },
   "captions": { "font": "Be Vietnam Pro", "size": 64, "color": "#FFFFFF", "highlightColor": "#FFD400", "maxWords": 6 },
   "mix": { "real": 0.6, "motion": 0.3, "other": 0.1 },
-  "sync": { "remote": "video-syn:create-video" }
+  "sync": { "remote": "video-syn:create-video" },
+  "align": { "enabled": true, "model": "large-v3-turbo", "version": "1.9.5", "language": "vi" }
 }

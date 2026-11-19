@@ -1,4 +1,4 @@
-// style: quick cuts, bold captions, accent overlays, logo top-left
+// style: quick cuts, bold captions, accent overlays, logo top-left; the video-wide motion track draws on top
 import React from 'react';
 import {AbsoluteFill, Img, Sequence, staticFile, useVideoConfig} from 'remotion';
 import {Audio} from '@remotion/media';
@@ -48,6 +48,11 @@ export const FastCut: React.FC<RenderProps> = (p) => {
           <CtaCard cta={p.cta} brand={p.brand} />
         </Sequence>
       )}
+      {(p.overlays ?? []).map((m, i) => (
+        <Sequence key={`overlay-${i}`} name={`track:${m.component}`} from={Math.round(m.start * fps)} durationInFrames={f(m.duration)}>
+          <MotionLayer item={m} brand={p.brand} />
+        </Sequence>
+      ))}
       {p.music && <MusicTrack music={p.music} scenes={p.scenes} total={p.totalSeconds} />}
     </AbsoluteFill>
   );

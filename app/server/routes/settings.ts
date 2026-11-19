@@ -63,10 +63,9 @@ export function settingsRoutes(_deps: Deps): Hono {
     return c.json(dirs.filter(d => d.isDirectory()).map(d => d.name).sort());
   });
 
-  app.get('/motion', async c => {
-    const src = await readFile(path.join(repoRoot(), 'studio/src/motion/registry.ts'), 'utf8').catch(() => '');
-    const body = /export const MOTION\b[^=]*=\s*\{([\s\S]*?)\}/.exec(src)?.[1] ?? '';
-    return c.json(body.split(',').map(s => s.trim().split(/\s*:/)[0].trim()).filter(s => /^[A-Za-z_$][\w$]*$/.test(s)));
+  app.get('/motion', async c => { // one component per studio/src/motion/<Name>.tsx (the app's forms read the registry itself)
+    const files = await readdir(path.join(repoRoot(), 'studio/src/motion')).catch(() => [] as string[]);
+    return c.json(files.filter(f => /^[A-Z][A-Za-z0-9]*\.tsx$/.test(f)).map(f => f.slice(0, -4)).sort());
   });
   return app;
 }
