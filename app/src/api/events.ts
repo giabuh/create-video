@@ -45,9 +45,21 @@ export function keysForPath(path: string): (readonly unknown[])[] {
 }
 
 const TERMINAL = new Set(['done', 'failed', 'cancelled']);
+
+/** Server snapshot wins. Local live jobs it no longer lists are dropped; local finished ones stay. `finished` = jobs that ended while we were away. */
+export function mergeJobs(local: Map<string, Job>, snapshot: Job[]): {next: Map<string, Job>; finished: {job: Job; prev: Job}[]} {
+  const next = new Map(snapshot.map((j) => [j.id, j] as const));
+  const finished: {job: Job; prev: Job}[] = [];
+  for (const [id, prev] of local) {
+    const job = next.get(id);
+    if (!job) { if (TERMINAL.has(prev.state)) next.set(id, prev); }
+    else if (!TERMINAL.has(prev.state) && TERMINAL.has(job.state)) finished.push({job, prev});
+  }
+  return {next, finished};
+}
 function toastFinished(job: Job, prev: Job | undefined) {
   if (!TERMINAL.has(job.state) || (prev && TERMINAL.has(prev.state))) return;
-  if (job.state === 'failed') return toast({title: `${job.label} — thất bại`, description: job.error ?? job.log.slice(-1)[0], tone: 'error'});
+  if (job.state === 'failed') return toast({title: `${job.label} — thất bại`, description: [job.error, ...job.log.slice(-20)].filter(Boolean).join('\n'), tone: 'error'});
   if (job.state !== 'done') return;
   const r = job.result ?? {};
   if (job.kind === 'render') {
@@ -91,7 +103,11 @@ export function useServerEvents(): void {
 
     const seed = async () => { // known jobs are seeded without toasts: only live transitions toast
       const [list, health] = await Promise.all([api<Job[]>('/jobs'), api<{worker: WorkerStatus}>('/health')]).catch(() => [null, null] as const);
-      if (list) { jobs = new Map([...list.map((j) => [j.id, j] as const), ...jobs]); setJobs(); }
+      if (list) {
+        const m = mergeJobs(jobs, list);
+        jobs = m.next; setJobs();
+        m.finished.forEach(({job, prev}) => toastFinished(job, prev));
+      }
       if (health) { worker = health.worker; emit(); }
     };
 

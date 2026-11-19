@@ -62,4 +62,34 @@ describe('AutosaveController', () => {
     expect(save).toHaveBeenCalledTimes(2);
     expect(c.getSnapshot()).toMatchObject({state: 'saved', error: null, dirty: false});
   });
+
+  it('reverting to the saved value before the debounce cancels the save', async () => {
+    const save = vi.fn(async () => 2);
+    const c = new AutosaveController('a', 1, {save});
+    c.change('b');
+    c.change('a');
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(save).not.toHaveBeenCalled();
+    expect(c.getSnapshot().dirty).toBe(false);
+  });
+
+  it('reverting while a save is in flight saves the reverted value afterwards', async () => {
+    const d = deferred<number>();
+    const save = vi.fn().mockReturnValueOnce(d.p).mockResolvedValue(3);
+    const c = new AutosaveController('a', 1, {save});
+    c.change('b');
+    await vi.advanceTimersByTimeAsync(500);
+    c.change('a'); // 'b' is in flight, UI shows 'a'
+    d.resolve(2);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(save).toHaveBeenLastCalledWith('a', 2);
+  });
+
+  it('409 without onConflict surfaces the conflict state', async () => {
+    const save = vi.fn().mockRejectedValue(new HttpError(409, {error: 'conflict'}));
+    const c = new AutosaveController('a', 1, {save});
+    c.change('b');
+    await vi.advanceTimersByTimeAsync(500);
+    expect(c.getSnapshot().state).toBe('conflict');
+  });
 });

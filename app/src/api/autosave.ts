@@ -1,8 +1,9 @@
 import {useEffect, useState, useSyncExternalStore} from 'react';
 import type {Versioned} from '../../shared/types.ts';
+import {toast} from '../ui/Toast.tsx';
 import {HttpError} from './client.ts';
 
-export type SaveState = {state: 'idle' | 'saving' | 'saved' | 'error'; savedAt: number | null; error: string | null};
+export type SaveState = {state: 'idle' | 'saving' | 'saved' | 'error' | 'conflict'; savedAt: number | null; error: string | null};
 type Snapshot = SaveState & {dirty: boolean};
 type Opts<T> = {
   save(v: T, baseMtime: number): Promise<number>;
@@ -38,7 +39,13 @@ export class AutosaveController<T> {
   }
 
   change(v: T): void {
-    if (v === this.pending || v === this.saved) return;
+    if (v === this.saved) { // reverted to the saved value: nothing left to write
+      if (this.timer) { clearTimeout(this.timer); this.timer = null; }
+      this.pending = v;
+      this.set({state: this.snap.savedAt ? 'saved' : 'idle', error: null});
+      return;
+    }
+    if (v === this.pending) return;
     this.pending = v;
     this.set({});
     if (this.timer) clearTimeout(this.timer);
@@ -82,8 +89,9 @@ export class AutosaveController<T> {
         this.failed = true;
         if (e instanceof HttpError && e.status === 409) {
           this.pending = this.saved; // drop the conflicting edit; the owner reloads the file
-          this.set({state: 'idle', error: null});
-          this.opts.onConflict?.(e.body?.details as Versioned<T>);
+          this.set({state: 'conflict', error: null});
+          if (this.opts.onConflict) this.opts.onConflict(e.body?.details as Versioned<T>);
+          else toast({title: 'File vừa được sửa bên ngoài — đã tải lại', tone: 'info'}); // never lose an edit silently
         } else {
           this.set({state: 'error', error: e instanceof Error ? e.message : String(e)});
         }

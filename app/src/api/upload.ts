@@ -43,11 +43,15 @@ function put(it: UploadItem, url: string): Promise<void> {
 async function upload(files: File[], target: UploadItem['target'], opts: {voiceName?: string; brandId?: string} = {}): Promise<void> {
   const batch = files.map((file): UploadItem => ({id: `u${++seq}`, file, target, state: 'uploading', progress: 0}));
   add(batch);
-  await Promise.all(batch.map((it) => {
-    const url = urlFor(it, opts);
-    if (!url) { patch(it.id, {state: 'error', error: it.target === 'voice' ? 'Thiếu tên giọng' : 'Thiếu brand'}); return; }
-    return put(it, url);
-  }));
+  const queue = [...batch];
+  const worker = async () => { // at most 3 uploads in flight per batch
+    for (let it = queue.shift(); it; it = queue.shift()) {
+      const url = urlFor(it, opts);
+      if (!url) patch(it.id, {state: 'error', error: it.target === 'voice' ? 'Thiếu tên giọng' : 'Thiếu brand'});
+      else await put(it, url);
+    }
+  };
+  await Promise.all([worker(), worker(), worker()]);
   if (target === 'media' && batch.some((it) => items.find((i) => i.id === it.id)?.state === 'done')) {
     try { await api('/ingest', {method: 'POST'}); } catch (e) {
       batch.forEach((it) => patch(it.id, {state: 'error', error: `Không nhập được: ${e instanceof Error ? e.message : e}`}));
