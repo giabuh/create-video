@@ -3,6 +3,8 @@ import type {ChatEvent, LimitInfo} from '../../shared/types.ts';
 export type Parsed = {
   events: ChatEvent[];
   init?: true;
+  threadId?: string;   // codex: the thread to resume later
+  note?: string;       // non-terminal error text, used if the process dies without a result
   limit?: LimitInfo;
   result?: {isError: boolean; message: string | null; costUsd: number | null; durationMs: number | null; http429: boolean};
 };

@@ -1,0 +1,11 @@
+{"type":"thread.started","thread_id":"01a1f20b-c273-7340-b1d8-e82e51082ee7"}
+{"type":"turn.started"}
+{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"Running the command."}}
+{"type":"item.started","item":{"id":"item_1","type":"command_execution","command":"/bin/bash -lc 'ls tools | head -3'","aggregated_output":"","exit_code":null,"status":"in_progress"}}
+{"type":"item.completed","item":{"id":"item_1","type":"command_execution","command":"/bin/bash -lc 'ls tools | head -3'","aggregated_output":"ingest.py\n","exit_code":0,"status":"completed"}}
+{"type":"item.completed","item":{"id":"item_2","type":"agent_message","text":"done"}}
+{"type":"turn.completed","usage":{"input_tokens":68073,"cached_input_tokens":41216,"output_tokens":101}}
+{"type":"item.completed","item":{"id":"item_3","type":"reasoning","text":"thinking"}}
+{"type":"item.completed","item":{"id":"item_4","type":"file_change","changes":[{"path":"projects/x/storyboard.json","kind":"update"},{"path":"config.json","kind":"update"}],"status":"completed"}}
+{"type":"item.completed","item":{"id":"item_5","type":"web_search","query":"remotion spring"}}
+not json
