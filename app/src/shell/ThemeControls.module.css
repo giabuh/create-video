@@ -1,3 +1,6 @@
 .root { display: flex; flex-direction: column; gap: 10px; }
 .group { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
 .label { font-size: var(--fs-xs); color: var(--dim); font-weight: 600; }
+.group { align-self: stretch; }
+.group > div { display: flex; width: 100%; box-sizing: border-box; } /* fit the sidebar at every text size */
+.group > div > button[data-state] { flex: 1 1 auto; padding: 0 var(--sp-2); min-width: 0; }

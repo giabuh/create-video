@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
-import {Link, useParams} from 'react-router';
+import {Link, useNavigate, useParams} from 'react-router';
 import {Film} from 'lucide-react';
 import type {VersionInfo} from '../../../shared/types.ts';
 import {useJobs} from '../../api/events.ts';
@@ -12,6 +12,7 @@ const mmss = (sec: number) => `${Math.floor(sec / 60)}:${String(Math.floor(sec %
 
 export function RendersScreen(): React.JSX.Element {
   const slug = useParams().slug ?? '';
+  const nav = useNavigate();
   const project = useProject(slug);
   const approve = useApprove(slug);
   const open = useOpenFolder();
@@ -39,7 +40,7 @@ export function RendersScreen(): React.JSX.Element {
   const header = (
     <PageHeader title="Bản render" subtitle={<>{crumb} · Mỗi lần render tạo bản mới, không bao giờ ghi đè.</>}
       actions={<>
-        <Link to={`/p/${encodeURIComponent(slug)}`}><Button>← Về trình sửa</Button></Link>
+        <Button onClick={() => nav(`/p/${encodeURIComponent(slug)}`)}>← Về trình sửa</Button>
         <Button disabled={versions.length < 2} onClick={playAll}>Phát đồng thời</Button>
       </>} />
   );
@@ -58,7 +59,7 @@ export function RendersScreen(): React.JSX.Element {
 
   const elapsed = job?.startedAt ? (now - job.startedAt) / 1000 : 0;
   return (
-    <>
+    <div className={s.page}>
       {header}
       <div className={s.layout}>
         {body}
@@ -83,6 +84,6 @@ export function RendersScreen(): React.JSX.Element {
         description={confirm?.hasSnapshot === false
           ? 'Bản này không có snapshot storyboard, nên chỉ ghi nhận việc duyệt, không lưu storyboard vào git.'
           : 'Đánh dấu bản này là bản đã chốt và lưu snapshot storyboard của nó vào git để sau này dựng lại đúng như vậy.'} />
-    </>
+    </div>
   );
 }

@@ -89,12 +89,14 @@ export function ProjectsScreen(): React.JSX.Element {
   const [filter, setFilter] = useState<Filter>('all');
   const [q, setQ] = useState('');
   const [open, setOpen] = useState(false);
+  const [gen, setGen] = useState(0); // remount on open (fresh form), never on close (keeps the exit animation)
+  const openNew = () => { setGen((g) => g + 1); setOpen(true); };
   const count = (f: Filter) => (data ?? []).filter((p) => matches(p.status, f)).length;
   const shown = useMemo(() => {
     const t = q.trim().toLowerCase();
     return (data ?? []).filter((p) => matches(p.status, filter) && (!t || p.slug.toLowerCase().includes(t) || p.firstCaption.toLowerCase().includes(t)));
   }, [data, filter, q]);
-  const newBtn = <Button variant="primary" icon={<Plus size={18} aria-hidden />} onClick={() => setOpen(true)}>Dự án mới</Button>;
+  const newBtn = <Button variant="primary" icon={<Plus size={18} aria-hidden />} onClick={openNew}>Dự án mới</Button>;
 
   let body: React.JSX.Element;
   if (error) body = <ErrorState error={error} onRetry={() => void refetch()} />;
@@ -114,7 +116,7 @@ export function ProjectsScreen(): React.JSX.Element {
       </div>
       <div className={s.grid}>
         {shown.map((p) => <Card key={p.slug} p={p} />)}
-        <button type="button" className={s.new} onClick={() => setOpen(true)}>
+        <button type="button" className={s.new} onClick={openNew}>
           <Plus size={28} aria-hidden /><b>Tạo dự án mới</b><span>Chọn mẫu, brand, giọng và thời lượng — rồi thêm cảnh trong trình sửa</span>
         </button>
       </div>
@@ -127,7 +129,7 @@ export function ProjectsScreen(): React.JSX.Element {
       <PageHeader title="Dự án" subtitle={<>Mỗi dự án là một thư mục trong <code>projects/</code> — tự cập nhật khi Claude hoặc bạn sửa file.</>}
         actions={<><Input className={s.search} type="search" aria-label="Tìm dự án" placeholder="Tìm dự án…" value={q} onChange={(e) => setQ(e.target.value)} />{newBtn}</>} />
       {body}
-      <NewDialog key={String(open)} open={open} onOpenChange={setOpen} />
+      <NewDialog key={gen} open={open} onOpenChange={setOpen} />
     </>
   );
 }

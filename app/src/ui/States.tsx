@@ -14,7 +14,8 @@ export function EmptyState({icon, title, description, action}: {icon: React.Reac
 }
 
 export function ErrorState({title = 'Không tải được dữ liệu', error, onRetry}: {title?: string; error: unknown; onRetry?(): void}): React.JSX.Element {
-  const msg = error instanceof Error ? error.message : String(error);
+  // fetch() rejects with a TypeError (English browser text) when the API is unreachable
+  const msg = error instanceof TypeError ? 'Không kết nối được tới server.' : error instanceof Error ? error.message : String(error);
   return (
     <div className={s.state} role="alert">
       <div className={`${s.icon} ${s.danger}`} aria-hidden><AlertTriangle size={28} /></div>

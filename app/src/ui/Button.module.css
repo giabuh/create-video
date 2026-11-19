@@ -1,5 +1,5 @@
 .btn {
-  display: inline-grid; place-items: center; border-radius: var(--r-md); border: 1px solid transparent;
+  position: relative; display: inline-grid; place-items: center; border-radius: var(--r-md); border: 1px solid transparent;
   font: 600 var(--fs-md)/1 var(--font); cursor: pointer; white-space: nowrap; text-decoration: none;
   transition: background var(--dur-fast) var(--ease), transform var(--dur-fast), border-color var(--dur-fast) var(--ease);
 }
@@ -8,6 +8,7 @@
 .btn[aria-busy="true"] { cursor: progress; opacity: 1; }
 .layer { grid-area: 1 / 1; display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2); }
 .sm { height: 36px; padding: 0 var(--sp-3); font-size: var(--fs-sm); }
+.sm::after { content: ""; position: absolute; inset: -4px 0; } /* 44px hit area */
 .md { height: 44px; padding: 0 var(--sp-4); }
 .lg { height: 52px; padding: 0 var(--sp-6); font-size: var(--fs-lg); }
 .primary { background: var(--accent); color: var(--accent-ink); }

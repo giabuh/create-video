@@ -1,3 +1,4 @@
+.page { padding: 28px 32px; } /* /p/* screens own their padding */
 .layout { display: flex; flex-wrap: wrap; gap: var(--sp-5); align-items: flex-start; }
 .grid { flex: 999 1 40rem; min-width: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: var(--sp-4); align-content: start; }
 .side { flex: 1 1 20rem; max-width: 24rem; display: flex; flex-direction: column; gap: var(--sp-4); }

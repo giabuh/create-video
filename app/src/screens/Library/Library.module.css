@@ -10,7 +10,7 @@
 .upState.bad { color: var(--danger-text); }
 .filters { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: center; }
 .search { margin-left: auto; width: 15rem; max-width: 100%; }
-.pill { height: 40px; padding: 0 var(--sp-4); border: 1px solid var(--line-strong); border-radius: var(--r-pill); background: transparent; color: var(--muted); font: 600 var(--fs-sm)/1 var(--font); cursor: pointer; white-space: nowrap; }
+.pill { height: 44px; padding: 0 var(--sp-4); border: 1px solid var(--line-strong); border-radius: var(--r-pill); background: transparent; color: var(--muted); font: 600 var(--fs-sm)/1 var(--font); cursor: pointer; white-space: nowrap; }
 .pill:hover { color: var(--text); }
 .pill[aria-pressed='true'] { background: var(--panel-3); color: var(--text); }
 .pill:focus-visible, .tile:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }

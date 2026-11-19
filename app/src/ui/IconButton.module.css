@@ -4,7 +4,8 @@
 }
 .btn:active:not(:disabled) { transform: scale(.96); }
 .btn:disabled { cursor: not-allowed; opacity: .55; }
-.sm { width: 36px; height: 36px; }
+.sm { position: relative; width: 36px; height: 36px; }
+.sm::after { content: ""; position: absolute; inset: -4px; } /* 44px hit area */
 .md { width: 44px; height: 44px; }
 .secondary { background: var(--panel-2); color: var(--text); border-color: var(--line-strong); }
 .secondary:hover:not(:disabled) { background: var(--panel-3); }

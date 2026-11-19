@@ -8,9 +8,9 @@
 .compact .play { width: 32px; height: 32px; }
 .compact .play::after { inset: -6px; }
 .label { font-size: var(--fs-sm); font-weight: 600; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.wave { flex: 1; min-width: 80px; height: 40px; display: flex; align-items: center; gap: 2px; cursor: pointer; border-radius: var(--r-sm); position: relative; touch-action: none; }
+.wave { flex: 1; min-width: 80px; overflow: hidden; height: 40px; display: flex; align-items: center; gap: 2px; cursor: pointer; border-radius: var(--r-sm); position: relative; touch-action: none; }
 .compact .wave { height: 28px; }
-.bar { flex: 1; min-width: 2px; border-radius: 2px; background: var(--line-strong); transition: background var(--dur-fast); }
+.bar { flex: 1; min-width: 0; border-radius: 2px; background: var(--line-strong); transition: background var(--dur-fast); }
 .bar[data-done] { background: var(--c); }
 .sk { background: var(--panel-3); animation: pulse 1.2s ease-in-out infinite; }
 @keyframes pulse { 0%, 100% { opacity: 1 } 50% { opacity: .45 } }

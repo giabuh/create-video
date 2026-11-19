@@ -40,7 +40,7 @@ export function PreviewPane(): React.JSX.Element {
       </div>
     );
   } else if (!renderProps) {
-    body = <div className={s.frame}><Skeleton height="100%" radius={18} delay={0} /><span className={s.wait}>Đang dựng bản xem trước…</span></div>;
+    body = <div className={s.frame}><Skeleton height="100%" radius={18} /><span className={s.wait}>Đang dựng bản xem trước…</span></div>;
   } else {
     body = (
       <div className={s.frame}>
