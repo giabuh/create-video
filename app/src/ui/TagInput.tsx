@@ -29,6 +29,7 @@ export function TagInput({value, onChange, placeholder, suggestions = [], id, to
           role="combobox" aria-expanded={open} aria-controls={listId} aria-autocomplete="list"
           aria-activedescendant={open && hi >= 0 ? `${listId}-${hi}` : undefined}
           onChange={(e) => {
+            setFocus(true); // typing after Escape reopens the suggestions
             const v = e.target.value;
             if (v.includes(',')) {
               const parts = v.split(',').map((x) => x.trim());

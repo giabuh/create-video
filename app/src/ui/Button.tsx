@@ -15,8 +15,10 @@ export function Button({variant = 'secondary', size = 'md', loading, loadingText
       {...rest}
       type={type}
       className={[s.btn, s[variant], s[size], className].filter(Boolean).join(' ')}
-      disabled={disabled || loading}
+      disabled={disabled}
       aria-busy={loading || undefined}
+      aria-disabled={loading || undefined} /* keeps keyboard focus while loading */
+      onClick={loading ? (e) => e.preventDefault() : rest.onClick}
     >
       {/* both layers share one grid cell so the width is the wider of the two and never jumps */}
       <span className={s.layer} style={loading ? {visibility: 'hidden'} : undefined}>

@@ -7,12 +7,12 @@ export function ThemeControls(): React.JSX.Element {
     <div className={s.root}>
       <div className={s.group}>
         <span className={s.label}>Giao diện</span>
-        <Segmented size="sm" aria-label="Giao diện" value={theme} onChange={setTheme}
+        <Segmented size="sm" className={s.seg} aria-label="Giao diện" value={theme} onChange={setTheme}
           options={[{value: 'system', label: 'Hệ thống'}, {value: 'light', label: 'Sáng'}, {value: 'dark', label: 'Tối'}]} />
       </div>
       <div className={s.group}>
         <span className={s.label}>Cỡ chữ</span>
-        <Segmented size="sm" aria-label="Cỡ chữ" value={textSize} onChange={setTextSize}
+        <Segmented size="sm" className={s.seg} aria-label="Cỡ chữ" value={textSize} onChange={setTextSize}
           options={[{value: 'md', label: 'Vừa'}, {value: 'lg', label: 'Lớn'}, {value: 'xl', label: 'Rất lớn'}]} />
       </div>
     </div>

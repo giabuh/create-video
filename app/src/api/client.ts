@@ -18,6 +18,9 @@ export async function api<T>(path: string, init: {method?: string; body?: unknow
     headers: hasBody ? {'Content-Type': 'application/json'} : undefined,
     body: hasBody ? JSON.stringify(init.body) : undefined,
     signal: init.signal,
+  }).catch((e: unknown) => {
+    if (e instanceof DOMException && e.name === 'AbortError') throw e; // caller cancelled: not a network failure
+    throw new HttpError(0, {error: 'Không kết nối được tới server.'});
   });
   const text = await res.text();
   let json: unknown = null;
