@@ -24,7 +24,7 @@ export function InspectorCta(): React.JSX.Element {
       <Switch checked={!!cta} label="Có thẻ CTA" onChange={(on) => setStoryboard({...sb, cta: on ? {title: ''} : null})} />
       {cta && (
         <>
-          <Field label="Tiêu đề"><Input value={cta.title} placeholder="VD: Đăng ký ngay" onChange={(e) => setStoryboard({...sb, cta: {...cta, title: e.target.value}})} /></Field>
+          <Field label="Tiêu đề"><Input value={cta.title} placeholder={brand?.name ? `[TIÊU ĐỀ] — ${brand.name}` : '[TIÊU ĐỀ]'} onChange={(e) => set({title: e.target.value})} /></Field>
           {text('phone', 'Số điện thoại')}
           {text('fanpage', 'Fanpage')}
           {text('address', 'Địa chỉ')}

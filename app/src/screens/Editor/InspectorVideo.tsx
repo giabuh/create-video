@@ -41,7 +41,7 @@ export function InspectorVideo(): React.JSX.Element {
       <Field label="Độ dài mục tiêu (giây)"><NumberField value={sb.targetSeconds ?? null} min={5} step={1} onChange={(v) => set({targetSeconds: v ?? undefined})} /></Field>
       <Field label="Nhạc nền"><Select value={musicVal} options={musicOpts}
         onChange={(v) => set({music: v === '' ? undefined : v === NONE ? null : {file: v, ...(m?.volume != null ? {volume: m.volume} : {})}})} /></Field>
-      <Field label={`Âm lượng nhạc (${m?.volume == null ? 'mặc định' : 'riêng video'})`}>
+      <Field label={`Âm lượng nhạc (${m?.volume == null ? 'mặc định' : 'riêng video'})`} hint={m ? undefined : 'Chọn một file nhạc để chỉnh âm lượng.'}>
         <Slider aria-label="Âm lượng nhạc" min={0} max={1} step={0.01} disabled={!m} value={m?.volume ?? volDef} format={(v) => `${Math.round(v * 100)}%`}
           onChange={(v) => m && set({music: {...m, volume: v}})} />
       </Field>

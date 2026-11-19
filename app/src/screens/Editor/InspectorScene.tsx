@@ -18,13 +18,13 @@ function MediaRow({m, onChange, onRemove, handle, missing}: {m: MediaSpec; onCha
   return (
     <div className={s.card}>
       <div className={s.row}>
-        <IconButton label="Kéo để đổi thứ tự" icon={<GripVertical size={18} aria-hidden />} size="sm" {...handle} />
+        <IconButton label="Kéo để đổi thứ tự" icon={<GripVertical size={18} aria-hidden />} {...handle} />
         {bad ? <span className={s.thumb} /> : <img className={s.thumb} src={`/library/thumbs/${encodeURIComponent(stem(m.src))}.jpg`} alt="" onError={() => setBad(true)} />}
         <span className={s.grow} title={m.src}>
           <span className={s.name}>{m.src}</span>
           {missing && <span className={s.warn}>Không có trong thư viện</span>}
         </span>
-        <IconButton label={`Bỏ ${m.src}`} icon={<Trash2 size={18} aria-hidden />} size="sm" onClick={onRemove} />
+        <IconButton label={`Bỏ ${m.src}`} icon={<Trash2 size={18} aria-hidden />} onClick={onRemove} />
       </div>
       <div className={s.grid3}>
         <Field label="Từ (giây)"><NumberField value={m.from ?? 0} min={0} step={0.5} onChange={(v) => onChange({from: v ?? undefined})} /></Field>
@@ -43,6 +43,7 @@ export function InspectorScene(): React.JSX.Element {
   const motionNames = useMotionNames();
   const voiceAction = useVoiceAction();
   const [picker, setPicker] = useState(false);
+  const [stash, setStash] = useState<Record<string, string>>({}); // say text kept while the switch is off
   const scene = sb.scenes.find((x) => x.id === selectedId);
   const words = useMemo(() => [...new Set((scene?.caption ?? '').split(/\s+/).map((w) => w.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, '')).filter(Boolean))], [scene?.caption]);
   if (!scene) return <p className={s.muted}>Chưa chọn cảnh nào.</p>;
@@ -70,7 +71,7 @@ export function InspectorScene(): React.JSX.Element {
         </div>
       )}
 
-      <Switch checked={hasSay} onChange={(on) => (on ? up({say: '', duration: undefined}) : up({say: undefined, duration: scene.duration ?? 3}))} label="Cảnh có lời đọc" />
+      <Switch checked={hasSay} onChange={(on) => (on ? up({say: stash[scene.id] ?? '', duration: undefined}) : (setStash({...stash, [scene.id]: scene.say ?? ''}), up({say: undefined, duration: scene.duration ?? 3})))} label="Cảnh có lời đọc" />
       {hasSay
         ? <Field label="Lời đọc (đọc theo cách phát âm)" hint="Viết số, giá, số điện thoại, từ tiếng Anh đúng như cần đọc."><Textarea autosize value={scene.say ?? ''} onChange={(e) => up({say: e.target.value})} /></Field>
         : <Field label="Thời lượng (giây)"><NumberField value={scene.duration ?? null} min={0.5} step={0.5} onChange={(v) => up({duration: v ?? undefined})} /></Field>}
@@ -110,7 +111,7 @@ export function InspectorScene(): React.JSX.Element {
             <div key={i} className={s.card}>
               <div className={s.row}>
                 <span className={s.grow}><Select aria-label="Component motion" value={m.component} options={opts} onChange={(c) => set({component: c, props: {}})} /></span>
-                <IconButton label="Xoá lớp motion" icon={<Trash2 size={18} aria-hidden />} size="sm" onClick={() => setMotion(motion.filter((_, j) => j !== i))} />
+                <IconButton label="Xoá lớp motion" icon={<Trash2 size={18} aria-hidden />} onClick={() => setMotion(motion.filter((_, j) => j !== i))} />
               </div>
               <MotionForm key={m.component} component={m.component} value={m.props ?? {}} onChange={(props) => set({props})} />
               <div className={s.grid2}>
