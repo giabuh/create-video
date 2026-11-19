@@ -50,6 +50,8 @@ test('edit caption: autosave pill and player', async ({page}) => {
   const caption = page.getByLabel('Caption (hiển thị trên màn hình)');
   await caption.fill(CAPTION);
   await expect(page.getByRole('status').filter({hasText: 'Đã lưu'})).toBeVisible();
+  // the pill also reads "Đã lưu" when idle, so confirm the caption really reached storyboard.json
+  await expect.poll(async () => (await (await fetch(`${API}/projects/${slug}`)).json()).storyboard.data.scenes[0].caption, {timeout: 10_000}).toBe(CAPTION);
   const player = page.getByRole('region', {name: 'Xem trước'});
   await expect(player.getByText(CAPTION).first()).toBeVisible({timeout: 30_000});
   await player.screenshot({path: 'test-results/player-caption.png'});
