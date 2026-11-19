@@ -38,7 +38,7 @@ export function DefaultsCard(): React.JSX.Element {
         );
       })}
       <div className={s.actions}>
-        <Button variant="primary" size="sm" loading={saving} loadingText="Đang lưu…" disabled={!dirty || !cfg.data} onClick={save}>Lưu mặc định</Button>
+        <Button variant="primary" loading={saving} loadingText="Đang lưu…" disabled={!dirty || !cfg.data} onClick={save}>Lưu mặc định</Button>
         <Button size="sm" disabled={!dirty && !conflict} onClick={() => { setEdited({}); setConflict(false); }}>Khôi phục</Button>
       </div>
     </aside>

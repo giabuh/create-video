@@ -1,10 +1,10 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {Mic, MoreHorizontal, Plus} from 'lucide-react';
 import type {VoiceInfo} from '../../../shared/types.ts';
 import {useJobs} from '../../api/events.ts';
 import {useUploads} from '../../api/upload.ts';
 import {useVoices} from '../../api/hooks.ts';
-import {AudioPlayer, Button, Chip, Dialog, DropdownMenu, DropZone, EmptyState, ErrorState, Field, fmtNum, IconButton, Input, PageHeader, ProgressBar, Select, Skeleton} from '../../ui/index.ts';
+import {AudioPlayer, Button, Chip, Dialog, DropdownMenu, DropZone, EmptyState, ErrorState, Field, fmtNum, IconButton, Input, PageHeader, ProgressBar, Select, Skeleton, toast} from '../../ui/index.ts';
 import {DefaultsCard} from './Defaults.tsx';
 import {TryPanel} from './Try.tsx';
 import {useConfigEdit} from './useConfigEdit.ts';
@@ -48,18 +48,26 @@ function AddVoice({open, onClose}: {open: boolean; onClose(): void}): React.JSX.
   const {items, upload} = useUploads();
   const jobs = useJobs();
   const slug = slugify(name);
+  const validName = /[a-z0-9]/i.test(name.replace(/đ/gi, 'd').normalize('NFKD')); // slugify of "!!!" would be the fallback "media"
   const [sentAt, setSentAt] = useState(0);
   const item = [...items].reverse().find((i) => i.target === 'voice' && i.file === file);
-  const job = jobs.find((j) => j.kind === 'voice-add' && j.label === `Thêm giọng ${slug}` && (j.startedAt ?? Date.now()) >= sentAt - 5000);
+  const job = jobs.find((j) => j.kind === 'voice-add' && j.label === `Thêm giọng ${slug}` && sentAt > 0 && (j.startedAt ?? Infinity) >= sentAt - 2000);
   const busy = item?.state === 'uploading' || job?.state === 'queued' || job?.state === 'running';
   const err = item?.state === 'error' ? item.error : job?.state === 'failed' ? job.error ?? 'Thêm giọng thất bại' : null;
-  useEffect(() => { if (job?.state === 'done' && open) { onClose(); setName(''); setFile(null); } }, [job?.state, open, onClose]);
-  const go = () => { if (file && name.trim()) { setSentAt(Date.now()); void upload([file], 'voice', {voiceName: slug}); } };
+  const close = () => { onClose(); setName(''); setFile(null); setSentAt(0); };
+  const handled = useRef('');
+  useEffect(() => {
+    if (!job || !open || (job.state !== 'done' && job.state !== 'failed') || handled.current === job.id) return;
+    handled.current = job.id;
+    if (job.state === 'done') { toast({title: `Đã thêm giọng ${name.trim()}`, tone: 'success'}); close(); }
+    else toast({title: 'Không thêm được giọng', description: job.error ?? undefined, tone: 'error'});
+  });
+  const go = () => { if (file && validName) { setSentAt(Date.now()); void upload([file], 'voice', {voiceName: slug}); } };
   return (
-    <Dialog open={open} onOpenChange={(o) => { if (!o && !busy) onClose(); }} title="Thêm giọng" description="Chọn một đoạn thu rõ tiếng, dài 6–10 giây, không nhạc nền."
-      footer={<><Button variant="ghost" disabled={busy} onClick={onClose}>Huỷ</Button><Button variant="primary" loading={busy} loadingText="Đang thêm…" disabled={!file || !name.trim()} onClick={go}>Thêm giọng</Button></>}>
+    <Dialog open={open} onOpenChange={(o) => { if (!o && !busy) close(); }} title="Thêm giọng" description="Chọn một đoạn thu rõ tiếng, dài 6–10 giây, không nhạc nền."
+      footer={<><Button variant="ghost" disabled={busy} onClick={close}>Huỷ</Button><Button variant="primary" loading={busy} loadingText="Đang thêm…" disabled={!file || !validName} onClick={go}>Thêm giọng</Button></>}>
       <div className={s.page} style={{gap: 'var(--sp-4)'}}>
-        <Field label="Tên giọng" hint={name.trim() ? `Sẽ lưu là: ${slug}` : 'Ví dụ: Phương, Vy'} error={err ?? undefined}>
+        <Field label="Tên giọng" hint={name.trim() ? `Sẽ lưu là: ${slug}` : 'Ví dụ: Phương, Vy'} error={err ?? (name.trim() && !validName ? 'Tên cần có ít nhất một chữ cái hoặc chữ số' : undefined)}>
           <Input value={name} disabled={busy} maxLength={40} onChange={(e) => setName(e.target.value)} />
         </Field>
         <DropZone accept={AUDIO_REF_EXTS} multiple={false} compact title={file ? file.name : 'Kéo thả file ghi âm vào đây'} description=".wav, .mp3, .m4a, .ogg, .flac" buttonLabel={file ? 'Chọn file khác' : 'Chọn file'} onFiles={(f) => setFile(f[0])} />

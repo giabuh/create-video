@@ -97,7 +97,7 @@ export function TryPanel({voices}: {voices: VoiceInfo[]}): React.JSX.Element {
                 <span className={s.letter}>{k}</span>
                 <div className={s.player}><AudioPlayer src={`/${v.file}?v=${stamp}`} label={`Bản ${k}`} compact accent="voice" /></div>
                 <span className={s.sec}>{fmtNum(v.seconds, 2)} s</span>
-                <Button size="sm" onClick={() => setPick({k, v})}>Lưu làm mặc định</Button>
+                <Button onClick={() => setPick({k, v})}>Lưu làm mặc định</Button>
               </div>
             ))}
           </div>
