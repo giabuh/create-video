@@ -22,6 +22,10 @@ async function run() {
   }
   out({type: 'system', subtype: 'init', session_id: sid});
   if (prompt.includes('CRASH')) { process.stderr.write('boom: fake crash\n'); process.exit(3); }
+  if (prompt.includes('HARDLIMIT')) { // limit event, then exit without a result line
+    out({type: 'rate_limit_event', rate_limit_info: {status: 'rejected', resetsAt: 1795514400, rateLimitType: 'five_hour', utilization: 1}});
+    process.stderr.write('usage limit reached\n'); process.exit(1);
+  }
   if (prompt.includes('LIMIT')) {
     out({type: 'rate_limit_event', rate_limit_info: {status: 'rejected', resetsAt: 1795514400, rateLimitType: 'five_hour', utilization: 1}});
     out({type: 'result', subtype: 'success', is_error: true, result: "You've hit your limit", api_error_status: 429});

@@ -50,6 +50,10 @@ describe('runTurn (fake CLI)', () => {
     expect(r.limits[0].status).toBe('rejected');
     expect(r.events.at(-1)).toEqual({kind: 'error', message: "You've hit your limit", limit: {account: 'claude', resetsAt: 1795514400}});
   });
+  it('limit then exit without result → error still carries limit', async () => {
+    const r = await turn('HARDLIMIT');
+    expect(r.events.at(-1)).toEqual({kind: 'error', message: 'usage limit reached', limit: {account: 'claude', resetsAt: 1795514400}});
+  });
   it('missing session → error with CLI message', async () => {
     const r = await turn('NOSESSION', {resume: true});
     expect(r.events).toEqual([{kind: 'error', message: expect.stringContaining('No conversation found')}]);

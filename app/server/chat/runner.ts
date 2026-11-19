@@ -62,7 +62,8 @@ export function runTurn(o: TurnOpts): Promise<void> {
       void drained.then(() => {
         clearTimeout(killTimer);
         o.signal.removeEventListener('abort', onAbort);
-        end(o.signal.aborted ? {kind: 'error', message: STOPPED} : {kind: 'error', message: lastErr || `claude thoát với mã ${code}`});
+        end(o.signal.aborted ? {kind: 'error', message: STOPPED} : {kind: 'error', message: lastErr || `claude thoát với mã ${code}`,
+          ...(limit && {limit: {account: o.account.name, resetsAt: limit.resetsAt}})});
         resolve();
       });
     });
