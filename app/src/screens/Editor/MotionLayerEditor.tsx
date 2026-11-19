@@ -219,7 +219,7 @@ export function MotionLayerEditor({m, onChange, onRemove, onMove, scope, spoken 
         <section className={s.stack}>
           <AnimField label="Vào" noneIsDefault value={m.enter} onChange={(v) => set({enter: v})} />
           <AnimField label="Ra" noneIsDefault={false} value={m.exit} onChange={(v) => set({exit: v})} />
-          <p className={s.muted}>Áp lên trên chuyển động riêng của component. Ra mặc định: mờ dần khi lớp đặt ở dải/tự do.</p>
+          <p className={s.muted}>Áp lên trên chuyển động riêng của component. Ra mặc định: mờ dần khi lớp đặt ở dải/tự do, trừ các thẻ tự diễn cảnh ra (Ruy băng, Thẻ hai tầng, Nhãn chỉ điểm, Ghim vị trí, Nhãn bóng, Chữ khổng lồ).</p>
         </section>
       </details>
 
