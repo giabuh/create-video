@@ -5,7 +5,7 @@ import path from 'node:path';
 import {expect, test} from '@playwright/test';
 
 const API = 'http://127.0.0.1:5316/api';
-const ROOT = path.resolve(import.meta.dirname, '../..');
+const ROOT = process.env.REEL_ROOT ?? path.resolve(import.meta.dirname, '../..'); // must match the API's data root
 const slug = `e2e-${Date.now()}`;
 const jpgStem = `e2e-pic-${Date.now()}`;
 const CAPTION = 'Xin chào từ E2E';
