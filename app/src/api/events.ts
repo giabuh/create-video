@@ -2,7 +2,7 @@ import {useEffect, useSyncExternalStore} from 'react';
 import {useQueryClient} from '@tanstack/react-query';
 import type {Job, ServerEvent, WorkerStatus} from '../../shared/types.ts';
 import {toast} from '../ui/index.ts';
-import {onChatEvent} from './chat.ts';
+import {onChatEvent, resetChatDrafts} from './chat.ts';
 import {api} from './client.ts';
 import {qk} from './hooks.ts';
 
@@ -122,7 +122,7 @@ export function useServerEvents(): void {
         connection = 'open';
         emit();
         void seed();
-        if (reconnected) void qc.invalidateQueries(); // anything may have changed while we were away
+        if (reconnected) { resetChatDrafts(); void qc.invalidateQueries(); } // anything may have changed while we were away
       };
       es.onmessage = (m) => {
         try {

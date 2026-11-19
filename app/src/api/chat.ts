@@ -40,5 +40,8 @@ export function onChatEvent(ev: Extract<ServerEvent, {type: 'chat' | 'chatBusy'}
   void qc.invalidateQueries({queryKey: chatKeys.one(ev.chatId)});
   if (ev.event.kind !== 'text' && ev.event.kind !== 'tool') void qc.invalidateQueries({queryKey: chatKeys.list});
 }
+/** Drop partial text after an SSE reconnect: missed deltas would leave it stale or truncated; new deltas rebuild it. */
+export function resetChatDrafts(): void { drafts = new Map(); emit(); }
+export const getChatDraft = (id: string): string => drafts.get(id) ?? '';
 export const useChatBusy = (): string | null => useSyncExternalStore(subscribe, () => busy);
 export const useChatDraft = (id: string | null): string => useSyncExternalStore(subscribe, () => (id ? drafts.get(id) ?? '' : ''));

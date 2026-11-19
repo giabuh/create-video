@@ -2,7 +2,6 @@ import {useEffect, useRef, useState} from 'react';
 import {MessageSquare} from 'lucide-react';
 import {matchPath, useLocation} from 'react-router';
 import {Button, Drawer, EmptyState, Select, Spinner, Textarea, toast} from '../ui/index.ts';
-import {HttpError} from '../api/client.ts';
 import {useChat, useChatAccounts, useChatBusy, useChatDraft, useChats, useCreateChat, useSendChat, useStopChat} from '../api/chat.ts';
 import {isInterrupted, limitText} from './chatView.ts';
 import s from './ChatPanel.module.css';
@@ -23,6 +22,7 @@ export function ChatPanel({open, onOpenChange}: {open: boolean; onOpenChange(o: 
   const [account, setAccount] = useState('');
   const [text, setText] = useState('');
   const endRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLDivElement>(null);
 
   const chatAccount = detail.data?.chat.account;
   useEffect(() => { if (chatAccount) setAccount(chatAccount); }, [chatAccount]);
@@ -32,6 +32,7 @@ export function ChatPanel({open, onOpenChange}: {open: boolean; onOpenChange(o: 
   const events = detail.data?.events ?? [];
   useEffect(() => { endRef.current?.scrollIntoView?.({block: 'end'}); }, [events.length, draft, open]);
 
+  useEffect(() => { if (busy === null && open) inputRef.current?.querySelector('textarea')?.focus(); }, [busy, open]);
   const running = busy !== null && busy === chatId;
   const submit = async () => {
     const t = text.trim();
@@ -48,7 +49,7 @@ export function ChatPanel({open, onOpenChange}: {open: boolean; onOpenChange(o: 
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} title="Chat với Claude" width={420} footer={
-      <div className={s.foot}>
+      <div className={s.foot} ref={inputRef}>
         <Textarea
           autosize rows={2} value={text} aria-label="Tin nhắn cho Claude" disabled={busy !== null}
           placeholder="Nhắn Claude… (Enter để gửi, Shift+Enter xuống dòng)"
@@ -65,11 +66,11 @@ export function ChatPanel({open, onOpenChange}: {open: boolean; onOpenChange(o: 
       <div className={s.wrap}>
         <div className={s.head}>
           <div className={s.row}>
-            <Select aria-label="Phiên chat" value={chatId} placeholder="Chưa có phiên" onChange={setPicked}
+            <Select key={chatId === null ? "none" : "set"} aria-label="Phiên chat" value={chatId} placeholder="Chưa có phiên" onChange={setPicked}
               options={(chats.data ?? []).map((c) => ({value: c.id, label: c.title, hint: c.slug ?? ''}))} />
             <Button size="sm" loading={create.isPending} onClick={() => create.mutate({slug}, {onSuccess: (c) => setPicked(c.id)})}>Phiên mới</Button>
           </div>
-          <Select aria-label="Tài khoản Claude" value={acct || null} onChange={setAccount}
+          <Select key={acct ? "set" : "none"} aria-label="Tài khoản Claude" value={acct || null} onChange={setAccount}
             options={(accounts.data ?? []).map((a) => ({value: a.name, label: a.name, hint: a.limit?.utilization != null ? `${Math.round(a.limit.utilization * 100)}%` : ''}))} />
         </div>
         <div className={s.log} role="log" aria-live="polite">
