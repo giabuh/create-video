@@ -918,3 +918,17 @@ import {MOTION} from '@studio/motion/registry';
 | 2 | 3, 4, 5 and 6 | in parallel, after Task 2; Tasks 3–5 share `registry.ts` (re-read before editing) |
 | 3 | 7 | after Tasks 3–6 |
 | Final | review | by the main session: the full branch diff, the full suite, all baseline diffs, and one still per card |
+
+## Deferred findings (from task reviews, none blocking)
+
+- Task 1: minor (deferred): settings.ts PUT does not type-check accent2/surface values
+- Task 1: minor (deferred): default hexes duplicated in BrandSection.tsx and settings.ts
+- Task 1: minor (deferred): settings.test.ts awkward .json().then cast
+- Task 2: minor (deferred): no TS test for ownsExit branch in withDefaults
+- Task 2: minor (deferred): FxText/choreo/Decor lack unit tests (not requested)
+- Plan defect: Callout default labelY 38 overlaps ring; fixed to 18 (mockup) via Task 4 fix round 1 — plan text to update at final review
+- Task 5: minor (deferred): GlossyPill redundant clamp :41; fit height ignores sub/sticker :25; sticker offset may clip in narrow box :46
+- Task 6: minor (deferred): no still shows PriceTag mid-pop; motionSchema fx loop lacks card name in failure; Checklist FxText start unrounded vs spring frame
+- Task 3: minor (deferred): Ribbon dot Decor at frame edge x~1040; PinLabel fit ignores pin height / narrow box -> 12px; TwoTier padX 1.8 over-shrinks
+- Task 4: minor (deferred): Callout BACK double-eases ring :65; title fit ignores line elbow :53; subFit t shadows choreo t :55; line passes behind wide sub1; GiantText caption fit ignores stroke
+- Task 7: minor (deferred): parity test regex throws TypeError if OWNS_EXIT reformatted
