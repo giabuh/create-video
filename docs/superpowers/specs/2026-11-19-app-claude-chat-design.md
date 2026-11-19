@@ -65,7 +65,7 @@ runTurn(opts: {sessionId: string; resume: boolean; account: Account; prompt: str
 ## Server
 
 - `ChatRunner` holds at most one active turn (app-wide). A send while busy → 409.
-- Storage: `app/.data/chats/index.json` (array of `{id, sessionId, title, account, slug, started, createdAt, updatedAt}`; title = first user message, ~60 chars) and `app/.data/chats/<id>.jsonl` (append-only persisted `ChatEvent`s, no `delta`). `app/.data/` is gitignored and must stay outside the file watcher and the static routes. Chat `id` = `sessionId` (uuid).
+- Storage: `app/.data/chats/index.json` (array of `{id, title, account, slug, started, createdAt, updatedAt}`; title = first user message, ~60 chars) and `app/.data/chats/<id>.jsonl` (append-only persisted `ChatEvent`s, no `delta`). `app/.data/` is gitignored and must stay outside the file watcher and the static routes. Chat `id` is the Claude session id (uuid).
 - A chat log whose last turn has no `done`/`error` (server stopped mid-turn) is shown as interrupted.
 - Routes (under `/api`, behind `hostGuard`; inputs validated: text non-empty and size-capped, account must be a detected one, id must be a known uuid):
   - `GET /chat/accounts` → `[{name, limit}]`
