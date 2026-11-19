@@ -14,6 +14,7 @@ Start a reel with the `/make-reel` skill.
 - Preview UI for the user: `cd studio && npx remotion studio`
 - Voice audition: `VieNeu-TTS/.venv/bin/python tools/voice_try.py --voice phuong --text "..." --variants '[{"speed":1.05},{"temperature":0.6}]'`
 - Sync media with Google Drive: `tools/sync.sh push|pull` (rclone remote in config.json `sync.remote`).
+- App (visual UI for the user): `cd app && npm start`  → http://127.0.0.1:5317 (dev with API auto-restart: `npm run dev`)
 - Tests: `uv run --with pytest python -m pytest tools/tests -q` and `cd studio && npx tsc --noEmit`.
 
 ## Rules
@@ -29,3 +30,4 @@ Start a reel with the `/make-reel` skill.
 7. Before every draft: render one still per scene and look at it (overflow, covered faces, wrong shot, mix).
 8. Never overwrite a render: use the next `reel-v<N>`. Commit `storyboard.json` when the user accepts a version.
 9. `VieNeu-TTS/` is upstream code: never edit it.
+10. When the app is running, tell the user to check the result in the app (Editor / Bản render) instead of describing frames.
