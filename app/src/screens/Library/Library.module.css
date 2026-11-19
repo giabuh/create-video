@@ -1,0 +1,47 @@
+.tabs { margin-bottom: var(--sp-5); }
+.stack { display: flex; flex-direction: column; gap: var(--sp-5); }
+.ups { flex: 1 1 100%; width: 100%; align-self: stretch; display: flex; flex-direction: column; gap: var(--sp-2); }
+.up { display: flex; align-items: center; gap: var(--sp-3); font-size: var(--fs-sm); transition: opacity .4s var(--ease); }
+.up.fade { opacity: 0; }
+.upName { width: 11rem; flex: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.upBar { flex: 1; min-width: 60px; }
+.upState { width: 11.5rem; flex: none; color: var(--muted); }
+.upState.ok { color: var(--success-text); }
+.upState.bad { color: var(--danger-text); }
+.filters { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: center; }
+.search { margin-left: auto; width: 15rem; max-width: 100%; }
+.pill { height: 40px; padding: 0 var(--sp-4); border: 1px solid var(--line-strong); border-radius: var(--r-pill); background: transparent; color: var(--muted); font: 600 var(--fs-sm)/1 var(--font); cursor: pointer; white-space: nowrap; }
+.pill:hover { color: var(--text); }
+.pill[aria-pressed='true'] { background: var(--panel-3); color: var(--text); }
+.pill:focus-visible, .tile:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.body { display: flex; flex-wrap: wrap; gap: var(--sp-5); align-items: flex-start; }
+.grid { flex: 999 1 420px; min-width: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: var(--sp-4); }
+.tile { display: flex; flex-direction: column; padding: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; overflow: hidden; background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-lg); }
+.tile:hover { border-color: var(--line-strong); }
+.tile.on { border-color: var(--accent); }
+.thumb { position: relative; aspect-ratio: 4 / 3; background: var(--bg-sunken); overflow: hidden; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+.badge { position: absolute; right: 8px; bottom: 8px; padding: 2px 8px; border-radius: 6px; background: rgba(13, 14, 17, .8); color: #fff; font: 600 var(--fs-xs)/1.4 var(--font); }
+.meta { padding: var(--sp-3); display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.name { font-size: var(--fs-sm); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.desc { font-size: var(--fs-sm); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.warn { color: var(--warning-text); }
+.detail { flex: 1 1 300px; max-width: 380px; position: sticky; top: 0; background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-lg); padding: var(--sp-4); }
+.form { display: flex; flex-direction: column; gap: var(--sp-4); }
+.prev { border-radius: var(--r-md); overflow: hidden; background: #000; }
+.prev img { width: 100%; max-height: 320px; object-fit: contain; display: block; }
+.cap { color: var(--muted); font-size: var(--fs-sm); }
+.lbl { font-size: var(--fs-sm); font-weight: 600; color: var(--text-2); }
+.ranges { display: flex; flex-direction: column; gap: var(--sp-5); padding-top: var(--sp-5); }
+.range { display: flex; align-items: center; gap: var(--sp-2); }
+.range > :first-child { flex: 1; min-width: 0; padding: 0 var(--sp-3); }
+.links { display: flex; flex-wrap: wrap; gap: var(--sp-2); font-size: var(--fs-sm); }
+.links a { color: var(--accent-text); }
+.actions { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+.actions > :first-child { flex: 1; }
+.music { display: flex; flex-direction: column; gap: var(--sp-2); }
+.mrow { display: flex; align-items: center; gap: var(--sp-4); padding: var(--sp-3) var(--sp-4); background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-md); }
+.mrow > :first-child { flex: 1 1 260px; min-width: 0; }
+.mname { flex: 0 1 14rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.msize { color: var(--muted); font-size: var(--fs-sm); width: 5rem; text-align: right; }
+.ups:empty { display: none; }
