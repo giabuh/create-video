@@ -33,7 +33,7 @@ export async function deleteProjectCommit(slug: string): Promise<string | null> 
   if (!SLUG_RE.test(slug)) throw new Error('bad slug');
   const dir = `projects/${slug}`;
   // Not --cached: `commit -- <path>` re-reads the work tree and would undo a cache-only removal. The caller deletes the folder next anyway.
-  await git(['rm', '-r', '-q', '--ignore-unmatch', '--', dir]);
+  await git(['rm', '-r', '-f', '-q', '--ignore-unmatch', '--', dir]);
   const staged = await git(['diff', '--cached', '--quiet', '--', dir]).then(() => false, (e: {code?: number}) => { if (e.code === 1) return true; throw e; });
   if (!staged) return null;
   try { await git(['commit', '-m', `Delete project ${slug}`, '--', dir]); } catch (e) {

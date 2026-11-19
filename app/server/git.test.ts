@@ -79,4 +79,14 @@ describe('deleteProjectCommit', () => {
     await put('projects/p2/a.json', '{}');
     expect(await deleteProjectCommit('p2')).toBeNull();
   });
+  it('succeeds with uncommitted project.json edits and commits only the project', async () => {
+    await put('projects/p1/project.json', '{}');
+    git('add', '-A'); git('commit', '-qm', 'pj');
+    await put('projects/p1/project.json', '{"deleting":1}');
+    await put('other.txt', 'o');
+    git('add', 'other.txt');
+    expect(await deleteProjectCommit('p1')).toMatch(/^[0-9a-f]{7,}$/);
+    expect(lastFiles()).toEqual(['projects/p1/project.json', 'projects/p1/storyboard.json']);
+    expect(git('diff', '--cached', '--name-only').trim()).toBe('other.txt');
+  });
 });

@@ -53,6 +53,13 @@ describe('runDeleteProject', () => {
     expect(sleep.mock.calls.map(c => c[0])).toEqual([10000, 30000, 90000]);
     expect((await readMeta('p1')).data.deleting).toMatchObject({state: 'failed', error: 'boom'});
   });
+  it('commit failure marks failed and keeps the folder', async () => {
+    vi.mocked(git.deleteProjectCommit).mockRejectedValueOnce(new Error('git boom'));
+    await setDeleting([]);
+    await expect(runDeleteProject('p1', ctx, sleep)).rejects.toThrow('git boom');
+    expect(await exists(dir)).toBe(true);
+    expect((await readMeta('p1')).data.deleting).toMatchObject({state: 'failed', error: 'git boom'});
+  });
   it('retry skips versions already done', async () => {
     await setDeleting(['reel-v1', 'reel-v2']);
     const m = (await readMeta('p1')).data;

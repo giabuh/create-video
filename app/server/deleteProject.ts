@@ -20,6 +20,8 @@ export async function runDeleteProject(slug: string, ctx: JobCtx, sleep?: (ms: n
     }
     const published = (await readMeta(slug)).data.published;
     if (uploads.some(v => published?.[v]?.state !== 'done')) throw new Error('Chưa tải lên xong');
+    await deleteProjectCommit(slug);
+    await rm(safeJoin('projects', slug), {recursive: true, force: true});
   } catch (e) {
     await withSlugLock(slug, async () => {
       const meta = (await readMeta(slug)).data;
@@ -27,6 +29,4 @@ export async function runDeleteProject(slug: string, ctx: JobCtx, sleep?: (ms: n
     });
     throw e;
   }
-  await deleteProjectCommit(slug);
-  await rm(safeJoin('projects', slug), {recursive: true, force: true});
 }
