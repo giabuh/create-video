@@ -15,7 +15,7 @@ export const CalloutSchema = z.object({
   targetX: numDefault('Điểm chỉ: ngang (% khung)', 72, {min: 0, max: 100, step: 1}),
   targetY: numDefault('Điểm chỉ: dọc (% khung)', 46, {min: 0, max: 100, step: 1}),
   labelX: numDefault('Ô chữ: ngang (% khung)', 12, {min: 0, max: 100, step: 1}),
-  labelY: numDefault('Ô chữ: dọc (% khung)', 38, {min: 0, max: 100, step: 1}),
+  labelY: numDefault('Ô chữ: dọc (% khung)', 18, {min: 0, max: 100, step: 1}),
   size: numDefault('Cỡ chữ tối đa (px)', 97, {min: 40, max: 200, step: 2}),
   fx: textFx('Hiệu ứng chữ', 'typewriter'),
   pace: pace(), decor: decor(), emoji: emoji(),
