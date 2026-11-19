@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {useDeleteProject, useProject} from '../../api/hooks.ts';
-import {Button, Dialog, Skeleton, fmtBytes, toast} from '../../ui/index.ts';
+import {Button, Dialog, ErrorState, Skeleton, fmtBytes, toast} from '../../ui/index.ts';
 import s from './Projects.module.css';
 
 export function DeleteProjectDialog({slug, open, onOpenChange}: {slug: string; open: boolean; onOpenChange(o: boolean): void}): React.JSX.Element {
@@ -22,9 +22,9 @@ export function DeleteProjectDialog({slug, open, onOpenChange}: {slug: string; o
       description="Thư viện footage và nhạc không bị xoá."
       footer={<>
         <Button variant="ghost" disabled={del.isPending} onClick={() => onOpenChange(false)}>Huỷ</Button>
-        <Button variant="danger" loading={del.isPending} disabled={q.isPending} onClick={go}>{n ? `Đẩy ${n} bản lên Drive rồi xoá` : 'Xoá luôn'}</Button>
+        <Button variant="danger" loading={del.isPending} disabled={!q.data} onClick={go}>{n ? `Đẩy ${n} bản lên Drive rồi xoá` : 'Xoá luôn'}</Button>
       </>}>
-      {q.isPending ? <Skeleton height={60} /> : (
+      {q.isError ? <ErrorState error={q.error} onRetry={() => void q.refetch()} /> : q.isPending ? <Skeleton height={60} /> : (
         <div className={s.form}>
           {todo.map((v) => (
             <label key={v.name} className={s.check}>

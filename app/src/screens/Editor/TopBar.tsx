@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {Link, useNavigate} from 'react-router';
 import {ChartPie, Clapperboard, MessageSquare, Mic, MoreVertical, Upload} from 'lucide-react';
 import type {Job} from '../../../shared/types.ts';
@@ -49,8 +49,15 @@ export function TopBar(): React.JSX.Element {
   const [confirm, setConfirm] = useState(false);
   const [askDelete, setAskDelete] = useState(false);
   const deleting = !!detail.meta.deleting || jobs.some((j) => j.kind === 'delete-project' && j.project === slug && ACTIVE(j));
-  const deleted = jobs.some((j) => j.kind === 'delete-project' && j.project === slug && j.state === 'done');
-  useEffect(() => { if (deleted) void nav('/'); }, [deleted, nav]);
+  // only a delete job this Editor saw queued/running counts: a stale finished job must not redirect a re-created slug
+  const seenDel = useRef(new Set<string>());
+  useEffect(() => {
+    for (const j of jobs) {
+      if (j.kind !== 'delete-project' || j.project !== slug) continue;
+      if (ACTIVE(j)) seenDel.current.add(j.id);
+      else if (j.state === 'done' && seenDel.current.has(j.id)) void nav('/');
+    }
+  }, [jobs, slug, nav]);
   const renderJob = jobs.find((j) => j.kind === 'render' && j.project === slug && ACTIVE(j));
   const voiceBusy = voice.loading || deleting;
   const rendering = startRender.isPending || !!renderJob || deleting;
