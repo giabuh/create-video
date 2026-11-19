@@ -1,12 +1,10 @@
 import {useEffect, useState} from 'react';
-import {Skeleton, Tabs} from '../../ui/index.ts';
+import {Tabs} from '../../ui/index.ts';
 import {useEditor} from './EditorContext.tsx';
+import {InspectorCta} from './InspectorCta.tsx';
+import {InspectorScene} from './InspectorScene.tsx';
+import {InspectorVideo} from './InspectorVideo.tsx';
 import s from './Inspector.module.css';
-
-// Task 16 replaces these three bodies (new files, imported here).
-export const InspectorScene = (): React.JSX.Element => <Skeleton height={240} />;
-export const InspectorVideo = (): React.JSX.Element => <Skeleton height={240} />;
-export const InspectorCta = (): React.JSX.Element => <Skeleton height={240} />;
 
 type Tab = 'scene' | 'video' | 'cta';
 
