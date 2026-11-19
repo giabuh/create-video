@@ -66,11 +66,11 @@ export function ChatPanel({open, onOpenChange}: {open: boolean; onOpenChange(o: 
       <div className={s.wrap}>
         <div className={s.head}>
           <div className={s.row}>
-            <Select key={chatId === null ? "none" : "set"} aria-label="Phiên chat" value={chatId} placeholder="Chưa có phiên" onChange={setPicked}
+            <Select key={chatId === null ? 'none' : 'set'} aria-label="Phiên chat" value={chatId} placeholder="Chưa có phiên" onChange={setPicked}
               options={(chats.data ?? []).map((c) => ({value: c.id, label: c.title, hint: c.slug ?? ''}))} />
             <Button size="sm" loading={create.isPending} onClick={() => create.mutate({slug}, {onSuccess: (c) => setPicked(c.id)})}>Phiên mới</Button>
           </div>
-          <Select key={acct ? "set" : "none"} aria-label="Tài khoản Claude" value={acct || null} onChange={setAccount}
+          <Select key={acct ? 'set' : 'none'} aria-label="Tài khoản Claude" value={acct || null} onChange={setAccount}
             options={(accounts.data ?? []).map((a) => ({value: a.name, label: a.name, hint: a.limit?.utilization != null ? `${Math.round(a.limit.utilization * 100)}%` : ''}))} />
         </div>
         <div className={s.log} role="log" aria-live="polite">
