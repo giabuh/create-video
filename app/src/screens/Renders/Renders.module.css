@@ -1,0 +1,26 @@
+.layout { display: flex; flex-wrap: wrap; gap: var(--sp-5); align-items: flex-start; }
+.grid { flex: 999 1 40rem; min-width: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: var(--sp-4); align-content: start; }
+.side { flex: 1 1 20rem; max-width: 24rem; display: flex; flex-direction: column; gap: var(--sp-4); }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-lg); padding: var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-3); }
+.row { display: flex; align-items: center; gap: var(--sp-2); }
+.name { font-size: var(--fs-lg); font-weight: 700; margin: 0; }
+.frame { position: relative; aspect-ratio: 9 / 16; border-radius: var(--r-md); background: var(--bg-sunken); overflow: hidden; }
+.frame video { width: 100%; height: 100%; object-fit: contain; display: block; }
+.shimmer { position: absolute; inset: 0; background: linear-gradient(100deg, var(--panel-2) 30%, var(--panel-3) 50%, var(--panel-2) 70%); background-size: 200% 100%; animation: sh 1.4s linear infinite; }
+@keyframes sh { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .shimmer { animation: none; } }
+.missing { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; gap: var(--sp-1); padding: var(--sp-3); color: var(--muted); font-size: var(--fs-sm); }
+.ctrl { position: absolute; left: var(--sp-2); right: var(--sp-2); bottom: var(--sp-2); display: flex; align-items: center; gap: var(--sp-2); padding: var(--sp-1) var(--sp-2); border-radius: var(--r-pill); background: rgba(13, 14, 17, .78); color: #ECEEF2; }
+.ctrl > :nth-child(2) { flex: 1; min-width: 0; }
+.time { font-size: var(--fs-xs); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.meta { display: grid; grid-template-columns: auto 1fr; gap: var(--sp-2) var(--sp-3); margin: 0; font-size: var(--fs-sm); }
+.meta dt { color: var(--dim); }
+.meta dd { margin: 0; text-align: right; }
+.actions { display: flex; gap: var(--sp-2); align-items: center; }
+.actions > :first-child { flex: 1; }
+.muted { color: var(--muted); font-size: var(--fs-sm); line-height: 1.55; margin: 0; }
+.pct { margin-left: auto; font-weight: 700; }
+.hint { color: var(--dim); font-size: var(--fs-sm); }
+.crumb a { color: var(--muted); text-decoration: none; }
+.crumb a:hover { color: var(--text); text-decoration: underline; }
+.ctrl button { color: #ECEEF2; }
