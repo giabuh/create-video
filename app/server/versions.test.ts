@@ -1,8 +1,8 @@
-import {mkdir, writeFile} from 'node:fs/promises';
+import {mkdir, readdir, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {describe, expect, it} from 'vitest';
 import {makeTestRoot} from './testRoot.ts';
-import {listVersions, nextVersion, projectStatus, readMeta, writeMeta} from './versions.ts';
+import {listVersions, nextVersion, projectStatus, readMeta, recordRender, writeMeta} from './versions.ts';
 import {withSlugLock} from './slugLock.ts';
 
 describe('versions', () => {
@@ -20,6 +20,19 @@ describe('versions', () => {
     expect(v[1]).toMatchObject({kind: null, approved: false, hasSnapshot: false});
     await mkdir(path.join(root, 'projects/empty'));
     expect(await nextVersion('empty')).toEqual({n: 1, name: 'reel-v1'});
+  });
+
+  it('recordRender: a new draft removes older drafts, keeps finals and approved', async () => {
+    const root = await makeTestRoot();
+    const d = path.join(root, 'projects/p2');
+    await mkdir(d, {recursive: true});
+    for (const n of [1, 2, 3, 4]) for (const e of ['mp4', 'storyboard.json']) await writeFile(path.join(d, `reel-v${n}.${e}`), 'x');
+    const at = 'now';
+    await writeMeta('p2', {approved: 'reel-v2', renders: {'reel-v1': {kind: 'draft', at}, 'reel-v2': {kind: 'draft', at}, 'reel-v3': {kind: 'final', at}}});
+    await recordRender('p2', 'reel-v4', 'draft');
+    expect(Object.keys((await readMeta('p2')).data.renders).sort()).toEqual(['reel-v2', 'reel-v3', 'reel-v4']);
+    expect(await readdir(d)).toEqual(expect.not.arrayContaining(['reel-v1.mp4', 'reel-v1.storyboard.json']));
+    expect(await readdir(d)).toEqual(expect.arrayContaining(['reel-v2.mp4', 'reel-v3.mp4', 'reel-v4.mp4']));
   });
 
   it('projectStatus', () => {

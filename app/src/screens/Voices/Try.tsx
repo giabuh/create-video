@@ -1,4 +1,4 @@
-import {useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {Plus, Trash2, AudioLines} from 'lucide-react';
 import type {Json, TryVariant, VoiceInfo} from '../../../shared/types.ts';
 import {useJobs} from '../../api/events.ts';
@@ -31,6 +31,11 @@ export function TryPanel({voices}: {voices: VoiceInfo[]}): React.JSX.Element {
   const total = useRef(0);
 
   const running = jobs.find((j) => j.kind === 'try' && (j.state === 'queued' || j.state === 'running'));
+  const wasRunning = useRef(false);
+  useEffect(() => { // refetch when a try job ends: don't rely only on the file-watcher event
+    if (wasRunning.current && !running) void tries.refetch();
+    wasRunning.current = !!running;
+  }, [running, tries]);
   const letter = running?.step.match(/\b([A-F])\b/)?.[1];
   const label = !running ? '' : running.state === 'queued' ? 'Đang chờ lượt…'
     : letter ? `Đang tạo bản ${letter}… ${LETTERS.indexOf(letter) + 1}/${total.current || list.length}` : running.step || 'Đang nạp model giọng… (~10 giây)';
