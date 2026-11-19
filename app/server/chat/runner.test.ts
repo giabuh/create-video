@@ -26,6 +26,14 @@ describe('turnArgs', () => {
 });
 
 describe('runTurn (fake CLI)', () => {
+  it('never rejects: NUL in argv yields exactly one error event', async () => {
+    const events: ChatEvent[] = [];
+    await runTurn({sessionId: '11111111-1111-4111-8111-111111111111', resume: false, account: def, prompt: 'x', systemAppend: 'a\u0000b',
+      signal: new AbortController().signal, onEvent: e => events.push(e)});
+    expect(events).toHaveLength(1);
+    expect(events[0].kind).toBe('error');
+  });
+
   it('streams a normal turn, prompt via stdin, default account', async () => {
     const r = await turn('-n xin chào');
     expect(r.init).toBe(1);

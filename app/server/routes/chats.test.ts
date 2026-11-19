@@ -72,6 +72,16 @@ describe('chat routes', () => {
     expect(accs[0].limit.status).toBe('rejected');
   });
 
+  it('hostile screen (NUL, newline) is neutralised: 202 and the turn ends normally', async () => {
+    const {req, chat} = setup();
+    const c = await newChat(req);
+    const r = await req(`/api/chats/${c.id}/messages`, {method: 'POST', json: {text: 'hi', account: 'claude', screen: '/a\u0000b\n"x', slug: null}});
+    expect(r.status).toBe(202);
+    await chat.idle();
+    const d: ChatDetail = await (await req(`/api/chats/${c.id}`)).json();
+    expect(d.events.at(-1)?.kind).toBe('done');
+  });
+
   it('validation', async () => {
     const {req} = setup();
     const c = await newChat(req);

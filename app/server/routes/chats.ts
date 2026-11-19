@@ -5,6 +5,7 @@ import {bodyOf, HttpError} from './util.ts';
 import type {Deps} from './util.ts';
 
 const MAX_TEXT = 20_000;
+const SCREEN_RE = /^\/[\w\-./]{0,199}$/;
 const slugOf = (v: unknown): string | null => {
   if (v == null) return null;
   if (typeof v !== 'string' || !SLUG_RE.test(v)) throw new HttpError(400, 'bad slug');
@@ -27,7 +28,7 @@ export function chatRoutes({chat}: Deps): Hono {
     const b = await bodyOf(c);
     if (typeof b.text !== 'string' || !b.text.trim() || b.text.length > MAX_TEXT) throw new HttpError(400, 'text must be 1–20000 characters');
     if (typeof b.account !== 'string') throw new HttpError(400, 'account must be a string');
-    const screen = typeof b.screen === 'string' ? b.screen.slice(0, 200) : '/';
+    const screen = typeof b.screen === 'string' && SCREEN_RE.test(b.screen) ? b.screen : '/'; // path-like only: it goes into the system prompt
     await chat.send(id, {text: b.text, account: b.account, screen, slug: slugOf(b.slug)});
     return c.body(null, 202);
   });

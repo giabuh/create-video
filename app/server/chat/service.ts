@@ -66,7 +66,7 @@ export class ChatService {
       }).then(async () => {
         await w;
         await updateIndex(l => l.map(c => c.id === id ? {...c, updatedAt: Date.now()} : c)).catch(() => undefined);
-      }).finally(() => {
+      }).catch(err => { persist({kind: 'error', message: String(err)}); }).finally(() => {
         this.#active = null;
         this.#bus.emit({type: 'chatBusy', chatId: null});
         release();

@@ -26,16 +26,19 @@ export function runTurn(o: TurnOpts): Promise<void> {
     const end = (e: ChatEvent) => { if (!ended) { ended = true; o.onEvent(e); } };
     if (o.signal.aborted) { end({kind: 'error', message: STOPPED}); resolve(); return; }
 
-    const p = spawn(claudeBin(), turnArgs(o), {cwd: repoRoot(), env: childEnv(o.account), stdio: ['pipe', 'pipe', 'pipe']});
+    let p: ReturnType<typeof spawn>;
+    try { p = spawn(claudeBin(), turnArgs(o), {cwd: repoRoot(), env: childEnv(o.account), stdio: ['pipe', 'pipe', 'pipe']}); } catch (err) { // e.g. NUL in argv throws synchronously
+      end({kind: 'error', message: String(err)}); resolve(); return;
+    }
     let killTimer: ReturnType<typeof setTimeout> | undefined;
     const onAbort = () => { p.kill('SIGTERM'); killTimer = setTimeout(() => p.kill('SIGKILL'), 3000); };
     o.signal.addEventListener('abort', onAbort, {once: true});
 
-    p.stdin.on('error', () => { /* child exited before reading stdin; close/error handlers report it */ });
-    p.stdin.end(o.prompt);
+    p.stdin!.on('error', () => { /* child exited before reading stdin; close/error handlers report it */ });
+    p.stdin!.end(o.prompt);
 
-    const outRl = readline.createInterface({input: p.stdout});
-    const errRl = readline.createInterface({input: p.stderr});
+    const outRl = readline.createInterface({input: p.stdout!});
+    const errRl = readline.createInterface({input: p.stderr!});
     outRl.on('line', line => {
       const r = parseLine(line);
       if (!r) return;
