@@ -37,6 +37,18 @@ export function libraryRoutes({jobs}: Deps): Hono {
     return c.json(files);
   });
 
+  app.delete('/music/:name', async c => {
+    const name = plainName(c.req.param('name'));
+    if (!MUSIC_EXTS.includes(path.extname(name).toLowerCase())) throw new HttpError(400, 'not a music file');
+    for (const d of await readdir(safeJoin('projects'), {withFileTypes: true}).catch(() => [])) {
+      const sb = await readJson<Storyboard>(safeJoin('projects', d.name, 'storyboard.json')).catch(() => null);
+      if (sb?.data.music?.file === name) throw new HttpError(409, `Dự án "${d.name}" đang dùng bài nhạc này`);
+    }
+    await stat(safeJoin('music', name)).catch(() => { throw new HttpError(404, 'unknown music'); });
+    await rm(safeJoin('music', name));
+    return c.body(null, 204);
+  });
+
   app.get('/library', async c => {
     const idx = await readJsonOr<LibraryIndex>(indexFile(), {});
     return c.json({...idx, usage: await usageMap()} satisfies LibraryResponse);

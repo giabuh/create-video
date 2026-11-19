@@ -1,7 +1,8 @@
-import {Music as MusicIcon} from 'lucide-react';
-import {useMusic} from '../../api/hooks.ts';
+import {useState} from 'react';
+import {Music as MusicIcon, Trash2} from 'lucide-react';
+import {useDeleteMusic, useMusic} from '../../api/hooks.ts';
 import {useUploads} from '../../api/upload.ts';
-import {AudioPlayer, DropZone, EmptyState, ErrorState, Skeleton, fmtBytes} from '../../ui/index.ts';
+import {AudioPlayer, ConfirmDialog, DropZone, IconButton, toast, EmptyState, ErrorState, Skeleton, fmtBytes} from '../../ui/index.ts';
 import {MUSIC_EXTS} from './exts.ts';
 import {UploadRows} from './Uploads.tsx';
 import s from './Library.module.css';
@@ -9,6 +10,8 @@ import s from './Library.module.css';
 export function MusicTab(): React.JSX.Element {
   const {upload} = useUploads();
   const q = useMusic();
+  const del = useDeleteMusic();
+  const [pending, setPending] = useState<string | null>(null);
   return (
     <div className={s.stack}>
       <DropZone accept={MUSIC_EXTS} title="Kéo-thả nhạc nền vào đây" description="MP3, M4A, WAV, OGG, AAC. File lưu vào thư mục music/." buttonLabel="Chọn file nhạc"
@@ -24,9 +27,16 @@ export function MusicTab(): React.JSX.Element {
               <AudioPlayer compact src={`/music/${encodeURIComponent(m.name)}`} label={m.name} />
               <span className={s.mname} title={m.name}>{m.name}</span>
               <span className={s.msize}>{fmtBytes(m.bytes)}</span>
+              <IconButton label={`Xoá ${m.name}`} icon={<Trash2 size={18} />} onClick={() => setPending(m.name)} />
             </li>
           ))}
         </ul>}
+      <ConfirmDialog open={pending !== null} onOpenChange={(o) => { if (!o) setPending(null); }} danger loading={del.isPending}
+        title={`Xoá nhạc "${pending ?? ''}"?`} description="Xoá file khỏi thư mục music/. Không hoàn tác được." confirmLabel="Xoá nhạc"
+        onConfirm={() => pending && del.mutate(pending, {
+          onSuccess: () => { setPending(null); toast({title: 'Đã xoá nhạc', tone: 'success'}); },
+          onError: (e) => { setPending(null); toast({title: 'Không xoá được nhạc', description: e.message, tone: 'error'}); },
+        })} />
     </div>
   );
 }

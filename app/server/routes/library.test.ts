@@ -26,6 +26,20 @@ describe('library routes', () => {
     await writeFile(path.join(root, 'music/.hidden.mp3'), 'h');
     expect(await (await setup().req('/api/music')).json()).toEqual([{name: 'Sôi động 1.mp3', bytes: 3}, {name: 'a.wav', bytes: 2}].sort((x, y) => x.name < y.name ? -1 : 1));
   });
+  it('DELETE /music removes a file unless a project uses it', async () => {
+    const root = await makeTestRoot();
+    await mkdir(path.join(root, 'music'), {recursive: true});
+    await writeFile(path.join(root, 'music/a.mp3'), 'a');
+    await writeFile(path.join(root, 'music/b.mp3'), 'b');
+    await mkdir(path.join(root, 'projects/p1'), {recursive: true});
+    await writeFile(path.join(root, 'projects/p1/storyboard.json'), JSON.stringify({scenes: [], music: {file: 'b.mp3'}}));
+    const {req} = setup();
+    expect((await req('/api/music/a.mp3', {method: 'DELETE'})).status).toBe(204);
+    expect((await req('/api/music/b.mp3', {method: 'DELETE'})).status).toBe(409);
+    expect((await req('/api/music/a.mp3', {method: 'DELETE'})).status).toBe(404);
+    expect((await req('/api/music/x.txt', {method: 'DELETE'})).status).toBe(400);
+    expect(await (await req('/api/music')).json()).toEqual([{name: 'b.mp3', bytes: 1}]);
+  });
   it('missing index -> empty', async () => {
     const root = await makeTestRoot();
     await import('node:fs/promises').then(f => f.rm(path.join(root, 'library/media-index.json')));

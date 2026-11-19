@@ -42,7 +42,7 @@ export function UploadRows({target}: {target: 'media' | 'music'}): React.JSX.Ele
     if (i.state === 'uploading') return 'up' as const;
     if (target === 'music') return 'done' as const;
     if (active) return 'ingest' as const;
-    const t0 = (seen.current.get(i.id) ?? 0) - 500;
+    const t0 = (i.doneAt ?? seen.current.get(i.id) ?? 0) - 500; // doneAt: the screen may not have been open when the upload finished
     if (newest && newest.state !== 'done' && (newest.endedAt ?? 0) >= t0) return 'error' as const;
     return last?.endedAt && last.endedAt >= t0 ? 'done' as const : 'ingest' as const;
   };

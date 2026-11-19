@@ -8,8 +8,9 @@ export const chatKeys = {accounts: ['chat-accounts'] as const, list: ['chats'] a
 
 export const useChatAccounts = () => useQuery({queryKey: chatKeys.accounts, queryFn: ({signal}) => api<ChatAccount[]>('/chat/accounts', {signal})});
 export const useChats = () => useQuery({queryKey: chatKeys.list, queryFn: ({signal}) => api<ChatMeta[]>('/chats', {signal})});
-export const useChat = (id: string | null) => useQuery({
-  queryKey: chatKeys.one(id ?? ''), enabled: id !== null, queryFn: ({signal}) => api<ChatDetail>(`/chats/${id}`, {signal}),
+// poll: fallback while a turn we sent is open, in case the SSE stream silently died (e.g. the API restarted behind the dev proxy)
+export const useChat = (id: string | null, poll = false) => useQuery({
+  queryKey: chatKeys.one(id ?? ''), enabled: id !== null, refetchInterval: poll ? 2000 : false, queryFn: ({signal}) => api<ChatDetail>(`/chats/${id}`, {signal}),
 });
 export function useCreateChat() {
   const qc = useQueryClient();
@@ -19,9 +20,13 @@ export function useCreateChat() {
     return qc.invalidateQueries({queryKey: chatKeys.list});
   }});
 }
-export const useSendChat = () => useMutation({
-  mutationFn: ({id, ...body}: {id: string; text: string; account: string; screen: string; slug: string | null}) => api<void>(`/chats/${id}/messages`, {body}),
-});
+export function useSendChat() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({id, ...body}: {id: string; text: string; account: string; screen: string; slug: string | null}) => api<void>(`/chats/${id}/messages`, {body}),
+    onSuccess: (_r, {id}) => { void qc.invalidateQueries({queryKey: chatKeys.one(id)}); void qc.invalidateQueries({queryKey: chatKeys.list}); },
+  });
+}
 export const useStopChat = () => useMutation({mutationFn: (id: string) => api<void>(`/chats/${id}/stop`, {method: 'POST'})});
 
 // Live state from SSE; module-level because the panel can close and reopen.

@@ -70,6 +70,10 @@ export function useStartIngest(): UseMutationResult<Job, HttpError, void> {
 }
 
 export const useMusic = () => useGet<MusicFile[]>(qk.music, '/music');
+export function useDeleteMusic(): UseMutationResult<unknown, HttpError, string> {
+  const qc = useQueryClient();
+  return useMutation({mutationFn: (name) => api(`/music/${enc(name)}`, {method: 'DELETE'}), onSuccess: () => qc.invalidateQueries({queryKey: qk.music})});
+}
 export const useVoices = () => useGet<VoiceInfo[]>(qk.voices, '/voices');
 export const useTries = () => useGet<Tries | null>(qk.tries, '/voices/tries');
 export function useStartTry(): UseMutationResult<Job, HttpError, {voice: string; text: string; variants: Json[]}> {

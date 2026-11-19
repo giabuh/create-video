@@ -2,7 +2,7 @@ import {useSyncExternalStore} from 'react';
 import type {ApiError} from '../../shared/types.ts';
 import {api} from './client.ts';
 
-export type UploadItem = {id: string; file: File; target: 'media' | 'music' | 'voice' | 'logo'; state: 'uploading' | 'done' | 'error'; progress: number; savedAs?: string; error?: string};
+export type UploadItem = {id: string; file: File; target: 'media' | 'music' | 'voice' | 'logo'; state: 'uploading' | 'done' | 'error'; progress: number; savedAs?: string; error?: string; doneAt?: number};
 
 // Module-level so uploads keep running (and stay visible) when the user navigates away.
 let items: UploadItem[] = [];
@@ -32,7 +32,7 @@ function put(it: UploadItem, url: string): Promise<void> {
     x.onload = () => {
       let body: (ApiError & {saved?: string; logo?: string}) | null = null;
       try { body = JSON.parse(x.responseText); } catch { /* empty or non-JSON body */ }
-      if (x.status >= 200 && x.status < 300) patch(it.id, {state: 'done', progress: 1, savedAs: body?.saved ?? body?.logo});
+      if (x.status >= 200 && x.status < 300) patch(it.id, {state: 'done', doneAt: Date.now(), progress: 1, savedAs: body?.saved ?? body?.logo});
       else patch(it.id, {state: 'error', error: body?.error ?? `HTTP ${x.status}`});
       resolve();
     };
