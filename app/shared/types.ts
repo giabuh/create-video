@@ -30,9 +30,11 @@ export type VersionInfo = {
   file: string;            // "projects/<slug>/reel-v3.mp4" (URL path without leading slash)
   bytes: number; mtime: number;
   kind: 'draft' | 'final' | null;   // from project.json renders; null = rendered outside the app
-  hasSnapshot: boolean; approved: boolean;
+  hasSnapshot: boolean; approved: boolean; published: PublishInfo | null;
 };
-export type ProjectMeta = {approved: string | null; renders: Record<string, {kind: 'draft' | 'final'; at: string}>};
+export type PublishInfo = {name: string; state: 'uploading' | 'done' | 'failed'; error?: string; at: string};
+export type ProjectMeta = {approved: string | null; renders: Record<string, {kind: 'draft' | 'final'; at: string}>;
+  published?: Record<string, PublishInfo>; deleting?: {uploads: string[]; state: 'uploading' | 'failed'; error?: string}};
 export type ProjectSummary = {
   slug: string; status: ProjectStatus; approved: string | null; latest: VersionInfo | null;
   sceneCount: number; totalSeconds: number | null; mix: Mix | null; mtime: number;
@@ -63,8 +65,9 @@ export type Config = Json & {
   mix: Mix; video: {fps: number; width: number; height: number};
   music: {volume: number; duckTo: number; fadeOut: number};
   captions: {font: string; size: number; color: string; highlightColor: string; maxWords: number};
+  sync: {remote: string};
 };
-export type JobKind = 'voice' | 'render' | 'ingest' | 'try' | 'approve' | 'voice-add';
+export type JobKind = 'voice' | 'render' | 'ingest' | 'try' | 'approve' | 'voice-add' | 'publish' | 'delete-project';
 export type JobState = 'queued' | 'running' | 'done' | 'failed' | 'cancelled';
 export type Job = {
   id: string; kind: JobKind; lane: 'gpu' | 'render' | 'io'; project: string | null; label: string;

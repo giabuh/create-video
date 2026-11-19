@@ -33,7 +33,7 @@ export function driveName(input: string): string {
 
 export async function publishDir(): Promise<string> {
   const cfg = await readJson<Config>(path.join(repoRoot(), 'config.json'));
-  return `${(cfg.data as unknown as {sync: {remote: string}}).sync.remote}/xuat-ban`;
+  return `${cfg.data.sync.remote}/xuat-ban`;
 }
 
 function fail(r: {err: string}): DriveError {

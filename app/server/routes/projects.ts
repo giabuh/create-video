@@ -1,9 +1,11 @@
 import {mkdir, readdir, stat, writeFile} from 'node:fs/promises';
 import {Hono} from 'hono';
+import {driveName} from '../drive.ts';
 import {approveCommit} from '../git.ts';
 import type {JobCtx, JobQueue} from '../jobs.ts';
 import {SLUG_RE, safeJoin, slugify} from '../paths.ts';
 import {runPreview} from '../procs.ts';
+import {deleteRender, uploadVersion} from '../publish.ts';
 import {withSlugLock} from '../slugLock.ts';
 import {readJson, readJsonOr, writeJsonAtomic} from '../store.ts';
 import {listVersions, projectStatus, readMeta, writeMeta} from '../versions.ts';
@@ -26,6 +28,8 @@ async function summarize(jobs: JobQueue, slug: string, config: Config): Promise<
     mtime: sb.mtime, firstCaption: first?.caption ?? first?.say ?? '', voice: sb.data.voice ?? config.defaults.voice,
   };
 }
+
+const isBusy = (jobs: JobQueue, slug: string) => jobs.list().some(j => (j.kind === 'render' || j.kind === 'publish') && j.project === slug && (j.state === 'queued' || j.state === 'running'));
 
 const optStr = (v: unknown, what: string): string | undefined => {
   if (v === undefined) return undefined;
@@ -118,14 +122,26 @@ export function projectRoutes({jobs, worker}: Deps): Hono {
     }), 202);
   });
 
+  const enqueuePublish = (slug: string, version: string, name: string) => jobs.enqueue({
+    kind: 'publish', lane: 'io', label: `Đẩy ${version} lên Drive`, project: slug, cancellable: true,
+    run: async ctx => { await uploadVersion(slug, version, name, ctx, {unique: false}); },
+  });
+  const nameOf = (slug: string, version: string, raw: unknown): string => {
+    if (raw !== undefined && typeof raw !== 'string') throw new HttpError(400, 'bad name');
+    try { return driveName(raw ?? `${slug}-${version}`); } catch { throw new HttpError(400, 'bad name'); }
+  };
+
   app.post('/projects/:slug/approve', async c => {
     const slug = c.req.param('slug');
     await needProject(slug);
-    const version = (await bodyOf(c)).version;
+    const b = await bodyOf(c);
+    const version = b.version;
     if (typeof version !== 'string' || !/^reel-v\d+$/.test(version)) throw new HttpError(400, 'bad version');
-    return c.json(await withSlugLock(slug, async () => {
+    const name = nameOf(slug, version, b.name);
+    const res = await withSlugLock(slug, async () => {
       if (!(await stat(safeJoin('projects', slug, `${version}.mp4`)).catch(() => null))) throw new HttpError(404, 'unknown version');
       const prev = (await readMeta(slug)).data;
+      if (prev.renders[version]?.kind === 'draft') throw new HttpError(400, 'Bản nháp cũ không duyệt được');
       const meta = {...prev, approved: version};
       await writeMeta(slug, meta); // approveCommit needs project.json on disk
       try { return {meta, commit: await approveCommit(slug, version)}; } catch (e) { // restore only `approved`; renders may have changed
@@ -133,7 +149,29 @@ export function projectRoutes({jobs, worker}: Deps): Hono {
         await writeMeta(slug, {...now, approved: prev.approved});
         throw e;
       }
-    }));
+    });
+    return c.json({...res, job: enqueuePublish(slug, version, name)});
+  });
+
+  app.post('/projects/:slug/publish', async c => {
+    const slug = c.req.param('slug');
+    await needProject(slug);
+    const b = await bodyOf(c);
+    if (typeof b.version !== 'string' || !/^reel-v\d+$/.test(b.version)) throw new HttpError(400, 'bad version');
+    const name = nameOf(slug, b.version, b.name);
+    if ((await readMeta(slug)).data.approved !== b.version) throw new HttpError(409, 'not approved');
+    return c.json(enqueuePublish(slug, b.version, name), 202);
+  });
+
+  app.delete('/projects/:slug/renders/:version', async c => {
+    const slug = c.req.param('slug'), version = c.req.param('version');
+    await needProject(slug);
+    if (!/^reel-v\d+$/.test(version)) throw new HttpError(400, 'bad version');
+    if (!(await stat(safeJoin('projects', slug, `${version}.mp4`)).catch(() => null))) throw new HttpError(404, 'unknown version');
+    const meta = (await readMeta(slug)).data;
+    if (meta.approved === version && meta.published?.[version]?.state !== 'done') throw new HttpError(409, 'Bản đã duyệt chưa lên Drive');
+    if (isBusy(jobs, slug)) throw new HttpError(409, 'Đang render hoặc đẩy lên Drive');
+    return c.json(await deleteRender(slug, version, {drive: c.req.query('drive') === '1'}));
   });
   return app;
 }

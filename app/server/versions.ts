@@ -2,7 +2,7 @@ import {readdir, stat} from 'node:fs/promises';
 import {withSlugLock} from './slugLock.ts';
 import {readJsonOr, writeJsonAtomic} from './store.ts';
 import {safeJoin} from './paths.ts';
-import type {ProjectMeta, ProjectStatus, VersionInfo, Versioned} from '../shared/types.ts';
+import type {ProjectMeta, ProjectStatus, PublishInfo, VersionInfo, Versioned} from '../shared/types.ts';
 
 const dirOf = (slug: string) => safeJoin('projects', slug);
 const metaFile = (slug: string) => safeJoin('projects', slug, 'project.json');
@@ -20,7 +20,7 @@ export async function listVersions(slug: string, meta: ProjectMeta): Promise<Ver
     if (!st) continue;
     out.push({
       name, n: Number(m[1]), file: `projects/${slug}/${f}`, bytes: st.size, mtime: Math.floor(st.mtimeMs),
-      kind: meta.renders[name]?.kind ?? null, hasSnapshot: set.has(`${name}.storyboard.json`), approved: meta.approved === name,
+      kind: meta.renders[name]?.kind ?? null, hasSnapshot: set.has(`${name}.storyboard.json`), approved: meta.approved === name, published: meta.published?.[name] ?? null,
     });
   }
   return out.sort((a, b) => b.n - a.n);
@@ -50,4 +50,11 @@ export const recordRender = (slug: string, name: string): Promise<number> => wit
   const meta = (await readMeta(slug)).data;
   meta.renders[name] = {kind: 'final', at: new Date().toISOString()};
   return writeMeta(slug, meta);
+});
+
+export const setPublished = (slug: string, version: string, info: PublishInfo | null): Promise<void> => withSlugLock(slug, async () => {
+  const meta = (await readMeta(slug)).data;
+  const published = {...meta.published};
+  if (info) published[version] = info; else delete published[version];
+  await writeMeta(slug, {...meta, published});
 });

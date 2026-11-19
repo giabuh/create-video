@@ -6,6 +6,10 @@ import {setup, settle} from './testApp.ts';
 import {readMeta, recordRender} from '../versions.ts';
 
 vi.mock('../git.ts', () => ({approveCommit: vi.fn(async () => 'abc123')}));
+vi.mock('../drive.ts', async (orig) => ({
+  ...(await orig<typeof import('../drive.ts')>()),
+  driveList: vi.fn(async () => []), driveUpload: vi.fn(async () => {}), driveDelete: vi.fn(async () => {}),
+}));
 
 describe('projects routes', () => {
   it('lists, creates, conflicts', async () => {
@@ -59,7 +63,7 @@ describe('projects routes', () => {
     expect((await req('/api/projects/p1/approve', {method: 'POST', json: {version: '../x'}})).status).toBe(400);
     await writeFile(path.join(dir, 'reel-v1.mp4'), 'x');
     const ap = await req('/api/projects/p1/approve', {method: 'POST', json: {version: 'reel-v1'}});
-    expect(await ap.json()).toEqual({meta: {approved: 'reel-v1', renders: {}}, commit: 'abc123'});
+    expect(await ap.json()).toMatchObject({meta: {approved: 'reel-v1', renders: {}}, commit: 'abc123', job: {kind: 'publish'}});
     expect(JSON.parse(await readFile(path.join(dir, 'project.json'), 'utf8')).approved).toBe('reel-v1');
   });
 
@@ -75,5 +79,35 @@ describe('projects routes', () => {
     const meta = (await readMeta('p1')).data;
     expect(meta.approved).toBe('reel-v1');
     expect(Object.keys(meta.renders).sort()).toEqual(['reel-v2', 'reel-v3']);
+  });
+
+  it('approve rejects legacy drafts and bad names; delete guards', async () => {
+    const root = await makeTestRoot();
+    const {req, jobs} = setup();
+    const dir = path.join(root, 'projects/p1');
+    await writeFile(path.join(dir, 'reel-v1.mp4'), 'x');
+    await writeFile(path.join(dir, 'reel-v2.mp4'), 'x');
+    await writeFile(path.join(dir, 'project.json'), JSON.stringify({approved: null, renders: {'reel-v1': {kind: 'draft', at: 'x'}, 'reel-v2': {kind: 'final', at: 'x'}}}));
+    const bad = await req('/api/projects/p1/approve', {method: 'POST', json: {version: 'reel-v1'}});
+    expect(bad.status).toBe(400);
+    expect(await bad.json()).toMatchObject({error: 'Bản nháp cũ không duyệt được'});
+    expect((await req('/api/projects/p1/approve', {method: 'POST', json: {version: 'reel-v2', name: '!!!'}})).status).toBe(400);
+    expect((await readMeta('p1')).data.approved).toBeNull();
+    const ok = await req('/api/projects/p1/approve', {method: 'POST', json: {version: 'reel-v2'}});
+    expect(ok.status).toBe(200);
+    await settle(jobs, (await ok.json()).job.id);
+    expect((await readMeta('p1')).data.published?.['reel-v2']).toMatchObject({state: 'done', name: 'p1-reel-v2.mp4'});
+    expect((await req('/api/projects/p1/renders/reel-v9', {method: 'DELETE'})).status).toBe(404);
+    expect((await req('/api/projects/p1/renders/reel-v2?drive=1', {method: 'DELETE'})).status).toBe(200);
+  });
+
+  it('delete of approved render not on Drive is 409', async () => {
+    const root = await makeTestRoot();
+    const {req} = setup();
+    await writeFile(path.join(root, 'projects/p1/reel-v1.mp4'), 'x');
+    await writeFile(path.join(root, 'projects/p1/project.json'), JSON.stringify({approved: 'reel-v1', renders: {}}));
+    const r = await req('/api/projects/p1/renders/reel-v1', {method: 'DELETE'});
+    expect(r.status).toBe(409);
+    expect(await r.json()).toMatchObject({error: 'Bản đã duyệt chưa lên Drive'});
   });
 });
