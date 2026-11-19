@@ -27,6 +27,7 @@ export function VersionCard({v, register, publishJob, onApprove, onRetry, onDele
         {v.approved && <Chip tone="success">Đã duyệt</Chip>}
         {v.kind === 'draft' && <Chip>{QUALITY.draft}</Chip>}
       </div>
+      {v.approved && !p && <div className={s.row}><Button size="sm" variant="secondary" onClick={onRetry}>Đẩy lên Drive</Button></div>}
       {p && (
         <div className={s.row}>
           {p.state === 'uploading' && <Chip tone="info">Đang tải lên Drive{publishJob?.progress != null ? ` · ${fmtPct(publishJob.progress)}` : ''}</Chip>}

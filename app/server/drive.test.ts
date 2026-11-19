@@ -46,6 +46,10 @@ describe('rclone calls', () => {
     fake({code: 1, err: "Failed: didn't find section in config file"});
     await expect(driveList()).rejects.toThrow('rclone config');
   });
+  it('json-log stderr shows only the last error msg', async () => {
+    fake({code: 1, err: '{"level":"error","msg":"quota exceeded "}\n{"level":"info","msg":"stats"}\n'});
+    await expect(driveDelete('x.mp4')).rejects.toThrow(/^quota exceeded$/);
+  });
 });
 
 describe('withRetry', () => {

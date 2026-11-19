@@ -38,7 +38,9 @@ export async function publishDir(): Promise<string> {
 
 function fail(r: {err: string}): DriveError {
   if (r.err.includes("didn't find section in config file")) return new DriveError('Chưa cấu hình rclone — chạy: rclone config');
-  const last = r.err.trim().split('\n').filter(Boolean).pop();
+  // --use-json-log: stderr lines are {"level","msg",...}; show only the msg
+  const msgs = r.err.trim().split('\n').filter(Boolean).map((l) => { try { return (JSON.parse(l) as {level?: string; msg?: string}); } catch { return {msg: l}; } });
+  const last = (msgs.filter((m) => m.level === 'error').pop() ?? msgs.pop())?.msg?.trim();
   return new DriveError(last ?? 'rclone thất bại');
 }
 

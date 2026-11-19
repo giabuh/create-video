@@ -213,7 +213,7 @@ Saving reusable assets by voice command: "lưu bố cục này thành template X
 
 **In git (private repo):** all code, `config.json`, `brands/`, `voices/*-short.wav` and `*-full.wav`, `projects/*/storyboard.json`, CLAUDE.md, skills, and the VieNeu-TTS submodule pointer.
 
-**Not in git, synced via Google Drive:** `library/` (media + `media-index.json` + thumbs), `music/`, `reference/`, and `projects/*/reel-v*.mp4`.
+**Not in git, synced via Google Drive:** `library/` (media + `media-index.json` + thumbs), `music/`, `reference/`. Approved renders go to Drive `xuat-ban/` from the app (see 2026-11-19-publish-to-drive-design.md).
 
 **Not in git, not synced:** `.venv`, `node_modules`, the TTS audio cache, `preview/` and `inbox/`. These are rebuilt or regenerated per machine.
 
