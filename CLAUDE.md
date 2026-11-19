@@ -15,7 +15,7 @@ Start a reel with the `/make-reel` skill.
 - Voice audition: `VieNeu-TTS/.venv/bin/python tools/voice_try.py --voice phuong --text "..." --variants '[{"speed":1.05},{"temperature":0.6}]'`
 - Sync media with Google Drive: `tools/sync.sh push|pull` (rclone remote in config.json `sync.remote`).
 - App (visual UI for the user): `cd app && npm start`  → http://127.0.0.1:5317 (dev with API auto-restart: `npm run dev`)
-- Tests: `uv run --with pytest python -m pytest tools/tests -q` and `cd studio && npx tsc --noEmit`.
+- Tests: `uv run --with pytest python -m pytest tools/tests -q`, `cd studio && npx tsc --noEmit`, `cd app && npm test && npx tsc --noEmit` (E2E: `cd app && npm run e2e`).
 
 ## Rules
 1. Never invent ad facts (price, phone, dates, address, scores, results). Ask the user.
