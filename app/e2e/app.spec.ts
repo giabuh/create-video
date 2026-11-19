@@ -37,6 +37,7 @@ test.beforeAll(async () => {
 test.afterAll(async () => {
   for (const k of await libraryKeys()) await fetch(`${API}/library/${encodeURIComponent(k)}`, {method: 'DELETE'});
   rmSync(path.join(ROOT, 'projects', slug), {recursive: true, force: true});
+  rmSync(path.join(ROOT, 'inbox/_done', `${jpgStem}.jpg`), {force: true}); // ingest keeps the original here
 });
 
 test('projects list shows the scratch project', async ({page}) => {
