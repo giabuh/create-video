@@ -3,8 +3,8 @@ import {Link, useNavigate, useParams} from 'react-router';
 import {Film} from 'lucide-react';
 import type {VersionInfo} from '../../../shared/types.ts';
 import {useJobs} from '../../api/events.ts';
-import {useCancelJob, useApprove, useOpenFolder, useProject, useStartRender} from '../../api/hooks.ts';
-import {Button, Chip, ConfirmDialog, EmptyState, ErrorState, PageHeader, ProgressBar, Skeleton, fmtPct, toast} from '../../ui/index.ts';
+import {useCancelJob, useApprove, useDeleteRender, useOpenFolder, usePublish, useProject, useStartRender} from '../../api/hooks.ts';
+import {Button, Chip, Dialog, EmptyState, Input, ErrorState, PageHeader, ProgressBar, Skeleton, fmtPct, toast} from '../../ui/index.ts';
 import {VersionCard} from './VersionCard.tsx';
 import s from './Renders.module.css';
 
@@ -21,7 +21,14 @@ export function RendersScreen(): React.JSX.Element {
   const job = useJobs().find((j) => j.kind === 'render' && j.project === slug && (j.state === 'running' || j.state === 'queued'));
   const videos = useRef(new Map<string, HTMLVideoElement>());
   const register = useCallback((name: string, el: HTMLVideoElement | null) => { if (el) videos.current.set(name, el); else videos.current.delete(name); }, []);
-  const [confirm, setConfirm] = useState<VersionInfo | null>(null);
+  const publish = usePublish(slug);
+  const del = useDeleteRender(slug);
+  const publishJobs = useJobs().filter((j) => j.kind === 'publish' && j.project === slug && (j.state === 'running' || j.state === 'queued'));
+  const [confirm, setConfirm] = useState<{v: VersionInfo; retry: boolean} | null>(null);
+  const [name, setName] = useState('');
+  const [toDelete, setToDelete] = useState<VersionInfo | null>(null);
+  const [alsoDrive, setAlsoDrive] = useState(false);
+  const askName = (v: VersionInfo, retry: boolean) => { setName(v.published?.name ?? `${slug}-${v.name}`); setConfirm({v, retry}); };
   const [now, setNow] = useState(Date.now());
   useEffect(() => { if (!job) return; const i = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(i); }, [job]);
 
@@ -30,9 +37,20 @@ export function RendersScreen(): React.JSX.Element {
   const render = () => start.mutate(undefined, {onError: (e) => toast({title: 'Không bắt đầu được render', description: e.message, tone: 'error'})});
   const doApprove = () => {
     if (!confirm) return;
-    approve.mutate(confirm.name, {
-      onSuccess: (r) => { toast({title: `Đã duyệt ${confirm.name}`, description: r.commit ? `Commit ${r.commit}` : 'Không có thay đổi để commit', tone: 'success'}); setConfirm(null); },
-      onError: (e) => { toast({title: 'Không duyệt được', description: e.message, tone: 'error'}); setConfirm(null); },
+    const {v, retry} = confirm;
+    const body = {version: v.name, name: name.trim()};
+    const fail = (title: string) => (e: Error) => { toast({title, description: e.message, tone: 'error'}); setConfirm(null); };
+    if (retry) publish.mutate(body, {onSuccess: () => { toast({title: `Đang đẩy ${v.name} lên Drive`, tone: 'info'}); setConfirm(null); }, onError: fail('Không đẩy được lên Drive')});
+    else approve.mutate(body, {
+      onSuccess: () => { toast({title: `Đã duyệt ${v.name} · đang đẩy lên Drive`, tone: 'success'}); setConfirm(null); },
+      onError: fail('Không duyệt được'),
+    });
+  };
+  const doDelete = () => {
+    if (!toDelete) return;
+    del.mutate({version: toDelete.name, drive: alsoDrive}, {
+      onSuccess: (r) => { toast({title: `Đã xoá ${toDelete.name}`, tone: 'success'}); if (r.driveError) toast({title: 'Không xoá được trên Drive', description: r.driveError, tone: 'error'}); setToDelete(null); },
+      onError: (e) => { toast({title: 'Không xoá được', description: e.message, tone: 'error'}); setToDelete(null); },
     });
   };
 
@@ -54,7 +72,7 @@ export function RendersScreen(): React.JSX.Element {
     body = <EmptyState icon={<Film size={28} />} title="Chưa có bản render" description="Render một bản nháp để xem thử video."
       action={<Button variant="primary" loading={start.isPending || !!job} loadingText="Đang render…" onClick={render}>Render nháp</Button>} />;
   } else {
-    body = <div className={s.grid}>{versions.map((v) => <VersionCard key={v.name} v={v} register={register} onApprove={() => setConfirm(v)} onOpenFolder={() => open.mutate(`projects/${slug}`, {onError: (e) => toast({title: 'Không mở được thư mục', description: e.message, tone: 'error'})})} />)}</div>;
+    body = <div className={s.grid}>{versions.map((v) => <VersionCard key={v.name} v={v} register={register} publishJob={publishJobs.find((j) => j.label.includes(` ${v.name} `))} onApprove={() => askName(v, false)} onRetry={() => askName(v, true)} onDelete={() => { setAlsoDrive(false); setToDelete(v); }} onOpenFolder={() => open.mutate(`projects/${slug}`, {onError: (e) => toast({title: 'Không mở được thư mục', description: e.message, tone: 'error'})})} />)}</div>;
   }
 
   const elapsed = job?.startedAt ? (now - job.startedAt) / 1000 : 0;
@@ -74,16 +92,35 @@ export function RendersScreen(): React.JSX.Element {
           ) : (
             <section className={s.card}>
               <b>“Duyệt bản này” làm gì?</b>
-              <p className={s.muted}>Đánh dấu bản đã chốt và lưu storyboard của bản đó vào git, để sau này dựng lại đúng y như vậy. File video vẫn nằm trong thư mục dự án và được đồng bộ lên Drive.</p>
+              <p className={s.muted}>Duyệt = chốt bản này, lưu storyboard vào git và đẩy file lên Drive (thư mục xuat-ban/). Các bản khác chỉ nằm trên máy này; xoá khi không cần.</p>
             </section>
           )}
         </aside>
       </div>
-      <ConfirmDialog open={!!confirm} onOpenChange={(o) => { if (!o) setConfirm(null); }} loading={approve.isPending}
-        title={`Duyệt ${confirm?.name ?? ''}?`} confirmLabel="Duyệt bản này" onConfirm={doApprove}
-        description={confirm?.hasSnapshot === false
+      <Dialog open={!!confirm} onOpenChange={(o) => { if (!o && !approve.isPending && !publish.isPending) setConfirm(null); }} size="sm"
+        title={confirm?.retry ? `Thử lại đẩy ${confirm.v.name}` : `Duyệt ${confirm?.v.name ?? ''}?`}
+        description={confirm?.retry ? undefined : confirm?.v.hasSnapshot === false
           ? 'Bản này không có snapshot storyboard, nên chỉ ghi nhận việc duyệt, không lưu storyboard vào git.'
-          : 'Đánh dấu bản này là bản đã chốt và lưu snapshot storyboard của nó vào git để sau này dựng lại đúng như vậy.'} />
+          : 'Đánh dấu bản này là bản đã chốt, lưu snapshot storyboard vào git và đẩy file lên Drive.'}
+        footer={<>
+          <Button variant="ghost" onClick={() => setConfirm(null)} disabled={approve.isPending || publish.isPending}>Huỷ</Button>
+          <Button variant="primary" loading={approve.isPending || publish.isPending} disabled={!name.trim()} onClick={doApprove}>{confirm?.retry ? 'Thử lại' : 'Duyệt bản này'}</Button>
+        </>}>
+        <label className={s.field}>Tên file trên Drive
+          <Input value={name} onChange={(e) => setName(e.target.value)} />
+          <span className={s.hint}>Lưu vào thư mục xuat-ban/ trên Drive</span>
+        </label>
+      </Dialog>
+      <Dialog open={!!toDelete} onOpenChange={(o) => { if (!o && !del.isPending) setToDelete(null); }} size="sm" title={`Xoá ${toDelete?.name ?? ''}?`}
+        description="Xoá file video trên máy này. Storyboard của dự án vẫn giữ."
+        footer={<>
+          <Button variant="ghost" disabled={del.isPending} onClick={() => setToDelete(null)}>Huỷ</Button>
+          <Button variant="danger" loading={del.isPending} onClick={doDelete}>Xoá</Button>
+        </>}>
+        {toDelete?.published?.state === 'done' && (
+          <label className={s.check}><input type="checkbox" checked={alsoDrive} onChange={(e) => setAlsoDrive(e.target.checked)} /> Xoá cả trên Drive</label>
+        )}
+      </Dialog>
     </div>
   );
 }

@@ -32,10 +32,10 @@ export function useStartVoice(slug: string): UseMutationResult<Job, HttpError, v
 export function useStartRender(slug: string): UseMutationResult<Job, HttpError, void> {
   return useMutation({mutationFn: post(() => `/projects/${enc(slug)}/render`, () => ({}))});
 }
-export function useApprove(slug: string): UseMutationResult<{meta: ProjectMeta; commit: string | null}, HttpError, string> {
+export function useApprove(slug: string): UseMutationResult<{meta: ProjectMeta; commit: string | null; job: Job}, HttpError, {version: string; name: string}> {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: post((_v: string) => `/projects/${enc(slug)}/approve`, (version) => ({version})),
+    mutationFn: post((_v: {version: string; name: string}) => `/projects/${enc(slug)}/approve`, (b) => b),
     onSuccess: () => invalidate(qc, qk.project(slug), qk.projects),
   });
 }
@@ -106,4 +106,19 @@ export function useCancelJob(): UseMutationResult<Job, HttpError, string> {
 }
 export function useOpenFolder(): UseMutationResult<void, HttpError, string> {
   return useMutation({mutationFn: (path) => api('/open', {method: 'POST', body: {path}})});
+}
+
+export function usePublish(slug: string): UseMutationResult<Job, HttpError, {version: string; name: string}> {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: post((_v: {version: string; name: string}) => `/projects/${enc(slug)}/publish`, (b) => b),
+    onSettled: () => invalidate(qc, qk.project(slug), qk.projects),
+  });
+}
+export function useDeleteRender(slug: string): UseMutationResult<{driveError?: string}, HttpError, {version: string; drive: boolean}> {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({version, drive}) => api(`/projects/${enc(slug)}/renders/${enc(version)}?drive=${drive ? 1 : 0}`, {method: 'DELETE'}),
+    onSettled: () => invalidate(qc, qk.project(slug), qk.projects),
+  });
 }

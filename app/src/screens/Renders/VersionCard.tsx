@@ -1,15 +1,17 @@
 import {useEffect, useRef, useState} from 'react';
-import {Pause, Play, FolderOpen} from 'lucide-react';
-import type {VersionInfo} from '../../../shared/types.ts';
-import {Button, Chip, IconButton, Slider, fmtBytes} from '../../ui/index.ts';
+import {Pause, Play, FolderOpen, Trash2} from 'lucide-react';
+import type {Job, VersionInfo} from '../../../shared/types.ts';
+import {Button, Chip, IconButton, Slider, Tooltip, fmtBytes, fmtPct} from '../../ui/index.ts';
 import s from './Renders.module.css';
 
 const QUALITY = {draft: 'Nháp 0,5×', final: '1080×1920'} as const;
 const clock = (t: number) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
 
-export function VersionCard({v, register, onApprove, onOpenFolder}: {
-  v: VersionInfo; register(name: string, el: HTMLVideoElement | null): void; onApprove(): void; onOpenFolder(): void;
+export function VersionCard({v, register, publishJob, onApprove, onRetry, onDelete, onOpenFolder}: {
+  v: VersionInfo; register(name: string, el: HTMLVideoElement | null): void; publishJob?: Job; onApprove(): void; onRetry(): void; onDelete(): void; onOpenFolder(): void;
 }): React.JSX.Element {
+  const p = v.published;
+  const blocked = v.approved && p?.state !== 'done';
   const ref = useRef<HTMLVideoElement>(null);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [playing, setPlaying] = useState(false);
@@ -23,7 +25,18 @@ export function VersionCard({v, register, onApprove, onOpenFolder}: {
       <div className={s.row}>
         <h2 className={s.name}>{v.name}</h2>
         {v.approved && <Chip tone="success">Đã duyệt</Chip>}
+        {v.kind === 'draft' && <Chip>{QUALITY.draft}</Chip>}
       </div>
+      {p && (
+        <div className={s.row}>
+          {p.state === 'uploading' && <Chip tone="info">Đang tải lên Drive{publishJob?.progress != null ? ` · ${fmtPct(publishJob.progress)}` : ''}</Chip>}
+          {p.state === 'done' && <Chip tone="success">Đã lên Drive · {p.name}</Chip>}
+          {p.state === 'failed' && <>
+            <Tooltip content={p.error ?? 'Lỗi không rõ'}><span><Chip tone="danger">Lỗi Drive</Chip></span></Tooltip>
+            <Button size="sm" variant="ghost" onClick={onRetry}>Thử lại</Button>
+          </>}
+        </div>
+      )}
       <div className={s.frame}>
         <video ref={ref} src={`/${v.file}`} preload="metadata" playsInline onClick={toggle}
           onLoadedMetadata={(e) => { setDur(e.currentTarget.duration); setState('ready'); }}
@@ -48,8 +61,10 @@ export function VersionCard({v, register, onApprove, onOpenFolder}: {
         <dt>Snapshot</dt><dd>{v.hasSnapshot ? 'Có' : 'Không'}</dd>
       </dl>
       <div className={s.actions}>
-        <Button variant="primary" size="sm" disabled={v.approved} onClick={onApprove}>{v.approved ? 'Đã duyệt' : 'Duyệt bản này'}</Button>
+        {v.kind === 'draft' ? <span className={s.muted}>Bản nháp cũ — không duyệt được</span>
+          : <Button variant="primary" size="sm" disabled={v.approved} onClick={onApprove}>{v.approved ? 'Đã duyệt' : 'Duyệt bản này'}</Button>}
         <IconButton label="Mở thư mục chứa file" variant="secondary" icon={<FolderOpen size={18} />} onClick={onOpenFolder} />
+        <IconButton label={blocked ? 'Đẩy lên Drive trước khi xoá' : 'Xoá bản này'} variant="secondary" icon={<Trash2 size={18} />} disabled={blocked} onClick={onDelete} />
       </div>
     </article>
   );
