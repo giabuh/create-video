@@ -15,7 +15,7 @@ function Row({it, state, pct, err}: {it: UploadItem; state: 'up' | 'ingest' | 'd
   }, [state]);
   if (gone) return null;
   const text = state === 'up' ? `Đang tải lên ${fmtPct(it.progress)}` : state === 'ingest' ? (pct == null ? 'Đang chuẩn hoá…' : `Đang chuẩn hoá ${fmtPct(pct)}`)
-    : state === 'done' ? 'Xong · cần mô tả' : state === 'error' ? err ?? it.error ?? 'Lỗi' : '';
+    : state === 'done' ? (it.target === 'music' ? 'Đã tải lên' : 'Xong · cần mô tả') : state === 'error' ? err ?? it.error ?? 'Lỗi' : '';
   const value = state === 'up' ? it.progress : state === 'ingest' ? pct : state === 'done' ? 1 : state === 'error' ? 1 : 0;
   return (
     <div className={`${s.up} ${fade ? s.fade : ''}`} role={state === 'error' ? 'alert' : undefined}>
