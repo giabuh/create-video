@@ -45,7 +45,7 @@ export function uploadRoutes(): Hono {
     const name = sanitizeFilename(c.req.param('filename'), IMAGE_EXTS);
     await stat(file).catch(() => { throw new HttpError(400, 'unknown brand'); });
     const saved = await saveUpload(c, safeJoin('brands', id), name);
-    const logo = `brands/${id}/${saved}`;
+    const logo = saved; // brand.json stores the bare file name; tools/reel/props.py prefixes brands/<id>/
     const cur = await readJson<BrandFile>(file);
     const mtime = await writeJsonAtomic(file, {...cur.data, logo}, cur.mtime);
     return c.json({logo, mtime});

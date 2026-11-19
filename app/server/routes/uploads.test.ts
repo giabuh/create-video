@@ -25,8 +25,8 @@ describe('upload routes', () => {
     expect((await (await req('/api/upload-music/S%C3%B4i.mp3', {method: 'PUT', body: 'm'})).json()).saved).toBe('soi.mp3');
     expect((await readFile(path.join(root, 'music/soi.mp3'), 'utf8'))).toBe('m');
     const r = await (await req('/api/upload-logo/demo/Logo.PNG', {method: 'PUT', body: 'png'})).json();
-    expect(r).toMatchObject({logo: 'brands/demo/logo.png'});
-    expect(JSON.parse(await readFile(path.join(root, 'brands/demo/brand.json'), 'utf8')).logo).toBe('brands/demo/logo.png');
+    expect(r).toMatchObject({logo: 'logo.png'});
+    expect(JSON.parse(await readFile(path.join(root, 'brands/demo/brand.json'), 'utf8')).logo).toBe('logo.png');
     expect((await req('/api/upload-logo/nope/x.png', {method: 'PUT', body: 'x'})).status).toBe(400);
     expect((await req('/api/upload-logo/demo/x.gif', {method: 'PUT', body: 'x'})).status).toBe(400);
   });
