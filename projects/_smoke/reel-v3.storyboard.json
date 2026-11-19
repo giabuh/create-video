@@ -1,0 +1,71 @@
+{
+  "targetSeconds": 12,
+  "music": {
+    "file": "_smoke.mp3"
+  },
+  "scenes": [
+    {
+      "id": "s1",
+      "say": "Học viên đạt chứng chỉ ai en tê ét bảy chấm năm chỉ sau ba tháng.",
+      "caption": "Học viên đạt IELTS 7.5 chỉ sau 3 tháng",
+      "highlight": [
+        "7.5"
+      ],
+      "media": [
+        {
+          "src": "_smoke-landscape.mp4",
+          "from": 1,
+          "effect": "zoom-in"
+        }
+      ],
+      "transition": "fade"
+    },
+    {
+      "id": "s2",
+      "say": "Lớp học sôi động mỗi ngày.",
+      "caption": "Lớp học sôi động mỗi ngày",
+      "voice": "vy",
+      "transition": "fade",
+      "media": [
+        {
+          "src": "_smoke-portrait.mp4"
+        },
+        {
+          "src": "_smoke.jpg",
+          "effect": "pan-left"
+        }
+      ]
+    },
+    {
+      "id": "s3m",
+      "say": "Lộ trình ba bước rõ ràng.",
+      "caption": "Lộ trình 3 bước rõ ràng",
+      "motion": [
+        {
+          "component": "Checklist",
+          "props": {
+            "items": [
+              "Kiểm tra đầu vào",
+              "Học 1 kèm 1",
+              "Thi thử hằng tuần"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "s3",
+      "duration": 2,
+      "transition": "slide",
+      "media": [
+        {
+          "src": "_smoke.jpg",
+          "effect": "zoom-out"
+        }
+      ]
+    }
+  ],
+  "cta": {
+    "title": "Đăng ký ngay"
+  }
+}
