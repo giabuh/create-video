@@ -1,5 +1,5 @@
 import {execFileSync} from 'node:child_process';
-import {mkdir, mkdtemp, writeFile} from 'node:fs/promises';
+import {mkdir, mkdtemp, readFile, writeFile} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import {beforeEach, describe, expect, it} from 'vitest';
@@ -88,5 +88,16 @@ describe('deleteProjectCommit', () => {
     expect(await deleteProjectCommit('p1')).toMatch(/^[0-9a-f]{7,}$/);
     expect(lastFiles()).toEqual(['projects/p1/project.json', 'projects/p1/storyboard.json']);
     expect(git('diff', '--cached', '--name-only').trim()).toBe('other.txt');
+  });
+  it('failed commit keeps uncommitted edits and stages nothing', async () => {
+    await put('projects/p1/project.json', '{}');
+    git('add', '-A'); git('commit', '-qm', 'pj');
+    await writeFile(path.join(dir, '.git/hooks/pre-commit'), '#!/bin/sh\nexit 1\n', {mode: 0o755});
+    await put('projects/p1/project.json', '{"deleting":1}');
+    await put('projects/p1/storyboard.json', '{"a":99}');
+    await expect(deleteProjectCommit('p1')).rejects.toThrow();
+    expect(await readFile(path.join(dir, 'projects/p1/project.json'), 'utf8')).toBe('{"deleting":1}');
+    expect(await readFile(path.join(dir, 'projects/p1/storyboard.json'), 'utf8')).toBe('{"a":99}');
+    expect(git('diff', '--cached', '--name-only').trim()).toBe('');
   });
 });
