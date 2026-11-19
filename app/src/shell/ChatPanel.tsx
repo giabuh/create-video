@@ -37,7 +37,24 @@ export function ChatPanel({open, onOpenChange}: {open: boolean; onOpenChange(o: 
   const acct = accountNames.includes(account) ? account : accountNames[0] ?? '';
 
   const events = detail.data?.events ?? [];
-  useEffect(() => { endRef.current?.scrollIntoView?.({block: 'end'}); }, [events.length, draft, open]);
+  // Follow the newest message unless the user scrolled up to read. On open the drawer is still sliding in and
+  // markdown is laying out, so scroll again on the next frames instead of once.
+  const follow = useRef(true);
+  useEffect(() => { follow.current = true; }, [open, chatId]);
+  useEffect(() => {
+    const box = endRef.current?.closest<HTMLElement>('[role="dialog"] [class*="body"]');
+    if (!box) return;
+    const onScroll = () => { follow.current = box.scrollHeight - box.scrollTop - box.clientHeight < 80; };
+    box.addEventListener('scroll', onScroll, {passive: true});
+    return () => box.removeEventListener('scroll', onScroll);
+  }, [open, detail.isSuccess]);
+  useEffect(() => {
+    if (!open || !follow.current) return;
+    const go = () => endRef.current?.scrollIntoView?.({block: 'end'});
+    const f = requestAnimationFrame(go);
+    const t1 = setTimeout(go, 150), t2 = setTimeout(go, 450); // after the slide-in animation and late layout
+    return () => { cancelAnimationFrame(f); clearTimeout(t1); clearTimeout(t2); };
+  }, [events.length, draft, open, chatId, detail.isSuccess, busy]);
 
   useEffect(() => { if (busy === null && open) inputRef.current?.querySelector('textarea')?.focus(); }, [busy, open]);
   const last = events.at(-1)?.kind;
