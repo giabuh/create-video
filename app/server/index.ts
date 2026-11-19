@@ -4,6 +4,7 @@ import {ChatService} from './chat/service.ts';
 import {EventBus} from './events.ts';
 import {JobQueue} from './jobs.ts';
 import {openFolder} from './procs.ts';
+import {resetInterruptedUploads} from './publish.ts';
 import {startWatcher} from './watcher.ts';
 import {VoiceWorker} from './voiceWorker.ts';
 
@@ -11,6 +12,7 @@ const API_PORT = Number(process.env.REEL_API_PORT ?? 5316);
 const UI_PORT = Number(process.env.REEL_UI_PORT ?? 5317);
 // extra UI ports allowed by the host guard, e.g. a second Vite for side-by-side comparison
 const EXTRA_PORTS = (process.env.REEL_EXTRA_PORTS ?? '').split(',').filter(Boolean).map(Number);
+await resetInterruptedUploads();
 const bus = new EventBus();
 const jobs = new JobQueue(bus);
 const worker = new VoiceWorker(bus);

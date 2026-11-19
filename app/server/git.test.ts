@@ -3,7 +3,7 @@ import {mkdir, mkdtemp, writeFile} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import {beforeEach, describe, expect, it} from 'vitest';
-import {approveCommit} from './git.ts';
+import {approveCommit, deleteProjectCommit} from './git.ts';
 import {setRepoRoot} from './paths.ts';
 
 let dir = '';
@@ -64,5 +64,19 @@ describe('approveCommit', () => {
   it('rejects bad slug or version before running git', async () => {
     await expect(approveCommit('../x', 'reel-v1')).rejects.toThrow();
     await expect(approveCommit('p1', 'v1; rm')).rejects.toThrow();
+  });
+});
+
+describe('deleteProjectCommit', () => {
+  it('commits removal of tracked files and returns sha', async () => {
+    const sha = await deleteProjectCommit('p1');
+    expect(sha).toMatch(/^[0-9a-f]{7,}$/);
+    expect(git('log', '-1', '--format=%s').trim()).toBe('Delete project p1');
+    expect(lastFiles()).toEqual(['projects/p1/storyboard.json']);
+  });
+  it('returns null for an untracked-only project', async () => {
+    await mkdir(path.join(dir, 'projects/p2'), {recursive: true});
+    await put('projects/p2/a.json', '{}');
+    expect(await deleteProjectCommit('p2')).toBeNull();
   });
 });

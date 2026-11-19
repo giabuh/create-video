@@ -5,7 +5,7 @@ import {makeTestRoot} from '../testRoot.ts';
 import {setup, settle} from './testApp.ts';
 import {readMeta, recordRender} from '../versions.ts';
 
-vi.mock('../git.ts', () => ({approveCommit: vi.fn(async () => 'abc123')}));
+vi.mock('../git.ts', () => ({approveCommit: vi.fn(async () => 'abc123'), deleteProjectCommit: vi.fn(async () => null)}));
 vi.mock('../drive.ts', async (orig) => ({
   ...(await orig<typeof import('../drive.ts')>()),
   driveList: vi.fn(async () => []), driveUpload: vi.fn(async () => {}), driveDelete: vi.fn(async () => {}),
@@ -126,5 +126,21 @@ describe('projects routes', () => {
       }
     }
     expect((await readMeta('p1')).data.published?.['reel-v1']?.state).toBe('uploading');
+  });
+
+  it('deleting project is read-only; cancel clears; delete validates and removes', async () => {
+    const root = await makeTestRoot();
+    const {req, jobs} = setup();
+    const dir = path.join(root, 'projects/p1');
+    await writeFile(path.join(dir, 'project.json'), JSON.stringify({approved: null, renders: {}, deleting: {uploads: [], state: 'failed', error: 'x'}}));
+    expect((await (await req('/api/projects')).json())[0]).toMatchObject({status: 'deleting', deleting: {state: 'failed'}});
+    expect((await req('/api/projects/p1/storyboard', {method: 'PUT', json: {storyboard: {scenes: []}, baseMtime: 0}})).status).toBe(423);
+    expect((await req('/api/projects/p1/delete-cancel', {method: 'POST'})).status).toBe(200);
+    expect((await readMeta('p1')).data.deleting).toBeUndefined();
+    expect((await req('/api/projects/p1', {method: 'DELETE', json: {upload: ['reel-v9']}})).status).toBe(400);
+    const r = await req('/api/projects/p1', {method: 'DELETE', json: {upload: []}});
+    expect(r.status).toBe(202);
+    await settle(jobs, (await r.json()).id);
+    expect((await req('/api/projects/p1')).status).toBe(404);
   });
 });

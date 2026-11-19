@@ -1,6 +1,7 @@
 import {mkdir, readdir, stat, writeFile} from 'node:fs/promises';
 import {Hono} from 'hono';
 import {driveName} from '../drive.ts';
+import {runDeleteProject} from '../deleteProject.ts';
 import {approveCommit} from '../git.ts';
 import type {JobCtx, JobQueue} from '../jobs.ts';
 import {SLUG_RE, safeJoin, slugify} from '../paths.ts';
@@ -10,7 +11,7 @@ import {withSlugLock} from '../slugLock.ts';
 import {readJson, readJsonOr, writeJsonAtomic} from '../store.ts';
 import {listVersions, projectStatus, readMeta, writeMeta} from '../versions.ts';
 import type {Config, Mix, ProjectDetail, ProjectSummary, RenderProps, Storyboard, Timings} from '../../shared/types.ts';
-import {bodyOf, HttpError, isObj, mtimeField, needProject, readConfig, slugParam} from './util.ts';
+import {bodyOf, HttpError, isObj, mtimeField, needEditable, needProject, readConfig, slugParam} from './util.ts';
 import type {Deps, WorkerLike} from './util.ts';
 
 const isRendering = (jobs: JobQueue, slug: string) => jobs.list().some(j => j.kind === 'render' && j.project === slug && (j.state === 'queued' || j.state === 'running'));
@@ -23,9 +24,9 @@ async function summarize(jobs: JobQueue, slug: string, config: Config): Promise<
   const props = timings ? null : (await readJsonOr<RenderProps | null>(safeJoin('projects', slug, 'render-props.json'), null)).data;
   const first = sb.data.scenes[0];
   return {
-    slug, status: projectStatus(versions, meta, isRendering(jobs, slug)), approved: meta.approved, latest: versions[0] ?? null,
+    slug, status: meta.deleting ? 'deleting' : projectStatus(versions, meta, isRendering(jobs, slug)), approved: meta.approved, latest: versions[0] ?? null,
     sceneCount: sb.data.scenes.length, totalSeconds: timings?.totalSeconds ?? props?.totalSeconds ?? null, mix: timings?.mix ?? null,
-    mtime: sb.mtime, firstCaption: first?.caption ?? first?.say ?? '', voice: sb.data.voice ?? config.defaults.voice,
+    mtime: sb.mtime, firstCaption: first?.caption ?? first?.say ?? '', voice: sb.data.voice ?? config.defaults.voice, deleting: meta.deleting ?? null,
   };
 }
 
@@ -93,6 +94,7 @@ export function projectRoutes({jobs, worker}: Deps): Hono {
   app.put('/projects/:slug/storyboard', async c => {
     const slug = c.req.param('slug');
     await needProject(slug);
+    await needEditable(slug);
     const b = await bodyOf(c);
     if (!isObj(b.storyboard) || !Array.isArray(b.storyboard.scenes)) throw new HttpError(400, 'storyboard.scenes must be an array');
     return c.json({mtime: await writeJsonAtomic(safeJoin('projects', slug, 'storyboard.json'), b.storyboard, mtimeField(b.baseMtime))});
@@ -101,12 +103,14 @@ export function projectRoutes({jobs, worker}: Deps): Hono {
   app.post('/projects/:slug/preview', async c => {
     const slug = c.req.param('slug');
     await needProject(slug);
+    await needEditable(slug);
     return c.json(await runPreview(slug));
   });
 
   app.post('/projects/:slug/voice', async c => {
     const slug = c.req.param('slug');
     await needProject(slug);
+    await needEditable(slug);
     return c.json(jobs.enqueue({
       kind: 'voice', lane: 'gpu', label: `Tạo giọng ${slug}`, project: slug, cancellable: false,
       run: ctx => withSlugLock(slug, () => prepare(worker, slug, ctx)),
@@ -116,6 +120,7 @@ export function projectRoutes({jobs, worker}: Deps): Hono {
   app.post('/projects/:slug/render', async c => {
     const slug = c.req.param('slug');
     await needProject(slug);
+    await needEditable(slug);
     return c.json(jobs.enqueue({
       kind: 'render', lane: 'render', label: `Render ${slug}`, project: slug, cancellable: true,
       run: async ctx => (await import('../render.ts')).renderVersion(slug, ctx, worker as never),
@@ -139,6 +144,7 @@ export function projectRoutes({jobs, worker}: Deps): Hono {
   app.post('/projects/:slug/approve', async c => {
     const slug = c.req.param('slug');
     await needProject(slug);
+    await needEditable(slug);
     const b = await bodyOf(c);
     const version = b.version;
     if (typeof version !== 'string' || !/^reel-v\d+$/.test(version)) throw new HttpError(400, 'bad version');
@@ -162,6 +168,7 @@ export function projectRoutes({jobs, worker}: Deps): Hono {
   app.post('/projects/:slug/publish', async c => {
     const slug = c.req.param('slug');
     await needProject(slug);
+    await needEditable(slug);
     const b = await bodyOf(c);
     if (typeof b.version !== 'string' || !/^reel-v\d+$/.test(b.version)) throw new HttpError(400, 'bad version');
     const name = nameOf(slug, b.version, b.name);
@@ -174,12 +181,46 @@ export function projectRoutes({jobs, worker}: Deps): Hono {
   app.delete('/projects/:slug/renders/:version', async c => {
     const slug = c.req.param('slug'), version = c.req.param('version');
     await needProject(slug);
+    await needEditable(slug);
     if (!/^reel-v\d+$/.test(version)) throw new HttpError(400, 'bad version');
     if (!(await stat(safeJoin('projects', slug, `${version}.mp4`)).catch(() => null))) throw new HttpError(404, 'unknown version');
     const meta = (await readMeta(slug)).data;
     if (meta.approved === version && meta.published?.[version]?.state !== 'done') throw new HttpError(409, 'Bản đã duyệt chưa lên Drive');
     if (isBusy(jobs, slug)) throw new HttpError(409, 'Đang render hoặc đẩy lên Drive');
     return c.json(await deleteRender(slug, version, {drive: c.req.query('drive') === '1'}));
+  });
+
+  const hasJob = (slug: string) => jobs.list().some(j => j.project === slug && (j.state === 'queued' || j.state === 'running'));
+
+  app.delete('/projects/:slug', async c => {
+    const slug = c.req.param('slug');
+    await needProject(slug);
+    const b = await c.req.json().catch(() => ({}));
+    if (hasJob(slug)) throw new HttpError(409, 'Dự án đang có tác vụ chạy');
+    const meta = (await readMeta(slug)).data;
+    let uploads: string[] = isObj(b) && b.upload !== undefined ? (b.upload as string[]) : meta.deleting?.uploads ?? [];
+    if (!Array.isArray(uploads) || uploads.some(v => typeof v !== 'string' || !/^reel-v\d+$/.test(v))) throw new HttpError(400, 'bad upload');
+    uploads = [...new Set(uploads)];
+    for (const v of uploads) if (!(await stat(safeJoin('projects', slug, `${v}.mp4`)).catch(() => null))) throw new HttpError(400, 'bad upload');
+    await withSlugLock(slug, async () => {
+      const cur = (await readMeta(slug)).data;
+      await writeMeta(slug, {...cur, deleting: {uploads, state: 'uploading'}});
+    });
+    return c.json(jobs.enqueue({
+      kind: 'delete-project', lane: 'io', label: `Xoá dự án ${slug}`, project: slug, cancellable: false,
+      run: async ctx => { await runDeleteProject(slug, ctx); },
+    }), 202);
+  });
+
+  app.post('/projects/:slug/delete-cancel', async c => {
+    const slug = c.req.param('slug');
+    await needProject(slug);
+    if (jobs.list().some(j => j.kind === 'delete-project' && j.project === slug && (j.state === 'queued' || j.state === 'running'))) throw new HttpError(409, 'Đang xoá dự án');
+    await withSlugLock(slug, async () => {
+      const {deleting: _d, ...rest} = (await readMeta(slug)).data;
+      await writeMeta(slug, rest);
+    });
+    return c.json({ok: true});
   });
   return app;
 }

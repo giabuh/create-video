@@ -1,7 +1,7 @@
-import {rm} from 'node:fs/promises';
+import {readdir, rm} from 'node:fs/promises';
 import type {JobCtx} from './jobs.ts';
 import {driveDelete, DriveError, driveList, driveUpload, freeName} from './drive.ts';
-import {safeJoin} from './paths.ts';
+import {SLUG_RE, safeJoin} from './paths.ts';
 import {withSlugLock} from './slugLock.ts';
 import {readMeta, setPublished, writeMeta} from './versions.ts';
 
@@ -44,4 +44,21 @@ export async function deleteRender(slug: string, version: string, opts: {drive: 
   try { await driveDelete(driveName); } catch (e) { return {driveError: (e as Error).message}; }
   await setPublished(slug, version, null);
   return {};
+}
+
+const INTERRUPTED = 'Bị gián đoạn — hãy thử lại';
+
+/** On server start: an 'uploading' record can only be left by a crash, so flip it to 'failed' to unblock the user. */
+export async function resetInterruptedUploads(): Promise<void> {
+  for (const d of await readdir(safeJoin('projects'), {withFileTypes: true}).catch(() => [])) {
+    if (!d.isDirectory() || !SLUG_RE.test(d.name)) continue;
+    await withSlugLock(d.name, async () => {
+      const meta = (await readMeta(d.name)).data;
+      const at = new Date().toISOString();
+      const published = Object.fromEntries(Object.entries(meta.published ?? {}).map(([v, p]) => [v, p.state === 'uploading' ? {...p, state: 'failed' as const, error: INTERRUPTED, at} : p]));
+      const deleting = meta.deleting?.state === 'uploading' ? {...meta.deleting, state: 'failed' as const, error: INTERRUPTED} : meta.deleting;
+      if (JSON.stringify([published, deleting]) === JSON.stringify([meta.published ?? {}, meta.deleting])) return;
+      await writeMeta(d.name, {...meta, ...(meta.published && {published}), ...(deleting && {deleting})});
+    }).catch(e => console.warn(`reset uploads ${d.name}: ${(e as Error).message}`));
+  }
 }

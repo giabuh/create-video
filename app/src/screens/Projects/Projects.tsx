@@ -18,6 +18,7 @@ const matches = (st: ProjectStatus, f: Filter) => f === 'all' || (f === 'doing' 
 function statusChip(p: ProjectSummary): React.JSX.Element {
   const v = p.latest ? ` v${p.latest.n}` : '';
   const [tone, text]: [Tone, string] =
+    p.status === 'deleting' ? ['info', 'Đang xoá'] :
     p.status === 'rendering' ? ['info', 'Đang render'] :
     p.status === 'approved' ? ['success', `Đã duyệt${p.approved ? ` ${p.approved.replace(/^reel-/, '')}` : v}`] :
     p.status === 'draft' ? ['warning', `Chưa duyệt${v}`] : ['neutral', 'Chưa render'];

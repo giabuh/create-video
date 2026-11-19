@@ -7,6 +7,7 @@ import {stat} from 'node:fs/promises';
 import path from 'node:path';
 import {PathError, SLUG_RE, repoRoot, safeJoin} from '../paths.ts';
 import {readJson} from '../store.ts';
+import {readMeta} from '../versions.ts';
 import type {Config} from '../../shared/types.ts';
 
 export type WorkerLike = Pick<VoiceWorker, 'request' | 'status' | 'start' | 'stop'>;
@@ -45,3 +46,7 @@ export function plainName(s: string): string {
 export const ingestBusy = (jobs: JobQueue): boolean => jobs.list().some(j => j.kind === 'ingest' && (j.state === 'queued' || j.state === 'running'));
 export const readConfigV = () => readJson<Config>(path.join(repoRoot(), 'config.json'));
 export const readConfig = async (): Promise<Config> => (await readConfigV()).data;
+/** Mutating routes call this: a project being deleted is read-only. */
+export async function needEditable(slug: string): Promise<void> {
+  if ((await readMeta(slug)).data.deleting) throw new HttpError(423, 'Dự án đang được xoá');
+}

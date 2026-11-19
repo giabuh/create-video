@@ -23,7 +23,7 @@ export type Timings = {
   scenes: Record<string, {duration: number; pauseAfter?: number; voice?: string; ref?: string; tts?: Json; cacheKey?: string}>;
   totalSeconds: number; mix: Mix;
 };
-export type ProjectStatus = 'rendering' | 'approved' | 'draft' | 'new';
+export type ProjectStatus = 'rendering' | 'approved' | 'draft' | 'new' | 'deleting';
 export type VersionInfo = {
   name: string;            // "reel-v3"
   n: number;               // 3
@@ -38,7 +38,7 @@ export type ProjectMeta = {approved: string | null; renders: Record<string, {kin
 export type ProjectSummary = {
   slug: string; status: ProjectStatus; approved: string | null; latest: VersionInfo | null;
   sceneCount: number; totalSeconds: number | null; mix: Mix | null; mtime: number;
-  firstCaption: string; voice: string | null;
+  firstCaption: string; voice: string | null; deleting: ProjectMeta['deleting'] | null;
 };
 export type ProjectDetail = {
   slug: string; storyboard: Versioned<Storyboard>; timings: Timings | null;
