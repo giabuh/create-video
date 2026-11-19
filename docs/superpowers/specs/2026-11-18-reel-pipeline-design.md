@@ -153,7 +153,7 @@ TTS keys map 1:1 onto `Vieneu` v3 Turbo `infer()` kwargs (`src/vieneu/v3turbo.py
     - **Backdrop:** `backdrop` ∈ {`auto` (default: a dark scrim behind a band/box when there is footage under it), `scrim`, `none`}; the scrim eases in over ≥ 0.4 s so no empty panel shows before the content.
     - **Enter/exit:** `enter`/`exit` = a name or `{type, duration}`; names: `none`, `fade`, `slide-up|down|left|right`, `pop`, `zoom`, `wipe`, `blur`. Default enter `none` (the component's own animation); default exit `fade` 0.25 s for bands/boxes, `none` for full-frame.
     - **Keyframes:** `keyframes: [{t, x?, y?, scale?, rotate?, opacity?}]` — `t` seconds from the layer start, `x`/`y` offsets in percent of the frame, `scale`/`rotate`/`opacity` multiply/add to the layer's values; eased (in-out cubic) between keys.
-    - **Colors:** `colors: {primary?, accent?, text?, background?}` overrides the brand for this layer only.
+    - **Colors:** `colors: {primary?, accent?, text?, background?, accent2?, surface?}` overrides the brand for this layer only.
   - **Timing on the voice (scene layers):** `at` = a word/phrase (or `{word, occurrence?, offset?}`) — the layer starts when it is spoken; `until` = same, the layer ends when that word ends. Words are looked up in `say`; a phrase only in `caption` (e.g. `999K` read as "chín trăm chín mươi chín nghìn") is placed between its matched neighbours. Unknown words are reported by `prepare.py` (stage `anchor`) and nothing renders.
   - **Video-wide track:** top-level `motion: [...]` — layers that run across scenes and draw on top of everything (progress bar, sticker, a line bridging two scenes). `start` = seconds or `{scene, at?, offset?, edge?}` (default 0); `end` = seconds, `"video"` (end incl. CTA), or `{scene, at?, offset?, edge?}` (scene default edge `end`); or `duration`; default = end of the last scene. Not counted in the mix.
   - Prefer bands/boxes over footage for text/price/checklist moments; keep `full` for pure motion scenes and for components that carry their own panel (`LowerThird`).
@@ -214,7 +214,7 @@ Writes `voices/tries/<name>-A.wav`, `-B.wav`, … plus a `tries.json` listing ea
   - `ownsExit: true` (set in `registry.ts` by `defineMotion`): the card draws its own exit, so the layer's default exit is `none` instead of `fade`. Mirrored in `tools/reel/props.py` `OWNS_EXIT` and guarded by a test (`app/src/screens/Editor/motionSchema.test.ts`). All six new cards set it.
   - Brand colors gain optional `accent2` (default `#E11D2E`) and `surface` (default `#FFFFFF`); per-layer `colors` accepts them too.
 - Video tag: `@remotion/media` `<Video>` for rendering, with `<OffthreadVideo>` while previewing in Studio (per current Remotion docs).
-- Brand (`brands/<id>/brand.json`): `{ name, logo, colors: {primary, accent, text}, font?, cta: {phone, fanpage, address} }`.
+- Brand (`brands/<id>/brand.json`): `{ name, logo, colors: {primary, accent, text, background, accent2?, surface?}, font?, cta: {phone, fanpage, address} }`.
 - Commands:
   - Render: `npx remotion render Reel <project>/reel-v<N>.mp4 --props=<project>/render-props.json`
   - Stills: `npx remotion still Reel <project>/preview/<scene>.png --frame=<mid-frame> --props=…`
