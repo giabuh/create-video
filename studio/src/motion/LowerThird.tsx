@@ -7,18 +7,18 @@ export const LowerThirdSchema = z.object({
   title: text('Tiêu đề'),
   subtitle: optText('Phụ đề'),
   side: choice('Bên', ['left', 'right'], 'left', {left: 'Trái', right: 'Phải'}),
-  bottom: numDefault('Cách đáy khung (px)', 640, {min: 0, max: 1800, step: 10}),
+  bottom: numDefault('Cách đáy khung (px, theo khung cao 1920)', 640, {min: 0, max: 1800, step: 10}),
   size: numDefault('Cỡ chữ (px)', 64, {min: 28, max: 140, step: 2}),
 });
 
 export const LowerThird: React.FC<MotionProps<typeof LowerThirdSchema>> = ({title, subtitle, side, bottom, size, brand}) => {
   const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
+  const {fps, height} = useVideoConfig();
   const s = spring({frame, fps, config: {damping: 16}});
   const left = side === 'left';
   return (
     <AbsoluteFill style={{fontFamily}}>
-      <div style={{position: 'absolute', [left ? 'left' : 'right']: 0, bottom, transform: `translateX(${(left ? s - 1 : 1 - s) * 100}%)`,
+      <div style={{position: 'absolute', [left ? 'left' : 'right']: 0, bottom: (bottom * height) / 1920, transform: `translateX(${(left ? s - 1 : 1 - s) * 100}%)`,
         background: brand.colors.primary, [left ? 'borderLeft' : 'borderRight']: `16px solid ${brand.colors.accent}`,
         padding: left ? '24px 48px 24px 40px' : '24px 40px 24px 48px', borderRadius: left ? '0 24px 24px 0' : '24px 0 0 24px', maxWidth: '88%',
         textAlign: left ? 'left' : 'right'}}>

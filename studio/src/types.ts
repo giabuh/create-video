@@ -29,7 +29,7 @@ export type Scene = {
 export type Brand = {name: string; logo: string | null; colors: {primary: string; accent: string; text: string; background: string}};
 export type CaptionStyle = {font: string; size: number; color: string; highlightColor: string};
 export type Music = {src: string; volume: number; duckTo: number; fadeOut: number};
-export type Cta = {title: string; phone?: string; fanpage?: string; address?: string; duration: number};
+export type Cta = {title: string; logoSize?: number; phone?: string; fanpage?: string; address?: string; duration: number};
 export type RenderProps = {
   template: string; fps: number; width: number; height: number;
   brand: Brand; captions: CaptionStyle; music: Music | null;

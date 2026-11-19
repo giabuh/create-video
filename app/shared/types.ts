@@ -26,7 +26,7 @@ export type SceneSpec = {
   highlight?: string[]; overlay?: {text: string; position: 'top' | 'center' | 'bottom'} | null;
   media?: MediaSpec[]; motion?: MotionSpec[]; transition?: TransitionName; pauseAfter?: number;
 };
-export type CtaSpec = {title: string; phone?: string; fanpage?: string; address?: string; duration?: number};
+export type CtaSpec = {title?: string; logoSize?: number; phone?: string; fanpage?: string; address?: string; duration?: number};
 export type Storyboard = {
   template?: string; brand?: string; voice?: string; tts?: Json;
   music?: {file: string; volume?: number} | null; targetSeconds?: number;
@@ -73,7 +73,7 @@ export type MusicFile = {name: string; bytes: number};
 export type TryVariant = {file: string; ref: string; tts: Json; seconds: number};
 export type Tries = {voice: string; text: string; variants: Record<string, TryVariant>};
 export type VoiceInfo = {name: string; ref: string; refs: string[]; isDefault: boolean; seconds: number | null};
-export type BrandFile = {name: string; logo: string | null; colors: {primary: string; accent: string; text: string; background: string}; cta?: {phone?: string; fanpage?: string; address?: string}; captions?: Json};
+export type BrandFile = {name: string; logo: string | null; colors: {primary: string; accent: string; text: string; background: string}; cta?: {title?: string; logoSize?: number; phone?: string; fanpage?: string; address?: string}; captions?: Json};
 export type BrandSummary = {id: string; brand: BrandFile; isDefault: boolean; mtime: number}; // mtime of brands/<id>/brand.json, used as baseMtime
 export type Config = Json & {
   defaults: {voice: string; template: string; brand: string};

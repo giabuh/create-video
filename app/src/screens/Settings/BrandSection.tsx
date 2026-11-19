@@ -1,22 +1,22 @@
 import {useEffect, useMemo, useRef, useState} from 'react';
 import {Player} from '@remotion/player';
 import {useQueryClient} from '@tanstack/react-query';
-import {Plus} from 'lucide-react';
+import {Plus, Trash2} from 'lucide-react';
 import {CtaCard} from '@studio/components/CtaCard';
 import type {BrandFile, BrandSummary} from '../../../shared/types.ts';
-import {qk, useCreateBrand, useSaveBrand, useSaveConfig, useConfig} from '../../api/hooks.ts';
+import {qk, useCreateBrand, useDeleteBrand, useLogoCutout, useSaveBrand, useSaveConfig, useConfig} from '../../api/hooks.ts';
 import {useUploads} from '../../api/upload.ts';
 import type {HttpError} from '../../api/client.ts';
-import {Button, Chip, Dialog, DropZone, EmptyState, Field, Input, ColorField, Skeleton, toast} from '../../ui/index.ts';
+import {Button, Chip, ConfirmDialog, Dialog, Slider, DropZone, EmptyState, Field, Input, ColorField, Skeleton, toast} from '../../ui/index.ts';
 import s from './Settings.module.css';
 
 const IMAGE_EXTS = ['.png', '.jpg', '.jpeg', '.webp', '.svg'] as const; // mirrors app/server/paths.ts (the server cannot be imported in the browser)
 const PLACEHOLDER_ADDRESS = '[ĐỊA CHỈ] — để trống nếu không hiện';
 const COLORS = [['primary', 'Chính'], ['accent', 'Nhấn (từ nổi bật)'], ['text', 'Chữ'], ['background', 'Nền cảnh motion']] as const;
 
-type Form = {name: string; colors: BrandFile['colors']; phone: string; fanpage: string; address: string};
-const toForm = (b: BrandFile): Form => ({name: b.name, colors: b.colors, phone: b.cta?.phone ?? '', fanpage: b.cta?.fanpage ?? '', address: b.cta?.address ?? ''});
-const same = (a: Form, b: Form) => a.name === b.name && a.phone === b.phone && a.fanpage === b.fanpage && a.address === b.address && COLORS.every(([k]) => a.colors[k] === b.colors[k]);
+type Form = {name: string; title: string; logoSize: number; colors: BrandFile['colors']; phone: string; fanpage: string; address: string};
+const toForm = (b: BrandFile): Form => ({name: b.name, title: b.cta?.title ?? '', logoSize: b.cta?.logoSize ?? 260, colors: b.colors, phone: b.cta?.phone ?? '', fanpage: b.cta?.fanpage ?? '', address: b.cta?.address ?? ''});
+const same = (a: Form, b: Form) => a.name === b.name && a.title === b.title && a.logoSize === b.logoSize && a.phone === b.phone && a.fanpage === b.fanpage && a.address === b.address && COLORS.every(([k]) => a.colors[k] === b.colors[k]);
 // Uploads store "brands/<id>/<file>"; the pipeline prefixes the id itself, so accept both shapes.
 const logoPath = (id: string, logo: string | null) => (logo ? (logo.startsWith('brands/') ? logo : `brands/${id}/${logo}`) : null);
 
@@ -67,6 +67,9 @@ function AddBrandDialog({open, onOpenChange, onCreated}: {open: boolean; onOpenC
 
 function BrandEditor({summary, draft, setDraft}: {summary: BrandSummary; draft: Form | null; setDraft(f: Form | null): void}): React.JSX.Element {
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [confirmDel, setConfirmDel] = useState(false);
+  const del = useDeleteBrand();
+  const cutout = useLogoCutout();
   const {id, brand} = summary;
   const base = useMemo(() => toForm(brand), [brand]);
   const form = draft ?? base;
@@ -91,7 +94,7 @@ function BrandEditor({summary, draft, setDraft}: {summary: BrandSummary; draft: 
   const uploading = items.some((it) => it.target === 'logo' && it.state === 'uploading');
 
   const onSave = () => {
-    const next: BrandFile = {...brand, name: form.name.trim() || brand.name, colors: form.colors, cta: {...brand.cta, phone: form.phone, fanpage: form.fanpage, address: form.address}};
+    const next: BrandFile = {...brand, name: form.name.trim() || brand.name, colors: form.colors, cta: {...brand.cta, title: form.title, logoSize: form.logoSize, phone: form.phone, fanpage: form.fanpage, address: form.address}};
     save.mutate({id, brand: next, baseMtime: summary.mtime}, {
       onSuccess: () => { setDraft(null); toast({title: 'Đã lưu brand', tone: 'success'}); },
       onError: (e) => {
@@ -113,7 +116,7 @@ function BrandEditor({summary, draft, setDraft}: {summary: BrandSummary; draft: 
 
   const logo = logoPath(id, brand.logo);
   const previewBrand = useMemo(() => ({name: form.name, logo, colors: form.colors}), [form.name, logo, form.colors]);
-  const cta = useMemo(() => ({title: 'Đăng ký ngay', phone: form.phone, fanpage: form.fanpage, address: form.address, duration: 3}), [form.phone, form.fanpage, form.address]);
+  const cta = useMemo(() => ({title: form.title || 'Đăng ký ngay', logoSize: form.logoSize, phone: form.phone, fanpage: form.fanpage, address: form.address, duration: 3}), [form.title, form.logoSize, form.phone, form.fanpage, form.address]);
   const inputProps = useMemo(() => ({cta, brand: previewBrand}), [cta, previewBrand]);
   const preview = (
     <div className={s.previewBox}>
@@ -133,14 +136,11 @@ function BrandEditor({summary, draft, setDraft}: {summary: BrandSummary; draft: 
           <Field label="Tên"><Input value={form.name} onChange={(e) => set({name: e.target.value})} /></Field>
           <div>
             <span className={s.label}>Logo</span>
-            <div className={s.logoBox}>
-              {logo ? <img className={s.logoImg} src={`/${logo}?v=${summary.mtime}`} alt={`Logo ${brand.name}`} /> : <span className={`${s.logoImg} ${s.logoNone}`}>Chưa có</span>}
-              <div style={{flex: 1, minWidth: 0}}>
-                {uploading
-                  ? <Button loading loadingText="Đang tải logo…">Tải logo</Button>
-                  : <DropZone compact multiple={false} accept={IMAGE_EXTS} title="Logo" description="PNG nền trong" buttonLabel={logo ? 'Đổi logo' : 'Tải logo'} onFiles={(f) => void upload(f, 'logo', {brandId: id})} />}
-              </div>
-            </div>
+            <DropZone compact multiple={false} accept={IMAGE_EXTS} title="Logo" description="PNG nền trong" buttonLabel={logo ? 'Đổi logo' : 'Tải logo'}
+              icon={logo ? <img className={s.logoImg} src={`/${logo}?v=${summary.mtime}`} alt={`Logo ${brand.name}`} /> : undefined}
+              onFiles={(f) => void upload(f, 'logo', {brandId: id})}>
+              {logo && <Button size="sm" variant="ghost" loading={cutout.isPending} loadingText="Đang tách…" onClick={() => cutout.mutate(id, {onSuccess: () => toast({title: 'Đã tách nền logo', tone: 'success'}), onError: (e) => toast({title: e.message, tone: 'info'})})}>Tách nền</Button>}
+            </DropZone>
           </div>
         </div>
         <div>
@@ -151,8 +151,11 @@ function BrandEditor({summary, draft, setDraft}: {summary: BrandSummary; draft: 
             ))}
           </div>
         </div>
+        <h3>Thẻ CTA cuối video</h3>
+        <Field label="Tiêu đề CTA" hint="Dòng chữ lớn trên thẻ cuối video. Mỗi video vẫn sửa riêng được."><Input value={form.title} placeholder="Đăng ký ngay" onChange={(e) => set({title: e.target.value})} /></Field>
+        {logo && <Field label={`Cỡ logo trên CTA: ${form.logoSize}px`}><Slider aria-label="Cỡ logo trên CTA" min={120} max={800} step={10} value={form.logoSize} format={(v) => `${v}px`} onChange={(v) => set({logoSize: v})} /></Field>}
         <div className={s.grid2}>
-          <Field label="Số điện thoại (CTA)"><Input value={form.phone} placeholder="[SĐT] — để trống nếu không hiện" onChange={(e) => set({phone: e.target.value})} /></Field>
+          <Field label="Số điện thoại"><Input value={form.phone} placeholder="[SĐT] — để trống nếu không hiện" onChange={(e) => set({phone: e.target.value})} /></Field>
           <Field label="Fanpage"><Input value={form.fanpage} placeholder="[FANPAGE] — để trống nếu không hiện" onChange={(e) => set({fanpage: e.target.value})} /></Field>
         </div>
         <Field label="Địa chỉ"><Input value={form.address} placeholder={PLACEHOLDER_ADDRESS} onChange={(e) => set({address: e.target.value})} /></Field>
@@ -163,12 +166,16 @@ function BrandEditor({summary, draft, setDraft}: {summary: BrandSummary; draft: 
             : <Button loading={saveConfig.isPending} loadingText="Đang lưu…" disabled={!config.data} onClick={makeDefault}>Đặt làm mặc định</Button>}
           {dirty && <span className={s.dirty} role="status">Có thay đổi chưa lưu</span>}
           {dirty && <Button variant="ghost" onClick={() => setDraft(null)}>Hoàn tác</Button>}
+          {!summary.isDefault && <Button variant="danger" className={s.delBtn} onClick={() => setConfirmDel(true)}><Trash2 size={16} aria-hidden />Xoá brand</Button>}
         </div>
       </section>
       <section className={s.preview} aria-label="Xem trước CTA">
         <b>Xem trước CTA</b>
         {preview}
       </section>
+      <ConfirmDialog open={confirmDel} onOpenChange={setConfirmDel} danger loading={del.isPending} title={`Xoá brand "${brand.name}"?`}
+        description="Xoá cả thư mục brand (logo, màu, CTA). Không hoàn tác được. Brand mặc định hoặc brand đang được dự án dùng thì không xoá được." confirmLabel="Xoá brand"
+        onConfirm={() => del.mutate(id, {onSuccess: () => { setConfirmDel(false); toast({title: 'Đã xoá brand', tone: 'success'}); }, onError: (e) => { setConfirmDel(false); toast({title: 'Không xoá được brand', description: e.message, tone: 'error'}); }})} />
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen} title="Xem trước CTA" size="sm">
         <div className={s.dialogPreview}>{preview}</div>
       </Dialog>

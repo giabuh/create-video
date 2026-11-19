@@ -3,7 +3,7 @@
   padding: var(--sp-8) var(--sp-5); border: 2px dashed var(--line-strong); border-radius: var(--r-lg); background: var(--bg-sunken); color: var(--muted);
   transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), transform var(--dur) var(--ease);
 }
-.compact { flex-direction: row; padding: var(--sp-3) var(--sp-4); justify-content: flex-start; text-align: left; }
+.compact { flex-direction: row; flex-wrap: wrap; padding: var(--sp-3) var(--sp-4); justify-content: flex-start; text-align: left; }
 .over { border-color: var(--accent); background: var(--accent-soft); color: var(--text); transform: scale(1.01); animation: glow 1s var(--ease) infinite alternate; }
 @keyframes glow { from { box-shadow: 0 0 0 0 rgba(245,184,61,0) } to { box-shadow: 0 0 0 6px rgba(245,184,61,.18) } }
 .icon { color: var(--accent-text); }

@@ -1,4 +1,4 @@
-import {mkdir, readdir, readFile, writeFile} from 'node:fs/promises';
+import {mkdir, readdir, readFile, rm, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {Hono} from 'hono';
 import {repoRoot, safeJoin, slugify, SLUG_RE} from '../paths.ts';
@@ -56,6 +56,18 @@ export function settingsRoutes(_deps: Deps): Hono {
     const brand: BrandFile = {name: b.name.trim(), logo: null, colors: base, cta: {}};
     await writeFile(brandFile(id), JSON.stringify(brand, null, 2) + '\n', {flag: 'wx'});
     return c.json(await brandSummary(id, config.defaults.brand), 201);
+  });
+
+  app.delete('/brands/:id', async c => {
+    const id = slugParam(c.req.param('id'), 'brand id');
+    if ((await readConfigV()).data.defaults.brand === id) throw new HttpError(409, 'Không xoá được brand mặc định');
+    for (const d of await readdir(safeJoin('projects'), {withFileTypes: true}).catch(() => [])) {
+      const sb = await readJson<{brand?: string}>(safeJoin('projects', d.name, 'storyboard.json')).catch(() => null);
+      if (sb?.data.brand === id) throw new HttpError(409, `Dự án "${d.name}" đang dùng brand này`);
+    }
+    await readFile(brandFile(id)).catch(() => { throw new HttpError(404, 'brand not found'); });
+    await rm(safeJoin('brands', id), {recursive: true});
+    return c.json({ok: true});
   });
 
   app.get('/templates', async c => {

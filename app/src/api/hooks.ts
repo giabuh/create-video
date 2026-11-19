@@ -93,6 +93,14 @@ export function useSaveBrand(): UseMutationResult<{mtime: number}, HttpError, {i
     onSuccess: ({mtime}, {id, brand}) => qc.setQueryData<BrandSummary[]>(qk.brands, (l) => l?.map((b) => (b.id === id ? {...b, brand, mtime} : b))),
   });
 }
+export function useDeleteBrand(): UseMutationResult<unknown, HttpError, string> {
+  const qc = useQueryClient();
+  return useMutation({mutationFn: (id) => api(`/brands/${enc(id)}`, {method: 'DELETE'}), onSuccess: () => qc.invalidateQueries({queryKey: qk.brands})});
+}
+export function useLogoCutout(): UseMutationResult<unknown, HttpError, string> {
+  const qc = useQueryClient();
+  return useMutation({mutationFn: (id) => api(`/brands/${enc(id)}/logo-cutout`, {method: 'POST'}), onSuccess: () => qc.invalidateQueries({queryKey: qk.brands})});
+}
 export function useCreateBrand(): UseMutationResult<BrandSummary, HttpError, string> {
   const qc = useQueryClient();
   return useMutation({mutationFn: (name) => api('/brands', {method: 'POST', body: {name}}), onSuccess: () => invalidate(qc, qk.brands)});

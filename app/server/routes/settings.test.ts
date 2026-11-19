@@ -28,6 +28,10 @@ describe('settings routes', () => {
     expect((await put('trung-tam-b', b.mtime)).status).toBe(200);
     expect((await put('trung-tam-b', b.mtime - 5000)).status).toBe(409);
     expect((await put('missing', 1)).status).toBe(404);
+    expect((await req('/api/brands/demo', {method: 'DELETE'})).status).toBe(409); // default brand
+    expect((await req('/api/brands/missing', {method: 'DELETE'})).status).toBe(404);
+    expect((await req('/api/brands/trung-tam-b', {method: 'DELETE'})).status).toBe(200);
+    expect((await (await req('/api/brands')).json()).map((x: {id: string}) => x.id)).toEqual(['demo']);
   });
   it('templates and motion', async () => {
     const root = await makeTestRoot();

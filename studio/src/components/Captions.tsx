@@ -8,7 +8,7 @@ const norm = (w: string) => w.replace(/[.,!?;:"“”()]/g, '').toLowerCase();
 
 export const Captions: React.FC<{chunks: CaptionChunk[]; highlight: string[]; style: CaptionStyle}> = ({chunks, highlight, style}) => {
   const frame = useCurrentFrame();
-  const {fps, width} = useVideoConfig();
+  const {fps, width, height} = useVideoConfig();
   const t = frame / fps;
   const loaded = useFontsLoaded();
   const c = chunks.find((x) => t >= x.start && t < x.end);
@@ -18,8 +18,8 @@ export const Captions: React.FC<{chunks: CaptionChunk[]; highlight: string[]; st
   const pop = spring({frame: Math.round((t - c.start) * fps), fps, config: {damping: 14}});
   const marks = new Set(highlight.map(norm));
   return (
-    // paddingBottom keeps captions above the Reels/TikTok bottom UI
-    <AbsoluteFill style={{justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 380}}>
+    // paddingBottom keeps captions above the Reels/TikTok bottom UI (380px on a 1920-tall frame)
+    <AbsoluteFill style={{justifyContent: 'flex-end', alignItems: 'center', paddingBottom: height * 0.2}}>
       <div style={{
         fontFamily, fontWeight: 800, fontSize: size, color: style.color,
         textAlign: 'center', maxWidth: '86%', lineHeight: 1.15, transform: `scale(${0.85 + 0.15 * pop})`,

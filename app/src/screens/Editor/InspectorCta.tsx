@@ -21,13 +21,14 @@ export function InspectorCta(): React.JSX.Element {
   );
   return (
     <div className={s.stack}>
-      <Switch checked={!!cta} label="Có thẻ CTA" onChange={(on) => setStoryboard({...sb, cta: on ? {title: ''} : null})} />
+      <Switch checked={!!cta} label="Có thẻ CTA" onChange={(on) => setStoryboard({...sb, cta: on ? {} : null})} />
       {cta && (
         <>
-          <Field label="Tiêu đề"><Input value={cta.title ?? ''} placeholder={brand?.name ? `[TIÊU ĐỀ] — ${brand.name}` : '[TIÊU ĐỀ]'} onChange={(e) => set({title: e.target.value})} /></Field>
+          <Field label="Tiêu đề" hint="Để trống để dùng tiêu đề của thương hiệu."><Input value={cta.title ?? ''} placeholder={brand?.cta?.title || 'Đăng ký ngay'} onChange={(e) => set({title: e.target.value})} /></Field>
           {text('phone', 'Số điện thoại')}
           {text('fanpage', 'Fanpage')}
           {text('address', 'Địa chỉ')}
+          <Field label="Cỡ logo (px)" hint={`Để trống để dùng cỡ của thương hiệu (${brand?.cta?.logoSize ?? 260}px).`}><NumberField value={cta.logoSize ?? null} min={120} max={800} step={10} onChange={(v) => set({logoSize: v ?? undefined})} /></Field>
           <Field label="Thời lượng (giây)"><NumberField value={cta.duration ?? null} min={1} step={0.5} onChange={(v) => set({duration: v ?? undefined})} /></Field>
           {renderProps?.cta && cta.duration == null && <p className={s.muted}>Đang dùng thời lượng mặc định: {renderProps.cta.duration}s.</p>}
         </>

@@ -3,8 +3,8 @@ import {UploadCloud} from 'lucide-react';
 import {Button} from './Button.tsx';
 import s from './DropZone.module.css';
 
-export function DropZone({accept, multiple = true, onFiles, title, description, buttonLabel, compact, children}: {
-  accept: readonly string[]; multiple?: boolean; onFiles(files: File[]): void; title: string; description?: string; buttonLabel: string; compact?: boolean; children?: React.ReactNode;
+export function DropZone({accept, multiple = true, onFiles, title, description, buttonLabel, compact, icon, children}: {
+  accept: readonly string[]; multiple?: boolean; onFiles(files: File[]): void; title: string; description?: string; buttonLabel: string; compact?: boolean; icon?: React.ReactNode; children?: React.ReactNode;
 }): React.JSX.Element {
   const input = useRef<HTMLInputElement>(null);
   const [over, setOver] = useState(false);
@@ -20,7 +20,7 @@ export function DropZone({accept, multiple = true, onFiles, title, description, 
       onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setOver(false); }}
       onDrop={(e) => { e.preventDefault(); setOver(false); take(e.dataTransfer.files); }}
     >
-      <UploadCloud size={compact ? 24 : 36} className={s.icon} aria-hidden />
+      {icon ?? <UploadCloud size={compact ? 24 : 36} className={s.icon} aria-hidden />}
       <div>
         <div className={s.title}>{title}</div>
         {description && <div className={s.desc}>{description}</div>}

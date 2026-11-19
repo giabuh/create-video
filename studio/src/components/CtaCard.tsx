@@ -13,7 +13,7 @@ export const CtaCard: React.FC<{cta: Cta; brand: Brand}> = ({cta, brand}) => {
       background: `linear-gradient(160deg, ${brand.colors.primary}, ${brand.colors.background})`,
       justifyContent: 'center', alignItems: 'center', gap: 40, padding: 80, fontFamily,
     }}>
-      {brand.logo && <Img src={staticFile(brand.logo)} style={{width: 260, opacity: enter(0)}} />}
+      {brand.logo && <Img src={staticFile(brand.logo)} style={{width: cta.logoSize ?? 260, maxHeight: '40%', objectFit: 'contain', opacity: enter(0)}} />}
       <div style={{fontWeight: 800, fontSize: 120, color: brand.colors.accent, textAlign: 'center', transform: `scale(${enter(4)})`}}>{cta.title}</div>
       {lines.map((l, i) => (
         <div key={i} style={{fontWeight: 700, fontSize: 58, color: brand.colors.text, textAlign: 'center',

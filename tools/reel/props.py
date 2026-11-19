@@ -165,7 +165,8 @@ def build_render_props(storyboard: dict, settings: dict, brand: dict, audio: dic
             "transition": sc.get("transition", "cut"),
         })
         t += dur
-    cta = {"duration": 3.0, **brand.get("cta", {}), **storyboard["cta"]} if storyboard.get("cta") else None
+    own = {k: v for k, v in (storyboard.get("cta") or {}).items() if v not in ("", None)}  # empty field = use the brand's
+    cta = {"title": "Đăng ký ngay", "duration": 3.0, **brand.get("cta", {}), **own} if storyboard.get("cta") is not None else None
     total = round(t + (cta["duration"] if cta else 0), 3)
     captions = {sc["id"]: sc.get("caption") or "" for sc in storyboard["scenes"]}
     overlays = _track(storyboard.get("motion") or [], scenes, words, captions, t, total, problems)
