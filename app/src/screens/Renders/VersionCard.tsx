@@ -4,7 +4,7 @@ import type {VersionInfo} from '../../../shared/types.ts';
 import {Button, Chip, IconButton, Slider, fmtBytes} from '../../ui/index.ts';
 import s from './Renders.module.css';
 
-const QUALITY = {draft: 'Nháp 0,5×', final: 'Final 1080×1920'} as const;
+const QUALITY = {draft: 'Nháp 0,5×', final: '1080×1920'} as const;
 const clock = (t: number) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
 
 export function VersionCard({v, register, onApprove, onOpenFolder}: {

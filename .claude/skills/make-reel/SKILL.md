@@ -16,9 +16,9 @@ Follow CLAUDE.md rules. Steps:
 4. **Prepare:** `VieNeu-TTS/.venv/bin/python tools/prepare.py projects/<slug>`. Fix any reported errors.
    Over `targetSeconds` -> shorten `say` and rerun (only changed scenes re-synthesize).
 5. **Self-check:** render a still at the middle frame of each scene and look at every one; fix problems before rendering.
-6. **Draft:** render `reel-v<N>.mp4` at `--scale=0.5`. Reply in Vietnamese with:
+6. **Render:** render `reel-v<N>.mp4` at full quality (no `--scale`). Reply in Vietnamese with:
    - the absolute path;
    - a table (scene | lời đọc | hình | motion | giây);
    - total length and mix.
 7. **Iterate:** apply feedback per CLAUDE.md rule 2. Re-run prepare -> stills -> next `reel-v<N>`.
-8. **Final:** on approval, render without `--scale`, commit `storyboard.json`, and offer `tools/sync.sh push`.
+8. **Approve:** on approval, commit `storyboard.json` (no sync push of the mp4).

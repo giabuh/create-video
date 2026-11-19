@@ -60,7 +60,7 @@ export type BrandSummary = {id: string; brand: BrandFile; isDefault: boolean; mt
 export type Config = Json & {
   defaults: {voice: string; template: string; brand: string};
   tts: Json & {speed: number; pauseAfter: number}; voices: Record<string, Json & {ref: string}>;
-  mix: Mix; video: {fps: number; width: number; height: number; draftScale: number};
+  mix: Mix; video: {fps: number; width: number; height: number};
   music: {volume: number; duckTo: number; fadeOut: number};
   captions: {font: string; size: number; color: string; highlightColor: string; maxWords: number};
 };

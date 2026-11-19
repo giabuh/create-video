@@ -112,11 +112,9 @@ export function projectRoutes({jobs, worker}: Deps): Hono {
   app.post('/projects/:slug/render', async c => {
     const slug = c.req.param('slug');
     await needProject(slug);
-    const kind = (await bodyOf(c)).kind;
-    if (kind !== 'draft' && kind !== 'final') throw new HttpError(400, "kind must be 'draft' or 'final'");
     return c.json(jobs.enqueue({
-      kind: 'render', lane: 'render', label: `Render ${kind === 'draft' ? 'bản nháp' : 'bản cuối'} ${slug}`, project: slug, cancellable: true,
-      run: async ctx => (await import('../render.ts')).renderVersion(slug, kind, ctx, worker as never),
+      kind: 'render', lane: 'render', label: `Render ${slug}`, project: slug, cancellable: true,
+      run: async ctx => (await import('../render.ts')).renderVersion(slug, ctx, worker as never),
     }), 202);
   });
 

@@ -86,7 +86,7 @@ describe('renderVersion cleanup', () => {
     await makeTestRoot();
     const ac = new AbortController();
     const ctx = {progress() {}, log() {}, signal: ac.signal};
-    await expect(renderVersion('p1', 'draft', ctx, stub(() => ac.abort()))).rejects.toThrow();
+    await expect(renderVersion('p1', ctx, stub(() => ac.abort()))).rejects.toThrow();
     expect(await files()).toEqual(['storyboard.json']);
   });
 
@@ -94,7 +94,7 @@ describe('renderVersion cleanup', () => {
     await makeTestRoot();
     const ctx = {progress() {}, log() {}, signal: new AbortController().signal};
     let i = 0;
-    await expect(renderVersion('p1', 'draft', ctx, stub(() => writeFile(path.join(repoRoot(), 'projects/p1/storyboard.json'), `{"scenes":[],"n":${i++}}`)))).rejects.toThrow(/Storyboard thay đổi/);
+    await expect(renderVersion('p1', ctx, stub(() => writeFile(path.join(repoRoot(), 'projects/p1/storyboard.json'), `{"scenes":[],"n":${i++}}`)))).rejects.toThrow(/Storyboard thay đổi/);
     expect(await files()).toEqual(['storyboard.json']);
   });
 });

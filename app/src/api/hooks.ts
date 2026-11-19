@@ -29,8 +29,8 @@ export function usePreview(slug: string): UseMutationResult<PreviewResult, HttpE
 export function useStartVoice(slug: string): UseMutationResult<Job, HttpError, void> {
   return useMutation({mutationFn: post(() => `/projects/${enc(slug)}/voice`)});
 }
-export function useStartRender(slug: string): UseMutationResult<Job, HttpError, 'draft' | 'final'> {
-  return useMutation({mutationFn: post((_k: 'draft' | 'final') => `/projects/${enc(slug)}/render`, (kind) => ({kind}))});
+export function useStartRender(slug: string): UseMutationResult<Job, HttpError, void> {
+  return useMutation({mutationFn: post(() => `/projects/${enc(slug)}/render`, () => ({}))});
 }
 export function useApprove(slug: string): UseMutationResult<{meta: ProjectMeta; commit: string | null}, HttpError, string> {
   const qc = useQueryClient();

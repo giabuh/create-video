@@ -27,7 +27,7 @@ export function RendersScreen(): React.JSX.Element {
 
   const versions = [...(project.data?.versions ?? [])].sort((a, b) => b.n - a.n);
   const playAll = () => videos.current.forEach((el) => { el.currentTime = 0; void el.play().catch(() => {}); });
-  const render = () => start.mutate('draft', {onError: (e) => toast({title: 'Không bắt đầu được render', description: e.message, tone: 'error'})});
+  const render = () => start.mutate(undefined, {onError: (e) => toast({title: 'Không bắt đầu được render', description: e.message, tone: 'error'})});
   const doApprove = () => {
     if (!confirm) return;
     approve.mutate(confirm.name, {

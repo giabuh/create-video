@@ -1,4 +1,4 @@
-import {readdir, rm, stat} from 'node:fs/promises';
+import {readdir, stat} from 'node:fs/promises';
 import {withSlugLock} from './slugLock.ts';
 import {readJsonOr, writeJsonAtomic} from './store.ts';
 import {safeJoin} from './paths.ts';
@@ -45,16 +45,9 @@ export function projectStatus(versions: VersionInfo[], meta: ProjectMeta, render
 }
 
 /** Records a finished render in project.json under the slug lock so it cannot interleave with approve.
- *  A new draft replaces older drafts (mp4 + snapshot + meta); finals and the approved version are kept. */
-export const recordRender = (slug: string, name: string, kind: 'draft' | 'final'): Promise<number> => withSlugLock(slug, async () => {
+ *  Every render is full quality ('final'); 'draft' only survives as a legacy kind on old renders. */
+export const recordRender = (slug: string, name: string): Promise<number> => withSlugLock(slug, async () => {
   const meta = (await readMeta(slug)).data;
-  meta.renders[name] = {kind, at: new Date().toISOString()};
-  if (kind === 'draft') {
-    for (const [old, r] of Object.entries(meta.renders)) {
-      if (old === name || r.kind !== 'draft' || meta.approved === old) continue;
-      await Promise.all([`${old}.mp4`, `${old}.storyboard.json`].map(f => rm(safeJoin('projects', slug, f), {force: true})));
-      delete meta.renders[old];
-    }
-  }
+  meta.renders[name] = {kind: 'final', at: new Date().toISOString()};
   return writeMeta(slug, meta);
 });

@@ -93,7 +93,7 @@ Resolution order (later wins): `config.json` → `config.voices.<voice>` → bra
   },
   "mix":      { "real": 0.6, "motion": 0.3, "other": 0.1 },   // target share of screen time
   "sync":     { "remote": "video-syn:create-video" },            // rclone remote:path
-  "video":    { "fps": 30, "width": 1080, "height": 1920, "draftScale": 0.5 },
+  "video":    { "fps": 30, "width": 1080, "height": 1920 },
   "music":    { "volume": 0.25, "duckTo": 0.08, "fadeOut": 1.5 },
   "captions": { "font": "Be Vietnam Pro", "size": 64, "color": "#FFFFFF",
                 "highlightColor": "#FFD400", "maxWords": 6 }
@@ -194,8 +194,7 @@ Writes `voices/tries/<name>-A.wav`, `-B.wav`, … plus a `tries.json` listing ea
 - Video tag: `@remotion/media` `<Video>` for rendering, with `<OffthreadVideo>` while previewing in Studio (per current Remotion docs).
 - Brand (`brands/<id>/brand.json`): `{ name, logo, colors: {primary, accent, text}, font?, cta: {phone, fanpage, address} }`.
 - Commands:
-  - Draft: `npx remotion render Reel <project>/reel-v<N>.mp4 --props=<project>/render-props.json --scale=<draftScale>`
-  - Final: the same command without `--scale`.
+  - Render: `npx remotion render Reel <project>/reel-v<N>.mp4 --props=<project>/render-props.json`
   - Stills: `npx remotion still Reel <project>/preview/<scene>.png --frame=<mid-frame> --props=…`
 
 ## Workflow (`/make-reel`, documented in the skill and CLAUDE.md)
@@ -204,7 +203,7 @@ Writes `voices/tries/<name>-A.wav`, `-B.wav`, … plus a `tries.json` listing ea
 1. Brief: course, offer, length, voice, brand, music yes/no. Ask for any missing facts (price, phone, dates) rather than inventing them.
 2. Create `projects/<date-slug>/storyboard.json` (Mode A: write the script and pick shots from the index; Mode B: transcribe the user's script).
 3. Run `prepare.py`. If the total runs over the target, shorten `say` and rerun (only the changed scenes re-synthesize).
-4. Render stills of each scene and view them to self-check for overflow, collisions and wrong shots. Then render a draft and report the path plus a scene summary table.
+4. Render stills of each scene and view them to self-check for overflow, collisions and wrong shots. Then render and report the path plus a scene summary table.
 5. Iterate on the user's feedback. Each render is a new `reel-v<N>.mp4`. Commit the storyboard on each accepted version so "quay lại v2" works.
 6. Final render at full resolution.
 
@@ -275,7 +274,7 @@ Added by sub-project 2 (see `2026-11-18-reel-app-design.md`):
 - `prepare.py`: pytest for storyboard validation, config layer resolution and cache-key stability (pure functions; the TTS model is not tested).
 - `studio/`: `tsc --noEmit`, plus rendering stills from a 3-scene fixture storyboard.
 - Voice, symlink and Chrome feasibility were already proven by the spike (see below).
-- Portability check: fresh `git clone --recursive` into a temp dir, then `./setup.sh`, `prepare.py` and a draft render of the fixture storyboard succeed with no manual steps besides `rclone config`.
+- Portability check: fresh `git clone --recursive` into a temp dir, then `./setup.sh`, `prepare.py` and a render of the fixture storyboard succeed with no manual steps besides `rclone config`.
 
 ## Out of scope for v1
 

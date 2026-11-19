@@ -51,9 +51,9 @@ describe('projects routes', () => {
     const job = await settle(jobs, (await v.json()).id);
     expect(job.state).toBe('done');
     expect(worker.request).toHaveBeenCalledWith('prepare', {project: 'p1'}, expect.any(Function));
-    expect((await req('/api/projects/p1/render', {method: 'POST', json: {kind: 'x'}})).status).toBe(400);
+    expect((await req('/api/projects/p1/render', {method: 'POST', json: {}})).status).toBe(202);
     const gl = await (await req('/api/jobs')).json();
-    expect(gl[0].kind).toBe('voice');
+    expect(gl.map((j: {kind: string}) => j.kind)).toEqual(['render', 'voice']);
     const dir = path.join(root, 'projects/p1');
     expect((await req('/api/projects/p1/approve', {method: 'POST', json: {version: 'reel-v1'}})).status).toBe(404);
     expect((await req('/api/projects/p1/approve', {method: 'POST', json: {version: '../x'}})).status).toBe(400);
@@ -68,9 +68,9 @@ describe('projects routes', () => {
     const {req} = setup();
     await writeFile(path.join(root, 'projects/p1/reel-v1.mp4'), 'x');
     await Promise.all([
-      recordRender('p1', 'reel-v2', 'draft'),
+      recordRender('p1', 'reel-v2'),
       req('/api/projects/p1/approve', {method: 'POST', json: {version: 'reel-v1'}}),
-      recordRender('p1', 'reel-v3', 'final'),
+      recordRender('p1', 'reel-v3'),
     ]);
     const meta = (await readMeta('p1')).data;
     expect(meta.approved).toBe('reel-v1');

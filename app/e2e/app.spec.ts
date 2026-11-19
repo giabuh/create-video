@@ -58,7 +58,7 @@ test('edit caption: autosave pill and player', async ({page}) => {
   await player.screenshot({path: 'test-results/player-caption.png'});
 });
 
-test('voice job then draft render', async ({page}) => {
+test('voice job then render', async ({page}) => {
   await page.goto(`/p/${slug}`);
   const staleBanner = page.getByText(/\d+ cảnh chưa tạo giọng/);
   await expect(staleBanner).toBeVisible({timeout: 30_000});
@@ -66,7 +66,7 @@ test('voice job then draft render', async ({page}) => {
   await waitJob('voice', 120_000);
   // the Editor must re-run the preview by itself when the voice job ends (no edit in between)
   await expect(staleBanner).toBeHidden({timeout: 30_000});
-  await page.getByRole('button', {name: 'Render nháp'}).click();
+  await page.getByRole('button', {name: 'Render', exact: true}).click();
   await waitJob('render', 240_000);
   await page.goto(`/p/${slug}/renders`);
   await expect(page.getByRole('heading', {name: 'reel-v1'})).toBeVisible();

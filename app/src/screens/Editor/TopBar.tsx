@@ -45,16 +45,16 @@ export function TopBar(): React.JSX.Element {
   const jobs = useJobs();
   const voice = useVoiceAction();
   const startRender = useStartRender(slug);
-  const [confirm, setConfirm] = useState<'draft' | 'final' | null>(null);
+  const [confirm, setConfirm] = useState(false);
   const renderJob = jobs.find((j) => j.kind === 'render' && j.project === slug && ACTIVE(j));
   const voiceBusy = voice.loading;
   const rendering = startRender.isPending || !!renderJob;
 
-  const doRender = (kind: 'draft' | 'final') => {
-    setConfirm(null);
-    void save.flush().then(() => startRender.mutateAsync(kind)).catch((e: unknown) => toast({title: 'Không bắt đầu được render', description: e instanceof Error ? e.message : String(e), tone: 'error'}));
+  const doRender = () => {
+    setConfirm(false);
+    void save.flush().then(() => startRender.mutateAsync()).catch((e: unknown) => toast({title: 'Không bắt đầu được render', description: e instanceof Error ? e.message : String(e), tone: 'error'}));
   };
-  const ask = (kind: 'draft' | 'final') => (stale.length ? setConfirm(kind) : doRender(kind));
+  const ask = () => (stale.length ? setConfirm(true) : doRender());
   const openVersions = () => void nav(`/p/${encodeURIComponent(slug)}/renders`);
   const mix = renderProps ? mixOf(renderProps) : (detail.timings?.mix ?? null);
   const progress = rendering && (
@@ -78,8 +78,7 @@ export function TopBar(): React.JSX.Element {
       </div>
       <div className={s.compactActions}>
         <DropdownMenu align="end" trigger={<Button variant="primary" icon={<Upload size={16} aria-hidden />}>Xuất video</Button>} items={[
-          {label: 'Render nháp', disabled: voiceBusy || rendering, onSelect: () => ask('draft')},
-          {label: 'Render cuối', disabled: voiceBusy || rendering, onSelect: () => ask('final')},
+          {label: 'Render', disabled: voiceBusy || rendering, onSelect: ask},
           {label: `Bản render (${detail.versions.length})`, onSelect: openVersions},
           'separator',
           {label: voiceBusy ? voice.label : 'Tạo giọng', disabled: voiceBusy || rendering || voice.disabled, onSelect: voice.start},
@@ -89,13 +88,12 @@ export function TopBar(): React.JSX.Element {
       <div className={s.actions}>
         <Button icon={<Clapperboard size={16} aria-hidden />} onClick={openVersions}>Bản render ({detail.versions.length})</Button>
         <Button icon={<Mic size={16} aria-hidden />} loading={voiceBusy} loadingText={voice.label} disabled={rendering || voice.disabled} onClick={voice.start}>Tạo giọng</Button>
-        <Button disabled={voiceBusy || rendering} loading={startRender.isPending && startRender.variables === 'draft'} onClick={() => ask('draft')}>Render nháp</Button>
-        <Button variant="primary" disabled={voiceBusy || rendering} loading={startRender.isPending && startRender.variables === 'final'} onClick={() => ask('final')}>Render final</Button>
+        <Button variant="primary" disabled={voiceBusy || rendering} loading={startRender.isPending} onClick={ask}>Render</Button>
         <Button icon={<MessageSquare size={16} aria-hidden />} onClick={() => setChatOpen(true)}>Chat</Button>
       </div>
-      <ConfirmDialog open={confirm !== null} onOpenChange={(o) => { if (!o) setConfirm(null); }}
+      <ConfirmDialog open={confirm} onOpenChange={(o) => { if (!o) setConfirm(false); }}
         title="Cần tạo giọng trước" description={`Cần tạo giọng cho ${stale.join(', ')} trước. Render sẽ tự tạo giọng rồi mới render.`}
-        confirmLabel="Tạo giọng và render" onConfirm={() => confirm && doRender(confirm)} />
+        confirmLabel="Tạo giọng và render" onConfirm={doRender} />
     </header>
   );
 }

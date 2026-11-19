@@ -20,7 +20,7 @@ function statusChip(p: ProjectSummary): React.JSX.Element {
   const [tone, text]: [Tone, string] =
     p.status === 'rendering' ? ['info', 'Đang render'] :
     p.status === 'approved' ? ['success', `Đã duyệt${p.approved ? ` ${p.approved.replace(/^reel-/, '')}` : v}`] :
-    p.status === 'draft' ? ['warning', `Bản nháp${v}`] : ['neutral', 'Chưa render'];
+    p.status === 'draft' ? ['warning', `Chưa duyệt${v}`] : ['neutral', 'Chưa render'];
   return <Chip tone={tone}>{text}</Chip>;
 }
 

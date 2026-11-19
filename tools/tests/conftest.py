@@ -13,7 +13,7 @@ CFG = {
         "phuong": {"ref": "voices/phuong-short.wav", "speed": 1.05},
         "vy": {"ref": "voices/vy-short.wav", "temperature": 0.7},
     },
-    "video": {"fps": 30, "width": 1080, "height": 1920, "draftScale": 0.5},
+    "video": {"fps": 30, "width": 1080, "height": 1920},
     "music": {"volume": 0.25, "duckTo": 0.08, "fadeOut": 1.5},
     "captions": {"font": "Be Vietnam Pro", "size": 64, "color": "#FFFFFF", "highlightColor": "#FFD400", "maxWords": 6},
 }

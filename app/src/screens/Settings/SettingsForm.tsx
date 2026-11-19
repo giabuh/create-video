@@ -119,7 +119,7 @@ export function SettingsForm({group}: {group: SettingsGroup}): React.JSX.Element
           <Prm label="Âm lượng nhạc" n={pct(music.volume)} min={0} max={100} step={1} value={`${pct(music.volume)}%`} onChange={(v) => setMusic({volume: v / 100})} />
           <Prm label="Khi có giọng hạ còn" n={pct(music.duckTo)} min={0} max={50} step={1} value={`${pct(music.duckTo)}%`} onChange={(v) => setMusic({duckTo: v / 100})} />
           <Prm label="Fade cuối" n={music.fadeOut} min={0} max={5} step={0.5} value={`${fmtNum(music.fadeOut, 1)} s`} onChange={(v) => setMusic({fadeOut: v})} />
-          <div className={s.muted}>Video: {video.width}×{video.height} · {video.fps} fps · bản nháp {fmtNum(video.draftScale, 1)}×</div>
+          <div className={s.muted}>Video: {video.width}×{video.height} · {video.fps} fps</div>
         </section>}
       </div>
       <div className={s.saveBar}>

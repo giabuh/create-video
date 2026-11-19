@@ -8,7 +8,7 @@ import {repoRoot, safeJoin} from './paths.ts';
 import {withSlugLock} from './slugLock.ts';
 import {nextVersion, recordRender} from './versions.ts';
 import type {VoiceWorker} from './voiceWorker.ts';
-import type {Config, Json, RenderProps} from '../shared/types.ts';
+import type {Json, RenderProps} from '../shared/types.ts';
 
 let cached: {key: string; serveUrl: string} | null = null;
 let bundleChain: Promise<unknown> = Promise.resolve();
@@ -41,7 +41,7 @@ function getServeUrl(ctx: JobCtx): Promise<string> {
   return p;
 }
 
-export async function renderVersion(slug: string, kind: 'draft' | 'final', ctx: JobCtx, worker: VoiceWorker): Promise<Json> {
+export async function renderVersion(slug: string, ctx: JobCtx, worker: VoiceWorker): Promise<Json> {
   const sbPath = safeJoin('projects', slug, 'storyboard.json');
   let snapshot: string | null = null, tmp: string | null = null;
   try {
@@ -67,7 +67,6 @@ export async function renderVersion(slug: string, kind: 'draft' | 'final', ctx: 
       await writeFile(snapshot, sbBytes);
       return {props, name};
     });
-    const config = (await readJson<Config>(path.join(repoRoot(), 'config.json'))).data;
     const serveUrl = await getServeUrl(ctx);
     ctx.signal.throwIfAborted();
     const {cancelSignal, cancel} = makeCancelSignal();
@@ -79,14 +78,13 @@ export async function renderVersion(slug: string, kind: 'draft' | 'final', ctx: 
     tmp = safeJoin('projects', slug, `${name}.tmp.mp4`);
     await renderMedia({
       composition, serveUrl, codec: 'h264', outputLocation: tmp, inputProps, onBrowserDownload, cancelSignal,
-      scale: kind === 'draft' ? config.video.draftScale : 1,
       onProgress: ({progress, renderedFrames, stitchStage}) =>
         ctx.progress(0.25 + 0.75 * progress, stitchStage === 'muxing' ? 'Ghép âm thanh' : `Khung ${renderedFrames}/${composition.durationInFrames}`),
     });
     ctx.signal.throwIfAborted();
     await rename(tmp, safeJoin('projects', slug, `${name}.mp4`));
     tmp = null; snapshot = null; // mp4 is final; keep its snapshot even if the meta write fails
-    await recordRender(slug, name, kind);
+    await recordRender(slug, name);
     return {version: name, file: `projects/${slug}/${name}.mp4`};
   } catch (e) {
     await Promise.all([tmp as string | null, snapshot as string | null].map(f => f && rm(f, {force: true})));
