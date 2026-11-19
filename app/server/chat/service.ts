@@ -1,0 +1,87 @@
+import {randomUUID} from 'node:crypto';
+import type {ChatAccount, ChatDetail, ChatEvent, ChatMeta, LimitInfo} from '../../shared/types.ts';
+import type {EventBus} from '../events.ts';
+import {HttpError} from '../routes/util.ts';
+import {listAccounts} from './accounts.ts';
+import {runTurn} from './runner.ts';
+import {appendEvent, readEvents, readIndex, updateIndex} from './store.ts';
+
+export const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+export const NEW_TITLE = 'Phiên mới';
+const titleOf = (t: string) => { const s = t.replace(/\s+/g, ' ').trim(); return s.length > 60 ? s.slice(0, 59) + '…' : s; };
+const systemAppend = (screen: string, slug: string | null) =>
+  `The user is chatting with you from the reel app's chat panel; the app is running (CLAUDE.md rule 10: point them to the app instead of describing frames). ` +
+  `They are on app screen "${screen}"${slug ? `, working on projects/${slug}` : ''}.`;
+
+export class ChatService {
+  #bus: EventBus;
+  #active: {chatId: string; ac: AbortController; done: Promise<void>} | null = null;
+  #limits = new Map<string, LimitInfo>();
+  constructor(bus: EventBus) { this.#bus = bus; }
+
+  busy(): string | null { return this.#active?.chatId ?? null; }
+  idle(): Promise<void> { return this.#active?.done ?? Promise.resolve(); }
+
+  async accounts(): Promise<ChatAccount[]> {
+    return (await listAccounts()).map(a => ({name: a.name, limit: this.#limits.get(a.name) ?? null}));
+  }
+  async list(): Promise<ChatMeta[]> { return (await readIndex()).sort((a, b) => b.updatedAt - a.updatedAt); }
+
+  async create(slug: string | null): Promise<ChatMeta> {
+    const now = Date.now();
+    const chat: ChatMeta = {id: randomUUID(), title: NEW_TITLE, account: (await listAccounts())[0]?.name ?? 'claude', slug, started: false, createdAt: now, updatedAt: now};
+    await updateIndex(l => [...l, chat]);
+    return chat;
+  }
+
+  async get(id: string): Promise<ChatDetail | null> {
+    const chat = (await readIndex()).find(c => c.id === id);
+    return chat ? {chat, events: await readEvents(id)} : null;
+  }
+
+  async send(id: string, m: {text: string; account: string; screen: string; slug: string | null}): Promise<void> {
+    if (this.#active) throw new HttpError(409, 'Claude đang trả lời ở một phiên khác');
+    let release!: () => void;
+    const ac = new AbortController();
+    this.#active = {chatId: id, ac, done: new Promise<void>(r => { release = r; })}; // claimed before any await: no double start
+    try {
+      const chat = (await readIndex()).find(c => c.id === id);
+      if (!chat) throw new HttpError(404, 'chat not found');
+      const account = (await listAccounts()).find(a => a.name === m.account);
+      if (!account) throw new HttpError(400, 'unknown account');
+
+      let w: Promise<void> = Promise.resolve();
+      const persist = (e: ChatEvent) => { // write, then emit: a client refetch after the event sees it
+        w = w.then(() => appendEvent(id, e)).then(() => this.#bus.emit({type: 'chat', chatId: id, event: e}), err => console.error('chat append', err));
+      };
+      persist({kind: 'user', text: m.text, account: account.name, at: Date.now()});
+      await updateIndex(l => l.map(c => c.id === id ? {...c, account: account.name, title: c.title === NEW_TITLE ? titleOf(m.text) : c.title, updatedAt: Date.now()} : c));
+      this.#bus.emit({type: 'chatBusy', chatId: id});
+
+      void runTurn({
+        sessionId: id, resume: chat.started, account, prompt: m.text, systemAppend: systemAppend(m.screen, m.slug), signal: ac.signal,
+        onEvent: e => { if (e.kind === 'delta') this.#bus.emit({type: 'chat', chatId: id, event: e}); else persist(e); },
+        onInit: () => { if (!chat.started) { chat.started = true; void updateIndex(l => l.map(c => c.id === id ? {...c, started: true} : c)); } },
+        onLimit: l => { this.#limits.set(account.name, l); },
+      }).then(async () => {
+        await w;
+        await updateIndex(l => l.map(c => c.id === id ? {...c, updatedAt: Date.now()} : c)).catch(() => undefined);
+      }).finally(() => {
+        this.#active = null;
+        this.#bus.emit({type: 'chatBusy', chatId: null});
+        release();
+      });
+    } catch (e) {
+      this.#active = null;
+      release();
+      throw e;
+    }
+  }
+
+  stop(id: string): boolean {
+    if (this.#active?.chatId !== id) return false;
+    this.#active.ac.abort();
+    return true;
+  }
+  stopAll(): void { this.#active?.ac.abort(); }
+}

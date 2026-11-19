@@ -1,5 +1,6 @@
 import {serve} from '@hono/node-server';
 import {createApp} from './app.ts';
+import {ChatService} from './chat/service.ts';
 import {EventBus} from './events.ts';
 import {JobQueue} from './jobs.ts';
 import {openFolder} from './procs.ts';
@@ -13,12 +14,13 @@ const EXTRA_PORTS = (process.env.REEL_EXTRA_PORTS ?? '').split(',').filter(Boole
 const bus = new EventBus();
 const jobs = new JobQueue(bus);
 const worker = new VoiceWorker(bus);
+const chat = new ChatService(bus);
 worker.start();
 const stopWatcher = startWatcher(bus);
-const server = serve({fetch: createApp({bus, jobs, worker, ports: [API_PORT, UI_PORT, ...EXTRA_PORTS]}).fetch, hostname: '127.0.0.1', port: API_PORT});
+const server = serve({fetch: createApp({bus, jobs, worker, ports: [API_PORT, UI_PORT, ...EXTRA_PORTS], chat}).fetch, hostname: '127.0.0.1', port: API_PORT});
 console.log(`Reel Studio: http://127.0.0.1:${UI_PORT}`);
 
-for (const sig of ['SIGINT', 'SIGTERM'] as const) process.on(sig, () => { stopWatcher(); worker.stop(); server.close(); process.exit(0); });
+for (const sig of ['SIGINT', 'SIGTERM'] as const) process.on(sig, () => { stopWatcher(); worker.stop(); chat.stopAll(); server.close(); process.exit(0); });
 
 if (process.env.NO_OPEN !== '1' && process.env.REEL_DEV !== '1') {
   void (async () => {

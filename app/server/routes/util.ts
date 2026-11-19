@@ -1,5 +1,6 @@
 import type {Context} from 'hono';
 import type {EventBus} from '../events.ts';
+import type {ChatService} from '../chat/service.ts';
 import type {JobQueue} from '../jobs.ts';
 import type {VoiceWorker} from '../voiceWorker.ts';
 import {stat} from 'node:fs/promises';
@@ -9,7 +10,7 @@ import {readJson} from '../store.ts';
 import type {Config} from '../../shared/types.ts';
 
 export type WorkerLike = Pick<VoiceWorker, 'request' | 'status' | 'start' | 'stop'>;
-export type Deps = {bus: EventBus; jobs: JobQueue; worker: WorkerLike; ports: number[]};
+export type Deps = {bus: EventBus; jobs: JobQueue; worker: WorkerLike; ports: number[]; chat: ChatService};
 
 export class HttpError extends Error {
   status: number; details?: unknown;

@@ -1,0 +1,87 @@
+import path from 'node:path';
+import {beforeEach, describe, expect, it} from 'vitest';
+import type {ChatDetail, ChatMeta, ServerEvent} from '../../shared/types.ts';
+import {makeTestRoot} from '../testRoot.ts';
+import {makeClaudeHome} from '../chat/testHome.ts';
+import {setup} from './testApp.ts';
+
+const FAKE = path.join(import.meta.dirname, '../chat/fake-claude.mjs');
+
+beforeEach(async () => {
+  await makeTestRoot(); // chat dir = <temp root>/app/.data/chats
+  delete process.env.REEL_CHAT_DIR;
+  process.env.REEL_CLAUDE_BIN = FAKE;
+  process.env.REEL_CLAUDE_HOME = await makeClaudeHome();
+});
+
+async function newChat(req: ReturnType<typeof setup>['req']): Promise<ChatMeta> {
+  const r = await req('/api/chats', {method: 'POST', json: {slug: 'p1'}});
+  expect(r.status).toBe(201);
+  return r.json();
+}
+const send = (req: ReturnType<typeof setup>['req'], id: string, text: string, account = 'claude') =>
+  req(`/api/chats/${id}/messages`, {method: 'POST', json: {text, account, screen: '/p/p1', slug: 'p1'}});
+
+describe('chat routes', () => {
+  it('accounts come from the claude home', async () => {
+    const {req} = setup();
+    expect((await (await req('/api/chat/accounts')).json()).map((a: {name: string}) => a.name)).toEqual(['claude', 'claude2', 'claude10']);
+  });
+
+  it('two turns: new then resume, persisted without deltas, title set, busy events', async () => {
+    const {req, chat, bus} = setup();
+    const seen: ServerEvent[] = [];
+    bus.subscribe(e => seen.push(e));
+    const c = await newChat(req);
+    expect((await send(req, c.id, 'Làm video IELTS')).status).toBe(202);
+    await chat.idle();
+    expect((await send(req, c.id, 'tiếp', 'claude2')).status).toBe(202);
+    await chat.idle();
+    const d: ChatDetail = await (await req(`/api/chats/${c.id}`)).json();
+    const texts = d.events.filter(e => e.kind === 'text').map(e => (e as {text: string}).text);
+    expect(texts[0]).toMatch(/^acc=default mode=new sys=yes/);
+    expect(texts[1]).toMatch(/^acc=\.claude-acc2 mode=resume/);
+    expect(d.events.some(e => e.kind === 'delta')).toBe(false);
+    expect(d.events.filter(e => e.kind === 'done')).toHaveLength(2);
+    expect(d.chat).toMatchObject({title: 'Làm video IELTS', account: 'claude2', started: true, slug: 'p1'});
+    expect(seen.some(e => e.type === 'chat' && e.event.kind === 'delta')).toBe(true);
+    expect(seen.filter(e => e.type === 'chatBusy').map(e => (e as {chatId: string | null}).chatId)).toEqual([c.id, null, c.id, null]);
+  });
+
+  it('409 while busy, stop → Đã dừng', async () => {
+    const {req, chat} = setup();
+    const a = await newChat(req), b = await newChat(req);
+    expect((await send(req, a.id, 'SLOW')).status).toBe(202);
+    expect((await send(req, b.id, 'hi')).status).toBe(409);
+    expect((await req(`/api/chats/${b.id}/stop`, {method: 'POST'})).status).toBe(409);
+    expect((await req(`/api/chats/${a.id}/stop`, {method: 'POST'})).status).toBe(204);
+    await chat.idle();
+    const d: ChatDetail = await (await req(`/api/chats/${a.id}`)).json();
+    expect(d.events.at(-1)).toEqual({kind: 'error', message: 'Đã dừng'});
+    expect(chat.busy()).toBeNull();
+  });
+
+  it('limit error is persisted with the account, accounts report the limit', async () => {
+    const {req, chat} = setup();
+    const c = await newChat(req);
+    await send(req, c.id, 'LIMIT');
+    await chat.idle();
+    const d: ChatDetail = await (await req(`/api/chats/${c.id}`)).json();
+    expect(d.events.at(-1)).toMatchObject({kind: 'error', limit: {account: 'claude', resetsAt: 1795514400}});
+    const accs = await (await req('/api/chat/accounts')).json();
+    expect(accs[0].limit.status).toBe('rejected');
+  });
+
+  it('validation', async () => {
+    const {req} = setup();
+    const c = await newChat(req);
+    expect((await send(req, c.id, '   ')).status).toBe(400);
+    expect((await send(req, c.id, 'x'.repeat(20_001))).status).toBe(400);
+    expect((await send(req, c.id, 'hi', 'claude3')).status).toBe(400); // no credentials → not an account
+    expect((await req(`/api/chats/${c.id}/messages`, {method: 'POST', json: {text: 'hi', account: 'claude', slug: '../x'}})).status).toBe(400);
+    expect((await req('/api/chats', {method: 'POST', json: {slug: '../x'}})).status).toBe(400);
+    expect((await req('/api/chats/not-a-uuid')).status).toBe(404);
+    expect((await req('/api/chats/00000000-0000-4000-8000-000000000000')).status).toBe(404);
+    expect((await send(req, '00000000-0000-4000-8000-000000000000', 'hi')).status).toBe(404);
+  });
+});

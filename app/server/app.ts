@@ -7,6 +7,7 @@ import {hostGuard} from './guard.ts';
 import {AUDIO_REF_EXTS, IMAGE_EXTS, MEDIA_EXTS, MUSIC_EXTS, PathError, repoRoot} from './paths.ts';
 import {Conflict} from './store.ts';
 import type {ServerEvent} from '../shared/types.ts';
+import {chatRoutes} from './routes/chats.ts';
 import {jobRoutes} from './routes/jobs.ts';
 import {libraryRoutes} from './routes/library.ts';
 import {projectRoutes} from './routes/projects.ts';
@@ -38,8 +39,9 @@ export function createApp(deps: Deps): Hono {
   api.get('/events', sseRoute(deps.bus, () => [
     ...deps.jobs.list().filter(j => j.state === 'queued' || j.state === 'running').reverse().map((job): ServerEvent => ({type: 'job', job})),
     {type: 'worker', status: deps.worker.status()},
+    {type: 'chatBusy', chatId: deps.chat.busy()},
   ]));
-  for (const r of [projectRoutes, libraryRoutes, uploadRoutes, voiceRoutes, settingsRoutes, jobRoutes]) api.route('/', r(deps));
+  for (const r of [projectRoutes, libraryRoutes, uploadRoutes, voiceRoutes, settingsRoutes, jobRoutes, chatRoutes]) api.route('/', r(deps));
   app.route('/api', api);
 
   for (const [dir, exts] of Object.entries(STATIC_EXTS)) {
