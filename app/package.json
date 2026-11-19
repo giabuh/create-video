@@ -5,7 +5,8 @@
     "start": "concurrently -k -n api,web \"node server/index.ts\" \"vite\"",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "e2e:chat": "playwright test -c playwright.chat.config.ts"
   },
   "dependencies": {
     "remotion": "4.0.544", "@remotion/player": "4.0.544", "@remotion/bundler": "4.0.544",

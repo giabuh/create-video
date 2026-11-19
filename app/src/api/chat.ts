@@ -13,7 +13,11 @@ export const useChat = (id: string | null) => useQuery({
 });
 export function useCreateChat() {
   const qc = useQueryClient();
-  return useMutation({mutationFn: (v: {slug: string | null}) => api<ChatMeta>('/chats', {body: v}), onSuccess: () => qc.invalidateQueries({queryKey: chatKeys.list})});
+  return useMutation({mutationFn: (v: {slug: string | null}) => api<ChatMeta>('/chats', {body: v}), onSuccess: (chat) => {
+    // Seed the detail: an invalidation during a first fetch that has no data yet is swallowed (react-query), so the SSE events of the first turn would be lost.
+    qc.setQueryData<ChatDetail>(chatKeys.one(chat.id), {chat, events: []});
+    return qc.invalidateQueries({queryKey: chatKeys.list});
+  }});
 }
 export const useSendChat = () => useMutation({
   mutationFn: ({id, ...body}: {id: string; text: string; account: string; screen: string; slug: string | null}) => api<void>(`/chats/${id}/messages`, {body}),
