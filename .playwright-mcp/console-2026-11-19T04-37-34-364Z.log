@@ -1,0 +1,3 @@
+[     203ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=ab88caed:15802
+[     350ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:5317/favicon.ico:1
+[   11760ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:5317/api/projects/xoa-thu:1

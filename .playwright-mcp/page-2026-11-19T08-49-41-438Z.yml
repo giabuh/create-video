@@ -1,0 +1,81 @@
+- generic [active] [ref=f14e1]:
+  - 'heading "Xem thử: hiệu ứng chữ và thẻ mới (A + B)" [level=1] [ref=f14e2]'
+  - paragraph [ref=f14e3]: "Mỗi ô tự chạy lặp: vào, giữ, ra. Bấm vào khung hình để phát lại từ đầu. Bấm vào thẻ để đánh dấu cái bạn thích (chọn được nhiều). Màu: navy, vàng, trắng của thương hiệu, cộng thêm đỏ làm màu nhấn 2."
+  - heading "1. Hiệu ứng chữ" [level=2] [ref=f14e4]
+  - paragraph [ref=f14e5]: Cùng một thẻ, chỉ khác cách chữ hiện ra. Khi thoát, thẻ bị xóa dần từ trái sang phải.
+  - generic [ref=f14e6]:
+    - generic [ref=f14e7] [cursor=pointer]:
+      - generic [ref=f14e8]: Khóa học Quảng cáo Facebook
+      - heading "Hiện ngay ✓ thích" [level=3] [ref=f14e11]:
+        - text: Hiện ngay
+        - generic [ref=f14e12]: ✓ thích
+      - generic [ref=f14e13]: Như hiện tại, để so sánh
+    - generic [ref=f14e14] [cursor=pointer]:
+      - heading "Gõ phím ✓ thích" [level=3] [ref=f14e17]:
+        - text: Gõ phím
+        - generic [ref=f14e18]: ✓ thích
+      - generic [ref=f14e19]: Từng ký tự, có con trỏ nhấp nháy
+    - generic [ref=f14e20] [cursor=pointer]:
+      - heading "Từng từ trượt lên ✓ thích" [level=3] [ref=f14e23]:
+        - text: Từng từ trượt lên
+        - generic [ref=f14e24]: ✓ thích
+      - generic [ref=f14e25]: Mỗi từ nhô lên và rõ dần
+    - generic [ref=f14e26] [cursor=pointer]:
+      - heading "Bật từng chữ cái ✓ thích" [level=3] [ref=f14e29]:
+        - text: Bật từng chữ cái
+        - generic [ref=f14e30]: ✓ thích
+      - generic [ref=f14e31]: Chữ cái nảy ra nối tiếp nhau
+    - generic [ref=f14e32] [cursor=pointer]:
+      - heading "Xáo chữ ✓ thích" [level=3] [ref=f14e35]:
+        - text: Xáo chữ
+        - generic [ref=f14e36]: ✓ thích
+      - generic [ref=f14e37]: Chữ cái hiện không theo thứ tự, giống mẫu "Thành thạo"
+    - generic [ref=f14e38] [cursor=pointer]:
+      - heading "Trồi lên từ vạch che ✓ thích" [level=3] [ref=f14e41]:
+        - text: Trồi lên từ vạch che
+        - generic [ref=f14e42]: ✓ thích
+      - generic [ref=f14e43]: Từ trồi lên sau một mép che vô hình
+    - generic [ref=f14e44] [cursor=pointer]:
+      - heading "Sóng nghiêng ✓ thích" [level=3] [ref=f14e47]:
+        - text: Sóng nghiêng
+        - generic [ref=f14e48]: ✓ thích
+      - generic [ref=f14e49]: Chữ nghiêng, viền navy, nhấp nhô liên tục
+  - heading "2. Thẻ có hình dáng mới, kèm thứ tự lắp ráp" [level=2] [ref=f14e50]
+  - paragraph [ref=f14e51]: Khung xuất hiện trước, sau đó chữ chính, dòng phụ và đồ trang trí. Khi thoát, thẻ tự diễn ngược lại.
+  - generic [ref=f14e52]:
+    - generic [ref=f14e53] [cursor=pointer]:
+      - heading "Ruy băng ✓ thích" [level=3] [ref=f14e56]:
+        - text: Ruy băng
+        - generic [ref=f14e57]: ✓ thích
+      - generic [ref=f14e58]: Thanh đỏ chạy ra, tam giác gấp rơi xuống, chữ được gõ vào, dòng phụ có chấm vàng
+    - generic [ref=f14e59] [cursor=pointer]:
+      - heading "Thẻ hai tầng ✓ thích" [level=3] [ref=f14e62]:
+        - text: Thẻ hai tầng
+        - generic [ref=f14e63]: ✓ thích
+      - generic [ref=f14e64]: Hai vạch trắng kẻ ra, ô trắng mở, băng đỏ xéo trượt vào
+    - generic [ref=f14e65] [cursor=pointer]:
+      - heading "Nhãn chỉ điểm ✓ thích" [level=3] [ref=f14e68]:
+        - text: Nhãn chỉ điểm
+        - generic [ref=f14e69]: ✓ thích
+      - generic [ref=f14e70]: Vòng tròn đặt lên người, đường kẻ vẽ ra, ô chữ mở theo đường kẻ, rồi hai dòng phụ
+    - generic [ref=f14e71] [cursor=pointer]:
+      - heading "Ghim vị trí ✓ thích" [level=3] [ref=f14e74]:
+        - text: Ghim vị trí
+        - generic [ref=f14e75]: ✓ thích
+      - generic [ref=f14e76]: Ghim đỏ rơi xuống nảy lên, chữ vàng viền navy bật ra
+    - generic [ref=f14e77] [cursor=pointer]:
+      - heading "Nhãn bóng ✓ thích" [level=3] [ref=f14e80]:
+        - text: Nhãn bóng
+        - generic [ref=f14e81]: ✓ thích
+      - generic [ref=f14e82]: Viên gradient có viền sáng và vệt bóng quét qua, dòng phụ trắng, sticker loa rung
+    - generic [ref=f14e83] [cursor=pointer]:
+      - heading "Chữ khổng lồ quét qua ✓ thích" [level=3] [ref=f14e86]:
+        - text: Chữ khổng lồ quét qua
+        - generic [ref=f14e87]: ✓ thích
+      - generic [ref=f14e88]: Chữ to tràn màn hình lướt ngang, vệt sáng bay theo, rồi thu lại thành một dòng
+    - generic [ref=f14e89] [cursor=pointer]:
+      - 'heading "Đồ trang trí: tia lấp lánh ✓ thích" [level=3] [ref=f14e92]':
+        - text: "Đồ trang trí: tia lấp lánh"
+        - generic [ref=f14e93]: ✓ thích
+      - generic [ref=f14e94]: Gắn được vào bất kỳ thẻ nào; ở đây đi kèm chữ sóng nghiêng
+  - generic [ref=f14e95]: "Xem xong, quay lại terminal nói mình biết bạn thấy thế nào: thích cái nào, cái nào cần sửa (to hơn, nhanh hơn, màu khác…)."

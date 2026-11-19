@@ -1,0 +1,12 @@
+[     140ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:15803
+[     471ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[     477ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[     659ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[     665ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[     699ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[     707ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[     789ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[     804ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[     956ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[     966ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[    9114ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:5317/favicon.ico:1

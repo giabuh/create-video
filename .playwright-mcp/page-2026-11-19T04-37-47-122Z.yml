@@ -1,0 +1,107 @@
+- generic:
+  - generic [aria-hidden]:
+    - generic:
+      - generic:
+        - generic:
+          - complementary:
+            - generic:
+              - generic [aria-hidden]: R
+              - generic:
+                - text: Reel Studio
+                - generic: create-video
+            - navigation:
+              - link:
+                - /url: /
+                - text: Dự án
+              - link:
+                - /url: /library
+                - text: Thư viện
+              - link:
+                - /url: /voices
+                - text: Giọng đọc
+              - link:
+                - /url: /settings
+                - text: Brand & cài đặt
+            - generic:
+              - button:
+                - generic: Chat với Claude
+              - region:
+                - heading [level=2]: Tác vụ đang chạy
+                - paragraph: Không có tác vụ nào
+              - status: Model giọng chưa nạp
+              - generic:
+                - generic:
+                  - generic: Giao diện
+                  - radiogroup:
+                    - radio: Hệ thống
+                    - radio: Sáng
+                    - radio [checked]: Tối
+                - generic:
+                  - generic: Cỡ chữ
+                  - radiogroup:
+                    - radio: Vừa
+                    - radio: Lớn
+                    - radio [checked]: Rất lớn
+        - main:
+          - generic:
+            - generic:
+              - generic:
+                - heading [level=1]: Dự án
+                - generic: Mở lại video đang làm hoặc tạo dự án mới.
+              - generic:
+                - searchbox
+                - button:
+                  - generic: Dự án mới
+            - generic:
+              - radiogroup:
+                - radio [checked]: Tất cả · 2
+                - radio: Đang làm · 0
+                - radio: Đã duyệt · 1
+                - radio: Chưa render · 1
+              - generic:
+                - generic: Cảnh thật
+                - generic: Motion
+                - generic: Khác (CTA)
+            - generic:
+              - generic:
+                - link:
+                  - /url: /p/xoa-thu
+                  - generic: Chưa render
+                  - generic:
+                    - generic:
+                      - generic: xoa-thu
+                      - generic: Chưa render
+                    - generic: 0 cảnh · chưa tạo giọng · Phuong
+                    - generic: Sửa vừa xong
+                - generic:
+                  - button
+              - generic:
+                - link:
+                  - /url: /p/_smoke
+                  - generic:
+                    - generic:
+                      - generic: _smoke
+                      - generic: Đã duyệt v1
+                    - generic: 4 cảnh · 13,0 s · Phuong
+                    - generic: Sửa 1 giờ trước
+                - generic:
+                  - button
+              - button:
+                - generic: Tạo dự án mới
+                - generic: Chọn mẫu, brand, giọng và thời lượng — rồi thêm cảnh trong trình sửa
+    - list:
+      - listitem [ref=e143]:
+        - generic [ref=e146]:
+          - generic [ref=e147]: Không xoá được dự án
+          - generic [ref=e148]: HTTP 404
+        - button [ref=e149] [cursor=pointer]
+  - dialog "Xoá dự án xoa-thu?" [ref=e127]:
+    - generic [ref=e128]:
+      - generic [ref=e129]:
+        - heading "Xoá dự án xoa-thu?" [level=2] [ref=e130]
+        - paragraph [ref=e131]: Thư viện footage và nhạc không bị xoá.
+      - button "Đóng" [ref=e132] [cursor=pointer]
+    - generic [ref=e137]:
+      - button "Huỷ" [ref=e138] [cursor=pointer]
+      - button "Xoá luôn" [active] [ref=e140] [cursor=pointer]
+  - status: Thông báo Không xoá được dự ánHTTP 404

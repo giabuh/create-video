@@ -1,0 +1,74 @@
+[     248ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=8a882aff:15803
+[     391ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:5317/favicon.ico:1
+[   89284ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:15803
+[ 1004883ms] [ERROR] Error handled by React Router default ErrorBoundary: ReferenceError: Cannot access 'running' before initialization
+    at ChatPanel (http://127.0.0.1:5317/src/shell/ChatPanel.tsx?t=1795072746787:73:3)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:14140:12)
+    at renderWithHooks (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:4398:19)
+    at updateFunctionComponent (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:5773:16)
+    at beginWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:6389:20)
+    at runWithFiberInDEV (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:942:66)
+    at performUnitOfWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9146:92)
+    at workLoopSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9042:37)
+    at renderRootSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9026:6)
+    at performWorkOnRoot (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:8676:181) @ http://127.0.0.1:5317/@vite/client:364
+[ 1004883ms] [ERROR] Error handled by React Router default ErrorBoundary: ReferenceError: Cannot access 'running' before initialization
+    at ChatPanel (http://127.0.0.1:5317/src/shell/ChatPanel.tsx?t=1795072746787:73:3)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:14140:12)
+    at renderWithHooks (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:4398:19)
+    at updateFunctionComponent (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:5773:16)
+    at beginWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:6389:20)
+    at runWithFiberInDEV (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:942:66)
+    at performUnitOfWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9146:92)
+    at workLoopSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9042:37)
+    at renderRootSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9026:6)
+    at performWorkOnRoot (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:8676:181) @ http://127.0.0.1:5317/@vite/client:364
+[ 1004884ms] [ERROR] Error handled by React Router default ErrorBoundary: ReferenceError: Cannot access 'running' before initialization
+    at ChatPanel (http://127.0.0.1:5317/src/shell/ChatPanel.tsx?t=1795072746787:73:3)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:14140:12)
+    at renderWithHooks (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:4398:19)
+    at updateFunctionComponent (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:5773:16)
+    at beginWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:6389:20)
+    at runWithFiberInDEV (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:942:66)
+    at performUnitOfWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9146:92)
+    at workLoopSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9042:37)
+    at renderRootSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9026:6)
+    at performWorkOnRoot (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:8713:27) @ http://127.0.0.1:5317/@vite/client:364
+[ 1004885ms] [ERROR] Error handled by React Router default ErrorBoundary: ReferenceError: Cannot access 'running' before initialization
+    at ChatPanel (http://127.0.0.1:5317/src/shell/ChatPanel.tsx?t=1795072746787:73:3)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:14140:12)
+    at renderWithHooks (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:4398:19)
+    at updateFunctionComponent (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:5773:16)
+    at beginWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:6389:20)
+    at runWithFiberInDEV (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:942:66)
+    at performUnitOfWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9146:92)
+    at workLoopSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9042:37)
+    at renderRootSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9026:6)
+    at performWorkOnRoot (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:8713:27) @ http://127.0.0.1:5317/@vite/client:364
+[ 1004889ms] [ERROR] %o
+
+%s
+
+%s
+ ReferenceError: Cannot access 'running' before initialization
+    at ChatPanel (http://127.0.0.1:5317/src/shell/ChatPanel.tsx?t=1795072746787:73:3)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:14140:12)
+    at renderWithHooks (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:4398:19)
+    at updateFunctionComponent (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:5773:16)
+    at beginWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:6389:20)
+    at runWithFiberInDEV (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:942:66)
+    at performUnitOfWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9146:92)
+    at workLoopSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9042:37)
+    at renderRootSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9026:6)
+    at performWorkOnRoot (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:8713:27) The above error occurred in the <ChatPanel> component. React will try to recreate this component tree from scratch using the error boundary you provided, RenderErrorBoundary. @ http://127.0.0.1:5317/@vite/client:364
+[ 1004890ms] [ERROR] React Router caught the following error during render ReferenceError: Cannot access 'running' before initialization
+    at ChatPanel (http://127.0.0.1:5317/src/shell/ChatPanel.tsx?t=1795072746787:73:3)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:14140:12)
+    at renderWithHooks (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:4398:19)
+    at updateFunctionComponent (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:5773:16)
+    at beginWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:6389:20)
+    at runWithFiberInDEV (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:942:66)
+    at performUnitOfWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9146:92)
+    at workLoopSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9042:37)
+    at renderRootSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9026:6)
+    at performWorkOnRoot (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:8713:27) @ http://127.0.0.1:5317/@vite/client:364

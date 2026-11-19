@@ -1,0 +1,343 @@
+- generic [ref=f5e2]:
+  - generic [ref=f5e4]:
+    - complementary [ref=f5e6]:
+      - generic [ref=f5e7]:
+        - generic [aria-hidden] [ref=f5e8]: R
+        - generic [ref=f5e9]:
+          - text: Reel Studio
+          - generic [ref=f5e10]: create-video
+      - navigation "Điều hướng" [ref=f5e11]:
+        - link "Dự án" [ref=f5e13] [cursor=pointer]:
+          - /url: /
+        - link "Thư viện" [ref=f5e16] [cursor=pointer]:
+          - /url: /library
+        - link "Giọng đọc" [ref=f5e22] [cursor=pointer]:
+          - /url: /voices
+        - link "Brand & cài đặt" [ref=f5e26] [cursor=pointer]:
+          - /url: /settings
+      - generic [ref=f5e30]:
+        - button "Chat với Claude" [ref=f5e31] [cursor=pointer]
+        - region "Tác vụ" [ref=f5e35]:
+          - heading "Tác vụ đang chạy" [level=2] [ref=f5e36]
+          - paragraph [ref=f5e37]: Không có tác vụ nào
+        - status [ref=f5e38]: Model giọng chưa nạp
+        - generic [ref=f5e40]:
+          - generic [ref=f5e41]:
+            - generic [ref=f5e42]: Giao diện
+            - radiogroup "Giao diện" [ref=f5e43]:
+              - radio "Hệ thống" [ref=f5e44] [cursor=pointer]
+              - radio "Sáng" [ref=f5e45] [cursor=pointer]
+              - radio "Tối" [checked] [ref=f5e46] [cursor=pointer]
+          - generic [ref=f5e47]:
+            - generic [ref=f5e48]: Cỡ chữ
+            - radiogroup "Cỡ chữ" [ref=f5e49]:
+              - radio "Vừa" [ref=f5e50] [cursor=pointer]
+              - radio "Lớn" [ref=f5e51] [cursor=pointer]
+              - radio "Rất lớn" [checked] [ref=f5e52] [cursor=pointer]
+    - main [ref=f5e53]:
+      - generic [ref=f5e54]:
+        - generic [ref=f5e56]:
+          - heading "Thư viện" [level=1] [ref=f5e57]
+          - generic [ref=f5e58]: Ảnh, video học viên và nhạc nền. File gốc không bị sửa — app tạo bản chuẩn hoá trong library/.
+        - tablist "Loại thư viện" [ref=f5e61]:
+          - tab "Ảnh & video · 68" [ref=f5e88] [cursor=pointer]
+          - tab "Nhạc · 3" [ref=f5e89] [cursor=pointer]
+          - tab "Hiệu ứng âm thanh · 34" [active] [selected] [ref=f5e90] [cursor=pointer]
+        - generic [ref=f5e91]:
+          - generic [ref=f5e92]:
+            - generic [ref=f5e96]:
+              - generic [ref=f5e97]: Kéo-thả hiệu ứng âm thanh vào đây
+              - generic [ref=f5e98]: MP3, M4A, WAV, OGG, AAC. Đặt tên dạng nhóm-tên (vd whoosh-nhanh.mp3). File lưu vào thư mục sfx/.
+            - button "Chọn file âm thanh" [ref=f5e99] [cursor=pointer]
+          - region "Chuyển cảnh (whoosh)" [ref=f5e101]:
+            - heading "Chuyển cảnh (whoosh) · 9" [level=3] [ref=f5e102]
+            - list [ref=f5e103]:
+              - listitem [ref=f5e104]:
+                - generic [ref=f5e105]:
+                  - button "Phát" [ref=f5e106] [cursor=pointer]
+                  - slider "Tua whoosh-air-woosh.mp3" [ref=f5e109] [cursor=pointer]
+                  - generic [ref=f5e158]: 0:02
+                - generic "whoosh-air-woosh.mp3" [ref=f5e159]
+                - generic [ref=f5e160]: 70,0 KB
+                - button "Xoá whoosh-air-woosh.mp3" [ref=f5e161] [cursor=pointer]
+              - listitem [ref=f5e165]:
+                - generic [ref=f5e166]:
+                  - button "Phát" [ref=f5e167] [cursor=pointer]
+                  - slider "Tua whoosh-cinematic-whoosh-fast-transition.mp3" [ref=f5e170] [cursor=pointer]
+                  - generic [ref=f5e219]: 0:01
+                - generic "whoosh-cinematic-whoosh-fast-transition.mp3" [ref=f5e220]
+                - generic [ref=f5e221]: 43,5 KB
+                - button "Xoá whoosh-cinematic-whoosh-fast-transition.mp3" [ref=f5e222] [cursor=pointer]
+              - listitem [ref=f5e226]:
+                - generic [ref=f5e227]:
+                  - button "Phát" [ref=f5e228] [cursor=pointer]
+                  - slider "Tua whoosh-fast-small-sweep-transition.mp3" [ref=f5e231] [cursor=pointer]
+                  - generic [ref=f5e280]: 0:00
+                - generic "whoosh-fast-small-sweep-transition.mp3" [ref=f5e281]
+                - generic [ref=f5e282]: 26,6 KB
+                - button "Xoá whoosh-fast-small-sweep-transition.mp3" [ref=f5e283] [cursor=pointer]
+              - listitem [ref=f5e287]:
+                - generic [ref=f5e288]:
+                  - button "Phát" [ref=f5e289] [cursor=pointer]
+                  - slider "Tua whoosh-fast-transitions-swoosh.mp3" [ref=f5e292] [cursor=pointer]
+                  - generic [ref=f5e341]: 0:00
+                - generic "whoosh-fast-transitions-swoosh.mp3" [ref=f5e342]
+                - generic [ref=f5e343]: 18,6 KB
+                - button "Xoá whoosh-fast-transitions-swoosh.mp3" [ref=f5e344] [cursor=pointer]
+              - listitem [ref=f5e348]:
+                - generic [ref=f5e349]:
+                  - button "Phát" [ref=f5e350] [cursor=pointer]
+                  - slider "Tua whoosh-fast-whoosh-transition.mp3" [ref=f5e353] [cursor=pointer]
+                  - generic [ref=f5e402]: 0:01
+                - generic "whoosh-fast-whoosh-transition.mp3" [ref=f5e403]
+                - generic [ref=f5e404]: 56,3 KB
+                - button "Xoá whoosh-fast-whoosh-transition.mp3" [ref=f5e405] [cursor=pointer]
+              - listitem [ref=f5e409]:
+                - generic [ref=f5e410]:
+                  - button "Phát" [ref=f5e411] [cursor=pointer]
+                  - slider "Tua whoosh-quick-swoosh-accent.mp3" [ref=f5e414] [cursor=pointer]
+                  - generic [ref=f5e463]: 0:01
+                - generic "whoosh-quick-swoosh-accent.mp3" [ref=f5e464]
+                - generic [ref=f5e465]: 34,5 KB
+                - button "Xoá whoosh-quick-swoosh-accent.mp3" [ref=f5e466] [cursor=pointer]
+              - listitem [ref=f5e470]:
+                - generic [ref=f5e471]:
+                  - button "Phát" [ref=f5e472] [cursor=pointer]
+                  - slider "Tua whoosh-short-transition-sweep.mp3" [ref=f5e475] [cursor=pointer]
+                  - generic [ref=f5e524]: 0:00
+                - generic "whoosh-short-transition-sweep.mp3" [ref=f5e525]
+                - generic [ref=f5e526]: 17,6 KB
+                - button "Xoá whoosh-short-transition-sweep.mp3" [ref=f5e527] [cursor=pointer]
+              - listitem [ref=f5e531]:
+                - generic [ref=f5e532]:
+                  - button "Phát" [ref=f5e533] [cursor=pointer]
+                  - slider "Tua whoosh-technology-transition-slide.mp3" [ref=f5e536] [cursor=pointer]
+                  - generic [ref=f5e585]: 0:01
+                - generic "whoosh-technology-transition-slide.mp3" [ref=f5e586]
+                - generic [ref=f5e587]: 25,6 KB
+                - button "Xoá whoosh-technology-transition-slide.mp3" [ref=f5e588] [cursor=pointer]
+              - listitem [ref=f5e592]:
+                - generic [ref=f5e593]:
+                  - button "Phát" [ref=f5e594] [cursor=pointer]
+                  - slider "Tua whoosh-transition-windy-swoosh.mp3" [ref=f5e597] [cursor=pointer]
+                  - generic [ref=f5e646]: 0:03
+                - generic "whoosh-transition-windy-swoosh.mp3" [ref=f5e647]
+                - generic [ref=f5e648]: 95,8 KB
+                - button "Xoá whoosh-transition-windy-swoosh.mp3" [ref=f5e649] [cursor=pointer]
+          - region "Nhấn mạnh (impact)" [ref=f5e653]:
+            - heading "Nhấn mạnh (impact) · 2" [level=3] [ref=f5e654]
+            - list [ref=f5e655]:
+              - listitem [ref=f5e656]:
+                - generic [ref=f5e657]:
+                  - button "Phát" [ref=f5e658] [cursor=pointer]
+                  - slider "Tua impact-movie-trailer-whoosh-hit.mp3" [ref=f5e661] [cursor=pointer]
+                  - generic [ref=f5e710]: 0:04
+                - generic "impact-movie-trailer-whoosh-hit.mp3" [ref=f5e711]
+                - generic [ref=f5e712]: 128,0 KB
+                - button "Xoá impact-movie-trailer-whoosh-hit.mp3" [ref=f5e713] [cursor=pointer]
+              - listitem [ref=f5e717]:
+                - generic [ref=f5e718]:
+                  - button "Phát" [ref=f5e719] [cursor=pointer]
+                  - slider "Tua impact-movie-whoosh-impact-presentation.mp3" [ref=f5e722] [cursor=pointer]
+                  - generic [ref=f5e771]: 0:03
+                - generic "impact-movie-whoosh-impact-presentation.mp3" [ref=f5e772]
+                - generic [ref=f5e773]: 108,5 KB
+                - button "Xoá impact-movie-whoosh-impact-presentation.mp3" [ref=f5e774] [cursor=pointer]
+          - region "Ting / chuông" [ref=f5e778]:
+            - heading "Ting / chuông · 7" [level=3] [ref=f5e779]
+            - list [ref=f5e780]:
+              - listitem [ref=f5e781]:
+                - generic [ref=f5e782]:
+                  - button "Phát" [ref=f5e783] [cursor=pointer]
+                  - slider "Tua ting-achievement-bell.mp3" [ref=f5e786] [cursor=pointer]
+                  - generic [ref=f5e835]: 0:02
+                - generic "ting-achievement-bell.mp3" [ref=f5e836]
+                - generic [ref=f5e837]: 60,9 KB
+                - button "Xoá ting-achievement-bell.mp3" [ref=f5e838] [cursor=pointer]
+              - listitem [ref=f5e842]:
+                - generic [ref=f5e843]:
+                  - button "Phát" [ref=f5e844] [cursor=pointer]
+                  - slider "Tua ting-attention-bell-ding.mp3" [ref=f5e847] [cursor=pointer]
+                  - generic [ref=f5e896]: 0:01
+                - generic "ting-attention-bell-ding.mp3" [ref=f5e897]
+                - generic [ref=f5e898]: 48,6 KB
+                - button "Xoá ting-attention-bell-ding.mp3" [ref=f5e899] [cursor=pointer]
+              - listitem [ref=f5e903]:
+                - generic [ref=f5e904]:
+                  - button "Phát" [ref=f5e905] [cursor=pointer]
+                  - slider "Tua ting-confirmation-tone.mp3" [ref=f5e908] [cursor=pointer]
+                  - generic [ref=f5e957]: 0:01
+                - generic "ting-confirmation-tone.mp3" [ref=f5e958]
+                - generic [ref=f5e959]: 42,6 KB
+                - button "Xoá ting-confirmation-tone.mp3" [ref=f5e960] [cursor=pointer]
+              - listitem [ref=f5e964]:
+                - generic [ref=f5e965]:
+                  - button "Phát" [ref=f5e966] [cursor=pointer]
+                  - slider "Tua ting-correct-answer-tone.mp3" [ref=f5e969] [cursor=pointer]
+                  - generic [ref=f5e1018]: 0:01
+                - generic "ting-correct-answer-tone.mp3" [ref=f5e1019]
+                - generic [ref=f5e1020]: 62,0 KB
+                - button "Xoá ting-correct-answer-tone.mp3" [ref=f5e1021] [cursor=pointer]
+              - listitem [ref=f5e1025]:
+                - generic [ref=f5e1026]:
+                  - button "Phát" [ref=f5e1027] [cursor=pointer]
+                  - slider "Tua ting-magic-notification-ring.mp3" [ref=f5e1030] [cursor=pointer]
+                  - generic [ref=f5e1079]: 0:03
+                - generic "ting-magic-notification-ring.mp3" [ref=f5e1080]
+                - generic [ref=f5e1081]: 89,3 KB
+                - button "Xoá ting-magic-notification-ring.mp3" [ref=f5e1082] [cursor=pointer]
+              - listitem [ref=f5e1086]:
+                - generic [ref=f5e1087]:
+                  - button "Phát" [ref=f5e1088] [cursor=pointer]
+                  - slider "Tua ting-positive-notification.mp3" [ref=f5e1091] [cursor=pointer]
+                  - generic [ref=f5e1140]: 0:02
+                - generic "ting-positive-notification.mp3" [ref=f5e1141]
+                - generic [ref=f5e1142]: 85,4 KB
+                - button "Xoá ting-positive-notification.mp3" [ref=f5e1143] [cursor=pointer]
+              - listitem [ref=f5e1147]:
+                - generic [ref=f5e1148]:
+                  - button "Phát" [ref=f5e1149] [cursor=pointer]
+                  - slider "Tua ting-relaxing-bell-chime.mp3" [ref=f5e1152] [cursor=pointer]
+                  - generic [ref=f5e1201]: 0:01
+                - generic "ting-relaxing-bell-chime.mp3" [ref=f5e1202]
+                - generic [ref=f5e1203]: 41,9 KB
+                - button "Xoá ting-relaxing-bell-chime.mp3" [ref=f5e1204] [cursor=pointer]
+          - region "Lấp lánh" [ref=f5e1208]:
+            - heading "Lấp lánh · 6" [level=3] [ref=f5e1209]
+            - list [ref=f5e1210]:
+              - listitem [ref=f5e1211]:
+                - generic [ref=f5e1212]:
+                  - button "Phát" [ref=f5e1213] [cursor=pointer]
+                  - slider "Tua sparkle-fairy-magic-sparkle.mp3" [ref=f5e1216] [cursor=pointer]
+                  - generic [ref=f5e1265]: 0:01
+                - generic "sparkle-fairy-magic-sparkle.mp3" [ref=f5e1266]
+                - generic [ref=f5e1267]: 42,7 KB
+                - button "Xoá sparkle-fairy-magic-sparkle.mp3" [ref=f5e1268] [cursor=pointer]
+              - listitem [ref=f5e1272]:
+                - generic [ref=f5e1273]:
+                  - button "Phát" [ref=f5e1274] [cursor=pointer]
+                  - slider "Tua sparkle-magic-sparkle-touch.mp3" [ref=f5e1277] [cursor=pointer]
+                  - generic [ref=f5e1326]: 0:02
+                - generic "sparkle-magic-sparkle-touch.mp3" [ref=f5e1327]
+                - generic [ref=f5e1328]: 71,7 KB
+                - button "Xoá sparkle-magic-sparkle-touch.mp3" [ref=f5e1329] [cursor=pointer]
+              - listitem [ref=f5e1333]:
+                - generic [ref=f5e1334]:
+                  - button "Phát" [ref=f5e1335] [cursor=pointer]
+                  - slider "Tua sparkle-magic-sparkle-whoosh.mp3" [ref=f5e1338] [cursor=pointer]
+                  - generic [ref=f5e1387]: 0:03
+                - generic "sparkle-magic-sparkle-whoosh.mp3" [ref=f5e1388]
+                - generic [ref=f5e1389]: 100,2 KB
+                - button "Xoá sparkle-magic-sparkle-whoosh.mp3" [ref=f5e1390] [cursor=pointer]
+              - listitem [ref=f5e1394]:
+                - generic [ref=f5e1395]:
+                  - button "Phát" [ref=f5e1396] [cursor=pointer]
+                  - slider "Tua sparkle-magic-transition-sweep-presentation.mp3" [ref=f5e1399] [cursor=pointer]
+                  - generic [ref=f5e1448]: 0:03
+                - generic "sparkle-magic-transition-sweep-presentation.mp3" [ref=f5e1449]
+                - generic [ref=f5e1450]: 118,8 KB
+                - button "Xoá sparkle-magic-transition-sweep-presentation.mp3" [ref=f5e1451] [cursor=pointer]
+              - listitem [ref=f5e1455]:
+                - generic [ref=f5e1456]:
+                  - button "Phát" [ref=f5e1457] [cursor=pointer]
+                  - slider "Tua sparkle-magic-wand-sparkle.mp3" [ref=f5e1460] [cursor=pointer]
+                  - generic [ref=f5e1509]: 0:02
+                - generic "sparkle-magic-wand-sparkle.mp3" [ref=f5e1510]
+                - generic [ref=f5e1511]: 75,3 KB
+                - button "Xoá sparkle-magic-wand-sparkle.mp3" [ref=f5e1512] [cursor=pointer]
+              - listitem [ref=f5e1516]:
+                - generic [ref=f5e1517]:
+                  - button "Phát" [ref=f5e1518] [cursor=pointer]
+                  - slider "Tua sparkle-sweeping-sparkle-presentation-intro.mp3" [ref=f5e1521] [cursor=pointer]
+                  - generic [ref=f5e1570]: 0:02
+                - generic "sparkle-sweeping-sparkle-presentation-intro.mp3" [ref=f5e1571]
+                - generic [ref=f5e1572]: 92,6 KB
+                - button "Xoá sparkle-sweeping-sparkle-presentation-intro.mp3" [ref=f5e1573] [cursor=pointer]
+          - region "Pop (bật lên)" [ref=f5e1577]:
+            - heading "Pop (bật lên) · 5" [level=3] [ref=f5e1578]
+            - list [ref=f5e1579]:
+              - listitem [ref=f5e1580]:
+                - generic [ref=f5e1581]:
+                  - button "Phát" [ref=f5e1582] [cursor=pointer]
+                  - slider "Tua pop-bubble-pop-up-alert.mp3" [ref=f5e1585] [cursor=pointer]
+                  - generic [ref=f5e1634]: 0:00
+                - generic "pop-bubble-pop-up-alert.mp3" [ref=f5e1635]
+                - generic [ref=f5e1636]: 12,0 KB
+                - button "Xoá pop-bubble-pop-up-alert.mp3" [ref=f5e1637] [cursor=pointer]
+              - listitem [ref=f5e1641]:
+                - generic [ref=f5e1642]:
+                  - button "Phát" [ref=f5e1643] [cursor=pointer]
+                  - slider "Tua pop-dry-pop-up.mp3" [ref=f5e1646] [cursor=pointer]
+                  - generic [ref=f5e1695]: 0:00
+                - generic "pop-dry-pop-up.mp3" [ref=f5e1696]
+                - generic [ref=f5e1697]: 9,5 KB
+                - button "Xoá pop-dry-pop-up.mp3" [ref=f5e1698] [cursor=pointer]
+              - listitem [ref=f5e1702]:
+                - generic [ref=f5e1703]:
+                  - button "Phát" [ref=f5e1704] [cursor=pointer]
+                  - slider "Tua pop-explainer-video-pops-whoosh-light-pop.mp3" [ref=f5e1707] [cursor=pointer]
+                  - generic [ref=f5e1756]: 0:00
+                - generic "pop-explainer-video-pops-whoosh-light-pop.mp3" [ref=f5e1757]
+                - generic [ref=f5e1758]: 7,6 KB
+                - button "Xoá pop-explainer-video-pops-whoosh-light-pop.mp3" [ref=f5e1759] [cursor=pointer]
+              - listitem [ref=f5e1763]:
+                - generic [ref=f5e1764]:
+                  - button "Phát" [ref=f5e1765] [cursor=pointer]
+                  - slider "Tua pop-hard-pop-click.mp3" [ref=f5e1768] [cursor=pointer]
+                  - generic [ref=f5e1817]: 0:01
+                - generic "pop-hard-pop-click.mp3" [ref=f5e1818]
+                - generic [ref=f5e1819]: 38,2 KB
+                - button "Xoá pop-hard-pop-click.mp3" [ref=f5e1820] [cursor=pointer]
+              - listitem [ref=f5e1824]:
+                - generic [ref=f5e1825]:
+                  - button "Phát" [ref=f5e1826] [cursor=pointer]
+                  - slider "Tua pop-message-pop-alert.mp3" [ref=f5e1829] [cursor=pointer]
+                  - generic [ref=f5e1878]: 0:01
+                - generic "pop-message-pop-alert.mp3" [ref=f5e1879]
+                - generic [ref=f5e1880]: 12,8 KB
+                - button "Xoá pop-message-pop-alert.mp3" [ref=f5e1881] [cursor=pointer]
+          - region "Click" [ref=f5e1885]:
+            - heading "Click · 5" [level=3] [ref=f5e1886]
+            - list [ref=f5e1887]:
+              - listitem [ref=f5e1888]:
+                - generic [ref=f5e1889]:
+                  - button "Phát" [ref=f5e1890] [cursor=pointer]
+                  - slider "Tua click-cool-interface-click-tone.mp3" [ref=f5e1893] [cursor=pointer]
+                  - generic [ref=f5e1942]: 0:00
+                - generic "click-cool-interface-click-tone.mp3" [ref=f5e1943]
+                - generic [ref=f5e1944]: 8,3 KB
+                - button "Xoá click-cool-interface-click-tone.mp3" [ref=f5e1945] [cursor=pointer]
+              - listitem [ref=f5e1949]:
+                - generic [ref=f5e1950]:
+                  - button "Phát" [ref=f5e1951] [cursor=pointer]
+                  - slider "Tua click-interface-option-select.mp3" [ref=f5e1954] [cursor=pointer]
+                  - generic [ref=f5e2003]: 0:01
+                - generic "click-interface-option-select.mp3" [ref=f5e2004]
+                - generic [ref=f5e2005]: 50,1 KB
+                - button "Xoá click-interface-option-select.mp3" [ref=f5e2006] [cursor=pointer]
+              - listitem [ref=f5e2010]:
+                - generic [ref=f5e2011]:
+                  - button "Phát" [ref=f5e2012] [cursor=pointer]
+                  - slider "Tua click-modern-click-box-check.mp3" [ref=f5e2015] [cursor=pointer]
+                  - generic [ref=f5e2064]: 0:00
+                - generic "click-modern-click-box-check.mp3" [ref=f5e2065]
+                - generic [ref=f5e2066]: 4,9 KB
+                - button "Xoá click-modern-click-box-check.mp3" [ref=f5e2067] [cursor=pointer]
+              - listitem [ref=f5e2071]:
+                - generic [ref=f5e2072]:
+                  - button "Phát" [ref=f5e2073] [cursor=pointer]
+                  - slider "Tua click-modern-technology-select.mp3" [ref=f5e2076] [cursor=pointer]
+                  - generic [ref=f5e2125]: 0:00
+                - generic "click-modern-technology-select.mp3" [ref=f5e2126]
+                - generic [ref=f5e2127]: 4,6 KB
+                - button "Xoá click-modern-technology-select.mp3" [ref=f5e2128] [cursor=pointer]
+              - listitem [ref=f5e2132]:
+                - generic [ref=f5e2133]:
+                  - button "Phát" [ref=f5e2134] [cursor=pointer]
+                  - slider "Tua click-select-click.mp3" [ref=f5e2137] [cursor=pointer]
+                  - generic [ref=f5e2186]: 0:01
+                - generic "click-select-click.mp3" [ref=f5e2187]
+                - generic [ref=f5e2188]: 34,8 KB
+                - button "Xoá click-select-click.mp3" [ref=f5e2189] [cursor=pointer]
+  - region "Notifications (F8)":
+    - list

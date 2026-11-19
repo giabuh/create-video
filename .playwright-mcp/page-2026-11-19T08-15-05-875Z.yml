@@ -1,0 +1,215 @@
+- generic [ref=f8e2]:
+  - generic [ref=f8e4]:
+    - complementary [ref=f8e6]:
+      - generic [aria-hidden] [ref=f8e7]: R
+      - navigation "Điều hướng" [ref=f8e8]:
+        - link "Dự án" [ref=f8e10] [cursor=pointer]:
+          - /url: /
+        - link "Thư viện" [ref=f8e13] [cursor=pointer]:
+          - /url: /library
+        - link "Giọng đọc" [ref=f8e19] [cursor=pointer]:
+          - /url: /voices
+        - link "Brand & cài đặt" [ref=f8e23] [cursor=pointer]:
+          - /url: /settings
+      - generic [ref=f8e27]:
+        - button "Chat với Claude" [ref=f8e28] [cursor=pointer]
+        - button "Tác vụ (1 đang chạy)" [ref=f8e32] [cursor=pointer]:
+          - generic [ref=f8e33]:
+            - generic [aria-hidden]: "1"
+        - status "Model giọng chưa nạp" [ref=f8e37]
+        - button "Giao diện và cỡ chữ" [ref=f8e39] [cursor=pointer]
+    - main [ref=f8e46]:
+      - generic [ref=f8e54]:
+        - generic [ref=f8e55]:
+          - generic [ref=f8e56]:
+            - navigation "Đường dẫn" [ref=f8e57]:
+              - link "Dự án" [ref=f8e58] [cursor=pointer]:
+                - /url: /
+              - generic [aria-hidden] [ref=f8e59]: /
+              - generic "khoa-hoc-quang-cao-facebook" [ref=f8e60]
+            - status [ref=f8e61]: Đã lưu
+          - group "Tỉ lệ mix so với mục tiêu" [ref=f8e63]:
+            - generic [ref=f8e64]:
+              - text: Thật 54%
+              - generic [ref=f8e66]: / 60
+            - generic [ref=f8e67]:
+              - text: Motion 36%
+              - generic [ref=f8e69]: / 30
+            - generic [ref=f8e70]:
+              - text: Khác 10%
+              - generic [ref=f8e72]: / 10
+          - status [ref=f8e73]:
+            - progressbar "Tiến độ render" [ref=f8e74]
+            - generic [ref=f8e76]: 56%
+          - generic [ref=f8e77]:
+            - button "Bản render (2)" [ref=f8e78] [cursor=pointer]
+            - button "Tạo giọng" [disabled] [ref=f8e85]
+            - button "Render" [disabled] [ref=f8e90]
+            - button "Chat" [ref=f8e92] [cursor=pointer]
+            - button "Thêm" [ref=f8e96] [cursor=pointer]
+        - generic [ref=f8e101]:
+          - region "Danh sách cảnh" [ref=f8e103]:
+            - generic [ref=f8e104]:
+              - generic [ref=f8e105]: Cảnh · 4 + CTA
+              - generic [ref=f8e106]: kéo để đổi thứ tự
+            - generic [ref=f8e107]:
+              - list "Danh sách cảnh" [ref=f8e108]:
+                - listitem [ref=f8e109]:
+                  - generic [ref=f8e110]:
+                    - button "Kéo cảnh mo-dau để đổi thứ tự" [ref=f8e111]
+                    - button "mo-dau 6,2 s Bạn có cửa hàng và muốn tìm thêm khách trên mạng? Bạn muốn tự chạy quảng cáo Facebook nhưng chưa biết bắt đầu từ đâu? Cảnh thật phuong · Mờ dần" [ref=f8e119] [cursor=pointer]:
+                      - generic [ref=f8e123]:
+                        - generic [ref=f8e124]:
+                          - generic [ref=f8e125]: mo-dau
+                          - generic [ref=f8e126]: 6,2 s
+                        - generic [ref=f8e127]: Bạn có cửa hàng và muốn tìm thêm khách trên mạng? Bạn muốn tự chạy quảng cáo Facebook nhưng chưa biết bắt đầu từ đâu?
+                        - generic [ref=f8e128]:
+                          - generic [ref=f8e129]: Cảnh thật
+                          - generic "phuong · Mờ dần" [ref=f8e130]
+                    - button "Tuỳ chọn cảnh mo-dau" [ref=f8e131] [cursor=pointer]
+                - listitem [ref=f8e136]:
+                  - generic [ref=f8e137]:
+                    - button "Kéo cảnh hoc-truc-tiep để đổi thứ tự" [ref=f8e138]
+                    - button "hoc-truc-tiep 4,7 s Tại Tin học Sao Việt, bạn học trực tiếp và được giảng viên hướng dẫn 1 kèm 1. Cảnh thật phuong · Mờ dần" [ref=f8e146] [cursor=pointer]:
+                      - generic [ref=f8e150]:
+                        - generic [ref=f8e151]:
+                          - generic [ref=f8e152]: hoc-truc-tiep
+                          - generic [ref=f8e153]: 4,7 s
+                        - generic [ref=f8e154]: Tại Tin học Sao Việt, bạn học trực tiếp và được giảng viên hướng dẫn 1 kèm 1.
+                        - generic [ref=f8e155]:
+                          - generic [ref=f8e156]: Cảnh thật
+                          - generic "phuong · Mờ dần" [ref=f8e157]
+                    - button "Tuỳ chọn cảnh hoc-truc-tiep" [ref=f8e158] [cursor=pointer]
+                - listitem [ref=f8e163]:
+                  - generic [ref=f8e164]:
+                    - button "Kéo cảnh len-chien-dich để đổi thứ tự" [ref=f8e165]
+                    - button "len-chien-dich 9,4 s Dù bán sơn hay giỏ quà trái cây, bạn thực hành ngay trên sản phẩm mình bán. Bạn học cách chọn nhóm khách hàng muốn tiếp cận, rồi tự lên chiến dịch quảng cáo cho sản phẩm đó. Cảnh thật phuong · Mờ dần" [ref=f8e173] [cursor=pointer]:
+                      - generic [ref=f8e177]:
+                        - generic [ref=f8e178]:
+                          - generic [ref=f8e179]: len-chien-dich
+                          - generic [ref=f8e180]: 9,4 s
+                        - generic [ref=f8e181]: Dù bán sơn hay giỏ quà trái cây, bạn thực hành ngay trên sản phẩm mình bán. Bạn học cách chọn nhóm khách hàng muốn tiếp cận, rồi tự lên chiến dịch quảng cáo cho sản phẩm đó.
+                        - generic [ref=f8e182]:
+                          - generic [ref=f8e183]: Cảnh thật
+                          - generic "phuong · Mờ dần" [ref=f8e184]
+                    - button "Tuỳ chọn cảnh len-chien-dich" [ref=f8e185] [cursor=pointer]
+                - listitem [ref=f8e190]:
+                  - generic [ref=f8e191]:
+                    - button "Kéo cảnh uu-dai để đổi thứ tự" [ref=f8e192]
+                    - button "uu-dai 6,0 s Đăng ký ngay nhận ưu đãi 35%. Nhắn tin fanpage để được tư vấn và biết lịch khai giảng. Cảnh thật phuong · Mờ dần" [ref=f8e200] [cursor=pointer]:
+                      - generic [ref=f8e204]:
+                        - generic [ref=f8e205]:
+                          - generic [ref=f8e206]: uu-dai
+                          - generic [ref=f8e207]: 6,0 s
+                        - generic [ref=f8e208]: Đăng ký ngay nhận ưu đãi 35%. Nhắn tin fanpage để được tư vấn và biết lịch khai giảng.
+                        - generic [ref=f8e209]:
+                          - generic [ref=f8e210]: Cảnh thật
+                          - generic "phuong · Mờ dần" [ref=f8e211]
+                    - button "Tuỳ chọn cảnh uu-dai" [ref=f8e212] [cursor=pointer]
+              - status [ref=f8e217]
+              - button "CTA Kết video 3,0 s Nhắn tin fanpage" [ref=f8e218] [cursor=pointer]:
+                - generic [ref=f8e219]:
+                  - generic [ref=f8e220]:
+                    - generic [ref=f8e221]: CTA
+                    - generic [ref=f8e222]: Kết video
+                    - generic [ref=f8e223]: 3,0 s
+                  - generic [ref=f8e224]: Nhắn tin fanpage
+            - button "Thêm cảnh" [ref=f8e225] [cursor=pointer]
+          - region "Xem trước" [ref=f8e229]:
+            - generic [ref=f8e245]:
+              - generic [ref=f8e250]:
+                - generic [ref=f8e251]: CÓ CỬA HÀNG
+                - generic [ref=f8e252]: MUỐN BÁN ONLINE?
+              - generic [ref=f8e254]:
+                - generic [ref=f8e255]: Bạn
+                - generic [ref=f8e256]: có
+                - generic [ref=f8e257]: cửa
+                - generic [ref=f8e258]: hàng
+                - generic [ref=f8e259]: và
+                - generic [ref=f8e260]: muốn
+            - group "Điều khiển xem trước" [ref=f8e264]:
+              - button "Phát xem trước" [ref=f8e265] [cursor=pointer]
+              - button "Âm lượng xem trước" [ref=f8e268] [cursor=pointer]
+              - generic [ref=f8e273]: 0:00 / 0:29
+              - slider "Tua xem trước" [ref=f8e274]: "0"
+              - button "Xem toàn màn hình" [ref=f8e275] [cursor=pointer]
+            - radiogroup "Phạm vi xem trước" [ref=f8e286]:
+              - radio "Cảnh" [checked] [ref=f8e287] [cursor=pointer]
+              - radio "Cả video" [ref=f8e288] [cursor=pointer]
+          - complementary "Thuộc tính" [ref=f8e290]:
+            - tablist "Thuộc tính" [ref=f8e292]:
+              - tab "Cảnh mo-dau" [selected] [ref=f8e293] [cursor=pointer]
+              - tab "Toàn video" [ref=f8e294] [cursor=pointer]
+              - tab "CTA" [ref=f8e295] [cursor=pointer]
+            - generic [ref=f8e298]:
+              - radiogroup "Nhóm chỉnh cảnh" [ref=f8e299]:
+                - radio "Nội dung" [ref=f8e300] [cursor=pointer]
+                - radio "Media & Motion" [ref=f8e301] [cursor=pointer]
+                - radio "Chuyển cảnh" [checked] [active] [ref=f8e302] [cursor=pointer]
+              - region "Chữ phủ và chuyển cảnh" [ref=f8e303]:
+                - generic [ref=f8e304]:
+                  - generic [ref=f8e305]: Chữ phủ (tuỳ chọn)
+                  - textbox "Chữ phủ (tuỳ chọn)" [ref=f8e306]:
+                    - /placeholder: "VD: [ƯU ĐÃI]"
+                - radiogroup "Vị trí chữ phủ" [ref=f8e307]:
+                  - radio "Trên" [disabled] [ref=f8e308]
+                  - radio "Giữa" [disabled] [ref=f8e309]
+                  - radio "Dưới" [checked] [disabled] [ref=f8e310]
+                - generic [ref=f8e311]:
+                  - generic [ref=f8e312]: Chuyển cảnh
+                  - radiogroup "Chuyển cảnh" [ref=f8e313]:
+                    - radio "Cắt" [ref=f8e314] [cursor=pointer]
+                    - radio "Mờ dần" [checked] [ref=f8e315] [cursor=pointer]
+                    - radio "Trượt" [ref=f8e316] [cursor=pointer]
+                - generic [ref=f8e317]:
+                  - generic [ref=f8e318]: Âm thanh chuyển cảnh
+                  - combobox "Âm thanh chuyển cảnh" [ref=f8e319] [cursor=pointer]:
+                    - generic [ref=f8e320]: Tự động (Chuyển cảnh (whoosh))
+                  - generic [ref=f8e323]:
+                    - button "Phát" [ref=f8e324] [cursor=pointer]
+                    - slider "Tua whoosh-air-woosh.mp3" [ref=f8e327] [cursor=pointer]
+                    - generic [ref=f8e376]: 0:02
+                  - generic [ref=f8e377]: Chỉ phát khi chuyển cảnh không phải “Cắt” và không phải cảnh đầu.
+                - generic [ref=f8e378]:
+                  - generic [ref=f8e379]: Chuyển giữa các clip trong cảnh
+                  - radiogroup "Chuyển giữa các clip" [ref=f8e380]:
+                    - radio "Cắt" [ref=f8e381] [cursor=pointer]
+                    - radio "Mờ dần" [checked] [ref=f8e382] [cursor=pointer]
+                    - radio "Trượt" [ref=f8e383] [cursor=pointer]
+                - generic [ref=f8e384]:
+                  - generic [ref=f8e385]: Nghỉ sau (giây)
+                  - generic [ref=f8e386]:
+                    - button "Giảm" [ref=f8e387] [cursor=pointer]
+                    - textbox "Nghỉ sau (giây)" [ref=f8e389]
+                    - button "Tăng" [ref=f8e390] [cursor=pointer]
+        - region "Timeline" [ref=f8e393]:
+          - generic [ref=f8e394]:
+            - generic [ref=f8e395]: Timeline
+            - generic [ref=f8e396]: 29,3 giây
+          - generic [ref=f8e398]:
+            - slider "Vị trí phát" [ref=f8e399]:
+              - generic [ref=f8e400]: "0"
+              - generic [ref=f8e403]: "2"
+              - generic [ref=f8e406]: "4"
+              - generic [ref=f8e409]: "6"
+              - generic [ref=f8e412]: "8"
+              - generic [ref=f8e415]: "10"
+              - generic [ref=f8e418]: "12"
+              - generic [ref=f8e421]: "14"
+              - generic [ref=f8e424]: "16"
+              - generic [ref=f8e427]: "18"
+              - generic [ref=f8e430]: "20"
+              - generic [ref=f8e433]: "22"
+              - generic [ref=f8e436]: "24"
+              - generic [ref=f8e439]: "26"
+              - generic [ref=f8e442]: "28"
+              - generic [ref=f8e445]: 29,3 s
+            - generic [ref=f8e446]:
+              - button "mo-dau · 6,2 s" [pressed] [ref=f8e447] [cursor=pointer]
+              - button "hoc-truc-tiep · 4,7 s" [ref=f8e449] [cursor=pointer]
+              - button "len-chien-dich · 9,4 s" [ref=f8e451] [cursor=pointer]
+              - button "uu-dai · 6,0 s" [ref=f8e453] [cursor=pointer]
+              - button "CTA · 3,0 s" [ref=f8e455] [cursor=pointer]
+            - generic [ref=f8e766]: Close Up - Michael Ramir C.mp3 · âm lượng 52% · hạ còn 20% khi có giọng
+  - region "Notifications (F8)":
+    - list

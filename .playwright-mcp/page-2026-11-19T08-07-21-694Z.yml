@@ -1,0 +1,64 @@
+- generic [ref=f5e2]:
+  - generic [ref=f5e4]:
+    - complementary [ref=f5e6]:
+      - generic [ref=f5e7]:
+        - generic [aria-hidden] [ref=f5e8]: R
+        - generic [ref=f5e9]:
+          - text: Reel Studio
+          - generic [ref=f5e10]: create-video
+      - navigation "Điều hướng" [ref=f5e11]:
+        - link "Dự án" [ref=f5e13] [cursor=pointer]:
+          - /url: /
+        - link "Thư viện" [ref=f5e16] [cursor=pointer]:
+          - /url: /library
+        - link "Giọng đọc" [ref=f5e22] [cursor=pointer]:
+          - /url: /voices
+        - link "Brand & cài đặt" [ref=f5e26] [cursor=pointer]:
+          - /url: /settings
+      - generic [ref=f5e30]:
+        - button "Chat với Claude" [ref=f5e31] [cursor=pointer]
+        - region "Tác vụ" [ref=f5e35]:
+          - heading "Tác vụ đang chạy" [level=2] [ref=f5e36]
+          - paragraph [ref=f5e37]: Không có tác vụ nào
+        - status [ref=f5e38]: Model giọng chưa nạp
+        - generic [ref=f5e40]:
+          - generic [ref=f5e41]:
+            - generic [ref=f5e42]: Giao diện
+            - radiogroup "Giao diện" [ref=f5e43]:
+              - radio "Hệ thống" [ref=f5e44] [cursor=pointer]
+              - radio "Sáng" [ref=f5e45] [cursor=pointer]
+              - radio "Tối" [checked] [ref=f5e46] [cursor=pointer]
+          - generic [ref=f5e47]:
+            - generic [ref=f5e48]: Cỡ chữ
+            - radiogroup "Cỡ chữ" [ref=f5e49]:
+              - radio "Vừa" [ref=f5e50] [cursor=pointer]
+              - radio "Lớn" [ref=f5e51] [cursor=pointer]
+              - radio "Rất lớn" [checked] [ref=f5e52] [cursor=pointer]
+    - main [ref=f5e53]:
+      - generic [ref=f5e54]:
+        - generic [ref=f5e56]:
+          - heading "Thư viện" [level=1] [ref=f5e57]
+          - generic [ref=f5e58]: Ảnh, video học viên và nhạc nền. File gốc không bị sửa — app tạo bản chuẩn hoá trong library/.
+        - tablist "Loại thư viện" [ref=f5e61]:
+          - tab "Ảnh & video" [selected] [ref=f5e62] [cursor=pointer]
+          - tab "Nhạc" [ref=f5e63] [cursor=pointer]
+          - tab "Hiệu ứng âm thanh" [ref=f5e64] [cursor=pointer]
+        - generic [ref=f5e66]:
+          - generic [ref=f5e67]:
+            - generic [ref=f5e71]:
+              - generic [ref=f5e72]: Kéo-thả ảnh/video vào đây
+              - generic [ref=f5e73]: MP4, MOV, HEIC, JPG… Tự xoay đúng chiều, đổi về 30 fps, tạo thumbnail.
+            - button "Chọn file" [ref=f5e74] [cursor=pointer]
+          - generic [ref=f5e76]:
+            - radiogroup "Loại media" [ref=f5e77]:
+              - radio "Tất cả" [checked] [ref=f5e78] [cursor=pointer]
+              - radio "Video" [ref=f5e79] [cursor=pointer]
+              - radio "Ảnh" [ref=f5e80] [cursor=pointer]
+            - radiogroup "Hướng khung hình" [ref=f5e81]:
+              - radio "Dọc" [ref=f5e82] [cursor=pointer]
+              - radio "Ngang" [ref=f5e83] [cursor=pointer]
+              - radio "Tất cả" [checked] [ref=f5e84] [cursor=pointer]
+            - button "Chưa mô tả · 0" [ref=f5e85] [cursor=pointer]
+            - searchbox "Tìm media" [ref=f5e87]
+  - region "Notifications (F8)":
+    - list

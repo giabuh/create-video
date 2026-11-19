@@ -1,0 +1,5 @@
+[     131ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:15803
+[  241997ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://127.0.0.1:5317/src/screens/Editor/SfxSelect.tsx?t=1795075883370:1
+[  241997ms] [ERROR] [vite] Failed to reload /src/screens/Editor/SfxSelect.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[  248048ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://127.0.0.1:5317/src/screens/Editor/SfxSelect.tsx?t=1795075889422:1
+[  248048ms] [ERROR] [vite] Failed to reload /src/screens/Editor/SfxSelect.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364

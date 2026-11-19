@@ -1,0 +1,260 @@
+[     139ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:15803
+[ 1644860ms] [ERROR] [vite] SyntaxError: The requested module '/@fs/home/giabao/dev/create-video/studio/src/components/SceneTransition.tsx?t=1795074394234' does not provide an export named 'SceneTransition' @ http://127.0.0.1:5317/@vite/client:364
+[ 1644861ms] [ERROR] [vite] Failed to reload /@fs/home/giabao/dev/create-video/studio/src/templates/fast-cut/FastCut.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 1645958ms] [ERROR] [vite] SyntaxError: The requested module '/@fs/home/giabao/dev/create-video/studio/src/components/SceneTransition.tsx?t=1795074394234' does not provide an export named 'SceneTransition' @ http://127.0.0.1:5317/@vite/client:364
+[ 1645959ms] [ERROR] [vite] Failed to reload /@fs/home/giabao/dev/create-video/studio/src/templates/fast-cut/FastCut.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843207ms] [ERROR] Failed to load resource: net::ERR_INCOMPLETE_CHUNKED_ENCODING @ http://127.0.0.1:5317/api/events:1
+[ 2843214ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Library/Library.tsx?t=1795075601287:1
+[ 2843214ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Editor/InspectorCta.tsx?t=1795075601287:1
+[ 2843214ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Library/Uploads.tsx?t=1795075601287:1
+[ 2843214ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Editor/InspectorVideo.tsx?t=1795075601287:1
+[ 2843214ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Editor/InspectorScene.tsx?t=1795075601287:1
+[ 2843214ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Editor/MediaPicker.tsx?t=1795075601287:1
+[ 2843214ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Editor/MotionForm.tsx?t=1795075601287:1
+[ 2843214ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Editor/SceneList.tsx?t=1795075601287:1
+[ 2843214ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/api/events.ts?t=1795075601289:1
+[ 2843214ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/shell/Layout.tsx?t=1795075601289:1
+[ 2843214ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795075601289:1
+[ 2843214ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Library/Library.tsx?t=1795075601295:1
+[ 2843215ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Renders/Renders.tsx?t=1795075601289:1
+[ 2843215ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Settings/Settings.tsx?t=1795075601291:1
+[ 2843215ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Voices/Voices.tsx?t=1795075601291:1
+[ 2843215ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/App.tsx?t=1795075601295:1
+[ 2843215ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/shell/ConnectionBanner.tsx?t=1795075601289:1
+[ 2843215ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/api/hooks.ts?t=1795075601287:1
+[ 2843215ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Editor/EditorContext.tsx?t=1795075601289:1
+[ 2843215ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/api/upload.ts?t=1795075601291:1
+[ 2843215ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Voices/Try.tsx?t=1795075601289:1
+[ 2843215ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Voices/useConfigEdit.ts?t=1795075601287:1
+[ 2843215ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/shell/JobsPanel.tsx?t=1795075601289:1
+[ 2843215ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Editor/TopBar.tsx?t=1795075601289:1
+[ 2843215ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Library/Detail.tsx?t=1795075601289:1
+[ 2843215ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/shell/WorkerStatus.tsx?t=1795075601289:1
+[ 2843215ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Editor/Inspector.tsx?t=1795075601289:1
+[ 2843215ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Editor/PreviewPane.tsx?t=1795075601289:1
+[ 2843215ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Editor/SceneList.tsx?t=1795075601289:1
+[ 2843215ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Editor/Timeline.tsx?t=1795075601289:1
+[ 2843215ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Settings/BrandSection.tsx?t=1795075601291:1
+[ 2843215ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:5317/src/screens/Library/Uploads.tsx?t=1795075601293:1
+[ 2843215ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ http://127.0.0.1:5317/src/screens/Library/Music.tsx?t=1795075601293:1
+[ 2843237ms] [ERROR] [vite] Failed to reload /src/screens/Library/Library.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843237ms] [ERROR] [vite] Failed to reload /src/screens/Editor/InspectorCta.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843237ms] [ERROR] [vite] Failed to reload /src/screens/Library/Uploads.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843237ms] [ERROR] [vite] Failed to reload /src/screens/Editor/InspectorVideo.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843237ms] [ERROR] [vite] Failed to reload /src/screens/Editor/InspectorScene.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843237ms] [ERROR] [vite] Failed to reload /src/screens/Editor/MediaPicker.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843237ms] [ERROR] [vite] Failed to reload /src/screens/Editor/MotionForm.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843237ms] [ERROR] [vite] Failed to reload /src/screens/Editor/SceneList.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843237ms] [ERROR] [vite] Failed to reload /src/screens/Editor/TopBar.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843237ms] [ERROR] [vite] Failed to reload /src/screens/Voices/Try.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843237ms] [ERROR] [vite] Failed to reload /src/shell/JobsPanel.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843237ms] [ERROR] [vite] Failed to reload /src/App.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843237ms] [ERROR] [vite] Failed to reload /src/screens/Voices/Voices.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843238ms] [ERROR] [vite] Failed to reload /src/shell/ConnectionBanner.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843238ms] [ERROR] [vite] Failed to reload /src/shell/WorkerStatus.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843238ms] [ERROR] [vite] Failed to reload /src/screens/Renders/Renders.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843238ms] [ERROR] [vite] Failed to reload /src/screens/Editor/EditorContext.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843238ms] [ERROR] [vite] Failed to reload /src/screens/Library/Detail.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843238ms] [ERROR] [vite] Failed to reload /src/screens/Editor/Editor.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843238ms] [ERROR] [vite] Failed to reload /src/screens/Settings/Settings.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843238ms] [ERROR] [vite] Failed to reload /src/screens/Projects/Projects.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843238ms] [ERROR] [vite] Failed to reload /src/screens/Settings/SettingsForm.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843238ms] [ERROR] [vite] Failed to reload /src/screens/Settings/BrandSection.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843238ms] [ERROR] [vite] Failed to reload /src/screens/Library/Music.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843238ms] [ERROR] [vite] Failed to reload /src/screens/Projects/DeleteProjectDialog.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843238ms] [ERROR] [vite] Failed to reload /src/screens/Voices/Defaults.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843419ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://127.0.0.1:5317/src/screens/Library/Library.tsx:1
+[ 2843419ms] [ERROR] [vite] Failed to reload /src/App.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843515ms] [ERROR] [vite] SendBeforeConnectError: send was called before connect
+    at Object.send (http://127.0.0.1:5317/@vite/client:197:16)
+    at HMRClient.send (http://127.0.0.1:5317/@vite/client:588:18)
+    at HMRContext.send (http://127.0.0.1:5317/@vite/client:549:18)
+    at HMRContext.invalidate (http://127.0.0.1:5317/@vite/client:518:8)
+    at http://127.0.0.1:5317/src/shell/JobsPanel.tsx?t=1795071607340:285:46
+    at http://127.0.0.1:5317/@vite/client:496:95
+    at http://127.0.0.1:5317/@vite/client:653:52
+    at http://127.0.0.1:5317/@vite/client:631:55
+    at Array.forEach (<anonymous>)
+    at HMRClient.queueUpdate (http://127.0.0.1:5317/@vite/client:631:33) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843515ms] [ERROR] [vite] SendBeforeConnectError: send was called before connect
+    at Object.send (http://127.0.0.1:5317/@vite/client:197:16)
+    at HMRClient.send (http://127.0.0.1:5317/@vite/client:588:18)
+    at HMRContext.send (http://127.0.0.1:5317/@vite/client:549:18)
+    at HMRContext.invalidate (http://127.0.0.1:5317/@vite/client:518:8)
+    at http://127.0.0.1:5317/src/shell/WorkerStatus.tsx?t=1795071607340:90:46
+    at http://127.0.0.1:5317/@vite/client:496:95
+    at http://127.0.0.1:5317/@vite/client:653:52
+    at http://127.0.0.1:5317/@vite/client:631:55
+    at Array.forEach (<anonymous>)
+    at HMRClient.queueUpdate (http://127.0.0.1:5317/@vite/client:631:33) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843515ms] [ERROR] [vite] SendBeforeConnectError: send was called before connect
+    at Object.send (http://127.0.0.1:5317/@vite/client:197:16)
+    at HMRClient.send (http://127.0.0.1:5317/@vite/client:588:18)
+    at HMRContext.send (http://127.0.0.1:5317/@vite/client:549:18)
+    at HMRContext.invalidate (http://127.0.0.1:5317/@vite/client:518:8)
+    at http://127.0.0.1:5317/src/screens/Editor/EditorContext.tsx?t=1795071607340:205:46
+    at http://127.0.0.1:5317/@vite/client:496:95
+    at http://127.0.0.1:5317/@vite/client:653:52
+    at http://127.0.0.1:5317/@vite/client:631:55
+    at Array.forEach (<anonymous>)
+    at HMRClient.queueUpdate (http://127.0.0.1:5317/@vite/client:631:33) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843516ms] [ERROR] [vite] SendBeforeConnectError: send was called before connect
+    at Object.send (http://127.0.0.1:5317/@vite/client:197:16)
+    at HMRClient.send (http://127.0.0.1:5317/@vite/client:588:18)
+    at HMRContext.send (http://127.0.0.1:5317/@vite/client:549:18)
+    at HMRContext.invalidate (http://127.0.0.1:5317/@vite/client:518:8)
+    at http://127.0.0.1:5317/src/screens/Editor/TopBar.tsx?t=1795071607340:482:46
+    at http://127.0.0.1:5317/@vite/client:496:95
+    at http://127.0.0.1:5317/@vite/client:653:52
+    at http://127.0.0.1:5317/@vite/client:631:55
+    at Array.forEach (<anonymous>)
+    at HMRClient.queueUpdate (http://127.0.0.1:5317/@vite/client:631:33) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843539ms] [ERROR] Error handled by React Router default ErrorBoundary: Error: useEditor must be used inside <EditorProvider>
+    at useEditor (http://127.0.0.1:5317/src/screens/Editor/EditorContext.tsx?t=1795071607340:33:16)
+    at useEditorKeys (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:20:75)
+    at EditorBody (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:59:2)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:14140:12)
+    at renderWithHooks (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:4398:19)
+    at updateFunctionComponent (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:5773:16)
+    at beginWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:6389:20)
+    at runWithFiberInDEV (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:942:66)
+    at performUnitOfWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9146:92)
+    at workLoopSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9042:37) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843539ms] [ERROR] Error handled by React Router default ErrorBoundary: Error: useEditor must be used inside <EditorProvider>
+    at useEditor (http://127.0.0.1:5317/src/screens/Editor/EditorContext.tsx?t=1795071607340:33:16)
+    at useEditorKeys (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:20:75)
+    at EditorBody (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:59:2)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:14140:12)
+    at renderWithHooks (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:4398:19)
+    at updateFunctionComponent (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:5773:16)
+    at beginWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:6389:20)
+    at runWithFiberInDEV (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:942:66)
+    at performUnitOfWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9146:92)
+    at workLoopSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9042:37) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843542ms] [ERROR] Error handled by React Router default ErrorBoundary: Error: useEditor must be used inside <EditorProvider>
+    at useEditor (http://127.0.0.1:5317/src/screens/Editor/EditorContext.tsx?t=1795071607340:33:16)
+    at useEditorKeys (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:20:75)
+    at EditorBody (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:59:2)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:14140:12)
+    at renderWithHooks (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:4398:19)
+    at updateFunctionComponent (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:5773:16)
+    at beginWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:6389:20)
+    at runWithFiberInDEV (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:942:66)
+    at performUnitOfWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9146:92)
+    at workLoopSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9042:37) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843542ms] [ERROR] Error handled by React Router default ErrorBoundary: Error: useEditor must be used inside <EditorProvider>
+    at useEditor (http://127.0.0.1:5317/src/screens/Editor/EditorContext.tsx?t=1795071607340:33:16)
+    at useEditorKeys (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:20:75)
+    at EditorBody (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:59:2)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:14140:12)
+    at renderWithHooks (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:4398:19)
+    at updateFunctionComponent (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:5773:16)
+    at beginWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:6389:20)
+    at runWithFiberInDEV (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:942:66)
+    at performUnitOfWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9146:92)
+    at workLoopSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9042:37) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843548ms] [ERROR] %o
+
+%s
+
+%s
+ Error: useEditor must be used inside <EditorProvider>
+    at useEditor (http://127.0.0.1:5317/src/screens/Editor/EditorContext.tsx?t=1795071607340:33:16)
+    at useEditorKeys (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:20:75)
+    at EditorBody (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:59:2)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:14140:12)
+    at renderWithHooks (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:4398:19)
+    at updateFunctionComponent (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:5773:16)
+    at beginWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:6389:20)
+    at runWithFiberInDEV (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:942:66)
+    at performUnitOfWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9146:92)
+    at workLoopSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9042:37) The above error occurred in the <EditorBody> component. React will try to recreate this component tree from scratch using the error boundary you provided, RenderErrorBoundary. @ http://127.0.0.1:5317/@vite/client:364
+[ 2843548ms] [ERROR] React Router caught the following error during render Error: useEditor must be used inside <EditorProvider>
+    at useEditor (http://127.0.0.1:5317/src/screens/Editor/EditorContext.tsx?t=1795071607340:33:16)
+    at useEditorKeys (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:20:75)
+    at EditorBody (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:59:2)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:14140:12)
+    at renderWithHooks (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:4398:19)
+    at updateFunctionComponent (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:5773:16)
+    at beginWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:6389:20)
+    at runWithFiberInDEV (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:942:66)
+    at performUnitOfWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9146:92)
+    at workLoopSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9042:37) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843560ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://127.0.0.1:5317/src/screens/Library/Library.tsx?t=1795075601291:1
+[ 2843560ms] [ERROR] [vite] Failed to reload /src/screens/Library/Library.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843602ms] [ERROR] Error handled by React Router default ErrorBoundary: Error: useEditor must be used inside <EditorProvider>
+    at useEditor (http://127.0.0.1:5317/src/screens/Editor/EditorContext.tsx?t=1795071607340:33:16)
+    at useEditorKeys (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:20:75)
+    at EditorBody (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:59:2)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:14140:12)
+    at renderWithHooks (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:4398:19)
+    at updateFunctionComponent (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:5773:16)
+    at beginWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:6389:20)
+    at runWithFiberInDEV (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:942:66)
+    at performUnitOfWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9146:92)
+    at workLoopSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9042:37) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843602ms] [ERROR] Error handled by React Router default ErrorBoundary: Error: useEditor must be used inside <EditorProvider>
+    at useEditor (http://127.0.0.1:5317/src/screens/Editor/EditorContext.tsx?t=1795071607340:33:16)
+    at useEditorKeys (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:20:75)
+    at EditorBody (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:59:2)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:14140:12)
+    at renderWithHooks (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:4398:19)
+    at updateFunctionComponent (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:5773:16)
+    at beginWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:6389:20)
+    at runWithFiberInDEV (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:942:66)
+    at performUnitOfWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9146:92)
+    at workLoopSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9042:37) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843622ms] [ERROR] Error handled by React Router default ErrorBoundary: Error: useEditor must be used inside <EditorProvider>
+    at useEditor (http://127.0.0.1:5317/src/screens/Editor/EditorContext.tsx?t=1795071607340:33:16)
+    at useEditorKeys (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:20:75)
+    at EditorBody (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:59:2)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:14140:12)
+    at renderWithHooks (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:4398:19)
+    at updateFunctionComponent (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:5773:16)
+    at beginWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:6389:20)
+    at runWithFiberInDEV (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:942:66)
+    at performUnitOfWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9146:92)
+    at workLoopSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9042:37) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843623ms] [ERROR] Error handled by React Router default ErrorBoundary: Error: useEditor must be used inside <EditorProvider>
+    at useEditor (http://127.0.0.1:5317/src/screens/Editor/EditorContext.tsx?t=1795071607340:33:16)
+    at useEditorKeys (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:20:75)
+    at EditorBody (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:59:2)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:14140:12)
+    at renderWithHooks (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:4398:19)
+    at updateFunctionComponent (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:5773:16)
+    at beginWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:6389:20)
+    at runWithFiberInDEV (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:942:66)
+    at performUnitOfWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9146:92)
+    at workLoopSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9042:37) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843623ms] [ERROR] %o
+
+%s
+
+%s
+ Error: useEditor must be used inside <EditorProvider>
+    at useEditor (http://127.0.0.1:5317/src/screens/Editor/EditorContext.tsx?t=1795071607340:33:16)
+    at useEditorKeys (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:20:75)
+    at EditorBody (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:59:2)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:14140:12)
+    at renderWithHooks (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:4398:19)
+    at updateFunctionComponent (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:5773:16)
+    at beginWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:6389:20)
+    at runWithFiberInDEV (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:942:66)
+    at performUnitOfWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9146:92)
+    at workLoopSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9042:37) The above error occurred in the <EditorBody> component. React will try to recreate this component tree from scratch using the error boundary you provided, RenderErrorBoundary. @ http://127.0.0.1:5317/@vite/client:364
+[ 2843624ms] [ERROR] React Router caught the following error during render Error: useEditor must be used inside <EditorProvider>
+    at useEditor (http://127.0.0.1:5317/src/screens/Editor/EditorContext.tsx?t=1795071607340:33:16)
+    at useEditorKeys (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:20:75)
+    at EditorBody (http://127.0.0.1:5317/src/screens/Editor/Editor.tsx?t=1795071607340:59:2)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:14140:12)
+    at renderWithHooks (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:4398:19)
+    at updateFunctionComponent (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:5773:16)
+    at beginWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:6389:20)
+    at runWithFiberInDEV (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:942:66)
+    at performUnitOfWork (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9146:92)
+    at workLoopSync (http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:9042:37) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843630ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://127.0.0.1:5317/src/screens/Library/Library.tsx?t=1795075601295:1
+[ 2843630ms] [ERROR] [vite] Failed to reload /src/screens/Library/Library.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:5317/@vite/client:364
+[ 2843630ms] [LOG] [vite] server connection lost. Polling for restart... @ http://127.0.0.1:5317/@vite/client:1078
+[ 2843730ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://127.0.0.1:5317/src/screens/Library/Library.tsx:1
+[ 2855654ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:15803

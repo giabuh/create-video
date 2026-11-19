@@ -1,6 +1,17 @@
 {
-  "name": "Demo Academy",
-  "logo": null,
-  "colors": { "primary": "#1E3A8A", "accent": "#FFD400", "text": "#FFFFFF", "background": "#0B1530" },
-  "cta": { "phone": "0900 000 000", "fanpage": "fb.com/demo", "address": "" }
+  "name": "Tin học Sao Việt",
+  "logo": "logo-marketing-sao-viet-3-nobg.png",
+  "colors": {
+    "primary": "#1E3A8A",
+    "accent": "#FFD400",
+    "text": "#FFFFFF",
+    "background": "#0B1530"
+  },
+  "cta": {
+    "phone": "0876929145",
+    "fanpage": "fb.com/hocquangcaobinhduong",
+    "address": "",
+    "title": "",
+    "logoSize": 260
+  }
 }

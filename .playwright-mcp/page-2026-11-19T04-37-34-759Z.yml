@@ -1,0 +1,46 @@
+- generic [ref=e2]:
+  - generic [ref=e4]:
+    - complementary [ref=e6]:
+      - generic [ref=e7]:
+        - generic [aria-hidden] [ref=e8]: R
+        - generic [ref=e9]:
+          - text: Reel Studio
+          - generic [ref=e10]: create-video
+      - navigation "Điều hướng" [ref=e11]:
+        - link "Dự án" [ref=e13] [cursor=pointer]:
+          - /url: /
+        - link "Thư viện" [ref=e16] [cursor=pointer]:
+          - /url: /library
+        - link "Giọng đọc" [ref=e22] [cursor=pointer]:
+          - /url: /voices
+        - link "Brand & cài đặt" [ref=e26] [cursor=pointer]:
+          - /url: /settings
+      - generic [ref=e30]:
+        - button "Chat với Claude" [ref=e31] [cursor=pointer]
+        - region "Tác vụ" [ref=e35]:
+          - heading "Tác vụ đang chạy" [level=2] [ref=e36]
+          - paragraph [ref=e37]: Không có tác vụ nào
+        - status [ref=e38]: Model giọng chưa nạp
+        - generic [ref=e40]:
+          - generic [ref=e41]:
+            - generic [ref=e42]: Giao diện
+            - radiogroup "Giao diện" [ref=e43]:
+              - radio "Hệ thống" [ref=e44] [cursor=pointer]
+              - radio "Sáng" [ref=e45] [cursor=pointer]
+              - radio "Tối" [checked] [ref=e46] [cursor=pointer]
+          - generic [ref=e47]:
+            - generic [ref=e48]: Cỡ chữ
+            - radiogroup "Cỡ chữ" [ref=e49]:
+              - radio "Vừa" [ref=e50] [cursor=pointer]
+              - radio "Lớn" [ref=e51] [cursor=pointer]
+              - radio "Rất lớn" [checked] [ref=e52] [cursor=pointer]
+    - main [ref=e53]:
+      - generic [ref=e55]:
+        - generic [ref=e56]:
+          - heading "Dự án" [level=1] [ref=e57]
+          - generic [ref=e58]: Mở lại video đang làm hoặc tạo dự án mới.
+        - generic [ref=e59]:
+          - searchbox "Tìm dự án" [ref=e60]
+          - button "Dự án mới" [ref=e61] [cursor=pointer]
+  - region "Notifications (F8)":
+    - list

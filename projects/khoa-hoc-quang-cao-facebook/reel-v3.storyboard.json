@@ -1,0 +1,233 @@
+{
+  "template": "fast-cut",
+  "brand": "demo",
+  "voice": "phuong",
+  "targetSeconds": 30,
+  "music": {
+    "file": "Close Up - Michael Ramir C.mp3",
+    "volume": 0.52
+  },
+  "scenes": [
+    {
+      "id": "mo-dau",
+      "say": "Bạn có cửa hàng và muốn tìm thêm khách trên mạng? Bạn muốn tự chạy quảng cáo Phây Búc nhưng chưa biết bắt đầu từ đâu?",
+      "caption": "Bạn có cửa hàng và muốn tìm thêm khách trên mạng? Bạn muốn tự chạy quảng cáo Facebook nhưng chưa biết bắt đầu từ đâu?",
+      "highlight": [
+        "Facebook"
+      ],
+      "media": [
+        {
+          "src": "video-doc-hoc-vien-nu-hoc-tren-laptop-ghi-chep.mp4",
+          "from": 0.2,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-doc-lop-hoc-dong-hoc-vien-tai-phong-may.mp4",
+          "from": 5,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "KineticText",
+          "props": {
+            "lines": [
+              "CÓ CỬA HÀNG",
+              "MUỐN BÁN ONLINE?"
+            ],
+            "size": 82
+          },
+          "box": {
+            "x": 5,
+            "y": 12,
+            "w": 84,
+            "h": 16
+          },
+          "duration": 2.4,
+          "backdrop": "scrim"
+        }
+      ]
+    },
+    {
+      "id": "hoc-truc-tiep",
+      "say": "Tại Tin học Sao Việt, bạn học trực tiếp và được giảng viên hướng dẫn một kèm một.",
+      "caption": "Tại Tin học Sao Việt, bạn học trực tiếp và được giảng viên hướng dẫn 1 kèm 1.",
+      "highlight": [
+        "trực tiếp"
+      ],
+      "media": [
+        {
+          "src": "video-doc-giao-vien-giang-bai-tren-bang-lop-tin-hoc.mp4",
+          "from": 1.2,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-hoc-vien-thuc-hanh-tai-phong-may-tuong-xanh.mp4",
+          "from": 4,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Text",
+          "props": {
+            "text": "HỌC TRỰC TIẾP\n1 KÈM 1",
+            "size": 68
+          },
+          "box": {
+            "x": 6,
+            "y": 11,
+            "w": 82,
+            "h": 16
+          },
+          "at": "học trực tiếp",
+          "duration": 2,
+          "enter": "slide-up",
+          "backdrop": "scrim"
+        }
+      ]
+    },
+    {
+      "id": "len-chien-dich",
+      "say": "Dù bán sơn hay giỏ quà trái cây, bạn thực hành ngay trên sản phẩm mình bán. Bạn học cách chọn nhóm khách hàng muốn tiếp cận, rồi tự lên chiến dịch quảng cáo cho sản phẩm đó.",
+      "caption": "Dù bán sơn hay giỏ quà trái cây, bạn thực hành ngay trên sản phẩm mình bán. Bạn học cách chọn nhóm khách hàng muốn tiếp cận, rồi tự lên chiến dịch quảng cáo cho sản phẩm đó.",
+      "highlight": [
+        "chiến dịch",
+        "sản phẩm"
+      ],
+      "media": [
+        {
+          "src": "video-doc-hoc-vien-nu-hoc-tren-laptop-ghi-chep.mp4",
+          "from": 1.5,
+          "duration": 2.7,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-nhieu-hoc-vien-thuc-hanh-tin-hoc-van-phong.mp4",
+          "from": 7.5,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-hoc-vien-thuc-hanh-tai-phong-may-tuong-xanh.mp4",
+          "from": 12,
+          "effect": "zoom-in"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Text",
+          "props": {
+            "text": "SƠN",
+            "size": 63,
+            "color": "#0B1530",
+            "background": "#FFD400"
+          },
+          "box": {
+            "x": 5,
+            "y": 12,
+            "w": 25,
+            "h": 8
+          },
+          "at": "bán sơn",
+          "until": {
+            "word": "trái cây",
+            "offset": 0.6
+          },
+          "enter": "pop",
+          "backdrop": "none"
+        },
+        {
+          "component": "Text",
+          "props": {
+            "text": "GIỎ QUÀ TRÁI CÂY",
+            "size": 57,
+            "color": "#0B1530",
+            "background": "#FFFFFF"
+          },
+          "box": {
+            "x": 30,
+            "y": 12,
+            "w": 59,
+            "h": 8
+          },
+          "at": "giỏ quà",
+          "until": {
+            "word": "trái cây",
+            "offset": 0.6
+          },
+          "enter": "pop",
+          "backdrop": "none"
+        },
+        {
+          "component": "KineticText",
+          "props": {
+            "lines": [
+              "LÊN CHIẾN DỊCH",
+              "CHO SẢN PHẨM CỦA BẠN"
+            ],
+            "size": 68
+          },
+          "box": {
+            "x": 5,
+            "y": 11,
+            "w": 84,
+            "h": 16
+          },
+          "at": "lên chiến dịch",
+          "duration": 1.8,
+          "backdrop": "scrim"
+        }
+      ]
+    },
+    {
+      "id": "uu-dai",
+      "say": "Đăng ký ngay nhận ưu đãi ba mươi lăm phần trăm. Nhắn tin fan pây để được tư vấn và biết lịch khai giảng.",
+      "caption": "Đăng ký ngay nhận ưu đãi 35%. Nhắn tin fanpage để được tư vấn và biết lịch khai giảng.",
+      "highlight": [
+        "35%",
+        "fanpage",
+        "khai giảng"
+      ],
+      "media": [
+        {
+          "src": "video-doc-lop-hoc-dong-hoc-vien-tai-phong-may.mp4",
+          "from": 15,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-giao-vien-giang-bai-tren-bang-lop-tin-hoc.mp4",
+          "from": 7,
+          "effect": "zoom-in"
+        }
+      ],
+      "motion": [
+        {
+          "component": "PriceTag",
+          "props": {
+            "price": "35%",
+            "note": "ƯU ĐÃI KHI ĐĂNG KÝ NGAY",
+            "size": 112,
+            "tilt": -3
+          },
+          "box": {
+            "x": 9,
+            "y": 14,
+            "w": 76,
+            "h": 20
+          },
+          "at": "ưu đãi",
+          "duration": 2.2,
+          "backdrop": "none"
+        }
+      ]
+    }
+  ],
+  "cta": {
+    "title": "Nhắn tin fanpage",
+    "duration": 3,
+    "logoSize": 490
+  },
+  "sfx": {
+    "volume": 0.51
+  }
+}

@@ -1,0 +1,18 @@
+[     142ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5317/node_modules/.vite/deps/react-dom_client.js?v=98a73028:15803
+[     430ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[     437ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[     602ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[     609ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[     643ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[     650ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[     728ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[     738ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[     892ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[     901ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[    7608ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:5317/favicon.ico:1
+[   27077ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[   27130ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[   27181ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[   27196ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[   27203ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
+[   27208ms] [ERROR] Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props. id @ http://127.0.0.1:5317/@vite/client:364
