@@ -43,6 +43,7 @@ export function voiceRoutes({jobs, worker}: Deps): Hono {
   });
 
   app.put('/upload-voice/:name/:filename', async c => {
+    if (!/[\p{L}\p{N}]/u.test(c.req.param('name'))) throw new HttpError(400, 'bad voice name'); // '!!!' would slugify to the 'media' fallback
     const name = slugParam(slugify(c.req.param('name')), 'voice name');
     const fname = sanitizeFilename(c.req.param('filename'), AUDIO_REF_EXTS);
     const dest = safeJoin('voices', `${name}-short.wav`);

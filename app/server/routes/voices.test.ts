@@ -26,6 +26,7 @@ describe('voice routes', () => {
     const root = await makeTestRoot();
     const {req, jobs} = setup();
     expect((await req('/api/upload-voice/thu/x.exe', {method: 'PUT', body: 'x'})).status).toBe(400);
+    expect((await req('/api/upload-voice/!!!/mau.wav', {method: 'PUT', body: 'x'})).status).toBe(400);
     expect((await req('/api/upload-voice/phuong/x.wav', {method: 'PUT', body: 'x'})).status).toBe(400);
     expect((await req('/api/upload-voice/thu/Thu%2Fmau.wav', {method: 'PUT', body: 'x'})).status).toBe(400); // slash in filename
     const ok = await req('/api/upload-voice/Thu/mau.wav', {method: 'PUT', body: 'audio'});
