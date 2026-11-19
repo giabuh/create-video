@@ -1,10 +1,133 @@
-import {PageHeader} from '../../ui/index.ts';
+import {useMemo, useState} from 'react';
+import {Link, useNavigate} from 'react-router';
+import {FolderPlus, Plus} from 'lucide-react';
+import type {ProjectStatus, ProjectSummary} from '../../../shared/types.ts';
+import {useBrands, useCreateProject, useProjects, useTemplates, useVoices} from '../../api/hooks.ts';
+import {Button, Chip, Dialog, EmptyState, ErrorState, Field, Input, NumberField, PageHeader, Segmented, Select, Skeleton, VideoThumb, fmtRelTime, fmtSec} from '../../ui/index.ts';
+import type {Tone} from '../../ui/index.ts';
+import s from './Projects.module.css';
+
+type Filter = 'all' | 'doing' | 'approved' | 'new';
+
+// Mirrors server slugify (app/server/paths.ts) for the preview only; the server result is authoritative.
+const slugify = (x: string): string =>
+  x.replace(/đ/g, 'd').replace(/Đ/g, 'D').normalize('NFKD').replace(/[^\x00-\x7f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'media';
+
+const matches = (st: ProjectStatus, f: Filter) => f === 'all' || (f === 'doing' ? st === 'rendering' || st === 'draft' : f === 'approved' ? st === 'approved' : st === 'new');
+
+function statusChip(p: ProjectSummary): React.JSX.Element {
+  const v = p.latest ? ` v${p.latest.n}` : '';
+  const [tone, text]: [Tone, string] =
+    p.status === 'rendering' ? ['info', 'Đang render'] :
+    p.status === 'approved' ? ['success', `Đã duyệt${p.approved ? ` ${p.approved.replace(/^reel-/, '')}` : v}`] :
+    p.status === 'draft' ? ['warning', `Bản nháp${v}`] : ['neutral', 'Chưa render'];
+  return <Chip tone={tone}>{text}</Chip>;
+}
+
+const cap = (v: string) => v.charAt(0).toUpperCase() + v.slice(1);
+
+function Card({p}: {p: ProjectSummary}): React.JSX.Element {
+  const meta = [`${p.sceneCount} cảnh`, p.totalSeconds != null ? fmtSec(p.totalSeconds) : 'chưa tạo giọng', p.voice && cap(p.voice)].filter(Boolean).join(' · ');
+  const m = p.mix;
+  return (
+    <Link to={`/p/${encodeURIComponent(p.slug)}`} className={s.card}>
+      <div className={s.thumb}><VideoThumb src={p.latest ? `/${p.latest.file}` : null} label={p.firstCaption || 'Chưa render'} /></div>
+      <div className={s.meta}>
+        <div className={s.row}><span className={s.name} title={p.slug}>{p.slug}</span>{statusChip(p)}</div>
+        <div className={s.sub}>{meta}</div>
+        <div className={s.mix} title="Tỉ lệ cảnh thật / motion / khác">
+          {m && <><i style={{width: `${m.real * 100}%`, background: 'var(--mix-real)'}} /><i style={{width: `${m.motion * 100}%`, background: 'var(--mix-motion)'}} /><i style={{width: `${m.other * 100}%`, background: 'var(--mix-other)'}} /></>}
+        </div>
+        <div className={s.sub}>Sửa {fmtRelTime(p.mtime)}</div>
+      </div>
+    </Link>
+  );
+}
+
+function NewDialog({open, onOpenChange}: {open: boolean; onOpenChange(o: boolean): void}): React.JSX.Element {
+  const nav = useNavigate();
+  const templates = useTemplates(), brands = useBrands(), voices = useVoices();
+  const create = useCreateProject();
+  const [name, setName] = useState('');
+  const [tpl, setTpl] = useState<string | null>(null);
+  const [brand, setBrand] = useState<string | null>(null);
+  const [voice, setVoice] = useState<string | null>(null);
+  const [secs, setSecs] = useState<number | null>(30);
+  const [err, setErr] = useState<string>();
+  // fall back to the server defaults (first entry marked default) until the user picks
+  const tplV = tpl ?? templates.data?.[0] ?? null;
+  const brandV = brand ?? brands.data?.find((b) => b.isDefault)?.id ?? brands.data?.[0]?.id ?? null;
+  const voiceV = voice ?? voices.data?.find((v) => v.isDefault)?.name ?? voices.data?.[0]?.name ?? null;
+  const valid = name.trim() !== '' && (secs ?? 0) > 0;
+  const submit = () => {
+    if (!valid || create.isPending) return;
+    setErr(undefined);
+    create.mutate({name: name.trim(), template: tplV ?? undefined, brand: brandV ?? undefined, voice: voiceV ?? undefined, targetSeconds: secs ?? 30}, {
+      onSuccess: (p) => nav(`/p/${encodeURIComponent(p.slug)}`),
+      onError: (e) => setErr(e.status === 409 ? 'Đã có dự án tên này' : e.message),
+    });
+  };
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange} title="Dự án mới" description="Chọn mẫu, brand, giọng và thời lượng — rồi thêm cảnh trong trình sửa."
+      footer={<><Button variant="ghost" onClick={() => onOpenChange(false)}>Huỷ</Button><Button variant="primary" loading={create.isPending} loadingText="Đang tạo…" disabled={!valid} onClick={submit}>Tạo dự án</Button></>}>
+      <form className={s.form} onSubmit={(e) => { e.preventDefault(); submit(); }}>
+        <Field label="Tên dự án" error={err} hint={name.trim() ? `Thư mục: projects/${slugify(name)}` : undefined}>
+          <Input value={name} autoFocus onChange={(e) => { setName(e.target.value); setErr(undefined); }} placeholder="vd. Khai giảng lớp mới" />
+        </Field>
+        <Field label="Mẫu"><Select value={tplV} onChange={setTpl} options={(templates.data ?? []).map((t) => ({value: t, label: t}))} placeholder="Chọn mẫu" /></Field>
+        <Field label="Brand"><Select value={brandV} onChange={setBrand} options={(brands.data ?? []).map((b) => ({value: b.id, label: b.brand.name || b.id}))} placeholder="Chọn brand" /></Field>
+        <Field label="Giọng"><Select value={voiceV} onChange={setVoice} options={(voices.data ?? []).map((v) => ({value: v.name, label: cap(v.name)}))} placeholder="Chọn giọng" /></Field>
+        <Field label="Thời lượng mục tiêu (giây)"><NumberField value={secs} onChange={setSecs} min={5} max={120} /></Field>
+        <button type="submit" hidden />
+      </form>
+    </Dialog>
+  );
+}
 
 export function ProjectsScreen(): React.JSX.Element {
+  const {data, isPending, error, refetch} = useProjects();
+  const [filter, setFilter] = useState<Filter>('all');
+  const [q, setQ] = useState('');
+  const [open, setOpen] = useState(false);
+  const count = (f: Filter) => (data ?? []).filter((p) => matches(p.status, f)).length;
+  const shown = useMemo(() => {
+    const t = q.trim().toLowerCase();
+    return (data ?? []).filter((p) => matches(p.status, filter) && (!t || p.slug.toLowerCase().includes(t) || p.firstCaption.toLowerCase().includes(t)));
+  }, [data, filter, q]);
+  const newBtn = <Button variant="primary" icon={<Plus size={18} aria-hidden />} onClick={() => setOpen(true)}>Dự án mới</Button>;
+
+  let body: React.JSX.Element;
+  if (error) body = <ErrorState error={error} onRetry={() => void refetch()} />;
+  else if (isPending) body = <div className={s.grid}>{[0, 1, 2, 3].map((i) => <Skeleton key={i} height={420} radius={14} />)}</div>;
+  else if (data.length === 0) body = <EmptyState icon={<FolderPlus size={28} />} title="Chưa có dự án nào" description="Tạo dự án đầu tiên: chọn mẫu, brand, giọng và thời lượng." action={newBtn} />;
+  else body = (
+    <>
+      <div className={s.tools}>
+        <Segmented<Filter> aria-label="Lọc dự án" value={filter} onChange={setFilter} options={[
+          {value: 'all', label: `Tất cả · ${count('all')}`}, {value: 'doing', label: `Đang làm · ${count('doing')}`},
+          {value: 'approved', label: `Đã duyệt · ${count('approved')}`}, {value: 'new', label: `Chưa render · ${count('new')}`}]} />
+        <div className={s.legend}>
+          <span><i className={s.sw} style={{background: 'var(--mix-real)'}} />Cảnh thật</span>
+          <span><i className={s.sw} style={{background: 'var(--mix-motion)'}} />Motion</span>
+          <span><i className={s.sw} style={{background: 'var(--mix-other)'}} />Khác (CTA)</span>
+        </div>
+      </div>
+      <div className={s.grid}>
+        {shown.map((p) => <Card key={p.slug} p={p} />)}
+        <button type="button" className={s.new} onClick={() => setOpen(true)}>
+          <Plus size={28} aria-hidden /><b>Tạo dự án mới</b><span>Chọn mẫu, brand, giọng và thời lượng — rồi thêm cảnh trong trình sửa</span>
+        </button>
+      </div>
+      {shown.length === 0 && <p className={s.sub}>Không có dự án khớp bộ lọc.</p>}
+    </>
+  );
+
   return (
     <>
-      <PageHeader title="Dự án" />
-      <p>Đang xây dựng</p>
+      <PageHeader title="Dự án" subtitle={<>Mỗi dự án là một thư mục trong <code>projects/</code> — tự cập nhật khi Claude hoặc bạn sửa file.</>}
+        actions={<><Input className={s.search} type="search" aria-label="Tìm dự án" placeholder="Tìm dự án…" value={q} onChange={(e) => setQ(e.target.value)} />{newBtn}</>} />
+      {body}
+      <NewDialog key={String(open)} open={open} onOpenChange={setOpen} />
     </>
   );
 }

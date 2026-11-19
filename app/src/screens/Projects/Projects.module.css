@@ -1,0 +1,22 @@
+.tools { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; margin-bottom: var(--sp-5); }
+.legend { margin-left: auto; display: flex; gap: var(--sp-4); flex-wrap: wrap; font-size: var(--fs-sm); color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.search { width: 240px; max-width: 100%; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: var(--sp-5); }
+.card { display: flex; flex-direction: column; overflow: hidden; background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-lg); color: inherit; text-decoration: none; transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease); }
+.card:hover, .card:focus-visible { transform: translateY(-2px); box-shadow: var(--shadow-pop); border-color: var(--line-strong); }
+.card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.thumb { max-height: 21rem; overflow: hidden; display: flex; justify-content: center; background: var(--bg-sunken); }
+.thumb > * { width: 100%; }
+.meta { padding: var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-2); }
+.row { display: flex; justify-content: space-between; align-items: center; gap: var(--sp-2); }
+.name { font-size: var(--fs-md); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.sub { font-size: var(--fs-sm); color: var(--muted); }
+.mix { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; display: flex; }
+.mix i { display: block; height: 100%; }
+.new { min-height: 18rem; border: 1.5px dashed var(--line-strong); background: transparent; border-radius: var(--r-lg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-2); padding: var(--sp-4); color: var(--muted); font: inherit; cursor: pointer; text-align: center; transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease); }
+.new:hover { border-color: var(--accent); color: var(--text); }
+.new:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.new b { color: var(--text); font-size: var(--fs-md); }
+.form { display: flex; flex-direction: column; gap: var(--sp-4); }
