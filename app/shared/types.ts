@@ -83,8 +83,9 @@ export type ChatEvent =
   | {kind: 'tool'; name: string; summary: string}
   | {kind: 'done'; costUsd: number | null; durationMs: number | null}
   | {kind: 'error'; message: string; limit?: {account: string; resetsAt: number | null}};
-export type ChatAccount = {name: string; limit: LimitInfo | null};
-export type ChatMeta = {id: string; title: string; account: string; slug: string | null; started: boolean; createdAt: number; updatedAt: number};
+export type Engine = 'claude' | 'codex';
+export type ChatAccount = {name: string; engine: Engine; limit: LimitInfo | null};
+export type ChatMeta = {id: string; title: string; engine: Engine; account: string; slug: string | null; started: boolean; threadId: string | null; createdAt: number; updatedAt: number};
 export type ChatDetail = {chat: ChatMeta; events: ChatEvent[]};
 export type ServerEvent =
   | {type: 'changed'; path: string}             // posix path relative to repo root, e.g. "projects/_smoke/storyboard.json"

@@ -2,7 +2,8 @@ import {lstat, readdir, realpath, stat} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-export type Account = {name: string; configDir: string | null};
+import type {Engine} from '../../shared/types.ts';
+export type Account = {name: string; engine: Engine; configDir: string | null};
 export const claudeHome = (): string => process.env.REEL_CLAUDE_HOME ?? os.homedir();
 
 const exists = (p: string) => stat(p).then(() => true, () => false);
@@ -10,7 +11,7 @@ const real = (p: string) => realpath(p).catch(() => null);
 
 export async function listAccounts(home: string = claudeHome()): Promise<Account[]> {
   const out: Account[] = [];
-  if (await exists(path.join(home, '.claude', '.credentials.json'))) out.push({name: 'claude', configDir: null});
+  if (await exists(path.join(home, '.claude', '.credentials.json'))) out.push({name: 'claude', engine: 'claude', configDir: null});
   const shared = await real(path.join(home, '.claude', 'projects'));
   const dirs = (await readdir(home).catch(() => [] as string[]))
     .map(n => /^\.claude-acc(\d+)$/.exec(n)).filter((m): m is RegExpExecArray => m !== null)
@@ -21,8 +22,9 @@ export async function listAccounts(home: string = claudeHome()): Promise<Account
     const link = await lstat(path.join(dir, 'projects')).catch(() => null);
     // transcripts must be shared, or --resume on another account fails
     if (!link?.isSymbolicLink() || !shared || (await real(path.join(dir, 'projects'))) !== shared) continue;
-    out.push({name: `claude${m[1]}`, configDir: dir});
+    out.push({name: `claude${m[1]}`, engine: 'claude', configDir: dir});
   }
+  if (await exists(path.join(home, '.codex', 'auth.json'))) out.push({name: 'codex', engine: 'codex', configDir: null}); // codex uses ~/.codex, CODEX_HOME untouched
   return out;
 }
 
