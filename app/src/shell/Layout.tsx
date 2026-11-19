@@ -2,7 +2,7 @@ import {useState} from 'react';
 import {Menu, MessageSquare} from 'lucide-react';
 import {Link, Outlet, useLocation, useMatch} from 'react-router';
 import {IconButton, Popover} from '../ui/index.ts';
-import {useChatBusy} from '../api/chat.ts';
+import {setChatOpen, useChatBusy, useChatOpen} from '../api/chat.ts';
 import {ChatPanel} from './ChatPanel.tsx';
 import {JobsPanel} from './JobsPanel.tsx';
 import {NavList} from './nav.tsx';
@@ -35,7 +35,7 @@ function MobileNav({onChat}: {onChat(): void}): React.JSX.Element {
 }
 
 export function Layout(): React.JSX.Element {
-  const [chatOpen, setChatOpen] = useState(false);
+  const chatOpen = useChatOpen();
   const openChat = () => setChatOpen(true);
   const {pathname} = useLocation();
   const compact = pathname.startsWith('/p/'); // editor and renders own their padding

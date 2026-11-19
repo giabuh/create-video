@@ -47,5 +47,9 @@ export function onChatEvent(ev: Extract<ServerEvent, {type: 'chat' | 'chatBusy'}
 /** Drop partial text after an SSE reconnect: missed deltas would leave it stale or truncated; new deltas rebuild it. */
 export function resetChatDrafts(): void { drafts = new Map(); emit(); }
 export const getChatDraft = (id: string): string => drafts.get(id) ?? '';
+// Panel open state: any screen (e.g. the editor top bar) can open it.
+let panelOpen = false;
+export function setChatOpen(o: boolean): void { panelOpen = o; emit(); }
+export const useChatOpen = (): boolean => useSyncExternalStore(subscribe, () => panelOpen);
 export const useChatBusy = (): string | null => useSyncExternalStore(subscribe, () => busy);
 export const useChatDraft = (id: string | null): string => useSyncExternalStore(subscribe, () => (id ? drafts.get(id) ?? '' : ''));

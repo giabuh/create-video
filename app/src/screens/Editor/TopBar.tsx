@@ -1,9 +1,10 @@
 import {useState} from 'react';
 import {Link, useNavigate} from 'react-router';
-import {ChartPie, Clapperboard, Mic, Upload} from 'lucide-react';
+import {ChartPie, Clapperboard, MessageSquare, Mic, Upload} from 'lucide-react';
 import type {Job} from '../../../shared/types.ts';
 import {useJobs, useWorkerStatus} from '../../api/events.ts';
 import {useStartRender, useStartVoice} from '../../api/hooks.ts';
+import {setChatOpen} from '../../api/chat.ts';
 import {Button, ConfirmDialog, DropdownMenu, IconButton, Popover, ProgressBar, Spinner, fmtPct, toast} from '../../ui/index.ts';
 import {useEditor} from './EditorContext.tsx';
 import {mixOf} from './editorState.ts';
@@ -90,6 +91,7 @@ export function TopBar(): React.JSX.Element {
         <Button icon={<Mic size={16} aria-hidden />} loading={voiceBusy} loadingText={voice.label} disabled={rendering || voice.disabled} onClick={voice.start}>Tạo giọng</Button>
         <Button disabled={voiceBusy || rendering} loading={startRender.isPending && startRender.variables === 'draft'} onClick={() => ask('draft')}>Render nháp</Button>
         <Button variant="primary" disabled={voiceBusy || rendering} loading={startRender.isPending && startRender.variables === 'final'} onClick={() => ask('final')}>Render final</Button>
+        <Button icon={<MessageSquare size={16} aria-hidden />} onClick={() => setChatOpen(true)}>Chat</Button>
       </div>
       <ConfirmDialog open={confirm !== null} onOpenChange={(o) => { if (!o) setConfirm(null); }}
         title="Cần tạo giọng trước" description={`Cần tạo giọng cho ${stale.join(', ')} trước. Render sẽ tự tạo giọng rồi mới render.`}
