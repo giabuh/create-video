@@ -20,7 +20,7 @@ export type MotionSpec = {
   sfx?: string | null;
   at?: WordRef; until?: WordRef;                                     // scene layers: start/end on a spoken word
   position?: MotionPosition; box?: BoxSpec; backdrop?: MotionBackdrop; scale?: number; rotate?: number; opacity?: number;
-  enter?: AnimSpec; exit?: AnimSpec; keyframes?: KeyframeSpec[]; colors?: Partial<Record<'primary' | 'accent' | 'text' | 'background', string>>;
+  enter?: AnimSpec; exit?: AnimSpec; keyframes?: KeyframeSpec[]; colors?: Partial<Record<'primary' | 'accent' | 'text' | 'background' | 'accent2' | 'surface', string>>;
 };
 export type SceneSpec = {
   id: string; say?: string; caption?: string; duration?: number; voice?: string; tts?: Json;
@@ -75,7 +75,7 @@ export type MusicFile = {name: string; bytes: number};
 export type TryVariant = {file: string; ref: string; tts: Json; seconds: number};
 export type Tries = {voice: string; text: string; variants: Record<string, TryVariant>};
 export type VoiceInfo = {name: string; ref: string; refs: string[]; isDefault: boolean; seconds: number | null};
-export type BrandFile = {name: string; logo: string | null; colors: {primary: string; accent: string; text: string; background: string}; cta?: {title?: string; logoSize?: number; phone?: string; fanpage?: string; address?: string}; captions?: Json};
+export type BrandFile = {name: string; logo: string | null; colors: {primary: string; accent: string; text: string; background: string; accent2?: string; surface?: string}; cta?: {title?: string; logoSize?: number; phone?: string; fanpage?: string; address?: string}; captions?: Json};
 export type BrandSummary = {id: string; brand: BrandFile; isDefault: boolean; mtime: number}; // mtime of brands/<id>/brand.json, used as baseMtime
 export type Config = Json & {
   defaults: {voice: string; template: string; brand: string};

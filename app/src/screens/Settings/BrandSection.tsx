@@ -12,11 +12,13 @@ import s from './Settings.module.css';
 
 const IMAGE_EXTS = ['.png', '.jpg', '.jpeg', '.webp', '.svg'] as const; // mirrors app/server/paths.ts (the server cannot be imported in the browser)
 const PLACEHOLDER_ADDRESS = '[ĐỊA CHỈ] — để trống nếu không hiện';
-const COLORS = [['primary', 'Chính'], ['accent', 'Nhấn (từ nổi bật)'], ['text', 'Chữ'], ['background', 'Nền cảnh motion']] as const;
+const COLORS = [['primary', 'Chính'], ['accent', 'Nhấn (từ nổi bật)'], ['text', 'Chữ'], ['background', 'Nền cảnh motion'], ['accent2', 'Nhấn 2 (băng đỏ, ruy băng)'], ['surface', 'Nền sáng (ô trắng)']] as const;
+const DEFAULT_COLORS = {accent2: '#E11D2E', surface: '#FFFFFF'} as const;
+const colorOf = (c: BrandFile['colors'], k: (typeof COLORS)[number][0]) => c[k] ?? DEFAULT_COLORS[k as keyof typeof DEFAULT_COLORS];
 
 type Form = {name: string; title: string; logoSize: number; colors: BrandFile['colors']; phone: string; fanpage: string; address: string};
 const toForm = (b: BrandFile): Form => ({name: b.name, title: b.cta?.title ?? '', logoSize: b.cta?.logoSize ?? 260, colors: b.colors, phone: b.cta?.phone ?? '', fanpage: b.cta?.fanpage ?? '', address: b.cta?.address ?? ''});
-const same = (a: Form, b: Form) => a.name === b.name && a.title === b.title && a.logoSize === b.logoSize && a.phone === b.phone && a.fanpage === b.fanpage && a.address === b.address && COLORS.every(([k]) => a.colors[k] === b.colors[k]);
+const same = (a: Form, b: Form) => a.name === b.name && a.title === b.title && a.logoSize === b.logoSize && a.phone === b.phone && a.fanpage === b.fanpage && a.address === b.address && COLORS.every(([k]) => colorOf(a.colors, k) === colorOf(b.colors, k));
 // Uploads store "brands/<id>/<file>"; the pipeline prefixes the id itself, so accept both shapes.
 const logoPath = (id: string, logo: string | null) => (logo ? (logo.startsWith('brands/') ? logo : `brands/${id}/${logo}`) : null);
 
@@ -147,7 +149,7 @@ function BrandEditor({summary, draft, setDraft}: {summary: BrandSummary; draft: 
           <span className={s.label}>Màu</span>
           <div className={s.colors}>
             {COLORS.map(([k, label]) => (
-              <div key={k}><span className={s.label}>{label}</span><ColorField label={label} value={form.colors[k]} onChange={(v) => set({colors: {...form.colors, [k]: v}})} /></div>
+              <div key={k}><span className={s.label}>{label}</span><ColorField label={label} value={colorOf(form.colors, k)} onChange={(v) => set({colors: {...form.colors, [k]: v}})} /></div>
             ))}
           </div>
         </div>

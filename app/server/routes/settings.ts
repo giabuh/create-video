@@ -9,7 +9,7 @@ import type {Deps} from './util.ts';
 
 const configFile = () => path.join(repoRoot(), 'config.json');
 const brandFile = (id: string) => safeJoin('brands', id, 'brand.json');
-const COLORS = ['primary', 'accent', 'text', 'background'];
+const COLORS = ['primary', 'accent', 'text', 'background']; // required; accent2 and surface are optional
 
 async function brandSummary(id: string, defaultId: string): Promise<BrandSummary> {
   const v = await readJson<BrandFile>(brandFile(id));
@@ -50,7 +50,7 @@ export function settingsRoutes(_deps: Deps): Hono {
     if (typeof b.name !== 'string' || !/[\p{L}\p{N}]/u.test(b.name)) throw new HttpError(400, 'bad name');
     const id = slugParam(slugify(b.name), 'name');
     const {data: config} = await readConfigV();
-    const base = await readJson<BrandFile>(brandFile(config.defaults.brand)).then(v => v.data.colors, () => ({primary: '#1E3A8A', accent: '#FFD400', text: '#FFFFFF', background: '#0B1530'}));
+    const base = await readJson<BrandFile>(brandFile(config.defaults.brand)).then(v => v.data.colors, () => ({primary: '#1E3A8A', accent: '#FFD400', text: '#FFFFFF', background: '#0B1530', accent2: '#E11D2E', surface: '#FFFFFF'}));
     await mkdir(safeJoin('brands'), {recursive: true});
     await mkdir(safeJoin('brands', id)).catch(e => { throw (e as NodeJS.ErrnoException).code === 'EEXIST' ? new HttpError(409, 'brand exists') : e; });
     const brand: BrandFile = {name: b.name.trim(), logo: null, colors: base, cta: {}};

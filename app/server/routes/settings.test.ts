@@ -33,6 +33,14 @@ describe('settings routes', () => {
     expect((await req('/api/brands/trung-tam-b', {method: 'DELETE'})).status).toBe(200);
     expect((await (await req('/api/brands')).json()).map((x: {id: string}) => x.id)).toEqual(['demo']);
   });
+  it('brand optional colors round-trip', async () => {
+    await makeTestRoot();
+    const {req} = setup();
+    const b = await (await req('/api/brands')).json().then((l: {brand: {colors: object}; mtime: number}[]) => l[0]);
+    const brand = {...b.brand, colors: {...b.brand.colors, accent2: '#E11D2E', surface: '#FFFFFF'}};
+    expect((await req('/api/brands/demo', {method: 'PUT', json: {brand, baseMtime: b.mtime}})).status).toBe(200);
+    expect((await (await req('/api/brands')).json())[0].brand.colors).toMatchObject({accent2: '#E11D2E', surface: '#FFFFFF'});
+  });
   it('templates and motion', async () => {
     const root = await makeTestRoot();
     await mkdir(path.join(root, 'studio/src/templates/fast-cut'), {recursive: true});

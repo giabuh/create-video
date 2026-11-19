@@ -8,7 +8,7 @@ TRANSITIONS = {"cut", "fade", "slide"}
 POSITIONS = {"top", "center", "bottom"}
 MOTION_POSITIONS = {"full", "top", "center", "bottom", "free"}
 ANIMS = {"none", "fade", "slide-up", "slide-down", "slide-left", "slide-right", "pop", "zoom", "wipe", "blur"}
-COLOR_KEYS = {"primary", "accent", "text", "background"}
+COLOR_KEYS = {"primary", "accent", "text", "background", "accent2", "surface"}
 KEYFRAME_KEYS = {"t", "x", "y", "scale", "rotate", "opacity"}
 BACKDROPS = {"auto", "scrim", "none"}
 

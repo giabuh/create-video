@@ -80,6 +80,12 @@ def test_flexible_layers_and_track(root, cfg):
     assert validate(ok, cfg, root) == []
 
 
+def test_brand_color_keys_accepted(root, cfg):
+    sb = {"scenes": [{"id": "s1", "say": "x", "media": [{"src": "a.mp4"}],
+                      "motion": [{"component": "CountUp", "colors": {"accent2": "#f00", "surface": "#fff"}}]}]}
+    assert "colors may override" not in "\n".join(validate(sb, cfg, root))
+
+
 def test_sfx_field_types(root, cfg):
     ok = [{"id": "s1", "say": "x", "media": [{"src": "a.mp4"}], "sfx": None,
            "motion": [{"component": "CountUp", "sfx": "whoosh-nope.mp3"}]}]

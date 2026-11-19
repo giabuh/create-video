@@ -19,7 +19,7 @@ const POSITIONS: {value: MotionPosition; label: string}[] = [
 ];
 // same numbers as studio/src/components/MotionLayer.tsx BANDS, in percent
 const BAND_BOX: Record<'top' | 'center' | 'bottom', BoxSpec> = {top: {x: 0, y: 9, w: 100, h: 33}, center: {x: 0, y: 30, w: 100, h: 40}, bottom: {x: 0, y: 46, w: 100, h: 26}};
-const COLOR_KEYS = [['text', 'Chữ'], ['accent', 'Nhấn'], ['primary', 'Chính'], ['background', 'Nền']] as const;
+const COLOR_KEYS = [['text', 'Chữ'], ['accent', 'Nhấn'], ['primary', 'Chính'], ['background', 'Nền'], ['accent2', 'Nhấn 2'], ['surface', 'Nền sáng']] as const;
 
 /** Copy with `patch` applied; undefined values remove keys so storyboard defaults apply. */
 export function patchLayer(m: MotionSpec, patch: Partial<MotionSpec>): MotionSpec {
