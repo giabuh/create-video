@@ -1,7 +1,8 @@
 import React from 'react';
 import {AbsoluteFill, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {fontFamily} from '../fonts';
-import {numDefault, optText, text, z, type MotionProps} from './schema';
+import {FxText} from './fx/FxText';
+import {numDefault, optText, text, textFx, z, type MotionProps} from './schema';
 
 export const PriceTagSchema = z.object({
   price: text('Giá'),
@@ -9,9 +10,10 @@ export const PriceTagSchema = z.object({
   note: optText('Ghi chú'),
   size: numDefault('Cỡ giá (px)', 180, {min: 60, max: 320, step: 5}),
   tilt: numDefault('Nghiêng (độ)', -4, {min: -30, max: 30, step: 1}),
+  fx: textFx('Hiệu ứng chữ', 'none'),
 });
 
-export const PriceTag: React.FC<MotionProps<typeof PriceTagSchema>> = ({price, old, note, size, tilt, brand}) => {
+export const PriceTag: React.FC<MotionProps<typeof PriceTagSchema>> = ({price, old, note, size, tilt, fx, brand}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const s = spring({frame, fps, config: {damping: 9}});
@@ -26,7 +28,7 @@ export const PriceTag: React.FC<MotionProps<typeof PriceTagSchema>> = ({price, o
             <div style={{position: 'absolute', left: 0, top: '52%', height: 8, width: `${strike * 100}%`, background: '#E11D48'}} />
           </div>
         )}
-        <div style={{fontWeight: 800, fontSize: size, lineHeight: 1, color: brand.colors.background}}>{price}</div>
+        <div style={{fontWeight: 800, fontSize: size, lineHeight: 1, color: brand.colors.background}}>{fx === 'none' ? price : <FxText text={price} fx={fx} start={0.2} />}</div>
         {note && <div style={{fontWeight: 700, fontSize: size * 0.29, color: brand.colors.background, marginTop: 12}}>{note}</div>}
       </div>
     </AbsoluteFill>

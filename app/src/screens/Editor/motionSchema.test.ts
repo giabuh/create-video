@@ -12,7 +12,9 @@ describe('motion forms from zod schemas', () => {
     expect(f.text).toMatchObject({kind: 'textarea', required: true, title: 'Chữ'});
     expect(f.size).toMatchObject({kind: 'number', required: false, min: 20, max: 300, step: 2, default: 80});
     expect(f.color).toMatchObject({kind: 'color', required: false});
-    expect(f.reveal.options).toContainEqual({value: 'typewriter', label: 'Gõ từng ký tự'});
+    expect(f.reveal.options).toContainEqual({value: 'typewriter', label: 'Gõ phím'});
+    expect(f.reveal.options).toHaveLength(7);
+    for (const name of ['KineticText', 'LowerThird', 'PriceTag', 'DateBadge', 'Checklist']) expect(Object.fromEntries((motionFields(name) ?? []).map((x) => [x.key, x])).fx).toMatchObject({kind: 'choice', default: 'none'});
     expect(f.uppercase).toMatchObject({kind: 'bool'});
     expect(Object.fromEntries((motionFields('KineticText') ?? []).map((x) => [x.key, x.kind])).lines).toBe('lines');
     expect(Object.fromEntries((motionFields('Picture') ?? []).map((x) => [x.key, x.kind])).src).toBe('media');

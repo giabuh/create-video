@@ -2,7 +2,8 @@ import React from 'react';
 import {AbsoluteFill, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {fitFontSize, useFontsLoaded} from '../fit';
 import {fontFamily} from '../fonts';
-import {choice, lines, numDefault, bool, z, type MotionProps} from './schema';
+import {FxText} from './fx/FxText';
+import {bool, choice, lines, numDefault, textFx, z, type MotionProps} from './schema';
 
 export const KineticTextSchema = z.object({
   lines: lines('Các dòng chữ (mỗi dòng một ý)'),
@@ -10,9 +11,10 @@ export const KineticTextSchema = z.object({
   align: choice('Canh lề', ['center', 'left', 'right'], 'center', {center: 'Giữa', left: 'Trái', right: 'Phải'}),
   stagger: numDefault('Dòng sau trễ (giây)', 0.27, {min: 0, max: 2, step: 0.05}),
   alternate: bool('Dòng chẵn màu nhấn', true),
+  fx: textFx('Hiệu ứng chữ', 'none'),
 });
 
-export const KineticText: React.FC<MotionProps<typeof KineticTextSchema>> = ({lines: ls, size: maxSize, align, stagger, alternate, brand, area}) => {
+export const KineticText: React.FC<MotionProps<typeof KineticTextSchema>> = ({lines: ls, size: maxSize, align, stagger, alternate, fx, brand, area}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const loaded = useFontsLoaded();
@@ -30,7 +32,7 @@ export const KineticText: React.FC<MotionProps<typeof KineticTextSchema>> = ({li
             fontFamily, fontWeight: 800, fontSize: size, lineHeight: 1.05, textAlign: align,
             color: alternate && i % 2 ? brand.colors.accent : brand.colors.text, opacity: s,
             transform: `translateY(${(1 - s) * 80}px) scale(${0.8 + 0.2 * s})`, textShadow: '0 6px 24px rgba(0,0,0,.6)',
-          }}>{line}</div>
+          }}>{fx === 'none' ? line : <FxText text={line} fx={fx} start={i * stagger} />}</div>
         );
       })}
     </AbsoluteFill>

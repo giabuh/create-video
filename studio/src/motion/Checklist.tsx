@@ -2,16 +2,18 @@ import React from 'react';
 import {AbsoluteFill, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {useFontsLoaded, widthOf} from '../fit';
 import {fontFamily} from '../fonts';
-import {lines, numDefault, optText, z, type MotionProps} from './schema';
+import {FxText} from './fx/FxText';
+import {lines, numDefault, optText, textFx, z, type MotionProps} from './schema';
 
 export const ChecklistSchema = z.object({
   items: lines('Các mục (mỗi dòng một mục)'),
   title: optText('Tiêu đề'),
   size: numDefault('Cỡ chữ tối đa (px) — tự thu nhỏ cho vừa khung', 64, {min: 28, max: 140, step: 2}),
   interval: numDefault('Mục sau hiện cách (giây)', 0.5, {min: 0, max: 3, step: 0.05}),
+  fx: textFx('Hiệu ứng chữ', 'none'),
 });
 
-export const Checklist: React.FC<MotionProps<typeof ChecklistSchema>> = ({items, title, size: maxSize, interval, brand, area}) => {
+export const Checklist: React.FC<MotionProps<typeof ChecklistSchema>> = ({items, title, size: maxSize, interval, fx, brand, area}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const loaded = useFontsLoaded();
@@ -31,7 +33,7 @@ export const Checklist: React.FC<MotionProps<typeof ChecklistSchema>> = ({items,
           <div key={i} style={{display: 'flex', alignItems: 'center', gap: size / 2, opacity: s, transform: `translateX(${(1 - s) * -120}px)`}}>
             <div style={{width: dot, height: dot, borderRadius: dot / 2, background: brand.colors.accent, color: brand.colors.background,
               display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: size * 0.9, fontWeight: 800, flexShrink: 0}}>✓</div>
-            <div style={{fontWeight: 700, fontSize: size, color: brand.colors.text, lineHeight: 1.15}}>{item}</div>
+            <div style={{fontWeight: 700, fontSize: size, color: brand.colors.text, lineHeight: 1.15}}>{fx === 'none' ? item : <FxText text={item} fx={fx} start={0.05 + i * interval} />}</div>
           </div>
         );
       })}

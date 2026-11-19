@@ -1,9 +1,11 @@
 // Free text: the most flexible primitive. Place it anywhere with the layer box, style it here.
 import React from 'react';
-import {AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill} from 'remotion';
 import {fitFontSize, useFontsLoaded} from '../fit';
 import {fontFamily} from '../fonts';
-import {bool, choice, color, longText, numDefault, z, type MotionProps} from './schema';
+import {FxText} from './fx/FxText';
+import {fxDuration} from './fx/textFx';
+import {bool, choice, color, longText, numDefault, textFx, z, type MotionProps} from './schema';
 
 export const TextSchema = z.object({
   text: longText('Chữ'),
@@ -16,25 +18,18 @@ export const TextSchema = z.object({
   radius: numDefault('Bo góc nền (px)', 24, {min: 0, max: 200, step: 2}),
   uppercase: bool('IN HOA'),
   shadow: bool('Đổ bóng', true),
-  reveal: choice('Hiện chữ', ['none', 'typewriter', 'words'], 'none', {none: 'Hiện ngay', typewriter: 'Gõ từng ký tự', words: 'Từng từ'}),
+  reveal: textFx('Hiện chữ', 'none'),
   revealSeconds: numDefault('Thời gian hiện chữ (giây)', 1, {min: 0.1, max: 10, step: 0.1}),
 });
 
 export const Text: React.FC<MotionProps<typeof TextSchema>> = (p) => {
-  const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
-  const k = interpolate(frame, [0, p.revealSeconds * fps], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const loaded = useFontsLoaded();
   const text = p.uppercase ? p.text.toLocaleUpperCase('vi') : p.text;
   // largest size <= p.size at which the whole text fits the layer area (16 px safety margin each side)
   const size = loaded ? fitFontSize({text, maxSize: p.size, width: p.area.width - 32, height: p.area.height - 32, weight: p.weight,
     lineHeight: 1.12, padX: p.background ? 0.45 : 0, padY: p.background ? 0.25 : 0}) : p.size;
-  const words = text.split(/(\s+)/);
-  const content = p.reveal === 'typewriter' ? text.slice(0, Math.round(k * text.length))
-    : p.reveal === 'words' ? words.map((w, i) => (
-      <span key={i} style={{opacity: interpolate(k * words.length - i, [0, 1], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})}}>{w}</span>
-    ))
-    : text;
+  const k = p.reveal === 'none' ? 1 : p.revealSeconds / Math.max(1e-3, fxDuration(p.reveal, text, 1));
+  const content = p.reveal === 'none' ? text : <FxText text={text} fx={p.reveal} k={k} strokeColor={p.brand.colors.primary} />;
   return (
     <AbsoluteFill style={{
       justifyContent: p.vertical === 'top' ? 'flex-start' : p.vertical === 'bottom' ? 'flex-end' : 'center',

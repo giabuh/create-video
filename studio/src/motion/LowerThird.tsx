@@ -1,7 +1,8 @@
 import React from 'react';
 import {AbsoluteFill, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {fontFamily} from '../fonts';
-import {choice, numDefault, optText, text, z, type MotionProps} from './schema';
+import {FxText} from './fx/FxText';
+import {choice, numDefault, optText, text, textFx, z, type MotionProps} from './schema';
 
 export const LowerThirdSchema = z.object({
   title: text('Tiêu đề'),
@@ -9,9 +10,10 @@ export const LowerThirdSchema = z.object({
   side: choice('Bên', ['left', 'right'], 'left', {left: 'Trái', right: 'Phải'}),
   bottom: numDefault('Cách đáy khung (px, theo khung cao 1920)', 640, {min: 0, max: 1800, step: 10}),
   size: numDefault('Cỡ chữ (px)', 64, {min: 28, max: 140, step: 2}),
+  fx: textFx('Hiệu ứng chữ', 'none'),
 });
 
-export const LowerThird: React.FC<MotionProps<typeof LowerThirdSchema>> = ({title, subtitle, side, bottom, size, brand}) => {
+export const LowerThird: React.FC<MotionProps<typeof LowerThirdSchema>> = ({title, subtitle, side, bottom, size, fx, brand}) => {
   const frame = useCurrentFrame();
   const {fps, height} = useVideoConfig();
   const s = spring({frame, fps, config: {damping: 16}});
@@ -22,7 +24,7 @@ export const LowerThird: React.FC<MotionProps<typeof LowerThirdSchema>> = ({titl
         background: brand.colors.primary, [left ? 'borderLeft' : 'borderRight']: `16px solid ${brand.colors.accent}`,
         padding: left ? '24px 48px 24px 40px' : '24px 40px 24px 48px', borderRadius: left ? '0 24px 24px 0' : '24px 0 0 24px', maxWidth: '88%',
         textAlign: left ? 'left' : 'right'}}>
-        <div style={{fontWeight: 800, fontSize: size, color: brand.colors.text}}>{title}</div>
+        <div style={{fontWeight: 800, fontSize: size, color: brand.colors.text}}>{fx === 'none' ? title : <FxText text={title} fx={fx} start={0.15} />}</div>
         {subtitle && <div style={{fontWeight: 400, fontSize: size * 0.69, color: brand.colors.accent}}>{subtitle}</div>}
       </div>
     </AbsoluteFill>
