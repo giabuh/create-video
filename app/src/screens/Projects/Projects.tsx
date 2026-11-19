@@ -1,10 +1,11 @@
 import {useMemo, useState} from 'react';
 import {Link, useNavigate} from 'react-router';
-import {FolderPlus, Plus} from 'lucide-react';
+import {FolderPlus, MoreVertical, Plus} from 'lucide-react';
 import type {ProjectStatus, ProjectSummary} from '../../../shared/types.ts';
-import {useBrands, useCreateProject, useProjects, useTemplates, useVoices} from '../../api/hooks.ts';
-import {Button, Chip, Dialog, EmptyState, ErrorState, Field, Input, NumberField, PageHeader, Segmented, Select, Skeleton, VideoThumb, fmtRelTime, fmtSec} from '../../ui/index.ts';
+import {useBrands, useCancelDelete, useCreateProject, useDeleteProject, useProjects, useTemplates, useVoices} from '../../api/hooks.ts';
+import {Button, Chip, Dialog, DropdownMenu, EmptyState, ErrorState, Field, IconButton, Input, NumberField, PageHeader, Segmented, Select, Skeleton, VideoThumb, fmtRelTime, fmtSec, toast} from '../../ui/index.ts';
 import type {Tone} from '../../ui/index.ts';
+import {DeleteProjectDialog} from './DeleteProjectDialog.tsx';
 import s from './Projects.module.css';
 
 type Filter = 'all' | 'doing' | 'approved' | 'new';
@@ -18,7 +19,7 @@ const matches = (st: ProjectStatus, f: Filter) => f === 'all' || (f === 'doing' 
 function statusChip(p: ProjectSummary): React.JSX.Element {
   const v = p.latest ? ` v${p.latest.n}` : '';
   const [tone, text]: [Tone, string] =
-    p.status === 'deleting' ? ['info', 'Đang xoá'] :
+    p.status === 'deleting' ? (p.deleting?.state === 'failed' ? ['danger', 'Xoá dở: lỗi Drive'] : ['info', 'Đang xoá']) :
     p.status === 'rendering' ? ['info', 'Đang render'] :
     p.status === 'approved' ? ['success', `Đã duyệt${p.approved ? ` ${p.approved.replace(/^reel-/, '')}` : v}`] :
     p.status === 'draft' ? ['warning', `Chưa duyệt${v}`] : ['neutral', 'Chưa render'];
@@ -30,8 +31,12 @@ const cap = (v: string) => v.charAt(0).toUpperCase() + v.slice(1);
 function Card({p}: {p: ProjectSummary}): React.JSX.Element {
   const meta = [`${p.sceneCount} cảnh`, p.totalSeconds != null ? fmtSec(p.totalSeconds) : 'chưa tạo giọng', p.voice && cap(p.voice)].filter(Boolean).join(' · ');
   const m = p.mix;
-  return (
-    <Link to={`/p/${encodeURIComponent(p.slug)}`} className={s.card}>
+  const [askDelete, setAskDelete] = useState(false);
+  const retry = useDeleteProject(p.slug), cancel = useCancelDelete(p.slug);
+  const deleting = p.status === 'deleting';
+  const failed = p.deleting?.state === 'failed';
+  const inner = (
+    <>
       <div className={s.thumb}><VideoThumb src={p.latest ? `/${p.latest.file}` : null} label={p.firstCaption || 'Chưa render'} /></div>
       <div className={s.meta}>
         <div className={s.row}><span className={s.name} title={p.slug}>{p.slug}</span>{statusChip(p)}</div>
@@ -41,7 +46,29 @@ function Card({p}: {p: ProjectSummary}): React.JSX.Element {
         </div>
         <div className={s.sub}>Sửa {fmtRelTime(p.mtime)}</div>
       </div>
-    </Link>
+    </>
+  );
+  const fail = (e: {message: string}) => toast({title: 'Không thực hiện được', description: e.message, tone: 'error'});
+  return (
+    <div className={s.cardWrap}>
+      {deleting
+        ? <div className={s.card} aria-disabled>{inner}</div>
+        : <Link to={`/p/${encodeURIComponent(p.slug)}`} className={s.card}>{inner}</Link>}
+      {failed && (
+        <div className={s.failBar}>
+          <span className={s.sub} title={p.deleting?.error}>{p.deleting?.error ?? 'Đẩy lên Drive lỗi'}</span>
+          <Button size="sm" variant="danger" loading={retry.isPending} onClick={() => retry.mutate(undefined, {onError: fail})}>Thử lại</Button>
+          <Button size="sm" variant="ghost" loading={cancel.isPending} onClick={() => cancel.mutate(undefined, {onError: fail})}>Huỷ xoá</Button>
+        </div>
+      )}
+      {!deleting && (
+        <div className={s.menuBtn}>
+          <DropdownMenu align="end" trigger={<IconButton label={`Tuỳ chọn ${p.slug}`} icon={<MoreVertical size={18} aria-hidden />} />}
+            items={[{label: 'Xoá dự án', danger: true, onSelect: () => setAskDelete(true)}]} />
+        </div>
+      )}
+      {askDelete && <DeleteProjectDialog slug={p.slug} open={askDelete} onOpenChange={setAskDelete} />}
+    </div>
   );
 }
 

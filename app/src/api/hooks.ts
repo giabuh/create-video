@@ -122,3 +122,18 @@ export function useDeleteRender(slug: string): UseMutationResult<{driveError?: s
     onSettled: () => invalidate(qc, qk.project(slug), qk.projects),
   });
 }
+
+export function useDeleteProject(slug: string): UseMutationResult<Job, HttpError, {upload?: string[]} | void> {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (b) => api(`/projects/${enc(slug)}`, {method: 'DELETE', body: b ?? undefined}),
+    onSettled: () => invalidate(qc, qk.project(slug), qk.projects),
+  });
+}
+export function useCancelDelete(slug: string): UseMutationResult<{ok: true}, HttpError, void> {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: post(() => `/projects/${enc(slug)}/delete-cancel`),
+    onSettled: () => invalidate(qc, qk.project(slug), qk.projects),
+  });
+}

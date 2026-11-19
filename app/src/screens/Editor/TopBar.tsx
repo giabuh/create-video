@@ -1,6 +1,6 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {Link, useNavigate} from 'react-router';
-import {ChartPie, Clapperboard, MessageSquare, Mic, Upload} from 'lucide-react';
+import {ChartPie, Clapperboard, MessageSquare, Mic, MoreVertical, Upload} from 'lucide-react';
 import type {Job} from '../../../shared/types.ts';
 import {useJobs, useWorkerStatus} from '../../api/events.ts';
 import {useStartRender, useStartVoice} from '../../api/hooks.ts';
@@ -9,6 +9,7 @@ import {Button, ConfirmDialog, DropdownMenu, IconButton, Popover, ProgressBar, S
 import {useEditor} from './EditorContext.tsx';
 import {mixOf} from './editorState.ts';
 import {MixMeter} from './MixMeter.tsx';
+import {DeleteProjectDialog} from '../Projects/DeleteProjectDialog.tsx';
 import s from './TopBar.module.css';
 
 const ACTIVE = (j: Job) => j.state === 'queued' || j.state === 'running';
@@ -46,9 +47,13 @@ export function TopBar(): React.JSX.Element {
   const voice = useVoiceAction();
   const startRender = useStartRender(slug);
   const [confirm, setConfirm] = useState(false);
+  const [askDelete, setAskDelete] = useState(false);
+  const deleting = !!detail.meta.deleting || jobs.some((j) => j.kind === 'delete-project' && j.project === slug && ACTIVE(j));
+  const deleted = jobs.some((j) => j.kind === 'delete-project' && j.project === slug && j.state === 'done');
+  useEffect(() => { if (deleted) void nav('/'); }, [deleted, nav]);
   const renderJob = jobs.find((j) => j.kind === 'render' && j.project === slug && ACTIVE(j));
-  const voiceBusy = voice.loading;
-  const rendering = startRender.isPending || !!renderJob;
+  const voiceBusy = voice.loading || deleting;
+  const rendering = startRender.isPending || !!renderJob || deleting;
 
   const doRender = () => {
     setConfirm(false);
@@ -82,15 +87,21 @@ export function TopBar(): React.JSX.Element {
           {label: `Bản render (${detail.versions.length})`, onSelect: openVersions},
           'separator',
           {label: voiceBusy ? voice.label : 'Tạo giọng', disabled: voiceBusy || rendering || voice.disabled, onSelect: voice.start},
+          'separator',
+          {label: 'Xoá dự án', danger: true, onSelect: () => setAskDelete(true)},
         ]} />
       </div>
       {progress}
+      {deleting && <div className={s.banner} role="alert">Dự án đang được xoá</div>}
       <div className={s.actions}>
         <Button icon={<Clapperboard size={16} aria-hidden />} onClick={openVersions}>Bản render ({detail.versions.length})</Button>
         <Button icon={<Mic size={16} aria-hidden />} loading={voiceBusy} loadingText={voice.label} disabled={rendering || voice.disabled} onClick={voice.start}>Tạo giọng</Button>
         <Button variant="primary" disabled={voiceBusy || rendering} loading={startRender.isPending} onClick={ask}>Render</Button>
         <Button icon={<MessageSquare size={16} aria-hidden />} onClick={() => setChatOpen(true)}>Chat</Button>
+        <DropdownMenu align="end" trigger={<IconButton label="Thêm" icon={<MoreVertical size={18} aria-hidden />} />}
+          items={[{label: 'Xoá dự án', danger: true, onSelect: () => setAskDelete(true)}]} />
       </div>
+      {askDelete && <DeleteProjectDialog slug={slug} open={askDelete} onOpenChange={setAskDelete} />}
       <ConfirmDialog open={confirm} onOpenChange={(o) => { if (!o) setConfirm(false); }}
         title="Cần tạo giọng trước" description={`Cần tạo giọng cho ${stale.join(', ')} trước. Render sẽ tự tạo giọng rồi mới render.`}
         confirmLabel="Tạo giọng và render" onConfirm={doRender} />

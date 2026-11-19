@@ -30,3 +30,4 @@
   .compactActions { display: flex; gap: var(--sp-1); align-items: center; }
   .progress { flex-basis: 100%; }
 }
+.banner { flex-basis: 100%; padding: var(--sp-2) var(--sp-3); border-radius: var(--r-md); background: var(--bg-sunken); border: 1px solid var(--line-strong); font-size: var(--fs-sm); font-weight: 600; }
