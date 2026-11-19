@@ -5,7 +5,7 @@ import {openFolder, runIngest} from '../procs.ts';
 import {bodyOf, HttpError} from './util.ts';
 import type {Deps} from './util.ts';
 
-const OPENABLE = new Set<string>(['projects', 'library', 'music', 'brands', 'voices']);
+const OPENABLE = new Set<string>(['projects', 'library', 'music', 'sfx', 'brands', 'voices']);
 
 export function jobRoutes({jobs}: Deps): Hono {
   const app = new Hono();

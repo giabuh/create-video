@@ -14,7 +14,7 @@ export async function makeTestRoot(): Promise<string> {
   await writeFile(path.join(dir, 'projects/p1/storyboard.json'), '{"scenes":[{"id":"s1","duration":2}]}');
   await mkdir(path.join(dir, 'library'), {recursive: true});
   await writeFile(path.join(dir, 'library/media-index.json'), '{}');
-  for (const d of ['music', 'voices', 'inbox']) await mkdir(path.join(dir, d), {recursive: true});
+  for (const d of ['music', 'sfx', 'voices', 'inbox']) await mkdir(path.join(dir, d), {recursive: true});
   setRepoRoot(dir);
   return dir;
 }

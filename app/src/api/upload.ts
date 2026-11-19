@@ -2,7 +2,7 @@ import {useSyncExternalStore} from 'react';
 import type {ApiError} from '../../shared/types.ts';
 import {api} from './client.ts';
 
-export type UploadItem = {id: string; file: File; target: 'media' | 'music' | 'voice' | 'logo'; state: 'uploading' | 'done' | 'error'; progress: number; savedAs?: string; error?: string; doneAt?: number};
+export type UploadItem = {id: string; file: File; target: 'media' | 'music' | 'sfx' | 'voice' | 'logo'; state: 'uploading' | 'done' | 'error'; progress: number; savedAs?: string; error?: string; doneAt?: number};
 
 // Module-level so uploads keep running (and stay visible) when the user navigates away.
 let items: UploadItem[] = [];
@@ -18,6 +18,7 @@ function urlFor(it: UploadItem, o: {voiceName?: string; brandId?: string}): stri
   switch (it.target) {
     case 'media': return `/api/upload/${f}`;
     case 'music': return `/api/upload-music/${f}`;
+    case 'sfx': return `/api/upload-sfx/${f}`;
     case 'voice': return o.voiceName ? `/api/upload-voice/${seg(o.voiceName)}/${f}` : null;
     case 'logo': return o.brandId ? `/api/upload-logo/${seg(o.brandId)}/${f}` : null;
   }

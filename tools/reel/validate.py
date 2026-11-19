@@ -76,8 +76,11 @@ def validate(storyboard: dict, config: dict, root) -> list[str]:
                     errs += _word_ref_errors(mo[k], f"{sid}: motion[{i}].{k}")
                     if say is None:
                         errs.append(f"{sid}: motion[{i}].{k} needs a spoken scene ('say')")
-        if sc.get("transition", "cut") not in TRANSITIONS:
-            errs.append(f"{sid}: transition '{sc.get('transition')}' not in {sorted(TRANSITIONS)}")
+        if "sfx" in sc and not _sfx_ok(sc["sfx"]):
+            errs.append(f"{sid}: sfx must be a group name, a file name or null")
+        for k in ("transition", "mediaTransition"):
+            if sc.get(k, "cut") not in TRANSITIONS:
+                errs.append(f"{sid}: {k} '{sc.get(k)}' not in {sorted(TRANSITIONS)}")
         overlay = sc.get("overlay")
         if overlay and overlay.get("position", "top") not in POSITIONS:
             errs.append(f"{sid}: overlay position '{overlay.get('position')}' not in {sorted(POSITIONS)}")
@@ -99,6 +102,10 @@ def validate(storyboard: dict, config: dict, root) -> list[str]:
             if v.get("edge", "start") not in {"start", "end"}:
                 errs.append(f"{where}.{k}.edge must be 'start' or 'end'")
     return errs
+
+
+def _sfx_ok(v) -> bool:
+    return v is None or isinstance(v, str)
 
 
 def _num(v, lo=None, hi=None) -> bool:
@@ -146,6 +153,8 @@ def _layer_errors(mo: dict, where: str, root: Path) -> list[str]:
     cols = mo.get("colors")
     if cols is not None and not (isinstance(cols, dict) and set(cols) <= COLOR_KEYS and all(isinstance(v, str) for v in cols.values())):
         errs.append(f"{where}: colors may override {sorted(COLOR_KEYS)} with color strings")
+    if "sfx" in mo and not _sfx_ok(mo["sfx"]):
+        errs.append(f"{where}: sfx must be a group name, a file name or null")
     if mo.get("props") is not None and not isinstance(mo.get("props"), dict):
         errs.append(f"{where}: props must be an object")
     return errs

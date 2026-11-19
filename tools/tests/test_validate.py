@@ -78,3 +78,13 @@ def test_flexible_layers_and_track(root, cfg):
          "keyframes": [{"t": 0, "x": 0}, {"t": 1, "x": 5, "rotate": 10}], "at": {"word": "chào", "offset": -0.1}}]}],
           "motion": [{"component": "CountUp", "start": {"scene": "s1", "at": "xin"}, "end": "video"}]}
     assert validate(ok, cfg, root) == []
+
+
+def test_sfx_field_types(root, cfg):
+    ok = [{"id": "s1", "say": "x", "media": [{"src": "a.mp4"}], "sfx": None,
+           "motion": [{"component": "CountUp", "sfx": "whoosh-nope.mp3"}]}]
+    assert validate({"scenes": ok}, cfg, root) == []
+    bad = [{"id": "s1", "say": "x", "media": [{"src": "a.mp4"}], "sfx": 3,
+            "motion": [{"component": "CountUp", "sfx": ["x"]}]}]
+    errs = validate({"scenes": bad}, cfg, root)
+    assert len([e for e in errs if "sfx" in e]) == 2

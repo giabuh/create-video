@@ -7,7 +7,7 @@ from .align import estimate_words, scene_words
 from .cache import cache_key
 from .config import ROOT, load_json, resolve_names, resolve_scene_voice, resolve_video
 from .mix import mix
-from .props import AnchorError, build_render_props
+from .props import AnchorError, build_render_props, sfx_files_for
 from .tts import probe_duration, synth_to_file
 from .validate import validate
 
@@ -19,6 +19,36 @@ def write_json(path: Path, data) -> None:
     tmp = path.with_name(f"{path.name}.{os.getpid()}.tmp")  # pid: the app may run preview and worker prepare concurrently
     tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     tmp.replace(path)
+
+
+SFX_EXTS = {".mp3", ".wav", ".m4a", ".ogg", ".aac"}
+
+
+def _sfx_peaks(files: list[str]) -> dict[str, float]:
+    """Seconds from each sfx file's start to its loudest moment (a whoosh swells, a ting hits at once)."""
+    try:
+        import librosa  # in the VieNeu venv prepare.py runs with
+        import numpy as np
+    except ImportError:
+        return {}
+    out = {}
+    for f in files:
+        y, sr = librosa.load(ROOT / "sfx" / f, sr=22050, mono=True)
+        rms = librosa.feature.rms(y=y, frame_length=1024, hop_length=256)[0]
+        out[f] = min(1.0, float(np.argmax(rms)) * 256 / sr) if len(rms) else 0.0
+    return out
+
+
+def _warn_sfx(sb: dict, sfx: dict | None, files: list[str]) -> None:
+    """A sfx value (configured or explicit) that matches no file just plays nothing; say so."""
+    if not sfx:
+        return
+    layers = [m for sc in sb["scenes"] for m in sc.get("motion") or []] + list(sb.get("motion") or [])
+    values = [sfx.get("scene"), sfx.get("cta"), *(sfx.get("motion") or {}).values(),
+              *(x["sfx"] for x in [*sb["scenes"], *layers] if "sfx" in x)]
+    for v in dict.fromkeys(v for v in values if isinstance(v, str) and v != "none"):
+        if not sfx_files_for(v, files):
+            print(f"warning: sfx '{v}' matches no file in sfx/ (plays nothing)")
 
 
 def prepare(proj: Path, get_model=None, synth: bool = True, on_progress=None) -> dict:
@@ -91,7 +121,10 @@ def prepare(proj: Path, get_model=None, synth: bool = True, on_progress=None) ->
         except Exception as e:  # whisper missing/broken must never block a render: fall back to the estimate
             engines[sc["id"]] = f"estimate (whisper failed: {e})"
     try:
-        props = build_render_props({**sb, "scenes": scenes}, settings, brand, audio, words)
+        sfx_files = sorted(f.name for f in (ROOT / "sfx").glob("*") if f.suffix.lower() in SFX_EXTS)
+        props = build_render_props({**sb, "scenes": scenes}, settings, brand, audio, words, sfx_files,
+                                   _sfx_peaks(sfx_files) if settings.get("sfx") else None)
+        _warn_sfx(sb, settings.get("sfx"), sfx_files)
     except AnchorError as e:
         return {"ok": False, "stage": "anchor", "errors": e.problems, "stale": stale, "totalSeconds": None, "mix": None,
                 "target": target, "targetSeconds": sb.get("targetSeconds")}

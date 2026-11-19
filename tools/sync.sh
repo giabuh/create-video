@@ -27,4 +27,5 @@ copy() { # copy <local> <remote-subpath> [filters...]
 EXTRA=("$@")
 copy library library
 copy music music
+copy sfx sfx
 copy reference reference

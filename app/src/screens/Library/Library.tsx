@@ -1,12 +1,13 @@
 import {useEffect, useMemo, useState} from 'react';
 import {ImageOff, SearchX} from 'lucide-react';
 import type {LibraryEntry} from '../../../shared/types.ts';
-import {useLibrary, useMusic} from '../../api/hooks.ts';
+import {useLibrary, useMusic, useSfx} from '../../api/hooks.ts';
 import {useUploads} from '../../api/upload.ts';
 import {Button, Drawer, DropZone, EmptyState, ErrorState, Input, PageHeader, Segmented, Skeleton, Tabs, fmtSec} from '../../ui/index.ts';
 import {Detail} from './Detail.tsx';
 import {MEDIA_EXTS} from './exts.ts';
 import {MusicTab} from './Music.tsx';
+import {SfxTab} from './Sfx.tsx';
 import {UploadRows} from './Uploads.tsx';
 import s from './Library.module.css';
 
@@ -100,19 +101,21 @@ function MediaTab(): React.JSX.Element {
 }
 
 export function LibraryScreen(): React.JSX.Element {
-  const [tab, setTab] = useState<'media' | 'music'>('media');
+  const [tab, setTab] = useState<'media' | 'music' | 'sfx'>('media');
   const lib = useLibrary();
   const music = useMusic();
+  const sfx = useSfx();
   return (
     <>
       <PageHeader title="Thư viện" subtitle="Ảnh, video học viên và nhạc nền. File gốc không bị sửa — app tạo bản chuẩn hoá trong library/." />
       <div className={s.tabs}>
-        <Tabs<'media' | 'music'> aria-label="Loại thư viện" value={tab} onChange={setTab} tabs={[
+        <Tabs<'media' | 'music' | 'sfx'> aria-label="Loại thư viện" value={tab} onChange={setTab} tabs={[
           {value: 'media', label: `Ảnh & video${lib.data ? ` · ${Object.keys(lib.data.data).length}` : ''}`},
           {value: 'music', label: `Nhạc${music.data ? ` · ${music.data.length}` : ''}`},
+          {value: 'sfx', label: `Hiệu ứng âm thanh${sfx.data ? ` · ${sfx.data.length}` : ''}`},
         ]} />
       </div>
-      {tab === 'media' ? <MediaTab /> : <MusicTab />}
+      {tab === 'media' ? <MediaTab /> : tab === 'music' ? <MusicTab /> : <SfxTab />}
     </>
   );
 }

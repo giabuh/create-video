@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import {ArrowDown, ArrowUp, Copy, GripVertical, MoreHorizontal, Plus, Trash2} from 'lucide-react';
 import type {SceneSpec} from '../../../shared/types.ts';
+import {useConfig} from '../../api/hooks.ts';
 import {Button, Chip, ConfirmDialog, DropdownMenu, IconButton, SortableList, Tooltip, VideoThumb, fmtSec} from '../../ui/index.ts';
 import {useEditor} from './EditorContext.tsx';
 import {duplicateScene, errorsByScene, removeScene, sceneKind} from './editorState.ts';
@@ -21,6 +22,7 @@ function Thumb({scene, bg}: {scene: SceneSpec; bg: string | undefined}): React.J
 
 export function SceneList(): React.JSX.Element {
   const {storyboard: sb, setStoryboard, selectedId, select, seekToScene, renderProps, stale, errors, addSceneAt} = useEditor();
+  const defTransition = useConfig().data?.data.transition?.scene ?? 'cut';
   const [del, setDel] = useState<string | null>(null);
   const errs = errorsByScene(errors, sb.scenes.map((x) => x.id));
   const bg = renderProps?.brand.colors.background;
@@ -56,8 +58,8 @@ export function SceneList(): React.JSX.Element {
                     <span className={s.caption}>{sc.caption || sc.say || <i>Chưa có nội dung</i>}</span>
                     <span className={s.row}>
                       <Chip tone={kind[1]}>{kind[0]}</Chip>
-                      <span className={s.sceneMeta} title={`${sc.voice ?? sb.voice ?? 'Giọng mặc định'} · ${TRANSITION[sc.transition ?? 'cut']}`}>
-                        {sc.voice ?? sb.voice ?? 'Giọng mặc định'} · {TRANSITION[sc.transition ?? 'cut']}
+                      <span className={s.sceneMeta} title={`${sc.voice ?? sb.voice ?? 'Giọng mặc định'} · ${TRANSITION[sc.transition ?? defTransition]}`}>
+                        {sc.voice ?? sb.voice ?? 'Giọng mặc định'} · {TRANSITION[sc.transition ?? defTransition]}
                       </span>
                       {err && <Tooltip content={err.join('\n')}><span><Chip tone="danger">Lỗi</Chip></span></Tooltip>}
                     </span>

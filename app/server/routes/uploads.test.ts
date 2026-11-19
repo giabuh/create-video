@@ -21,6 +21,13 @@ describe('upload routes', () => {
     expect((await req('/api/upload/empty.mov', {method: 'PUT'})).status).toBe(400);
     expect((await readdir(path.join(root, 'inbox'))).filter(f => f.endsWith('.part'))).toEqual([]);
   });
+  it('sfx', async () => {
+    const root = await makeTestRoot();
+    const {req} = setup();
+    expect((await (await req('/api/upload-sfx/Pop-A.mp3', {method: 'PUT', body: 's'})).json()).saved).toBe('pop-a.mp3');
+    expect(await readFile(path.join(root, 'sfx/pop-a.mp3'), 'utf8')).toBe('s');
+    expect((await req('/api/upload-sfx/x.txt', {method: 'PUT', body: 's'})).status).toBe(400);
+  });
   it('music and logo', async () => {
     const root = await makeTestRoot();
     const {req} = setup();

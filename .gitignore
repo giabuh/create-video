@@ -2,6 +2,7 @@ VieNeu-TTS/.venv/
 node_modules/
 library/
 music/
+sfx/
 voices/tries/
 reference/
 inbox/

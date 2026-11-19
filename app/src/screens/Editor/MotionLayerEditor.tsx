@@ -3,6 +3,8 @@
 import {ArrowDown, ArrowUp, Move, Plus, Trash2, X} from 'lucide-react';
 import type {AnimName, AnimSpec, BoxSpec, KeyframeSpec, MotionPosition, MotionSpec, SceneSpec, TrackTime, WordRef} from '../../../shared/types.ts';
 import {Button, ColorField, Field, IconButton, Input, NumberField, Segmented, Select, Slider} from '../../ui/index.ts';
+import {useConfig} from '../../api/hooks.ts';
+import {SfxSelect} from './SfxSelect.tsx';
 import {MotionForm} from './MotionForm.tsx';
 import {motionDescription, motionNames, motionTitle} from './motionSchema.ts';
 import s from './Inspector.module.css';
@@ -156,6 +158,7 @@ export function MotionLayerEditor({m, onChange, onRemove, onMove, scope, spoken 
   scope: 'scene' | 'track'; spoken?: boolean; scenes?: SceneSpec[]; editing: boolean; onEdit(): void;
 }): React.JSX.Element {
   const set = (p: Partial<MotionSpec>) => onChange(patchLayer(m, p));
+  const sfxCfg = useConfig().data?.data.sfx;
   const names = motionNames();
   const opts = [...new Set([...names, m.component])].map((n) => ({value: n, label: motionTitle(n)}));
   const pos = m.position ?? (m.box ? 'free' : 'full');
@@ -172,6 +175,8 @@ export function MotionLayerEditor({m, onChange, onRemove, onMove, scope, spoken 
       </div>
       {motionDescription(m.component) && <p className={s.muted}>{motionDescription(m.component)}</p>}
       <MotionForm key={m.component} component={m.component} value={m.props ?? {}} onChange={(props) => set({props})} />
+
+      <SfxSelect label="Âm thanh khi xuất hiện" value={m.sfx} auto={sfxCfg ? sfxCfg.motion[m.component] ?? sfxCfg.motion.default : undefined} onChange={(v) => set({sfx: v})} />
 
       <details className={s.advanced} open>
         <summary>Thời điểm</summary>

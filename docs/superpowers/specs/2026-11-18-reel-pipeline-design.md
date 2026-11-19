@@ -11,7 +11,7 @@ Produce vertical course-promotion reels (Facebook/TikTok/Shorts, 9:16, ~15–60 
 
 1. **Engine (this spec):** media ingest, storyboard, layered config, TTS, Remotion template, render.
 2. **App (next spec):** local web UI that reads/writes the engine's files (see "File contract") to browse projects, play renders, edit storyboards/config, audition voices, manage library/templates/brands. Live-updates when files change. No Claude calls.
-3. **In-app Claude chat (later spec):** the app runs the local `claude` CLI headless in this folder under the user's own login. Personal single-user use only.
+3. **In-app Claude chat (later spec):** the app runs the local `claude` CLI headless in this folder under the user's own login. Personal single-user use only. Decided 2026-11-19: build the `claude` backend first (A), then add a `codex exec --json` backend (B) behind the same runner interface. Multiple Claude accounts: the user runs `claude`, `claude2`, `claude3` (bashrc `_claude_acc` = same binary with `CLAUDE_CONFIG_DIR=~/.claude-accN`, `projects/` symlinked so transcripts are shared); the app picks an account per chat by setting `CLAUDE_CONFIG_DIR`, so a chat can be resumed on another account when one hits its limit.
 
 ## Decisions
 
@@ -146,7 +146,7 @@ TTS keys map 1:1 onto `Vieneu` v3 Turbo `infer()` kwargs (`src/vieneu/v3turbo.py
 
 - `say` and `caption` are separate because TTS needs numbers, prices, phones and English names spelled phonetically, while captions show the normal spelling.
 - Scene length is the spoken audio length plus `pauseAfter`, or `duration` for silent scenes. Several media in one scene split the time evenly unless one has an explicit `duration`.
-- `media[].src` is relative to `library/`. `effect` ∈ {`none`, `zoom-in`, `zoom-out`, `pan-left`, `pan-right`}; `transition` ∈ {`cut`, `fade`, `slide`}. New effects are added to the template code and become new enum values.
+- `media[].src` is relative to `library/`. `effect` ∈ {`none`, `zoom-in`, `zoom-out`, `pan-left`, `pan-right`}; `transition` ∈ {`cut`, `fade`, `slide`}. `transition` = how the scene enters, `mediaTransition` = between clips inside the scene; both default to `config.transition` (`scene`/`media`, length `duration` s, shipped as `fade` 0.4). Fade is a real crossfade: the outgoing picture keeps running under the incoming one; captions, motion and voice still end at the scene boundary. New effects are added to the template code and become new enum values.
 - `motion[]`: `component` is a file name in `studio/src/motion/`; `props` are its typed props; `start`/`duration` (seconds, relative to the scene) are optional and default to the whole scene. A scene with `motion` but no `media` is a pure motion scene, drawn on the brand background.
   - Every layer (scene or video track) also takes, all optional:
     - **Placement:** `position` ∈ {`full` (default: the component lays itself out on the whole frame), `top`, `center`, `bottom` (preset bands, fractions of the height: top 0.09–0.42, center 0.30–0.70, bottom 0.46–0.72, above the captions), `free`}; `box: {x, y, w, h}` in percent of the frame (x/y = top-left; giving a box implies `free`); `scale` (0.3–2), `rotate` (degrees), `opacity` (0–1).
@@ -159,6 +159,17 @@ TTS keys map 1:1 onto `Vieneu` v3 Turbo `infer()` kwargs (`src/vieneu/v3turbo.py
   - Prefer bands/boxes over footage for text/price/checklist moments; keep `full` for pure motion scenes and for components that carry their own panel (`LowerThird`).
 - Mix accounting: a motion-only scene counts as `motion`; in a scene with `media`, the time covered by its motion layers (union of their spans) counts as `motion` and the rest as `real`; the CTA counts as `other`; the video-wide track is not counted. (The app's top bar computes the same in `editorState.ts mixOf`.) `prepare.py` prints the actual mix against `config.mix`.
 - Captions (`tools/reel/captions.py`) are split at punctuation first (`, . ; : ! ? …` and standalone dashes), then each phrase into the fewest chunks of ≤ `captions.maxWords` words, cut where it reads best: never inside a known two-word term (`VI_COMPOUNDS`: tin học, khai giảng, học viên…), not right after a function word (và, của, cho…), sizes as even as possible; a 1–2 word chunk joins a neighbour that still fits. Each chunk starts when its first word is spoken (word timings from align.py — whisper or the estimate; caption-only tokens such as `999K` are placed between their spoken neighbours). The template measures each chunk with the real font (`@remotion/layout-utils`, `studio/src/fit.ts`) and shrinks it to fit two lines.
+- **Sound effects (SFX)** — files in repo-root `sfx/` (gitignored, synced like `music/`, served to Remotion via the `studio/public/sfx` symlink, managed in the app's Library tab "Hiệu ứng âm thanh"). A file's *group* is its name prefix before the first `-` (`whoosh`, `impact`, `ting`, `sparkle`, `pop`, `click`; any other prefix is its own group). Added automatically by type, from `config.json` `sfx`:
+  ```json
+  "sfx": { "volume": 0.5, "minGap": 0.8, "scene": "whoosh", "cta": "impact",
+           "motion": { "default": "pop", "Text": "ting", "KineticText": "ting", "PriceTag": "ting", "CountUp": "ting",
+                       "DateBadge": "pop", "Picture": "pop", "Annotate": "pop", "LowerThird": "click", "Checklist": "click", "ProgressBar": "click" } }
+  ```
+  - Events: a scene whose `transition` is not `cut` gets `sfx.scene` (not the first scene), placed so the file's loudest moment (measured by `prepare.py` with librosa, capped at 1 s; fallback 0.15 s) lands on the scene start (clamped at 0); every event is aligned the same way, so a slow-swelling whoosh starts early and a ting starts on its hit; every motion layer (scene layers and the video-wide track) gets `sfx.motion[component]` (else `sfx.motion.default`) at its start; the CTA gets `sfx.cta` at its start. Clip changes inside a scene get none.
+  - A value is a group name (the file is picked in rotation through that group's files, sorted by name, so repeated events vary), an exact file name in `sfx/`, or `"none"`/`null` (no sound).
+  - Overrides: motion layer `sfx` (same value kinds) and scene `sfx` (the scene-transition sound); storyboard top-level `sfx` deep-merges over `config.sfx`, and `"sfx": null` turns all SFX off for that video.
+  - Breathing room: an *automatic* event closer than `minGap` seconds to the previous kept event is dropped; explicitly set ones (a layer's or scene's own `sfx`) always play. A group with no files left (the user deleted them) just plays nothing; `prepare.py` warns.
+  - Render props: top-level `sfx: [{src: "sfx/<file>", start: <absolute s>, volume}]`; the template plays each as `<Audio>` in a `<Sequence from=start>`. Music ducking ignores SFX.
 - Music ducks to `duckTo` while a spoken scene plays and fades out over `fadeOut` at the end. Gaps between two voice clips shorter than 1 s stay ducked (no swell at every scene change); it ramps back up only for longer silent stretches. All of this is computed in Remotion from known timings (`studio/src/components/duck.ts`), with no FFmpeg sidechain.
 
 ## Components

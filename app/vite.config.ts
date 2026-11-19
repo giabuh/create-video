@@ -15,6 +15,6 @@ export default defineConfig({
     port: Number(process.env.REEL_UI_PORT ?? 5317), strictPort: true, host: '127.0.0.1',
     fs: {allow: [here, path.join(repo, 'studio'), path.join(repo, 'node_modules')]}, // not the whole repo: config.json etc. must not be readable via /@fs
     // '/library' and '/voices' are also SPA routes: proxy only paths with a file part below the root (prefix keys would swallow the pages)
-    proxy: {'/api': {target: api}, '^/(library|music|brands|projects|voices)/': {target: api}},
+    proxy: {'/api': {target: api}, '^/(library|music|sfx|brands|projects|voices)/': {target: api}},
   },
 });

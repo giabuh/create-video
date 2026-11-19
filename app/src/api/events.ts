@@ -37,6 +37,7 @@ export function keysForPath(path: string): (readonly unknown[])[] {
     case 'projects': return p[1] ? [qk.project(p[1]), qk.projects] : [qk.projects];
     case 'library': return [qk.library];
     case 'music': return [qk.music];
+    case 'sfx': return [qk.sfx];
     case 'brands': return [qk.brands];
     case 'config.json': return [qk.config, qk.voices];
     case 'voices': return [p[1] === 'tries' ? qk.tries : qk.voices];

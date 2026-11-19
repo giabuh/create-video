@@ -7,6 +7,7 @@ import {useEditor} from './EditorContext.tsx';
 import {updateScene} from './editorState.ts';
 import {MediaPicker} from './MediaPicker.tsx';
 import {MotionLayerEditor} from './MotionLayerEditor.tsx';
+import {SfxSelect} from './SfxSelect.tsx';
 import {motionNames} from './motionSchema.ts';
 import {useVoiceAction} from './TopBar.tsx';
 import s from './Inspector.module.css';
@@ -14,6 +15,7 @@ import s from './Inspector.module.css';
 type Section = 'content' | 'media' | 'transition';
 
 const EFFECTS = [{value: 'zoom-in', label: 'Zoom vào'}, {value: 'zoom-out', label: 'Zoom ra'}, {value: 'pan-left', label: 'Lia trái'}, {value: 'pan-right', label: 'Lia phải'}, {value: 'none', label: 'Không'}] as const;
+const TRANSITIONS: {value: TransitionName; label: string}[] = [{value: 'cut', label: 'Cắt'}, {value: 'fade', label: 'Mờ dần'}, {value: 'slide', label: 'Trượt'}];
 const stem = (n: string) => n.replace(/\.[^.]+$/, '');
 
 function MediaRow({m, onChange, onRemove, handle, missing}: {m: MediaSpec; onChange(p: Partial<MediaSpec>): void; onRemove(): void; handle: React.HTMLAttributes<HTMLElement>; missing: boolean}): React.JSX.Element {
@@ -136,8 +138,12 @@ export function InspectorScene(): React.JSX.Element {
           onChange={(e) => up({overlay: e.target.value ? {text: e.target.value, position: scene.overlay?.position ?? 'bottom'} : undefined})} /></Field>
         <Segmented aria-label="Vị trí chữ phủ" value={scene.overlay?.position ?? 'bottom'} options={[{value: 'top', label: 'Trên', disabled: !scene.overlay}, {value: 'center', label: 'Giữa', disabled: !scene.overlay}, {value: 'bottom', label: 'Dưới', disabled: !scene.overlay}]}
           onChange={(position) => scene.overlay && up({overlay: {...scene.overlay, position}})} />
-        <Field label="Chuyển cảnh"><Segmented<TransitionName> aria-label="Chuyển cảnh" value={scene.transition ?? 'cut'} onChange={(t) => up({transition: t === 'cut' ? undefined : t})}
-          options={[{value: 'cut', label: 'Cắt'}, {value: 'fade', label: 'Mờ dần'}, {value: 'slide', label: 'Trượt'}]} /></Field>
+        <Field label="Chuyển cảnh"><Segmented<TransitionName> aria-label="Chuyển cảnh" value={scene.transition ?? cfg.data?.data.transition?.scene ?? 'cut'} onChange={(t) => up({transition: t})}
+          options={TRANSITIONS} /></Field>
+        <SfxSelect label="Âm thanh chuyển cảnh" value={scene.sfx} auto={cfg.data?.data.sfx?.scene} onChange={(v) => up({sfx: v})}
+          hint="Chỉ phát khi chuyển cảnh không phải “Cắt” và không phải cảnh đầu." />
+        <Field label="Chuyển giữa các clip trong cảnh"><Segmented<TransitionName> aria-label="Chuyển giữa các clip" value={scene.mediaTransition ?? cfg.data?.data.transition?.media ?? 'cut'} onChange={(t) => up({mediaTransition: t})}
+          options={media.length < 2 ? TRANSITIONS.map((o) => ({...o, disabled: true})) : TRANSITIONS} /></Field>
         <Field label="Nghỉ sau (giây)"><NumberField value={scene.pauseAfter ?? null} min={0} step={0.1} onChange={(v) => up({pauseAfter: v ?? undefined})} /></Field>
       </section>
     </div>

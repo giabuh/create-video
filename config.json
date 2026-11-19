@@ -1,22 +1,68 @@
 {
-  "defaults": { "voice": "phuong", "template": "fast-cut", "brand": "demo" },
+  "defaults": {
+    "voice": "phuong",
+    "template": "fast-cut",
+    "brand": "demo"
+  },
   "tts": {
-    "temperature": 0.8, "top_k": 25, "top_p": 0.95,
-    "repetition_penalty": 1.2, "max_chars": 256, "batch_size": 16,
-    "silence_p": 0.15, "denoise": true,
-    "speed": 1.0,
+    "temperature": 0.8,
+    "top_k": 25,
+    "top_p": 0.95,
+    "repetition_penalty": 1.2,
+    "max_chars": 256,
+    "batch_size": 16,
+    "silence_p": 0.15,
+    "denoise": true,
+    "speed": 1,
     "pauseAfter": 0.3,
     "trimSilence": true,
     "loudness": -16
   },
   "voices": {
-    "phuong": { "ref": "voices/phuong-short.wav" },
-    "vy": { "ref": "voices/vy-short.wav" }
+    "phuong": {
+      "ref": "voices/phuong-short.wav"
+    },
+    "vy": {
+      "ref": "voices/vy-short.wav"
+    }
   },
-  "video": { "fps": 30, "width": 1080, "height": 1920 },
-  "music": { "volume": 0.25, "duckTo": 0.08, "fadeOut": 1.5 },
-  "captions": { "font": "Be Vietnam Pro", "size": 64, "color": "#FFFFFF", "highlightColor": "#FFD400", "maxWords": 6 },
-  "mix": { "real": 0.6, "motion": 0.3, "other": 0.1 },
-  "sync": { "remote": "video-syn:create-video" },
-  "align": { "enabled": true, "model": "large-v3-turbo", "version": "1.9.5", "language": "vi" }
+  "video": {
+    "fps": 30,
+    "width": 1080,
+    "height": 1920
+  },
+  "transition": {
+    "scene": "fade",
+    "media": "fade",
+    "duration": 0.4
+  },
+  "music": {
+    "volume": 0.6,
+    "duckTo": 0.2,
+    "fadeOut": 1.5
+  },
+  "sfx": { "volume": 0.5, "minGap": 0.8, "scene": "whoosh", "cta": "impact",
+           "motion": { "default": "pop", "Text": "ting", "KineticText": "ting", "PriceTag": "ting", "CountUp": "ting",
+                       "DateBadge": "pop", "Picture": "pop", "Annotate": "pop", "LowerThird": "click", "Checklist": "click", "ProgressBar": "click" } },
+  "captions": {
+    "font": "Be Vietnam Pro",
+    "size": 64,
+    "color": "#FFFFFF",
+    "highlightColor": "#FFD400",
+    "maxWords": 6
+  },
+  "mix": {
+    "real": 0.6,
+    "motion": 0.3,
+    "other": 0.1
+  },
+  "sync": {
+    "remote": "video-syn:create-video"
+  },
+  "align": {
+    "enabled": true,
+    "model": "large-v3-turbo",
+    "version": "1.9.5",
+    "language": "vi"
+  }
 }

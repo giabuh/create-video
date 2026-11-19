@@ -49,6 +49,22 @@ export function libraryRoutes({jobs}: Deps): Hono {
     return c.body(null, 204);
   });
 
+  app.get('/sfx', async c => {
+    const dir = safeJoin('sfx');
+    const names = (await readdir(dir).catch(() => [] as string[]))
+      .filter(n => !n.startsWith('.') && MUSIC_EXTS.includes(path.extname(n).toLowerCase())).sort();
+    const files: MusicFile[] = await Promise.all(names.map(async name => ({name, bytes: (await stat(path.join(dir, name))).size})));
+    return c.json(files);
+  });
+
+  app.delete('/sfx/:name', async c => {
+    const name = plainName(c.req.param('name'));
+    if (!MUSIC_EXTS.includes(path.extname(name).toLowerCase())) throw new HttpError(400, 'not a sound file');
+    await stat(safeJoin('sfx', name)).catch(() => { throw new HttpError(404, 'unknown sfx'); });
+    await rm(safeJoin('sfx', name));
+    return c.body(null, 204);
+  });
+
   app.get('/library', async c => {
     const idx = await readJsonOr<LibraryIndex>(indexFile(), {});
     return c.json({...idx, usage: await usageMap()} satisfies LibraryResponse);

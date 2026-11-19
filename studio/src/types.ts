@@ -25,6 +25,7 @@ export type Scene = {
   voice: {src: string; duration: number} | null;
   captions: CaptionChunk[]; highlight: string[]; overlay: Overlay | null;
   media: MediaItem[]; motion: MotionItem[]; transition: Transition;
+  mediaTransition?: Transition; // between clips inside the scene
 };
 export type Brand = {name: string; logo: string | null; colors: {primary: string; accent: string; text: string; background: string}};
 export type CaptionStyle = {font: string; size: number; color: string; highlightColor: string};
@@ -34,5 +35,7 @@ export type RenderProps = {
   template: string; fps: number; width: number; height: number;
   brand: Brand; captions: CaptionStyle; music: Music | null;
   scenes: Scene[]; cta: Cta | null; totalSeconds: number;
+  transitionSeconds?: number; // crossfade/slide length for scene and clip transitions
+  sfx?: {src: string; start: number; volume: number}[]; // sound effects; start is absolute seconds
   overlays?: MotionItem[]; // video-wide motion track; start is absolute (seconds from the beginning)
 };

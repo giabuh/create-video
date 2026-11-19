@@ -139,10 +139,48 @@ def _track(items: list[dict], scenes: list[dict], words: dict, captions: dict, s
     return out
 
 
-def build_render_props(storyboard: dict, settings: dict, brand: dict, audio: dict, words: dict | None = None) -> dict:
-    """`words`: {scene id: word timings} from align.py; spoken scenes without an entry use the estimate.
+def sfx_files_for(value, files: list[str]) -> list[str]:
+    """A sfx value (group name, exact file name, "none"/None) -> the files it can play, sorted by name."""
+    if value in (None, "", "none"):
+        return []
+    if value in files:
+        return [value]
+    return sorted(f for f in files if f.split("-", 1)[0] == value)
+
+
+def _sfx_events(storyboard: dict, scenes: list[dict], overlays: list[dict], cta_start: float, cta, sfx: dict,
+                files: list[str], peaks: dict[str, float]) -> list[dict]:
+    """Automatic + explicit sound effects (see spec "Sound effects"); explicit ones (own `sfx` key) always play."""
+    motion = sfx.get("motion") or {}
+    ev = []  # (hit time, value, explicit, lead when the file's peak is unknown)
+    for i, (sc, raw) in enumerate(zip(scenes, storyboard["scenes"])):
+        if i and sc["transition"] != "cut":
+            ev.append((sc["start"], raw.get("sfx", sfx.get("scene")), "sfx" in raw, 0.15))
+        for m, rm in zip(sc["motion"], raw.get("motion") or []):
+            ev.append((sc["start"] + m["start"], rm.get("sfx", motion.get(m["component"], motion.get("default"))), "sfx" in rm, 0.0))
+    for m, rm in zip(overlays, storyboard.get("motion") or []):
+        ev.append((m["start"], rm.get("sfx", motion.get(m["component"], motion.get("default"))), "sfx" in rm, 0.0))
+    if cta:
+        ev.append((cta_start, sfx.get("cta"), False, 0.0))
+    out, counter, last = [], {}, None
+    for start, value, explicit, lead in sorted(ev, key=lambda e: e[0]):
+        picks = sfx_files_for(value, files)
+        if not picks or (not explicit and last is not None and start - last < sfx.get("minGap", 0)):
+            continue
+        n = counter[value] = counter.get(value, -1) + 1
+        file = picks[n % len(picks)]
+        # start early by the file's loudest moment so the hit lands on the change, not after it
+        out.append({"src": f"sfx/{file}", "start": round(max(0.0, start - peaks.get(file, lead)), 3), "volume": sfx.get("volume", 0.5)})
+        last = start
+    return out
+
+
+def build_render_props(storyboard: dict, settings: dict, brand: dict, audio: dict, words: dict | None = None,
+                       sfx_files: list[str] | None = None, sfx_peaks: dict[str, float] | None = None) -> dict:
+    """`sfx_files`: audio file names in sfx/ (none -> no sound effects are emitted); `sfx_peaks`: {file: seconds to its loudest moment}. `words`: {scene id: word timings} from align.py; spoken scenes without an entry use the estimate.
     Raises AnchorError when an `at`/`until`/track anchor cannot be resolved."""
     cap = settings["captions"]
+    tr = settings.get("transition") or {"scene": "cut", "media": "cut", "duration": 0.4}
     words = dict(words or {})
     problems: list[str] = []
     scenes, t = [], 0.0
@@ -162,7 +200,8 @@ def build_render_props(storyboard: dict, settings: dict, brand: dict, audio: dic
             "media": _media(sc.get("media") or [], dur),
             "motion": _motion(sc.get("motion") or [], dur, bool(sc.get("media")), words.get(sc["id"]),
                               sc.get("caption") or "", sc["id"], problems),
-            "transition": sc.get("transition", "cut"),
+            "transition": sc.get("transition", tr["scene"]),
+            "mediaTransition": sc.get("mediaTransition", tr["media"]),
         })
         t += dur
     own = {k: v for k, v in (storyboard.get("cta") or {}).items() if v not in ("", None)}  # empty field = use the brand's
@@ -186,5 +225,7 @@ def build_render_props(storyboard: dict, settings: dict, brand: dict, audio: dic
         "scenes": scenes,
         "cta": cta,
         "totalSeconds": total,
+        "transitionSeconds": tr["duration"],
         "overlays": overlays,
+        "sfx": _sfx_events(storyboard, scenes, overlays, t, cta, settings["sfx"], sfx_files or [], sfx_peaks or {}) if settings.get("sfx") else [],
     }

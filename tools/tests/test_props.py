@@ -30,6 +30,9 @@ def test_build_render_props():
     assert s1["captions"][-1]["end"] == 3.0  # captions follow speech, not the pause
     assert s1["highlight"] == ["hai"] and s1["overlay"] is None
     assert (s1["transition"], s2["transition"]) == ("fade", "cut")
+    tr = build_render_props(SB, {**SETTINGS, "transition": {"scene": "slide", "media": "fade", "duration": 0.5}}, BRAND, AUDIO)
+    assert [(s["transition"], s["mediaTransition"]) for s in tr["scenes"]] == [("fade", "fade"), ("slide", "fade")]
+    assert tr["transitionSeconds"] == 0.5
     assert s2["motion"] == [{"component": "CountUp", "props": {"to": 7.5}, "start": 0.5, "duration": 1.5,
                              "position": "full", "box": None, "backdrop": "none", "scale": 1.0, "rotate": 0.0, "opacity": 1.0,
                              "enter": {"type": "none", "duration": 0.0}, "exit": {"type": "none", "duration": 0.0},
@@ -107,3 +110,66 @@ def test_video_track_anchors_and_errors():
     with pytest.raises(AnchorError) as e:
         build_render_props(bad, SETTINGS, BRAND, VOICE, {"a": WORDS})
     assert any("'nope' not found" in x for x in e.value.problems) and any("unknown scene 'zz'" in x for x in e.value.problems)
+
+
+SFX = {"volume": 0.5, "minGap": 0.8, "scene": "whoosh", "cta": "impact",
+       "motion": {"default": "pop", "CountUp": "ting"}}
+FILES = ["impact-a.mp3", "pop-a.mp3", "pop-b.mp3", "ting-a.mp3", "whoosh-a.mp3", "whoosh-b.mp3"]
+
+
+def _sfx(sb, sfx=SFX, files=FILES):
+    audio = {"s1": {"src": "a.wav", "duration": 3.0, "pauseAfter": 0.0}, "s2": {"src": "b.wav", "duration": 3.0, "pauseAfter": 0.0}}
+    p = build_render_props(sb, {**SETTINGS, "sfx": sfx}, BRAND, audio, sfx_files=files)
+    return [(x["start"], x["src"]) for x in p["sfx"]], p
+
+
+def _sb(**kw):
+    return {"scenes": [
+        {"id": "s1", "say": "x", "transition": "fade", "media": [{"src": "a.mp4"}]},
+        {"id": "s2", "say": "x", "media": [{"src": "a.mp4"}], **kw.get("s2", {})},
+        {"id": "s3", "duration": 2, "motion": [{"component": "CountUp", "start": 0.5}], **kw.get("s3", {})},
+    ], **kw.get("top", {})}
+
+
+def test_sfx_off_without_settings_or_files():
+    sb = _sb()
+    assert _sfx(sb, None)[1]["sfx"] == [] and _sfx(sb, SFX, [])[1]["sfx"] == []
+
+
+def test_sfx_scene_cta_motion_rotation_and_first_scene():
+    ev, p = _sfx(_sb(s2={"transition": "fade"}, top={"cta": {"title": "x"}}))
+    # s1 has a transition but is first: no whoosh; s2 fades in at 3.0
+    assert ev == [(2.85, "sfx/whoosh-a.mp3"), (6.5, "sfx/ting-a.mp3"), (8.0, "sfx/impact-a.mp3")]
+    assert all(x["volume"] == 0.5 for x in p["sfx"])
+
+
+def test_sfx_cut_scene_has_no_whoosh_and_group_rotates():
+    sb = _sb(s2={"transition": "slide"}, s3={"transition": "fade", "motion": []})
+    sb["scenes"][0]["transition"] = "cut"
+    ev, _ = _sfx(sb)
+    assert ev == [(2.85, "sfx/whoosh-a.mp3"), (5.85, "sfx/whoosh-b.mp3")]
+    sb["scenes"][1]["transition"] = "cut"
+    assert _sfx(sb)[0] == [(5.85, "sfx/whoosh-a.mp3")]
+
+
+def test_sfx_explicit_kept_auto_dropped_by_mingap_and_none():
+    sb = _sb(s3={"transition": "fade", "motion": [
+        {"component": "CountUp", "start": 0.1, "sfx": "none"},        # explicit none: silent
+        {"component": "Text", "start": 0.2},                         # auto pop: 0.35 after whoosh -> dropped
+        {"component": "Text", "start": 0.3, "sfx": "pop-b.mp3"},     # explicit exact file: kept
+        {"component": "Text", "start": 0.5},                         # auto, 0.2 after kept explicit -> dropped
+        {"component": "CountUp", "start": 1.5}]})                    # auto ting, far enough
+    ev, _ = _sfx(sb)
+    assert ev == [(5.85, "sfx/whoosh-a.mp3"), (6.3, "sfx/pop-b.mp3"), (7.5, "sfx/ting-a.mp3")]
+    assert [e for e in _sfx(_sb(s2={"transition": "fade", "sfx": "none"}))[0] if e[0] < 3] == []
+
+
+def test_sfx_video_track_uses_absolute_start():
+    ev, _ = _sfx(_sb(top={"motion": [{"component": "CountUp", "start": 4.0, "duration": 1}]}))
+    assert (4.0, "sfx/ting-a.mp3") in ev
+
+
+def test_sfx_peak_lands_on_the_change():
+    audio = {"s1": {"src": "a.wav", "duration": 3.0, "pauseAfter": 0.0}, "s2": {"src": "b.wav", "duration": 3.0, "pauseAfter": 0.0}}
+    p = build_render_props(_sb(s2={"transition": "fade"}), {**SETTINGS, "sfx": SFX}, BRAND, audio, sfx_files=FILES, sfx_peaks={"whoosh-a.mp3": 0.7})
+    assert p["sfx"][0] == {"src": "sfx/whoosh-a.mp3", "start": 2.3, "volume": SFX.get("volume", 0.5)}

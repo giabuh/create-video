@@ -26,6 +26,17 @@ describe('library routes', () => {
     await writeFile(path.join(root, 'music/.hidden.mp3'), 'h');
     expect(await (await setup().req('/api/music')).json()).toEqual([{name: 'Sôi động 1.mp3', bytes: 3}, {name: 'a.wav', bytes: 2}].sort((x, y) => x.name < y.name ? -1 : 1));
   });
+  it('GET/DELETE /sfx lists audio files, deletes, rejects bad extension', async () => {
+    const root = await makeTestRoot();
+    await writeFile(path.join(root, 'sfx/whoosh-a.mp3'), 'abc');
+    await writeFile(path.join(root, 'sfx/SOURCES.md'), 'n');
+    const {req} = setup();
+    expect(await (await req('/api/sfx')).json()).toEqual([{name: 'whoosh-a.mp3', bytes: 3}]);
+    expect((await req('/api/sfx/x.md', {method: 'DELETE'})).status).toBe(400);
+    expect((await req('/api/sfx/whoosh-a.mp3', {method: 'DELETE'})).status).toBe(204);
+    expect((await req('/api/sfx/whoosh-a.mp3', {method: 'DELETE'})).status).toBe(404);
+    expect(await (await req('/api/sfx')).json()).toEqual([]);
+  });
   it('DELETE /music removes a file unless a project uses it', async () => {
     const root = await makeTestRoot();
     await mkdir(path.join(root, 'music'), {recursive: true});

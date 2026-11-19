@@ -68,6 +68,7 @@ export function PreviewPane(): React.JSX.Element {
         <Player ref={playerRef} component={Reel} inputProps={renderProps} durationInFrames={total} fps={fps}
           compositionWidth={renderProps.width} compositionHeight={renderProps.height} controls={playback.fullscreen} loop={loopOk}
           inFrame={loopOk ? inFrame : null} outFrame={loopOk ? outFrame : null} spaceKeyToPlayOrPause={false}
+          defaultPremountInSeconds={1} // load each clip 1 s before it appears; 0 stutters at every cut, 2 mounts too many videos
           acknowledgeRemotionLicense errorFallback={mediaError} style={{width: '100%'}} />
         {previewing && <div className={s.shimmer} aria-hidden />}
         <BoxOverlay />

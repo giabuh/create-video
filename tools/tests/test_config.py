@@ -47,3 +47,12 @@ def test_resolve_video(cfg):
     assert (s["template"], s["brand"], s["video"]["fps"]) == ("fast-cut", "demo", 30)
     assert resolve_video(cfg, {}, {"music": None})["music"] is None
     assert resolve_video(cfg, {}, {})["music"] is None
+
+
+def test_resolve_video_sfx(cfg):
+    assert resolve_video(cfg, {}, {})["sfx"] is None
+    cfg["sfx"] = {"volume": 0.5, "scene": "whoosh", "motion": {"default": "pop", "Text": "ting"}}
+    s = resolve_video(cfg, {}, {"sfx": {"volume": 0.2, "motion": {"Text": "none"}}})["sfx"]
+    assert s == {"volume": 0.2, "scene": "whoosh", "motion": {"default": "pop", "Text": "none"}}
+    assert resolve_video(cfg, {}, {"sfx": None})["sfx"] is None
+    assert resolve_video(cfg, {}, {})["sfx"]["volume"] == 0.5

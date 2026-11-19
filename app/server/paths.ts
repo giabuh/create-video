@@ -6,7 +6,7 @@ export function repoRoot(): string {
 }
 export function setRepoRoot(p: string): void { root = p; }
 
-export const ROOT_DIRS = {projects: 'projects', library: 'library', music: 'music', brands: 'brands', voices: 'voices', inbox: 'inbox'} as const;
+export const ROOT_DIRS = {projects: 'projects', library: 'library', music: 'music', sfx: 'sfx', brands: 'brands', voices: 'voices', inbox: 'inbox'} as const;
 export type RootKey = keyof typeof ROOT_DIRS;
 export class PathError extends Error {}
 

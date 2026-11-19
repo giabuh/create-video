@@ -40,10 +40,13 @@ def resolve_video(config: dict, brand: dict, storyboard: dict) -> dict:
     template, brand_id = resolve_names(config, storyboard)
     captions = deep_merge(deep_merge(config["captions"], brand.get("captions")), storyboard.get("captions"))
     music = storyboard.get("music")
+    sfx = config.get("sfx")
     return {
         "template": template,
         "brand": brand_id,
         "video": deep_merge(config["video"], storyboard.get("video")),
         "captions": captions,
         "music": None if music is None else deep_merge(config["music"], music),
+        "sfx": None if sfx is None or ("sfx" in storyboard and storyboard["sfx"] is None) else deep_merge(sfx, storyboard.get("sfx")),
+        "transition": deep_merge({"scene": "cut", "media": "cut", "duration": 0.4}, config.get("transition")),
     }

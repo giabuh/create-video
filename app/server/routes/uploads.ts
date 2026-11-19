@@ -43,6 +43,10 @@ export function uploadRoutes(): Hono {
     const saved = await saveUpload(c, safeJoin('music'), sanitizeFilename(c.req.param('filename'), MUSIC_EXTS));
     return c.json({saved});
   });
+  app.put('/upload-sfx/:filename', async c => {
+    const saved = await saveUpload(c, safeJoin('sfx'), sanitizeFilename(c.req.param('filename'), MUSIC_EXTS));
+    return c.json({saved});
+  });
   app.put('/upload-logo/:id/:filename', async c => {
     const id = slugParam(c.req.param('id'), 'brand id');
     const file = safeJoin('brands', id, 'brand.json');

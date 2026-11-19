@@ -19,7 +19,7 @@ import {voiceRoutes} from './routes/voices.ts';
 
 // Only the file types the UI/Remotion fetch; never dotfiles, JSON, or voices/_uploads.
 const STATIC_EXTS: Record<string, readonly string[]> = {
-  library: MEDIA_EXTS, music: MUSIC_EXTS, brands: IMAGE_EXTS, projects: ['.mp4', '.png', '.jpg', '.wav'], voices: AUDIO_REF_EXTS,
+  library: MEDIA_EXTS, music: MUSIC_EXTS, sfx: MUSIC_EXTS, brands: IMAGE_EXTS, projects: ['.mp4', '.png', '.jpg', '.wav'], voices: AUDIO_REF_EXTS,
 };
 
 export function createApp(deps: Deps): Hono {

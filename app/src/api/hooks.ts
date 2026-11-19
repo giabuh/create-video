@@ -7,7 +7,7 @@ import {toast} from '../ui/index.ts';
 import {api, type HttpError} from './client.ts';
 
 export const qk = {
-  projects: ['projects'], project: (slug: string) => ['project', slug] as const, library: ['library'], music: ['music'], voices: ['voices'],
+  projects: ['projects'], project: (slug: string) => ['project', slug] as const, library: ['library'], music: ['music'], sfx: ['sfx'], voices: ['voices'],
   tries: ['tries'], config: ['config'], brands: ['brands'], templates: ['templates'], motion: ['motion'], jobs: ['jobs'],
 } as const;
 
@@ -70,6 +70,11 @@ export function useStartIngest(): UseMutationResult<Job, HttpError, void> {
 }
 
 export const useMusic = () => useGet<MusicFile[]>(qk.music, '/music');
+export const useSfx = () => useGet<MusicFile[]>(qk.sfx, '/sfx');
+export function useDeleteSfx(): UseMutationResult<unknown, HttpError, string> {
+  const qc = useQueryClient();
+  return useMutation({mutationFn: (name) => api(`/sfx/${enc(name)}`, {method: 'DELETE'}), onSuccess: () => qc.invalidateQueries({queryKey: qk.sfx})});
+}
 export function useDeleteMusic(): UseMutationResult<unknown, HttpError, string> {
   const qc = useQueryClient();
   return useMutation({mutationFn: (name) => api(`/music/${enc(name)}`, {method: 'DELETE'}), onSuccess: () => qc.invalidateQueries({queryKey: qk.music})});

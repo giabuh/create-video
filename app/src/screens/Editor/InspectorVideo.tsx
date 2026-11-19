@@ -1,7 +1,7 @@
 import {Plus} from 'lucide-react';
 import type {MotionSpec, Storyboard} from '../../../shared/types.ts';
 import {useBrands, useConfig, useMusic, useTemplates, useVoices} from '../../api/hooks.ts';
-import {Button, Field, NumberField, Select, Slider} from '../../ui/index.ts';
+import {Button, Field, NumberField, Select, Slider, Switch} from '../../ui/index.ts';
 import {useEditor} from './EditorContext.tsx';
 import {MotionLayerEditor} from './MotionLayerEditor.tsx';
 import {motionNames} from './motionSchema.ts';
@@ -30,6 +30,8 @@ export function InspectorVideo(): React.JSX.Element {
   const musicVal = m === null ? NONE : m ? m.file : '';
   const musicOpts = [{value: '', label: 'Mặc định'}, {value: NONE, label: 'Không nhạc'}, ...(music.data ?? []).map((f) => ({value: f.name, label: f.name})), ...(m && !(music.data ?? []).some((f) => f.name === m.file) ? [{value: m.file, label: `${m.file} (thiếu file)`}] : [])];
   const volDef = Number(cfg?.music.volume ?? 0.2);
+  const sfxOn = sb.sfx !== null;
+  const sfxVolDef = Number(cfg?.sfx?.volume ?? 0.5);
   const track = sb.motion ?? [];
   const setTrack = (next: MotionSpec[]) => set({motion: next.length ? next : undefined});
 
@@ -49,6 +51,11 @@ export function InspectorVideo(): React.JSX.Element {
       <Field label={`Âm lượng nhạc (${m?.volume == null ? 'mặc định' : 'riêng video'})`} hint={m ? undefined : 'Chọn một file nhạc để chỉnh âm lượng.'}>
         <Slider aria-label="Âm lượng nhạc" min={0} max={1} step={0.01} disabled={!m} value={m?.volume ?? volDef} format={(v) => `${Math.round(v * 100)}%`}
           onChange={(v) => m && set({music: {...m, volume: v}})} />
+      </Field>
+      <Switch checked={sfxOn} onChange={(on) => set({sfx: on ? undefined : null})} label="Hiệu ứng âm thanh" />
+      <Field label={`Âm lượng hiệu ứng (${sb.sfx?.volume == null ? 'mặc định' : 'riêng video'})`}>
+        <Slider aria-label="Âm lượng hiệu ứng" min={0} max={1} step={0.01} disabled={!sfxOn} value={sb.sfx?.volume ?? sfxVolDef} format={(v) => `${Math.round(v * 100)}%`}
+          onChange={(v) => set({sfx: {...sb.sfx, volume: v}})} />
       </Field>
 
       <section className={s.stack} aria-label="Track motion toàn video">

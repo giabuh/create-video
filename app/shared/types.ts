@@ -17,6 +17,7 @@ export type TrackTime = number | 'video' | {scene: string; at?: WordRef; offset?
 export type MotionSpec = {
   component: string; props?: Json;
   start?: number | TrackTime; duration?: number; end?: TrackTime;   // end: video track only
+  sfx?: string | null;
   at?: WordRef; until?: WordRef;                                     // scene layers: start/end on a spoken word
   position?: MotionPosition; box?: BoxSpec; backdrop?: MotionBackdrop; scale?: number; rotate?: number; opacity?: number;
   enter?: AnimSpec; exit?: AnimSpec; keyframes?: KeyframeSpec[]; colors?: Partial<Record<'primary' | 'accent' | 'text' | 'background', string>>;
@@ -24,7 +25,7 @@ export type MotionSpec = {
 export type SceneSpec = {
   id: string; say?: string; caption?: string; duration?: number; voice?: string; tts?: Json;
   highlight?: string[]; overlay?: {text: string; position: 'top' | 'center' | 'bottom'} | null;
-  media?: MediaSpec[]; motion?: MotionSpec[]; transition?: TransitionName; pauseAfter?: number;
+  sfx?: string | null; media?: MediaSpec[]; motion?: MotionSpec[]; transition?: TransitionName; mediaTransition?: TransitionName; pauseAfter?: number;
 };
 export type CtaSpec = {title?: string; logoSize?: number; phone?: string; fanpage?: string; address?: string; duration?: number};
 export type Storyboard = {
@@ -32,6 +33,7 @@ export type Storyboard = {
   music?: {file: string; volume?: number} | null; targetSeconds?: number;
   captions?: Json; video?: Json; scenes: SceneSpec[]; cta?: CtaSpec | null;
   motion?: MotionSpec[];   // video-wide motion track
+  sfx?: {volume?: number} | null;   // null = all SFX off
 };
 export type Versioned<T> = {data: T; mtime: number};           // mtime = Math.floor(stat.mtimeMs)
 export type Mix = {real: number; motion: number; other: number};
@@ -82,6 +84,8 @@ export type Config = Json & {
   music: {volume: number; duckTo: number; fadeOut: number};
   captions: {font: string; size: number; color: string; highlightColor: string; maxWords: number};
   sync: {remote: string};
+  transition?: {scene: TransitionName; media: TransitionName; duration: number};
+  sfx?: {volume: number; minGap: number; scene: string | null; cta: string | null; motion: Record<string, string | null>};
 };
 export type JobKind = 'voice' | 'render' | 'ingest' | 'try' | 'approve' | 'voice-add' | 'publish' | 'delete-project';
 export type JobState = 'queued' | 'running' | 'done' | 'failed' | 'cancelled';

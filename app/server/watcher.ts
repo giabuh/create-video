@@ -4,7 +4,7 @@ import type {EventBus} from './events.ts';
 import {rel, repoRoot} from './paths.ts';
 
 const IGNORE_SUFFIX = ['.tmp', '.part', '.raw.wav', '.tmp.wav', '.tmp.mp4'];
-const WATCH_DIRS = ['projects', 'library', 'music', 'brands', 'voices', 'studio/src'];
+const WATCH_DIRS = ['projects', 'library', 'music', 'sfx', 'brands', 'voices', 'studio/src'];
 
 function ignored(relPath: string): boolean {
   if (IGNORE_SUFFIX.some(s => relPath.endsWith(s))) return true;

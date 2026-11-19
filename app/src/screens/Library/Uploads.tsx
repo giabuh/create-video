@@ -15,7 +15,7 @@ function Row({it, state, pct, err}: {it: UploadItem; state: 'up' | 'ingest' | 'd
   }, [state]);
   if (gone) return null;
   const text = state === 'up' ? `Đang tải lên ${fmtPct(it.progress)}` : state === 'ingest' ? (pct == null ? 'Đang chuẩn hoá…' : `Đang chuẩn hoá ${fmtPct(pct)}`)
-    : state === 'done' ? (it.target === 'music' ? 'Đã tải lên' : 'Xong · cần mô tả') : state === 'error' ? err ?? it.error ?? 'Lỗi' : '';
+    : state === 'done' ? (it.target !== 'media' ? 'Đã tải lên' : 'Xong · cần mô tả') : state === 'error' ? err ?? it.error ?? 'Lỗi' : '';
   const value = state === 'up' ? it.progress : state === 'ingest' ? pct : state === 'done' ? 1 : state === 'error' ? 1 : 0;
   return (
     <div className={`${s.up} ${fade ? s.fade : ''}`} role={state === 'error' ? 'alert' : undefined}>
@@ -27,7 +27,7 @@ function Row({it, state, pct, err}: {it: UploadItem; state: 'up' | 'ingest' | 'd
 }
 
 /** Per-file rows: upload % first, then the running ingest job's progress, then "done". */
-export function UploadRows({target}: {target: 'media' | 'music'}): React.JSX.Element | null {
+export function UploadRows({target}: {target: 'media' | 'music' | 'sfx'}): React.JSX.Element | null {
   const {items, clear} = useUploads();
   const jobs = useJobs().filter((j) => j.kind === 'ingest');
   const active = jobs.find((j) => j.state === 'running' || j.state === 'queued');
@@ -40,7 +40,7 @@ export function UploadRows({target}: {target: 'media' | 'music'}): React.JSX.Ele
   const rowState = (i: UploadItem) => {
     if (i.state === 'error') return 'error' as const;
     if (i.state === 'uploading') return 'up' as const;
-    if (target === 'music') return 'done' as const;
+    if (target !== 'media') return 'done' as const;
     if (active) return 'ingest' as const;
     const t0 = (i.doneAt ?? seen.current.get(i.id) ?? 0) - 500; // doneAt: the screen may not have been open when the upload finished
     if (newest && newest.state !== 'done' && (newest.endedAt ?? 0) >= t0) return 'error' as const;
