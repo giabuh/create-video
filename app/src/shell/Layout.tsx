@@ -7,6 +7,7 @@ import {NavList} from './nav.tsx';
 import {WorkerStatus} from './WorkerStatus.tsx';
 import {ConnectionBanner} from './ConnectionBanner.tsx';
 import {Rail} from './Rail.tsx';
+import {ThemeControls} from './ThemeControls.tsx';
 import {Mark, Sidebar} from './Sidebar.tsx';
 import s from './Layout.module.css';
 
@@ -20,6 +21,7 @@ function MobileNav(): React.JSX.Element {
           <NavList onNavigate={() => setOpen(false)} />
           <JobsPanel />
           <WorkerStatus />
+          <ThemeControls />
         </div>
       </Popover>
     </header>
