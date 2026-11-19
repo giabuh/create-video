@@ -1,6 +1,6 @@
 import {useMutation, useQuery, useQueryClient, type QueryClient} from '@tanstack/react-query';
 import {useSyncExternalStore} from 'react';
-import type {ChatAccount, ChatDetail, ChatMeta, ServerEvent} from '../../shared/types.ts';
+import type {ChatAccount, ChatDetail, ChatMeta, Engine, ServerEvent} from '../../shared/types.ts';
 import {draftAfter} from '../shell/chatView.ts';
 import {api} from './client.ts';
 
@@ -13,7 +13,7 @@ export const useChat = (id: string | null) => useQuery({
 });
 export function useCreateChat() {
   const qc = useQueryClient();
-  return useMutation({mutationFn: (v: {slug: string | null}) => api<ChatMeta>('/chats', {body: v}), onSuccess: (chat) => {
+  return useMutation({mutationFn: (v: {slug: string | null; engine?: Engine}) => api<ChatMeta>('/chats', {body: v}), onSuccess: (chat) => {
     // Seed the detail: an invalidation during a first fetch that has no data yet is swallowed (react-query), so the SSE events of the first turn would be lost.
     qc.setQueryData<ChatDetail>(chatKeys.one(chat.id), {chat, events: []});
     return qc.invalidateQueries({queryKey: chatKeys.list});
