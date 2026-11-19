@@ -17,6 +17,8 @@ const exists = (p: string) => access(p).then(() => true, () => false);
 let dir: string;
 beforeEach(async () => {
   vi.clearAllMocks();
+  vi.mocked(drive.driveList).mockResolvedValue([]);
+  vi.mocked(drive.driveDelete).mockResolvedValue();
   dir = path.join(await makeTestRoot(), 'projects/p1');
   for (const v of ['reel-v1', 'reel-v2']) {
     await writeFile(path.join(dir, `${v}.mp4`), 'x');
@@ -34,6 +36,11 @@ describe('uploadVersion', () => {
     await expect(uploadVersion('p1', 'reel-v1', 'x.mp4', ctx, {unique: false})).rejects.toThrow('Tên đã có trên Drive');
     expect((await readMeta('p1')).data.published?.['reel-v1']).toMatchObject({state: 'failed', error: 'Tên đã có trên Drive'});
     expect(drive.driveUpload).not.toHaveBeenCalled();
+  });
+  it('never overwrites a done record', async () => {
+    await uploadVersion('p1', 'reel-v1', 'x.mp4', ctx, {unique: false});
+    await expect(uploadVersion('p1', 'reel-v1', 'y.mp4', ctx, {unique: false})).rejects.toThrow('Bản này đã lên Drive');
+    expect((await readMeta('p1')).data.published?.['reel-v1']).toMatchObject({state: 'done', name: 'x.mp4'});
   });
   it('picks a free name when unique', async () => {
     vi.mocked(drive.driveList).mockResolvedValue(['x.mp4']);

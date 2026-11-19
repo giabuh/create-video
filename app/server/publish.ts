@@ -1,13 +1,17 @@
 import {rm} from 'node:fs/promises';
 import type {JobCtx} from './jobs.ts';
-import {driveDelete, DriveError, driveList, driveUpload, freeName, withRetry} from './drive.ts';
+import {driveDelete, DriveError, driveList, driveUpload, freeName} from './drive.ts';
 import {safeJoin} from './paths.ts';
 import {withSlugLock} from './slugLock.ts';
 import {readMeta, setPublished, writeMeta} from './versions.ts';
 
+export const PUBLISHED_MSG = 'Bản này đã lên Drive';
+export const UPLOADING_MSG = 'Đang tải lên Drive';
+
 /** Uploads a render to Drive and records the outcome in project.json. Returns the final Drive file name. */
 export async function uploadVersion(slug: string, version: string, name: string, ctx: JobCtx, opts: {unique: boolean}): Promise<string> {
   const at = () => new Date().toISOString();
+  if ((await readMeta(slug)).data.published?.[version]?.state === 'done') throw new DriveError(PUBLISHED_MSG); // never clobber a done record
   let final = name;
   try {
     const taken = await driveList();
@@ -15,7 +19,7 @@ export async function uploadVersion(slug: string, version: string, name: string,
     else if (taken.includes(name)) throw new DriveError('Tên đã có trên Drive');
     await setPublished(slug, version, {name: final, state: 'uploading', at: at()});
     ctx.progress(null, 'Đẩy lên Drive');
-    await withRetry(() => driveUpload(safeJoin('projects', slug, `${version}.mp4`), final, p => ctx.progress(p, 'Đẩy lên Drive'), ctx.signal), [2000, 5000], undefined, ctx.signal);
+    await driveUpload(safeJoin('projects', slug, `${version}.mp4`), final, p => ctx.progress(p, 'Đẩy lên Drive'), ctx.signal);
     await setPublished(slug, version, {name: final, state: 'done', at: at()});
     return final;
   } catch (e) {

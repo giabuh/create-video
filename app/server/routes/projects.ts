@@ -5,7 +5,7 @@ import {approveCommit} from '../git.ts';
 import type {JobCtx, JobQueue} from '../jobs.ts';
 import {SLUG_RE, safeJoin, slugify} from '../paths.ts';
 import {runPreview} from '../procs.ts';
-import {deleteRender, uploadVersion} from '../publish.ts';
+import {deleteRender, PUBLISHED_MSG, UPLOADING_MSG, uploadVersion} from '../publish.ts';
 import {withSlugLock} from '../slugLock.ts';
 import {readJson, readJsonOr, writeJsonAtomic} from '../store.ts';
 import {listVersions, projectStatus, readMeta, writeMeta} from '../versions.ts';
@@ -126,6 +126,11 @@ export function projectRoutes({jobs, worker}: Deps): Hono {
     kind: 'publish', lane: 'io', label: `Đẩy ${version} lên Drive`, project: slug, cancellable: true,
     run: async ctx => { await uploadVersion(slug, version, name, ctx, {unique: false}); },
   });
+  const needNotPublished = (meta: {published?: Record<string, {state: string}>}, version: string) => {
+    const st = meta.published?.[version]?.state;
+    if (st === 'done') throw new HttpError(409, PUBLISHED_MSG);
+    if (st === 'uploading') throw new HttpError(409, UPLOADING_MSG);
+  };
   const nameOf = (slug: string, version: string, raw: unknown): string => {
     if (raw !== undefined && typeof raw !== 'string') throw new HttpError(400, 'bad name');
     try { return driveName(raw ?? `${slug}-${version}`); } catch { throw new HttpError(400, 'bad name'); }
@@ -141,6 +146,7 @@ export function projectRoutes({jobs, worker}: Deps): Hono {
     const res = await withSlugLock(slug, async () => {
       if (!(await stat(safeJoin('projects', slug, `${version}.mp4`)).catch(() => null))) throw new HttpError(404, 'unknown version');
       const prev = (await readMeta(slug)).data;
+      needNotPublished(prev, version);
       if (prev.renders[version]?.kind === 'draft') throw new HttpError(400, 'Bản nháp cũ không duyệt được');
       const meta = {...prev, approved: version};
       await writeMeta(slug, meta); // approveCommit needs project.json on disk
@@ -159,7 +165,9 @@ export function projectRoutes({jobs, worker}: Deps): Hono {
     const b = await bodyOf(c);
     if (typeof b.version !== 'string' || !/^reel-v\d+$/.test(b.version)) throw new HttpError(400, 'bad version');
     const name = nameOf(slug, b.version, b.name);
-    if ((await readMeta(slug)).data.approved !== b.version) throw new HttpError(409, 'not approved');
+    const meta = (await readMeta(slug)).data;
+    if (meta.approved !== b.version) throw new HttpError(409, 'not approved');
+    needNotPublished(meta, b.version);
     return c.json(enqueuePublish(slug, b.version, name), 202);
   });
 

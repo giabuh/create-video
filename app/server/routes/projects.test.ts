@@ -110,4 +110,21 @@ describe('projects routes', () => {
     expect(r.status).toBe(409);
     expect(await r.json()).toMatchObject({error: 'Bản đã duyệt chưa lên Drive'});
   });
+
+  it('approve and publish are 409 when already uploaded or uploading', async () => {
+    const root = await makeTestRoot();
+    const {req} = setup();
+    const dir = path.join(root, 'projects/p1');
+    await writeFile(path.join(dir, 'reel-v1.mp4'), 'x');
+    const seed = (state: string) => writeFile(path.join(dir, 'project.json'), JSON.stringify({approved: 'reel-v1', renders: {}, published: {'reel-v1': {name: 'a.mp4', state, at: 'x'}}}));
+    for (const [state, msg] of [['done', 'Bản này đã lên Drive'], ['uploading', 'Đang tải lên Drive']]) {
+      await seed(state);
+      for (const url of ['approve', 'publish']) {
+        const r = await req(`/api/projects/p1/${url}`, {method: 'POST', json: {version: 'reel-v1', name: 'b'}});
+        expect(r.status).toBe(409);
+        expect(await r.json()).toMatchObject({error: msg});
+      }
+    }
+    expect((await readMeta('p1')).data.published?.['reel-v1']?.state).toBe('uploading');
+  });
 });
