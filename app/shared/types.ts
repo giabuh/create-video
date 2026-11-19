@@ -72,8 +72,21 @@ export type Job = {
   etaSeconds: number | null; log: string[]; result: Json | null; error: string | null; cancellable: boolean;
 };
 export type WorkerStatus = {state: 'starting' | 'idle' | 'loading' | 'ready' | 'error'; device: 'cuda' | 'cpu' | null; error: string | null};
+export type LimitInfo = {status: string; resetsAt: number | null; utilization: number | null; type: string | null}; // resetsAt = epoch seconds
+export type ChatEvent =
+  | {kind: 'user'; text: string; account: string; at: number}
+  | {kind: 'delta'; text: string}
+  | {kind: 'text'; text: string}
+  | {kind: 'tool'; name: string; summary: string}
+  | {kind: 'done'; costUsd: number | null; durationMs: number | null}
+  | {kind: 'error'; message: string; limit?: {account: string; resetsAt: number | null}};
+export type ChatAccount = {name: string; limit: LimitInfo | null};
+export type ChatMeta = {id: string; title: string; account: string; slug: string | null; started: boolean; createdAt: number; updatedAt: number};
+export type ChatDetail = {chat: ChatMeta; events: ChatEvent[]};
 export type ServerEvent =
   | {type: 'changed'; path: string}             // posix path relative to repo root, e.g. "projects/_smoke/storyboard.json"
   | {type: 'job'; job: Job}
-  | {type: 'worker'; status: WorkerStatus};
+  | {type: 'worker'; status: WorkerStatus}
+  | {type: 'chat'; chatId: string; event: ChatEvent}
+  | {type: 'chatBusy'; chatId: string | null};
 export type ApiError = {error: string; details?: unknown};

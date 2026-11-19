@@ -76,7 +76,7 @@ function onEvent(ev: ServerEvent, onChanged: (path: string) => void) {
     jobs = new Map(jobs).set(ev.job.id, ev.job);
     setJobs();
     toastFinished(ev.job, prev);
-  } else {
+  } else if (ev.type === 'worker') {
     worker = ev.status;
     emit();
   }
