@@ -4,12 +4,14 @@ import {Hono} from 'hono';
 import {repoRoot, safeJoin, slugify, SLUG_RE} from '../paths.ts';
 import {readJson, writeJsonAtomic} from '../store.ts';
 import type {BrandFile, BrandSummary} from '../../shared/types.ts';
+import {DEFAULT_ACCENT2, DEFAULT_SURFACE} from '../../shared/brandDefaults.ts';
 import {bodyOf, HttpError, isObj, mtimeField, readConfigV, slugParam} from './util.ts';
 import type {Deps} from './util.ts';
 
 const configFile = () => path.join(repoRoot(), 'config.json');
 const brandFile = (id: string) => safeJoin('brands', id, 'brand.json');
-const COLORS = ['primary', 'accent', 'text', 'background']; // required; accent2 and surface are optional
+const COLORS = ['primary', 'accent', 'text', 'background']; // required; accent2 and surface are optional but must be strings when present
+const OPTIONAL_COLORS = ['accent2', 'surface'];
 
 async function brandSummary(id: string, defaultId: string): Promise<BrandSummary> {
   const v = await readJson<BrandFile>(brandFile(id));
@@ -39,7 +41,7 @@ export function settingsRoutes(_deps: Deps): Hono {
     const id = slugParam(c.req.param('id'), 'brand id');
     const b = await bodyOf(c);
     const brand = b.brand;
-    if (!isObj(brand) || typeof brand.name !== 'string' || !isObj(brand.colors) || !COLORS.every(k => typeof (brand.colors as Record<string, unknown>)[k] === 'string')) throw new HttpError(400, 'bad brand');
+    if (!isObj(brand) || typeof brand.name !== 'string' || !isObj(brand.colors) || !COLORS.every(k => typeof (brand.colors as Record<string, unknown>)[k] === 'string') || !OPTIONAL_COLORS.every(k => (brand.colors as Record<string, unknown>)[k] === undefined || typeof (brand.colors as Record<string, unknown>)[k] === 'string')) throw new HttpError(400, 'bad brand');
     const baseMtime = mtimeField(b.baseMtime);
     await readFile(brandFile(id)).catch(() => { throw new HttpError(404, 'brand not found'); });
     return c.json({mtime: await writeJsonAtomic(brandFile(id), brand, baseMtime)});
@@ -50,7 +52,7 @@ export function settingsRoutes(_deps: Deps): Hono {
     if (typeof b.name !== 'string' || !/[\p{L}\p{N}]/u.test(b.name)) throw new HttpError(400, 'bad name');
     const id = slugParam(slugify(b.name), 'name');
     const {data: config} = await readConfigV();
-    const base = await readJson<BrandFile>(brandFile(config.defaults.brand)).then(v => v.data.colors, () => ({primary: '#1E3A8A', accent: '#FFD400', text: '#FFFFFF', background: '#0B1530', accent2: '#E11D2E', surface: '#FFFFFF'}));
+    const base = await readJson<BrandFile>(brandFile(config.defaults.brand)).then(v => v.data.colors, () => ({primary: '#1E3A8A', accent: '#FFD400', text: '#FFFFFF', background: '#0B1530', accent2: DEFAULT_ACCENT2, surface: DEFAULT_SURFACE}));
     await mkdir(safeJoin('brands'), {recursive: true});
     await mkdir(safeJoin('brands', id)).catch(e => { throw (e as NodeJS.ErrnoException).code === 'EEXIST' ? new HttpError(409, 'brand exists') : e; });
     const brand: BrandFile = {name: b.name.trim(), logo: null, colors: base, cta: {}};

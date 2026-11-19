@@ -36,10 +36,14 @@ describe('settings routes', () => {
   it('brand optional colors round-trip', async () => {
     await makeTestRoot();
     const {req} = setup();
-    const b = await (await req('/api/brands')).json().then((l: {brand: {colors: object}; mtime: number}[]) => l[0]);
+    const [b] = (await (await req('/api/brands')).json()) as {brand: {colors: object}; mtime: number}[];
     const brand = {...b.brand, colors: {...b.brand.colors, accent2: '#E11D2E', surface: '#FFFFFF'}};
     expect((await req('/api/brands/demo', {method: 'PUT', json: {brand, baseMtime: b.mtime}})).status).toBe(200);
     expect((await (await req('/api/brands')).json())[0].brand.colors).toMatchObject({accent2: '#E11D2E', surface: '#FFFFFF'});
+    for (const bad of [{accent2: 5}, {surface: null}]) {
+      const r = await req('/api/brands/demo', {method: 'PUT', json: {brand: {...b.brand, colors: {...b.brand.colors, ...bad}}, baseMtime: b.mtime}});
+      expect(r.status).toBe(400);
+    }
   });
   it('templates and motion', async () => {
     const root = await makeTestRoot();

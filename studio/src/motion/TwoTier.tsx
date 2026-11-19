@@ -23,7 +23,7 @@ export const TwoTier: React.FC<MotionProps<typeof TwoTierSchema>> = (p) => {
   const loaded = useFontsLoaded();
   const c = p.brand.colors;
   const longer = p.top.length >= p.bottom.length ? p.top : p.bottom;
-  const size = loaded ? fitFontSize({text: longer, maxSize: p.size, width: p.area.width * 0.85, height: p.area.height * 0.3, weight: 800, padX: 1.8, padY: 0.6}) : p.size;
+  const size = loaded ? fitFontSize({text: longer, maxSize: p.size, width: p.area.width * 0.85, height: p.area.height * 0.3, weight: 800, padX: 0.9, padY: 0.6}) : p.size;
   const botAt = 0.9;
   const botEnd = botAt + fxDuration('words', p.bottom, 1);
   const rule = (): React.CSSProperties => ({width: '46%', height: 2, background: c.surface, margin: '0 auto', transform: `scaleX(${step(0, 0.3)})`});

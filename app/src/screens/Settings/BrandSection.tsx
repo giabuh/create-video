@@ -4,6 +4,7 @@ import {useQueryClient} from '@tanstack/react-query';
 import {Plus, Trash2} from 'lucide-react';
 import {CtaCard} from '@studio/components/CtaCard';
 import type {BrandFile, BrandSummary} from '../../../shared/types.ts';
+import {DEFAULT_ACCENT2, DEFAULT_SURFACE} from '../../../shared/brandDefaults.ts';
 import {qk, useCreateBrand, useDeleteBrand, useLogoCutout, useSaveBrand, useSaveConfig, useConfig} from '../../api/hooks.ts';
 import {useUploads} from '../../api/upload.ts';
 import type {HttpError} from '../../api/client.ts';
@@ -13,7 +14,7 @@ import s from './Settings.module.css';
 const IMAGE_EXTS = ['.png', '.jpg', '.jpeg', '.webp', '.svg'] as const; // mirrors app/server/paths.ts (the server cannot be imported in the browser)
 const PLACEHOLDER_ADDRESS = '[ĐỊA CHỈ] — để trống nếu không hiện';
 const COLORS = [['primary', 'Chính'], ['accent', 'Nhấn (từ nổi bật)'], ['text', 'Chữ'], ['background', 'Nền cảnh motion'], ['accent2', 'Nhấn 2 (băng đỏ, ruy băng)'], ['surface', 'Nền sáng (ô trắng)']] as const;
-const DEFAULT_COLORS = {accent2: '#E11D2E', surface: '#FFFFFF'} as const;
+const DEFAULT_COLORS = {accent2: DEFAULT_ACCENT2, surface: DEFAULT_SURFACE} as const;
 const colorOf = (c: BrandFile['colors'], k: (typeof COLORS)[number][0]) => c[k] ?? DEFAULT_COLORS[k as keyof typeof DEFAULT_COLORS];
 
 type Form = {name: string; title: string; logoSize: number; colors: BrandFile['colors']; phone: string; fanpage: string; address: string};

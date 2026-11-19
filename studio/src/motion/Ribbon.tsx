@@ -22,7 +22,9 @@ export const Ribbon: React.FC<MotionProps<typeof RibbonSchema>> = (p) => {
   const {step, outP} = useChoreo(p.layerSeconds, k);
   const loaded = useFontsLoaded();
   const c = p.brand.colors;
-  const w = p.area.width * 0.88;
+  // decor sticks out past the bar's right end: reserve that room so it stays inside the 6% margin
+  const over = p.decor === 'none' ? 0 : p.size * (p.decor === 'emoji' ? 1 : 0.6);
+  const w = p.area.width * 0.88 - over;
   const size = loaded ? fitFontSize({text: p.title, maxSize: p.size, width: w, height: p.area.height * 0.55, weight: 800, padX: 1.2, padY: 0.32}) : p.size;
   const textAt = 0.52;
   const subAt = textAt + fxDuration(p.fx, p.title, 1);

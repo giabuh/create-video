@@ -12,7 +12,9 @@ describe('motion forms from zod schemas', () => {
   it('registers the new cards and keeps props.py OWNS_EXIT in sync with ownsExit', () => {
     expect(motionNames()).toEqual(expect.arrayContaining(['Ribbon', 'TwoTier', 'Callout', 'PinLabel', 'GlossyPill', 'GiantText']));
     const py = readFileSync(new URL('../../../../tools/reel/props.py', import.meta.url), 'utf8');
-    const set = /OWNS_EXIT = \{([^}]*)\}/.exec(py)![1].match(/"(\w+)"/g)!.map((s) => s.slice(1, -1)).sort();
+    const m = /OWNS_EXIT = \{([^}]*)\}/.exec(py);
+    if (!m) throw new Error('tools/reel/props.py: no line matching `OWNS_EXIT = {"A", "B"}` (was it reformatted?)');
+    const set = m[1].match(/"(\w+)"/g)!.map((s) => s.slice(1, -1)).sort();
     expect(set).toEqual(Object.entries(MOTION).filter(([, d]) => d.ownsExit).map(([n]) => n).sort());
   });
   it('derives widgets, bounds, defaults and labels', () => {
@@ -22,11 +24,13 @@ describe('motion forms from zod schemas', () => {
     expect(f.color).toMatchObject({kind: 'color', required: false});
     expect(f.reveal.options).toContainEqual({value: 'typewriter', label: 'Gõ phím'});
     expect(f.reveal.options).toHaveLength(7);
-    for (const name of ['KineticText', 'LowerThird', 'PriceTag', 'DateBadge', 'Checklist']) expect(Object.fromEntries((motionFields(name) ?? []).map((x) => [x.key, x])).fx).toMatchObject({kind: 'choice', default: 'none'});
     expect(f.uppercase).toMatchObject({kind: 'bool'});
     expect(Object.fromEntries((motionFields('KineticText') ?? []).map((x) => [x.key, x.kind])).lines).toBe('lines');
     expect(Object.fromEntries((motionFields('Picture') ?? []).map((x) => [x.key, x.kind])).src).toBe('media');
     expect(motionFields('Nope')).toBeNull();
+  });
+  it.each(['KineticText', 'LowerThird', 'PriceTag', 'DateBadge', 'Checklist'])('%s has an fx choice defaulting to none', (name) => {
+    expect(Object.fromEntries((motionFields(name) ?? []).map((x) => [x.key, x])).fx).toMatchObject({kind: 'choice', default: 'none'});
   });
   it('validates with the same schema the renderer uses', () => {
     expect(motionErrors('PriceTag', {price: '999K'})).toEqual({});

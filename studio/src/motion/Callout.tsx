@@ -32,19 +32,22 @@ export const Callout: React.FC<MotionProps<typeof CalloutSchema>> = (p) => {
   const {width: W, height: H} = p.area;
   const left = (p.labelX / 100) * W, top = (p.labelY / 100) * H;
   const size = loaded
-    ? fitFontSize({text: p.title, maxSize: p.size, width: W - left - W * 0.04, height: H, weight: 800, wrap: false, padX: PAD, lineHeight: LH})
+    ? fitFontSize({text: p.title, maxSize: p.size, width: W - left - W * 0.04 - 0.8 * p.size, height: H, weight: 800, wrap: false, padX: PAD, lineHeight: LH})
     : p.size;
-  const subFit = (t: string | undefined, max: number, indent: number) => (t && loaded
-    ? fitFontSize({text: t, maxSize: max, width: W - left - indent - W * 0.04, height: H, weight: 800, wrap: false, padX: PAD, lineHeight: LH}) : max);
+  const subFit = (s: string | undefined, max: number, indent: number) => (s && loaded
+    ? fitFontSize({text: s, maxSize: max, width: W - left - indent - W * 0.04, height: H, weight: 800, wrap: false, padX: PAD, lineHeight: LH}) : max);
   const f1 = subFit(p.sub1, size * 0.62, 0), f2 = subFit(p.sub2, size * 0.69, size * 0.6);
   const boxW = (loaded ? widthOf(p.title, size, 800) : size * p.title.length * 0.55) + 2 * PAD * size;
   const boxH = size * (LH + 0.3);
   const tx = (p.targetX / 100) * W, ty = (p.targetY / 100) * H;
   const lx = left + boxW, ly = top + boxH / 2;
+  const rowW = (s: string | undefined, f: number, indent: number) => (!s ? 0 : indent + 0.9 * f + (loaded ? widthOf(s, f, 800) : f * s.length * 0.55));
+  // elbow past the widest row so the diagonal never crosses a sub band
+  const ex = Math.min(W * 0.98, left + Math.max(boxW, rowW(p.sub1, f1, 0), rowW(p.sub2, f2, size * 0.6)) + size * 0.8);
   const titleEnd = 0.82 + fxDuration(p.fx, p.title, 1);
   const sub2End = titleEnd + 0.25 + 0.35;
 
-  const ringStep = step(0, 0.38);
+  const ringStep = step(0, 0.38, BACK);
   const q = (((t - 0.4 * k) / (1.1 * k)) % 1 + 1) % 1;
   const pulse = t >= 0.4 * k ? `0 0 0 ${size * 0.4 * q}px rgba(255,255,255,${0.7 * (1 - q)})` : 'none';
   const fade = 1 - outP;
@@ -55,15 +58,15 @@ export const Callout: React.FC<MotionProps<typeof CalloutSchema>> = (p) => {
   const s1 = step(titleEnd, 0.35), s2 = step(titleEnd + 0.25, 0.35);
   return (
     <AbsoluteFill style={{fontFamily}}>
-      <svg width={W} height={H} style={{position: 'absolute', inset: 0, opacity: fade}}>
-        <polyline points={`${lx},${ly} ${lx + size * 0.8},${ly} ${tx},${ty}`} fill="none" stroke="#fff" strokeWidth={4}
-          strokeLinejoin="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - step(0.3, 0.3)} />
-      </svg>
       <div style={{position: 'absolute', left: tx - size / 2, top: ty - size / 2, width: size, height: size, borderRadius: '50%',
-        border: `${size * 0.09}px solid #fff`, boxSizing: 'border-box', transform: `scale(${BACK(ringStep)})`, boxShadow: pulse,
+        border: `${size * 0.09}px solid #fff`, boxSizing: 'border-box', transform: `scale(${ringStep})`, boxShadow: pulse,
         opacity: fade, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
         <div style={{width: size * 0.33, height: size * 0.33, borderRadius: '50%', background: '#fff'}} />
       </div>
+      <svg width={W} height={H} style={{position: 'absolute', inset: 0, opacity: fade}}>
+        <polyline points={`${lx},${ly} ${ex},${ly} ${tx},${ty}`} fill="none" stroke="#fff" strokeWidth={4}
+          strokeLinejoin="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - step(0.3, 0.3)} />
+      </svg>
       <div style={{position: 'absolute', left, top, clipPath: eraseOut(outP)}}>
         <div style={{position: 'relative', width: boxW}}>
           <div style={{...box(c.accent2, c.text, size), width: boxW, boxSizing: 'border-box', transform: `scaleX(${step(0.56, 0.28)})`, transformOrigin: 'right'}}>

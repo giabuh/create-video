@@ -1,5 +1,6 @@
 import React from 'react';
 import {AbsoluteFill, spring, useCurrentFrame, useVideoConfig} from 'remotion';
+import {fitFontSize, useFontsLoaded} from '../fit';
 import {fontFamily} from '../fonts';
 import {FxText} from './fx/FxText';
 import {numDefault, optText, text, textFx, z, type MotionProps} from './schema';
@@ -13,9 +14,12 @@ export const PriceTagSchema = z.object({
   fx: textFx('Hiệu ứng chữ', 'none'),
 });
 
-export const PriceTag: React.FC<MotionProps<typeof PriceTagSchema>> = ({price, old, note, size, tilt, fx, brand}) => {
+export const PriceTag: React.FC<MotionProps<typeof PriceTagSchema>> = ({price, old, note, size: maxSize, tilt, fx, brand, area}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
+  const loaded = useFontsLoaded();
+  // /1.2: the pop overshoots to ~1.15x; 160 = the card's side padding
+  const size = loaded ? fitFontSize({text: price, maxSize, width: area.width / 1.2 - 160, height: area.height, weight: 800, wrap: false}) : maxSize;
   const s = spring({frame, fps, config: {damping: 9}});
   const strike = spring({frame: frame - 12, fps, config: {damping: 20}});
   return (

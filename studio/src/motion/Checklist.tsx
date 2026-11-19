@@ -33,7 +33,7 @@ export const Checklist: React.FC<MotionProps<typeof ChecklistSchema>> = ({items,
           <div key={i} style={{display: 'flex', alignItems: 'center', gap: size / 2, opacity: s, transform: `translateX(${(1 - s) * -120}px)`}}>
             <div style={{width: dot, height: dot, borderRadius: dot / 2, background: brand.colors.accent, color: brand.colors.background,
               display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: size * 0.9, fontWeight: 800, flexShrink: 0}}>✓</div>
-            <div style={{fontWeight: 700, fontSize: size, color: brand.colors.text, lineHeight: 1.15}}>{fx === 'none' ? item : <FxText text={item} fx={fx} start={0.05 + i * interval} />}</div>
+            <div style={{fontWeight: 700, fontSize: size, color: brand.colors.text, lineHeight: 1.15}}>{fx === 'none' ? item : <FxText text={item} fx={fx} start={Math.round((0.05 + i * interval) * fps) / fps} />}</div>
           </div>
         );
       })}

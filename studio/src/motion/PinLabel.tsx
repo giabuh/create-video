@@ -21,8 +21,8 @@ export const PinLabel: React.FC<MotionProps<typeof PinLabelSchema>> = (p) => {
   const {step, outP} = useChoreo(p.layerSeconds, k);
   const loaded = useFontsLoaded();
   const c = p.brand.colors;
-  // the pin (≈1.1 em) shares the row, so the text gets the rest of the width
-  const size = loaded ? fitFontSize({text: p.text, maxSize: p.size, width: p.area.width * 0.88 - p.size * 1.4, height: p.area.height * 0.3, weight: 800, padX: 0.3, padY: 0.2}) : p.size;
+  // the pin (1.1 em wide, 1.47 em tall) + gap share the row: padX 0.95 per side = pin+gap 1.3 + 0.6 slack; the size is capped so the pin fits the height
+  const size = loaded ? fitFontSize({text: p.text, maxSize: Math.min(p.size, (p.area.height * 0.9) / 1.47), minSize: 24, width: p.area.width * 0.88, height: p.area.height * 0.9, weight: 800, padX: 0.95, padY: 0.2}) : p.size;
   const textAt = 0.5;
   const q = step(0, 0.65, (x) => x);
   const dropY = interpolate(q, [0, 0.6, 0.8, 1], [-400, 0, -25, 0]);

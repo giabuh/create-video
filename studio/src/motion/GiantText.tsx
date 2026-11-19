@@ -34,7 +34,7 @@ export const GiantText: React.FC<MotionProps<typeof GiantTextSchema>> = (p) => {
   const sp = interpolate(tg, [0.15, 0.95], [0, 1], clamp);
   const sOp = sp <= 0 || sp >= 1 ? 0 : sp < 0.2 ? sp / 0.2 : 1 - (sp - 0.2) / 0.8;
   const cap = p.caption?.trim();
-  const capSize = cap && loaded ? fitFontSize({text: cap, maxSize: p.captionSize, width: W * 0.9, height: p.area.height * 0.3, weight: 800}) : p.captionSize;
+  const capSize = cap && loaded ? fitFontSize({text: cap, maxSize: p.captionSize, width: W * 0.9, height: p.area.height * 0.3, weight: 800, padX: 0.035}) : p.captionSize;
   const land = interpolate(tg, [1.1, 1.1 + 0.38], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
   const capEnd = 1.1 + 0.38 + (cap ? fxDuration(p.fx, cap, 1) : 0);
   return (
