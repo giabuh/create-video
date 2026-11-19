@@ -60,7 +60,7 @@ test('edit caption: autosave pill and player', async ({page}) => {
 
 test('voice job then draft render', async ({page}) => {
   await page.goto(`/p/${slug}`);
-  const staleBanner = page.getByText(/chưa có giọng — đang dùng độ dài ước tính/);
+  const staleBanner = page.getByText(/\d+ cảnh chưa tạo giọng/);
   await expect(staleBanner).toBeVisible({timeout: 30_000});
   await page.getByRole('button', {name: 'Tạo giọng', exact: true}).first().click();
   await waitJob('voice', 120_000);
