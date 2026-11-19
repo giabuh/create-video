@@ -1,9 +1,9 @@
-import {readdir, rm} from 'node:fs/promises';
+import {readdir, rm, stat} from 'node:fs/promises';
 import path from 'node:path';
 import {Hono} from 'hono';
-import {MEDIA_EXTS, PathError, safeJoin} from '../paths.ts';
+import {MEDIA_EXTS, MUSIC_EXTS, PathError, safeJoin} from '../paths.ts';
 import {Conflict, readJson, readJsonOr, writeJsonAtomic} from '../store.ts';
-import type {LibraryIndex, LibraryResponse, Storyboard} from '../../shared/types.ts';
+import type {LibraryIndex, LibraryResponse, MusicFile, Storyboard} from '../../shared/types.ts';
 import {bodyOf, HttpError, ingestBusy, isObj, mtimeField, plainName} from './util.ts';
 import type {Deps} from './util.ts';
 
@@ -28,6 +28,14 @@ async function usageMap(): Promise<Record<string, string[]>> {
 export function libraryRoutes({jobs}: Deps): Hono {
   const app = new Hono();
   const busy = () => { if (ingestBusy(jobs)) throw new HttpError(423, 'ingest running'); };
+
+  app.get('/music', async c => {
+    const dir = safeJoin('music');
+    const names = (await readdir(dir).catch(() => [] as string[]))
+      .filter(n => !n.startsWith('.') && MUSIC_EXTS.includes(path.extname(n).toLowerCase())).sort();
+    const files: MusicFile[] = await Promise.all(names.map(async name => ({name, bytes: (await stat(path.join(dir, name))).size})));
+    return c.json(files);
+  });
 
   app.get('/library', async c => {
     const idx = await readJsonOr<LibraryIndex>(indexFile(), {});

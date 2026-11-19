@@ -17,6 +17,15 @@ async function seed() {
 const useP1 = (root: string) => writeFile(path.join(root, 'projects/p1/storyboard.json'), JSON.stringify({scenes: [{id: 's1', media: [{src: 'a.jpg'}]}]}));
 
 describe('library routes', () => {
+  it('GET /music lists audio files with sizes, sorted, skipping others', async () => {
+    const root = await makeTestRoot();
+    await mkdir(path.join(root, 'music'), {recursive: true});
+    await writeFile(path.join(root, 'music/Sôi động 1.mp3'), 'xyz');
+    await writeFile(path.join(root, 'music/a.wav'), 'ab');
+    await writeFile(path.join(root, 'music/notes.txt'), 'n');
+    await writeFile(path.join(root, 'music/.hidden.mp3'), 'h');
+    expect(await (await setup().req('/api/music')).json()).toEqual([{name: 'Sôi động 1.mp3', bytes: 3}, {name: 'a.wav', bytes: 2}].sort((x, y) => x.name < y.name ? -1 : 1));
+  });
   it('missing index -> empty', async () => {
     const root = await makeTestRoot();
     await import('node:fs/promises').then(f => f.rm(path.join(root, 'library/media-index.json')));
