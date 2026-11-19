@@ -4,6 +4,8 @@ from pathlib import Path
 from .align import estimate_words, find_word
 from .captions import chunk_caption
 
+# Cards that animate their own exit (registered with ownsExit: true in studio/src/motion/registry.ts): no default fade.
+OWNS_EXIT = {"Ribbon", "TwoTier", "Callout", "PinLabel", "GlossyPill", "GiantText"}
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp"}
 
 
@@ -63,7 +65,7 @@ def _layer(m: dict, start: float, duration: float, has_media: bool) -> dict:
         "backdrop": backdrop, "scale": float(m.get("scale", 1)), "rotate": float(m.get("rotate", 0)),
         "opacity": float(m.get("opacity", 1)),
         "enter": _anim(m.get("enter"), "none"),
-        "exit": _anim(m.get("exit"), "none" if position == "full" else "fade", 0.25 if m.get("exit") is None else 0.35),
+        "exit": _anim(m.get("exit"), "none" if position == "full" or m["component"] in OWNS_EXIT else "fade", 0.25 if m.get("exit") is None else 0.35),
         "keyframes": [dict(k) for k in m.get("keyframes") or []],
         "colors": m.get("colors") or None,
     }

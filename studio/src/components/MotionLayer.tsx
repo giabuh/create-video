@@ -4,7 +4,7 @@ import React from 'react';
 import {AbsoluteFill, Easing, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
 import {MOTION} from '../motion/registry';
 import {parseMotionProps} from '../motion/schema';
-import type {Anim, Brand, Keyframe, MotionItem, MotionPosition} from '../types';
+import {BRAND_COLOR_DEFAULTS, type Anim, type Brand, type FullBrand, type Keyframe, type MotionItem, type MotionPosition} from '../types';
 
 // Bands as fractions of the frame height. 'bottom' ends above the captions and the Reels/TikTok UI.
 export const BANDS: Record<Exclude<MotionPosition, 'full' | 'free'>, [number, number]> = {
@@ -88,7 +88,7 @@ export const withDefaults = (item: MotionItem): MotionItem => {
   return {
     ...item, position, box: item.box ?? null, backdrop: item.backdrop ?? 'none', scale: item.scale ?? 1, rotate: item.rotate ?? 0,
     opacity: item.opacity ?? 1, enter: item.enter ?? NONE,
-    exit: item.exit ?? (position === 'full' ? NONE : {type: 'fade', duration: 0.25}), keyframes: item.keyframes ?? [], colors: item.colors ?? null,
+    exit: item.exit ?? (position === 'full' || MOTION[item.component]?.ownsExit ? NONE : {type: 'fade', duration: 0.25}), keyframes: item.keyframes ?? [], colors: item.colors ?? null,
   };
 };
 
@@ -109,7 +109,7 @@ export const MotionLayer: React.FC<{item: MotionItem; brand: Brand}> = ({item: r
   const scrimIn = interpolate(frame, [0, Math.max(1, (it.enter.type === 'none' ? 0 : it.enter.duration) * fps, SCRIM_IN * fps)], [0, 1],
     {...clamp, easing: Easing.inOut(Easing.cubic)});
   const kf = keyframeAt(it.keyframes, frame / fps);
-  const layerBrand = it.colors ? {...brand, colors: {...brand.colors, ...it.colors}} : brand;
+  const layerBrand: FullBrand = {...brand, colors: {...BRAND_COLOR_DEFAULTS, ...brand.colors, ...(it.colors ?? {})}};
 
   const transform = [
     kf.x || kf.y ? `translate(${(kf.x / 100) * width}px, ${(kf.y / 100) * height}px)` : '',

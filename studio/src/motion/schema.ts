@@ -5,7 +5,8 @@
 import type React from 'react';
 import {z} from 'zod';
 import {zColor} from '@remotion/zod-types';
-import type {Brand} from '../types';
+import type {FullBrand} from '../types';
+import {TEXT_FX, TEXT_FX_LABELS, type TextFx} from './fx/textFx';
 
 export {z};
 
@@ -37,20 +38,28 @@ export const choice = <const T extends readonly [string, ...string[]]>(title: st
   z.enum(values).default(value).meta({title, ...(labels && {labels})});
 /** A file in library/ (image or video), picked from the media library in the app. */
 export const media = (title: string) => z.string().min(1).meta({title, ui: 'media'});
+/** Which text effect a card uses for its main text. */
+export const textFx = (title: string, value: TextFx) => choice(title, TEXT_FX, value, TEXT_FX_LABELS);
+/** Speed of a card's whole choreography: fast 0.7×, normal 1×, slow 1.4× (see PACE). */
+export const pace = () => choice('Nhịp', ['fast', 'normal', 'slow'], 'normal', {fast: 'Nhanh', normal: 'Vừa', slow: 'Chậm'});
+export const decor = () => choice('Trang trí', ['none', 'sparkle', 'dot', 'emoji'], 'none',
+  {none: 'Không', sparkle: 'Tia lấp lánh', dot: 'Chấm nháy', emoji: 'Sticker emoji'});
+export const emoji = () => optText('Emoji (khi trang trí là sticker), VD: 📢 🔥 ⭐');
 
 /** What every motion component receives: its parsed props, the (possibly overridden) brand, the layer length,
  *  and the size in px of the area it is placed in (full frame, band or box) — for fitting text (see fit.ts). */
-export type MotionProps<S extends z.ZodType> = z.output<S> & {brand: Brand; layerSeconds: number; area: {width: number; height: number}};
+export type MotionProps<S extends z.ZodType> = z.output<S> & {brand: FullBrand; layerSeconds: number; area: {width: number; height: number}};
 export type MotionDef = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component: React.ComponentType<any>;
   schema: z.ZodObject;
   title: string;          // shown in the app's component picker
   description?: string;   // one line: what it is for
+  ownsExit?: boolean;     // the card animates its own exit: the layer's default exit is none
 };
 
 export const defineMotion = <S extends z.ZodObject>(def: {
-  component: React.ComponentType<MotionProps<S>>; schema: S; title: string; description?: string;
+  component: React.ComponentType<MotionProps<S>>; schema: S; title: string; description?: string; ownsExit?: boolean;
 }): MotionDef => def;
 
 /** Props after defaults, or a readable error listing every problem. */

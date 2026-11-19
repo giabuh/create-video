@@ -173,3 +173,11 @@ def test_sfx_peak_lands_on_the_change():
     audio = {"s1": {"src": "a.wav", "duration": 3.0, "pauseAfter": 0.0}, "s2": {"src": "b.wav", "duration": 3.0, "pauseAfter": 0.0}}
     p = build_render_props(_sb(s2={"transition": "fade"}), {**SETTINGS, "sfx": SFX}, BRAND, audio, sfx_files=FILES, sfx_peaks={"whoosh-a.mp3": 0.7})
     assert p["sfx"][0] == {"src": "sfx/whoosh-a.mp3", "start": 2.3, "volume": SFX.get("volume", 0.5)}
+
+
+def test_self_animating_cards_have_no_default_exit_fade():
+    sb = {"scenes": [{"id": "a", "duration": 3, "media": [{"src": "a.mp4"}], "motion": [
+        {"component": "Ribbon", "position": "bottom"}, {"component": "Text", "position": "bottom"}]}]}
+    rib, txt = build_render_props(sb, SETTINGS, BRAND, {})["scenes"][0]["motion"]
+    assert rib["exit"] == {"type": "none", "duration": 0.0}
+    assert txt["exit"] == {"type": "fade", "duration": 0.25}
