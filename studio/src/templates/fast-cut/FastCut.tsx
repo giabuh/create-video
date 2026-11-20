@@ -46,7 +46,7 @@ export const FastCut: React.FC<RenderProps> = (p) => {
                   </Sequence>
                 ))}
                 {sc.overlay && <Overlay overlay={sc.overlay} brand={p.brand} />}
-                <Captions chunks={sc.captions} highlight={sc.highlight} style={p.captions} />
+                <Captions chunks={sc.captions} highlight={sc.highlight} style={p.captions} boxColor={p.brand.colors.background} />
                 {sc.voice && <Audio src={staticFile(sc.voice.src)} />}
               </Sequence>
             </SceneTransition>
@@ -58,7 +58,7 @@ export const FastCut: React.FC<RenderProps> = (p) => {
       )}
       {p.cta && (
         <Sequence name="cta" from={Math.round(ctaStart * fps)} durationInFrames={f(p.cta.duration)}>
-          <CtaCard cta={p.cta} brand={p.brand} />
+          <CtaCard cta={p.cta} brand={p.brand} bg={p.scenes[p.scenes.length - 1]?.media[0]} />
         </Sequence>
       )}
       {(p.overlays ?? []).map((m, i) => (

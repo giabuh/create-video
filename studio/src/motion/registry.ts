@@ -12,9 +12,11 @@ import {LowerThird, LowerThirdSchema} from './LowerThird';
 import {Picture, PictureSchema} from './Picture';
 import {PinLabel, PinLabelSchema} from './PinLabel';
 import {PriceTag, PriceTagSchema} from './PriceTag';
+import {OfferCard, OfferCardSchema} from './OfferCard';
 import {ProgressBar, ProgressBarSchema} from './ProgressBar';
 import {Ribbon, RibbonSchema} from './Ribbon';
 import {defineMotion, type MotionDef} from './schema';
+import {Stamp, StampSchema} from './Stamp';
 import {Text, TextSchema} from './Text';
 import {TwoTier, TwoTierSchema} from './TwoTier';
 
@@ -24,6 +26,7 @@ export const MOTION: Record<string, MotionDef> = {
   CountUp: defineMotion({component: CountUp, schema: CountUpSchema, title: 'Số đếm', description: 'Số chạy từ A đến B'}),
   Checklist: defineMotion({component: Checklist, schema: ChecklistSchema, title: 'Danh sách tích', description: 'Các mục có dấu ✓ hiện lần lượt'}),
   PriceTag: defineMotion({component: PriceTag, schema: PriceTagSchema, title: 'Thẻ giá', description: 'Giá mới, giá cũ gạch ngang'}),
+  OfferCard: defineMotion({component: OfferCard, schema: OfferCardSchema, title: 'Thẻ ưu đãi', description: 'Thẻ trắng nhấn cụm chữ vàng + con dấu giảm giá, hoặc số khổng lồ', ownsExit: true}),
   DateBadge: defineMotion({component: DateBadge, schema: DateBadgeSchema, title: 'Thẻ ngày', description: 'Nhãn + ngày (VD: khai giảng)'}),
   LowerThird: defineMotion({component: LowerThird, schema: LowerThirdSchema, title: 'Thanh tên', description: 'Tên + mô tả trượt vào từ cạnh'}),
   Annotate: defineMotion({component: Annotate, schema: AnnotateSchema, title: 'Nét vẽ tay', description: 'Khoanh, gạch chân, tô nền một vùng hoặc một chữ'}),
@@ -35,4 +38,5 @@ export const MOTION: Record<string, MotionDef> = {
   GlossyPill: defineMotion({component: GlossyPill, schema: GlossyPillSchema, title: 'Nhãn bóng', description: 'Viên gradient viền sáng, vệt bóng quét qua, dòng phụ, sticker', ownsExit: true}),
   Callout: defineMotion({component: Callout, schema: CalloutSchema, title: 'Nhãn chỉ điểm', description: 'Ô chữ có đường kẻ chỉ vào người/vật', ownsExit: true}),
   GiantText: defineMotion({component: GiantText, schema: GiantTextSchema, title: 'Chữ khổng lồ', description: 'Chữ to lướt ngang màn hình rồi đọng lại một dòng', ownsExit: true}),
+  Stamp: defineMotion({component: Stamp, schema: StampSchema, title: 'Con dấu', description: 'Con dấu đỏ đóng xuống, vòng sóng lan ra', ownsExit: true}),
 };

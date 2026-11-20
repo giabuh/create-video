@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Chốt · B + C + A</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&amp;family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.frame{position:relative;width:360px;height:640px;border-radius:18px;overflow:hidden;flex:none;background:#0B1530}
+.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,21,48,.35) 0%,rgba(11,21,48,0) 25%,rgba(11,21,48,0) 65%,rgba(11,21,48,.5) 100%)}
+.logo{position:absolute;top:14px;left:14px;width:80px}
+.bc{font-family:'Barlow Condensed',sans-serif}
+.card{background:#FFFFFF;border-radius:20px;box-shadow:0 14px 34px rgba(11,21,48,.32)}
+.hl{background-image:linear-gradient(#FFD400,#FFD400);background-repeat:no-repeat;background-position:0 88%;background-size:100% 45%;padding:0 2px;animation:hl 4.5s both}
+.glass{background:rgba(11,21,48,.58);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.18);border-radius:22px;box-shadow:0 18px 40px rgba(0,0,0,.35)}
+.strike{position:absolute;left:10px;right:10px;top:50%;height:2px;background:#3B4660;transform-origin:left;animation:strike 4.5s both}
+.a-up{animation:up 4.5s both}
+.a-left{animation:left 4.5s both}
+.a-down{animation:down 4.5s both}
+.a-pop{animation:pop 4.5s both}
+.a-sticker{animation:sticker 4.5s both}
+.a-wipe{animation:wipe 4.5s both}
+.a-slam{animation:slam 4.5s both}
+.a-pulse{animation:pulse 1.1s ease-in-out infinite}
+@keyframes up{0%{opacity:0;transform:translateY(28px);animation-timing-function:cubic-bezier(.22,1,.36,1)}9%,88%{opacity:1;transform:none}94%,100%{opacity:0;transform:translateY(-10px)}}
+@keyframes left{0%{opacity:0;transform:translateX(-48px);animation-timing-function:cubic-bezier(.34,1.56,.64,1)}8%,88%{opacity:1;transform:none}94%,100%{opacity:0;transform:translateX(-24px)}}
+@keyframes down{0%{opacity:0;transform:translateY(-20px);animation-timing-function:cubic-bezier(.34,1.56,.64,1)}7%,88%{opacity:1;transform:none}94%,100%{opacity:0}}
+@keyframes pop{0%{opacity:0;transform:scale(.4);animation-timing-function:cubic-bezier(.34,1.7,.64,1)}8%,88%{opacity:1;transform:scale(1)}94%,100%{opacity:0;transform:scale(.7)}}
+@keyframes sticker{0%{opacity:0;transform:scale(.2) rotate(-40deg);animation-timing-function:cubic-bezier(.34,1.8,.64,1)}10%,88%{opacity:1;transform:scale(1) rotate(10deg)}94%,100%{opacity:0;transform:scale(.6) rotate(10deg)}}
+@keyframes wipe{0%{clip-path:inset(0 100% 0 0);animation-timing-function:cubic-bezier(.65,0,.35,1)}7%,88%{clip-path:inset(0 0 0 0)}94%,100%{clip-path:inset(0 0 0 100%)}}
+@keyframes slam{0%{opacity:0;transform:scale(1.7)}5%{opacity:1;transform:scale(.92)}7%{transform:scale(1.04) rotate(-1deg)}9%,88%{opacity:1;transform:scale(1) rotate(0)}94%,100%{opacity:0;transform:scale(.8)}}
+@keyframes hl{0%{background-size:0% 45%;animation-timing-function:cubic-bezier(.65,0,.35,1)}8%,88%{background-size:100% 45%}94%,100%{background-size:0% 45%}}
+@keyframes strike{0%{transform:scaleX(0);animation-timing-function:cubic-bezier(.65,0,.35,1)}6%,88%{transform:scaleX(1)}94%,100%{transform:scaleX(0)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.stamp{color:#E11D2E;background:rgba(255,255,255,.94);box-shadow:0 6px 18px rgba(11,21,48,.35);animation:stamp 4.5s both}
+.ring{position:absolute;border:3px solid #E11D2E;border-radius:999px;pointer-events:none;animation:ring 4.5s both}
+.shake{animation:shake 4.5s both}
+@keyframes stamp{0%{opacity:0;transform:scale(2.8) rotate(-24deg);animation-timing-function:cubic-bezier(.55,0,1,.45)}5%{opacity:1;transform:scale(.9) rotate(-12deg)}6.5%{transform:scale(1.04) rotate(-12deg)}8%,88%{opacity:1;transform:scale(1) rotate(-12deg)}94%,100%{opacity:0;transform:scale(1) rotate(-12deg)}}
+@keyframes ring{0%,4.9%{opacity:0;transform:scale(.7)}5%{opacity:.9;transform:scale(.8)}15%,100%{opacity:0;transform:scale(2)}}
+@keyframes shake{0%,4.9%{transform:none}5.6%{transform:translate(-5px,4px)}6.4%{transform:translate(4px,-3px)}7.2%{transform:translate(-2px,2px)}8%,100%{transform:none}}
+@media (prefers-reduced-motion: reduce){.a-up,.a-left,.a-down,.a-pop,.a-sticker,.a-wipe,.a-slam,.a-pulse,.hl,.strike,.stamp,.ring,.shake{animation:none}}
+</style>
+</helmet>
+<div style="width: 1992px; height: 800px; box-sizing: border-box; padding: 40px; background: #E9EDF3; font-family: 'Be Vietnam Pro', sans-serif; color: #0B1530; display: flex; flex-direction: column; gap: 24px">
+<div style="height: 56px; display: flex; align-items: baseline; gap: 20px">
+<h2 style="margin: 0; font-size: 32px; font-weight: 800">Chốt · B làm nền</h2>
+<p style="margin: 0; font-size: 16px; color: #3B4660">Ưu đãi từ C · danh sách, học phí, khai giảng từ B · CTA từ A · phụ đề hộp navy · chuyển động lặp mỗi 4,5 giây</p>
+</div>
+<div style="display: flex; gap: 28px">
+
+<div class="frame">
+<img class="bg shake" src="/_blob/e701f1691b7e642b9f0b148c02aba225" alt="" style="animation-delay: .45s">
+<div class="shade"></div>
+<img class="logo" src="/_blob/373d834b92a5a04f56b6b4aaed829e77" alt="Sao Việt">
+<div class="card a-up" style="position: absolute; top: 116px; left: 32px; right: 56px; padding: 18px 20px; display: flex; flex-direction: column; gap: 4px">
+<div style="font-size: 13px; font-weight: 700; color: #1E3A8A; letter-spacing: 1px">ƯU ĐÃI HỌC PHÍ</div>
+<div style="font-size: 30px; font-weight: 900; line-height: 1.15">Giảm ngay<br><span class="hl" style="animation-delay: .5s">khi đăng ký</span></div>
+</div>
+<div class="ring" style="top: 76px; right: 14px; width: 110px; height: 110px; animation-delay: .45s"></div>
+<div class="stamp" style="position: absolute; top: 76px; right: 14px; width: 110px; height: 110px; box-sizing: border-box; border-radius: 999px; border: 4px solid #E11D2E; padding: 5px; animation-delay: .45s">
+<div style="width: 100%; height: 100%; box-sizing: border-box; border-radius: 999px; border: 2px dashed #E11D2E; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1">
+<div class="bc" style="font-size: 14px; font-weight: 800; letter-spacing: 2px">GIẢM</div>
+<div class="bc" style="font-size: 38px; font-weight: 900">35%</div>
+<div style="font-size: 7px; font-weight: 800; letter-spacing: 1px">ĐĂNG KÝ NGAY</div>
+</div>
+</div>
+<p class="a-up" style="position: absolute; left: 0; right: 0; bottom: 56px; margin: 0; text-align: center; animation-delay: .1s"><span style="background: #0B1530; color: #FFFFFF; font-size: 18px; font-weight: 800; padding: 6px 10px; border-radius: 4px">được giảm <span style="color: #FFD400">35%</span> học phí.</span></p>
+</div>
+
+<div class="frame">
+<img class="bg" src="/_blob/56c8f5329ae071cf86835498a94476af" alt="">
+<div class="shade"></div>
+<img class="logo" src="/_blob/373d834b92a5a04f56b6b4aaed829e77" alt="Sao Việt">
+<div style="position: absolute; top: 84px; left: 20px; right: 40px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start">
+<div class="bc a-wipe" style="background: #FFD400; color: #0B1530; font-size: 26px; font-weight: 900; padding: 2px 12px; border-radius: 6px; letter-spacing: 1px">BẠN SẼ HỌC</div>
+<div class="a-left" style="display: flex; align-items: center; gap: 10px; background: #0B1530; color: #FFFFFF; font-size: 15px; font-weight: 700; padding: 8px 12px; border-radius: 6px; box-shadow: 4px 4px 0 #FFD400; animation-delay: .25s"><span class="bc" style="color: #FFD400; font-size: 20px; font-weight: 900">01</span>Tạo tài khoản quảng cáo</div>
+<div class="a-left" style="display: flex; align-items: center; gap: 10px; background: #0B1530; color: #FFFFFF; font-size: 15px; font-weight: 700; padding: 8px 12px; border-radius: 6px; box-shadow: 4px 4px 0 #FFD400; margin-left: 12px; animation-delay: .4s"><span class="bc" style="color: #FFD400; font-size: 20px; font-weight: 900">02</span>Chọn đúng tệp khách hàng</div>
+<div class="a-left" style="display: flex; align-items: center; gap: 10px; background: #0B1530; color: #FFFFFF; font-size: 15px; font-weight: 700; padding: 8px 12px; border-radius: 6px; box-shadow: 4px 4px 0 #FFD400; margin-left: 24px; animation-delay: .55s"><span class="bc" style="color: #FFD400; font-size: 20px; font-weight: 900">03</span>Viết nội dung thu hút</div>
+<div class="a-left" style="display: flex; align-items: center; gap: 10px; background: #0B1530; color: #FFFFFF; font-size: 15px; font-weight: 700; padding: 8px 12px; border-radius: 6px; box-shadow: 4px 4px 0 #FFD400; margin-left: 36px; animation-delay: .7s"><span class="bc" style="color: #FFD400; font-size: 20px; font-weight: 900">04</span>Tối ưu ngân sách</div>
+</div>
+<p class="a-up" style="position: absolute; left: 0; right: 0; bottom: 56px; margin: 0; text-align: center; animation-delay: .1s"><span style="background: #0B1530; color: #FFFFFF; font-size: 18px; font-weight: 800; padding: 6px 10px; border-radius: 4px">và <span style="color: #FFD400">tối ưu ngân sách.</span></span></p>
+</div>
+
+<div class="frame">
+<img class="bg shake" src="/_blob/35751622240a3bd8c6fb2ba7f34d4777" alt="" style="animation-delay: 1s">
+<div class="shade"></div>
+<img class="logo" src="/_blob/373d834b92a5a04f56b6b4aaed829e77" alt="Sao Việt">
+<div style="position: absolute; top: 100px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 0">
+<div class="a-down" style="position: relative; background: #FFFFFF; color: #3B4660; font-size: 16px; font-weight: 700; padding: 6px 14px; border-radius: 6px 6px 0 0">X.XXX.000đ<span class="strike" style="animation-delay: .35s"></span></div>
+<div class="bc a-slam" style="background: #FFD400; color: #0B1530; font-size: 60px; font-weight: 900; padding: 0 18px; border-radius: 6px; box-shadow: 6px 6px 0 #0B1530; line-height: 1.05; animation-delay: .6s">X.XXX.000Đ</div>
+</div>
+<div class="ring" style="top: 172px; left: 196px; width: 130px; height: 130px; animation-delay: 1s"></div>
+<div class="stamp bc" style="position: absolute; top: 200px; left: 180px; border: 5px double #E11D2E; border-radius: 8px; padding: 2px 14px; font-size: 34px; font-weight: 900; letter-spacing: 2px; line-height: 1.1; animation-delay: 1s">ƯU ĐÃI</div>
+<p class="a-up" style="position: absolute; left: 0; right: 0; bottom: 56px; margin: 0; text-align: center; animation-delay: .1s"><span style="background: #0B1530; color: #FFFFFF; font-size: 18px; font-weight: 800; padding: 6px 10px; border-radius: 4px">học phí chỉ còn <span style="color: #FFD400">…</span></span></p>
+</div>
+
+<div class="frame">
+<img class="bg" src="/_blob/05496574bee90779eeb7dffcc8eea2ef" alt="">
+<div class="shade"></div>
+<img class="logo" src="/_blob/373d834b92a5a04f56b6b4aaed829e77" alt="Sao Việt">
+<div style="position: absolute; top: 96px; left: 28px; display: flex; flex-direction: column; align-items: flex-start">
+<div class="bc a-down" style="background: #1E3A8A; color: #FFFFFF; font-size: 24px; font-weight: 800; padding: 2px 12px; border-radius: 6px 6px 0 0; letter-spacing: 2px">KHAI GIẢNG</div>
+<div class="bc a-wipe" style="background: #FFD400; color: #0B1530; font-size: 92px; font-weight: 900; padding: 0 16px; border-radius: 0 6px 6px 6px; box-shadow: 6px 6px 0 #0B1530; line-height: 1; animation-delay: .25s">DD.MM</div>
+</div>
+<p class="a-up" style="position: absolute; left: 0; right: 0; bottom: 56px; margin: 0; text-align: center; animation-delay: .1s"><span style="background: #0B1530; color: #FFFFFF; font-size: 18px; font-weight: 800; padding: 6px 10px; border-radius: 4px">khai giảng <span style="color: #FFD400">ngày …</span></span></p>
+</div>
+
+<div class="frame">
+<img class="bg" src="/_blob/7bdb75547d6fa9058407bcfb6afeb1bd" alt="">
+<div class="shade"></div>
+<div class="glass a-up" style="position: absolute; left: 24px; right: 24px; bottom: 40px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px">
+<img class="a-pop" src="/_blob/373d834b92a5a04f56b6b4aaed829e77" alt="Sao Việt" style="width: 120px; animation-delay: .25s">
+<div class="a-pop" style="width: 100%; animation-delay: .45s"><div class="a-pulse" style="background: #FFD400; color: #0B1530; font-size: 18px; font-weight: 900; text-align: center; padding: 12px 0; border-radius: 999px; letter-spacing: 0.5px">ĐĂNG KÝ NGAY</div></div>
+<div class="a-up" style="display: flex; align-items: center; gap: 8px; font-size: 22px; font-weight: 800; color: #FFFFFF; animation-delay: .6s"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFD400" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"></path></svg>0876 929 145</div>
+<div class="a-up" style="font-size: 13px; font-weight: 500; color: rgba(255,255,255,.75); animation-delay: .7s">fb.com/hocquangcaobinhduong</div>
+</div>
+</div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1992,"height":800}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

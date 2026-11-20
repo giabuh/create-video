@@ -5,7 +5,7 @@ from .align import estimate_words, find_word
 from .captions import chunk_caption
 
 # Cards that animate their own exit (registered with ownsExit: true in studio/src/motion/registry.ts): no default fade.
-OWNS_EXIT = {"Ribbon", "TwoTier", "Callout", "PinLabel", "GlossyPill", "GiantText"}
+OWNS_EXIT = {"Ribbon", "TwoTier", "Callout", "PinLabel", "GlossyPill", "GiantText", "OfferCard", "Stamp"}
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp"}
 
 
@@ -99,6 +99,10 @@ def _motion(items: list[dict], scene_dur: float, has_media: bool, words=None, ca
             dur = (t - start) if t is not None else scene_dur - start
         else:
             dur = float(m.get("duration", scene_dur - start))
+        props = m.get("props") or {}
+        if props.get("itemsAt"):  # one voice word per list item -> seconds from the layer start
+            times = [_word_time(w, words, caption, f"{where} itemsAt[{j}]", problems) for j, w in enumerate(props["itemsAt"])]
+            m = {**m, "props": {**props, "itemTimes": [round(max(0.0, t - start), 3) if t is not None else None for t in times]}}
         out.append(_layer(m, start, min(dur, scene_dur - start), has_media))
     return out
 
@@ -221,7 +225,7 @@ def build_render_props(storyboard: dict, settings: dict, brand: dict, audio: dic
         "brand": {"name": brand.get("name", ""),
                   "logo": f"brands/{settings['brand']}/{brand['logo']}" if brand.get("logo") else None,
                   "colors": brand["colors"]},
-        "captions": {k: cap[k] for k in ("font", "size", "color", "highlightColor")},
+        "captions": {**{k: cap[k] for k in ("font", "size", "color", "highlightColor")}, "box": bool(cap.get("box"))},
         "music": None if music is None else {"src": f"music/{music['file']}", "volume": music["volume"],
                                              "duckTo": music["duckTo"], "fadeOut": music["fadeOut"]},
         "scenes": scenes,

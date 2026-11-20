@@ -44,7 +44,7 @@ def test_build_render_props():
     assert p["brand"] == {"name": "Demo", "logo": "brands/demo/logo.png", "colors": BRAND["colors"]}
     assert p["music"] == {"src": "music/m.mp3", "volume": 0.25, "duckTo": 0.08, "fadeOut": 1.5}
     assert (p["template"], p["fps"], p["width"], p["height"]) == ("fast-cut", 30, 1080, 1920)
-    assert p["captions"] == {"font": "Be Vietnam Pro", "size": 64, "color": "#FFFFFF", "highlightColor": "#FFD400"}
+    assert p["captions"] == {"font": "Be Vietnam Pro", "size": 64, "color": "#FFFFFF", "highlightColor": "#FFD400", "box": False}
 
 
 def test_no_cta_no_music_no_logo():
@@ -93,6 +93,14 @@ def test_motion_anchored_to_spoken_words():
     price, text = p["scenes"][0]["motion"]
     assert (price["start"], price["duration"]) == (0.2, 1.8)  # '900K' is only in the caption: spans 'chín trăm nghìn'
     assert (text["start"], text["duration"]) == (1.2, 0.5)
+
+
+def test_checklist_items_at_resolve_to_times_from_layer_start():
+    sb = {"scenes": [{**SPOKEN["scenes"][0], "motion": [
+        {"component": "Checklist", "at": "chín", "props": {"items": ["a", "b"], "itemsAt": ["chín", "khóa"]}}]}]}
+    m = build_render_props(sb, SETTINGS, BRAND, VOICE, {"a": WORDS})["scenes"][0]["motion"][0]
+    assert m["props"]["itemTimes"] == [0.0, 1.3]
+    assert "itemTimes" not in sb["scenes"][0]["motion"][0]["props"]  # storyboard untouched
 
 
 def test_video_track_anchors_and_errors():

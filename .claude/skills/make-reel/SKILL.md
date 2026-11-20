@@ -35,8 +35,16 @@ Motion cards, pick by purpose:
 - `PinLabel`: a place.
 - `GlossyPill`: an offer or gift.
 - `GiantText`: one big statement, at most one per video.
+- `OfferCard`: an offer/discount (label, title with `highlight`, stamp via `stampTop/stampMain/stampBottom`); `variant` `card` | `giant` (huge number in a yellow slab).
+- `Stamp`: stamp any short label (round or rect, `top`/main/`bottom`); lands with a shake.
+- `Checklist`: `variant` `steps` (staircase bars) | `grid` (2x2 tiles).
+- `PriceTag`: `variant` `slam` | `countdown` (price counts from `old` to `price`); `stamp` text, empty = none.
+- `DateBadge`: `variant` `slab` | `calendar`; optional `sub` line.
+- CTA end card: one style (glass card with logo, pill, phone, fanpage); empty fields are hidden, so fill `cta` truthfully.
 
 Rules:
 - Vary `fx` (`none, typewriter, words, pop, scramble, mask, wave`) between consecutive cards; never use one effect for the whole video.
 - Brand colors are a starting point: per-layer `colors` (now including `accent2`/`surface`) and new components stay allowed.
 - Choreographed cards need a layer of at least about 2.5 s at `pace: normal`, or they exit before they finish; use `pace: fast` for short layers.
+- Variety: run `python3 tools/usage.py --motion` before choosing cards/variants. Pick by fit first; among equal fits take the least-used;
+  never repeat the last project's combo. New components are allowed if they use the brand tokens in `studio/src/motion/style.ts`.

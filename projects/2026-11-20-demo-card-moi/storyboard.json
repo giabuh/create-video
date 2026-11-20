@@ -1,0 +1,255 @@
+{
+  "template": "fast-cut",
+  "brand": "demo",
+  "voice": "phuong",
+  "targetSeconds": 28,
+  "music": {
+    "file": "Close Up - Michael Ramir C.mp3",
+    "volume": 0.5
+  },
+  "scenes": [
+    {
+      "id": "mo-dau",
+      "say": "Muốn tự chạy quảng cáo Phây Búc mà chưa biết bắt đầu từ đâu?",
+      "caption": "Muốn tự chạy quảng cáo Facebook mà chưa biết bắt đầu từ đâu?",
+      "highlight": [
+        "Facebook"
+      ],
+      "media": [
+        {
+          "src": "video-doc-hoc-vien-nu-thuc-hanh-excel-tren-laptop.mp4",
+          "from": 0.5,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-doc-hoc-vien-nam-thuc-hanh-excel.mp4",
+          "from": 1,
+          "effect": "none"
+        }
+      ],
+      "motion": []
+    },
+    {
+      "id": "kem-1-1",
+      "say": "Tại Tin học Sao Việt, giảng viên hướng dẫn bạn một kèm một, thực hành ngay trên sản phẩm của mình.",
+      "caption": "Tại Tin học Sao Việt, giảng viên hướng dẫn bạn 1 kèm 1, thực hành ngay trên sản phẩm của mình.",
+      "highlight": [
+        "1 kèm 1"
+      ],
+      "media": [
+        {
+          "src": "sv-facebook-hoc-vien-thuc-hanh.jpg",
+          "effect": "zoom-in",
+          "duration": 2.6
+        },
+        {
+          "src": "video-doc-giao-vien-giang-bai-tren-bang-lop-tin-hoc.mp4",
+          "from": 2,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Stamp",
+          "props": {
+            "shape": "rect",
+            "main": "HỌC 1 KÈM 1"
+          },
+          "box": {
+            "x": 40,
+            "y": 10,
+            "w": 56,
+            "h": 14
+          },
+          "at": "một kèm một",
+          "duration": 2.3,
+          "backdrop": "none"
+        }
+      ],
+      "mediaTransition": "fade"
+    },
+    {
+      "id": "ban-se-hoc",
+      "say": "Bạn học tạo tài khoản quảng cáo, chọn đúng tệp khách hàng, viết nội dung thu hút, rồi đọc chỉ số để tối ưu ngân sách.",
+      "caption": "Bạn học tạo tài khoản quảng cáo, chọn đúng tệp khách hàng, viết nội dung thu hút, rồi đọc chỉ số để tối ưu ngân sách.",
+      "highlight": [
+        "tối ưu ngân sách"
+      ],
+      "media": [
+        {
+          "src": "video-doc-hoc-vien-nu-deo-khau-trang-thuc-hanh-word-excel.mp4",
+          "from": 1,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-hoc-vien-nu-thuc-hanh-tin-hoc-van-phong.mp4",
+          "from": 0.5,
+          "effect": "zoom-in"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Checklist",
+          "props": {
+            "variant": "steps",
+            "title": "BẠN SẼ HỌC",
+            "items": [
+              "Tạo tài khoản quảng cáo",
+              "Chọn đúng tệp khách hàng",
+              "Viết nội dung thu hút",
+              "Đọc chỉ số, tối ưu ngân sách"
+            ],
+            "itemsAt": [
+              "tạo tài khoản",
+              "chọn đúng",
+              "viết nội dung",
+              "đọc chỉ số"
+            ]
+          },
+          "box": {
+            "x": 4,
+            "y": 9,
+            "w": 90,
+            "h": 38
+          },
+          "at": "tạo tài khoản",
+          "backdrop": "none",
+          "until": {
+            "word": "ngân sách",
+            "offset": 0.4
+          }
+        },
+        {
+          "component": "Picture",
+          "props": {
+            "src": "sv-facebook-minh-hoa-khach-hang.png",
+            "fit": "contain",
+            "shadow": false
+          },
+          "box": {
+            "x": 12,
+            "y": 47,
+            "w": 76,
+            "h": 21
+          },
+          "at": "chọn đúng",
+          "until": "viết nội dung",
+          "backdrop": "none",
+          "enter": {
+            "type": "pop",
+            "duration": 0.35
+          }
+        },
+        {
+          "component": "Picture",
+          "props": {
+            "src": "sv-facebook-minh-hoa-mau-quang-cao.png",
+            "fit": "contain",
+            "shadow": false
+          },
+          "box": {
+            "x": 12,
+            "y": 47,
+            "w": 76,
+            "h": 21
+          },
+          "at": "viết nội dung",
+          "until": "đọc chỉ số",
+          "backdrop": "none",
+          "enter": {
+            "type": "pop",
+            "duration": 0.35
+          }
+        },
+        {
+          "component": "Picture",
+          "props": {
+            "src": "sv-facebook-minh-hoa-bao-cao.png",
+            "fit": "contain",
+            "shadow": false
+          },
+          "box": {
+            "x": 12,
+            "y": 47,
+            "w": 76,
+            "h": 21
+          },
+          "at": "đọc chỉ số",
+          "until": {
+            "word": "ngân sách",
+            "offset": 0.4
+          },
+          "backdrop": "none",
+          "enter": {
+            "type": "pop",
+            "duration": 0.35
+          }
+        }
+      ]
+    },
+    {
+      "id": "uu-dai",
+      "say": "Đăng ký ngay để được giảm ba mươi lăm phần trăm học phí.",
+      "caption": "Đăng ký ngay để được giảm 35% học phí.",
+      "highlight": [
+        "35%"
+      ],
+      "media": [
+        {
+          "src": "video-doc-lop-hoc-dong-hoc-vien-tai-phong-may.mp4",
+          "from": 8,
+          "effect": "zoom-in"
+        }
+      ],
+      "motion": [
+        {
+          "component": "OfferCard",
+          "props": {
+            "variant": "card",
+            "label": "ƯU ĐÃI HỌC PHÍ",
+            "title": "Giảm ngay khi đăng ký",
+            "highlight": "khi đăng ký",
+            "stampTop": "GIẢM",
+            "stampMain": "35%",
+            "stampBottom": "ĐĂNG KÝ NGAY"
+          },
+          "box": {
+            "x": 4,
+            "y": 10,
+            "w": 92,
+            "h": 30
+          },
+          "at": "Đăng ký",
+          "duration": 2.8,
+          "backdrop": "none"
+        }
+      ]
+    },
+    {
+      "id": "goi-ngay",
+      "say": "Gọi không tám bảy sáu, chín hai chín, một bốn năm để được tư vấn lịch học.",
+      "caption": "Gọi 0876 929 145 để được tư vấn lịch học.",
+      "highlight": [
+        "0876 929 145"
+      ],
+      "media": [
+        {
+          "src": "video-doc-nhieu-hoc-vien-thuc-hanh-tin-hoc-van-phong.mp4",
+          "from": 12,
+          "effect": "none"
+        }
+      ],
+      "motion": []
+    }
+  ],
+  "cta": {
+    "title": "Gọi ngay để được tư vấn",
+    "duration": 3,
+    "logoSize": 420
+  },
+  "sfx": {
+    "volume": 0.5,
+    "scene": "none",
+    "cta": "none"
+  }
+}

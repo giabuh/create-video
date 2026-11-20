@@ -26,27 +26,28 @@ type Fit = {
   wrap?: boolean;           // false: every '\n' line stays on one line
   gap?: number;             // extra space between lines, as a factor of the size (KineticText)
   padX?: number; padY?: number; // padding inside the box, as factors of the size (a text pill)
+  family?: string;          // measure in this bundled font (default Be Vietnam Pro; headingFamily for Barlow)
 };
 
 /** Width in px of one line of text in the bundled font. */
-export const widthOf = (text: string, size: number, weight: number | string) =>
-  measureText({text, fontFamily, fontSize: size, fontWeight: String(weight)}).width;
+export const widthOf = (text: string, size: number, weight: number | string, family: string = fontFamily) =>
+  measureText({text, fontFamily: family, fontSize: size, fontWeight: String(weight)}).width;
 
 /** Line count at `size`, or Infinity if some word cannot fit the width at all. */
 const lineCount = (o: Required<Omit<Fit, 'maxSize' | 'minSize' | 'height'>>, size: number, avail: number): number => {
   let n = 0;
   for (const para of o.text.split('\n')) {
     if (!o.wrap) {
-      if (widthOf(para, size, o.weight) > avail) return Infinity;
+      if (widthOf(para, size, o.weight, o.family) > avail) return Infinity;
       n += 1;
       continue;
     }
     let line = '';
     n += 1;
     for (const word of para.split(/\s+/).filter(Boolean)) {
-      if (widthOf(word, size, o.weight) > avail) return Infinity;
+      if (widthOf(word, size, o.weight, o.family) > avail) return Infinity;
       const next = line ? `${line} ${word}` : word;
-      if (widthOf(next, size, o.weight) <= avail) line = next;
+      if (widthOf(next, size, o.weight, o.family) <= avail) line = next;
       else { n += 1; line = word; }
     }
   }
@@ -56,7 +57,7 @@ const lineCount = (o: Required<Omit<Fit, 'maxSize' | 'minSize' | 'height'>>, siz
 /** Largest font size <= maxSize (whole px) at which `text` fits width x height. */
 export const fitFontSize = (f: Fit): number => {
   const o = {text: f.text, width: f.width, weight: f.weight ?? 800, lineHeight: f.lineHeight ?? 1.12, wrap: f.wrap ?? true,
-    gap: f.gap ?? 0, padX: f.padX ?? 0, padY: f.padY ?? 0};
+    gap: f.gap ?? 0, padX: f.padX ?? 0, padY: f.padY ?? 0, family: f.family ?? fontFamily};
   const fits = (s: number) => {
     const n = lineCount(o, s, f.width - 2 * o.padX * s);
     return n !== Infinity && n * s * o.lineHeight + (n - 1) * o.gap * s + 2 * o.padY * s <= f.height;
