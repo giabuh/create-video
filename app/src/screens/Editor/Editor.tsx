@@ -1,7 +1,7 @@
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {useParams} from 'react-router';
 import {useProject} from '../../api/hooks.ts';
-import {ErrorState, Skeleton} from '../../ui/index.ts';
+import {ErrorState, Segmented, Skeleton} from '../../ui/index.ts';
 import {EditorProvider, useEditor} from './EditorContext.tsx';
 import {Inspector} from './Inspector.tsx';
 import {PreviewPane} from './PreviewPane.tsx';
@@ -12,7 +12,7 @@ import s from './Editor.module.css';
 
 // focus is somewhere that owns the key itself
 const OWN_KEYS = 'input,textarea,select,[contenteditable],[role=slider],[role=menuitem],[role=option],[role=radio],[role=tab],[role=switch],[aria-roledescription=sortable],[role=dialog] *';
-const OWN_SPACE = `${OWN_KEYS},button,a,[role=button]`;
+const OWN_SPACE = `${OWN_KEYS},button,a,summary,[role=button]`;
 
 function useEditorKeys(): void {
   const {storyboard, selectedId, select, seekToScene, playerRef, save} = useEditor();
@@ -35,15 +35,23 @@ function useEditorKeys(): void {
   }, [storyboard.scenes, selectedId, select, seekToScene, playerRef, save]);
 }
 
+type Panel = 'scenes' | 'edit' | 'timeline';
+
 function EditorBody(): React.JSX.Element {
   useEditorKeys();
+  const [panel, setPanel] = useState<Panel>('scenes');
   return (
-    <div className={s.root}>
+    <div className={s.root} data-panel={panel}>
       <TopBar />
       <div className={s.work}>
         <div className={s.left}><SceneList /></div>
         <div className={s.center}><PreviewPane /></div>
         <div className={s.right}><Inspector /></div>
+      </div>
+      <div className={s.dock}>
+        <Segmented<Panel> className={s.panels} aria-label="Bảng làm việc" value={panel} onChange={setPanel} options={[
+          {value: 'scenes', label: 'Cảnh'}, {value: 'edit', label: 'Chỉnh sửa'}, {value: 'timeline', label: 'Timeline'},
+        ]} />
       </div>
       <div id="editor-timeline" className={s.timeline}><Timeline /></div>
     </div>
@@ -60,7 +68,7 @@ export function EditorScreen(): React.JSX.Element {
         <div className={s.top}><Skeleton height={40} /></div>
         <div className={s.work}>
           <div className={s.left}><Skeleton height={100} /><Skeleton height={100} /><Skeleton height={100} /></div>
-          <div className={s.center}><Skeleton width="21rem" height={560} radius={18} /></div>
+          <div className={s.center}><Skeleton width="100%" height="100%" radius={18} /></div>
           <div className={s.right}><Skeleton height={400} radius={14} /></div>
         </div>
       </div>

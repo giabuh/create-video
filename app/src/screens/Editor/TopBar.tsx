@@ -1,10 +1,10 @@
 import {useState} from 'react';
 import {Link, useNavigate} from 'react-router';
-import {Clapperboard, Mic} from 'lucide-react';
+import {ChartPie, Clapperboard, Mic, Upload} from 'lucide-react';
 import type {Job} from '../../../shared/types.ts';
 import {useJobs, useWorkerStatus} from '../../api/events.ts';
 import {useStartRender, useStartVoice} from '../../api/hooks.ts';
-import {Button, ConfirmDialog, ProgressBar, Spinner, fmtPct, toast} from '../../ui/index.ts';
+import {Button, ConfirmDialog, DropdownMenu, IconButton, Popover, ProgressBar, Spinner, fmtPct, toast} from '../../ui/index.ts';
 import {useEditor} from './EditorContext.tsx';
 import {mixOf} from './editorState.ts';
 import {MixMeter} from './MixMeter.tsx';
@@ -54,20 +54,39 @@ export function TopBar(): React.JSX.Element {
     void save.flush().then(() => startRender.mutateAsync(kind)).catch((e: unknown) => toast({title: 'Không bắt đầu được render', description: e instanceof Error ? e.message : String(e), tone: 'error'}));
   };
   const ask = (kind: 'draft' | 'final') => (stale.length ? setConfirm(kind) : doRender(kind));
+  const openVersions = () => void nav(`/p/${encodeURIComponent(slug)}/renders`);
+  const mix = renderProps ? mixOf(renderProps) : (detail.timings?.mix ?? null);
+  const progress = rendering && (
+    <div className={s.progress} role="status">
+      <ProgressBar value={renderJob?.progress ?? null} tone="info" size="sm" label="Tiến độ render" />
+      <span>{renderJob?.progress != null ? fmtPct(renderJob.progress) : 'Đang chờ…'}</span>
+    </div>
+  );
 
   return (
     <header className={s.top}>
-      <nav className={s.crumb} aria-label="Đường dẫn"><Link to="/">Dự án</Link><span aria-hidden>/</span><b>{slug}</b></nav>
-      <SavePill />
-      <div className={s.mixWrap}><MixMeter actual={renderProps ? mixOf(renderProps) : (detail.timings?.mix ?? null)} target={detail.mixTarget} /></div>
+      <div className={s.identity}>
+        <nav className={s.crumb} aria-label="Đường dẫn"><Link to="/">Dự án</Link><span aria-hidden>/</span><b title={slug}>{slug}</b></nav>
+        <SavePill />
+      </div>
+      <div className={s.mixWrap}><MixMeter actual={mix} target={detail.mixTarget} /></div>
+      <div className={s.mixMenu}>
+        <Popover align="end" trigger={<IconButton label="Tỉ lệ nội dung" icon={<ChartPie size={18} aria-hidden />} />}>
+          <MixMeter actual={mix} target={detail.mixTarget} />
+        </Popover>
+      </div>
+      <div className={s.compactActions}>
+        <DropdownMenu align="end" trigger={<Button variant="primary" icon={<Upload size={16} aria-hidden />}>Xuất video</Button>} items={[
+          {label: 'Render nháp', disabled: voiceBusy || rendering, onSelect: () => ask('draft')},
+          {label: 'Render cuối', disabled: voiceBusy || rendering, onSelect: () => ask('final')},
+          {label: `Bản render (${detail.versions.length})`, onSelect: openVersions},
+          'separator',
+          {label: voiceBusy ? voice.label : 'Tạo giọng', disabled: voiceBusy || rendering || voice.disabled, onSelect: voice.start},
+        ]} />
+      </div>
+      {progress}
       <div className={s.actions}>
-        {rendering && (
-          <div className={s.progress} role="status">
-            <ProgressBar value={renderJob?.progress ?? null} tone="info" size="sm" label="Tiến độ render" />
-            <span>{renderJob?.progress != null ? fmtPct(renderJob.progress) : 'Đang chờ…'}</span>
-          </div>
-        )}
-        <Button icon={<Clapperboard size={16} aria-hidden />} onClick={() => void nav(`/p/${encodeURIComponent(slug)}/renders`)}>Bản render ({detail.versions.length})</Button>
+        <Button icon={<Clapperboard size={16} aria-hidden />} onClick={openVersions}>Bản render ({detail.versions.length})</Button>
         <Button icon={<Mic size={16} aria-hidden />} loading={voiceBusy} loadingText={voice.label} disabled={rendering || voice.disabled} onClick={voice.start}>Tạo giọng</Button>
         <Button disabled={voiceBusy || rendering} loading={startRender.isPending && startRender.variables === 'draft'} onClick={() => ask('draft')}>Render nháp</Button>
         <Button variant="primary" disabled={voiceBusy || rendering} loading={startRender.isPending && startRender.variables === 'final'} onClick={() => ask('final')}>Render final</Button>

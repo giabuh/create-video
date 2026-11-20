@@ -14,7 +14,7 @@ const ITEMS = [
 /** Project routes (/p/*) belong to the "Dự án" item. */
 const isActive = (to: string, path: string) => (to === '/' ? path === '/' || path.startsWith('/p/') : path.startsWith(to));
 
-export function NavList({compact}: {compact?: boolean}): React.JSX.Element {
+export function NavList({compact, onNavigate}: {compact?: boolean; onNavigate?(): void}): React.JSX.Element {
   const {pathname} = useLocation();
   const root = useRef<HTMLElement>(null);
   const [box, setBox] = useState<{y: number; h: number} | null>(null);
@@ -36,7 +36,7 @@ export function NavList({compact}: {compact?: boolean}): React.JSX.Element {
       {ITEMS.map(({to, label, Icon}) => {
         const active = isActive(to, pathname);
         const link = (
-          <NavLink key={to} to={to} viewTransition className={s.item} data-active={active} aria-current={active ? 'page' : undefined} aria-label={compact ? label : undefined}>
+          <NavLink key={to} to={to} onClick={onNavigate} viewTransition className={s.item} data-active={active} aria-current={active ? 'page' : undefined} aria-label={compact ? label : undefined}>
             <Icon size={compact ? 22 : 20} aria-hidden />
             {!compact && label}
           </NavLink>

@@ -66,6 +66,7 @@ function AddBrandDialog({open, onOpenChange, onCreated}: {open: boolean; onOpenC
 }
 
 function BrandEditor({summary, draft, setDraft}: {summary: BrandSummary; draft: Form | null; setDraft(f: Form | null): void}): React.JSX.Element {
+  const [previewOpen, setPreviewOpen] = useState(false);
   const {id, brand} = summary;
   const base = useMemo(() => toForm(brand), [brand]);
   const form = draft ?? base;
@@ -114,13 +115,19 @@ function BrandEditor({summary, draft, setDraft}: {summary: BrandSummary; draft: 
   const previewBrand = useMemo(() => ({name: form.name, logo, colors: form.colors}), [form.name, logo, form.colors]);
   const cta = useMemo(() => ({title: 'Đăng ký ngay', phone: form.phone, fanpage: form.fanpage, address: form.address, duration: 3}), [form.phone, form.fanpage, form.address]);
   const inputProps = useMemo(() => ({cta, brand: previewBrand}), [cta, previewBrand]);
+  const preview = (
+    <div className={s.previewBox}>
+      <Player component={CtaCard} inputProps={inputProps} compositionWidth={1080} compositionHeight={1920} fps={30} durationInFrames={90}
+        initialFrame={89} acknowledgeRemotionLicense style={{width: '100%', height: '100%'}} />
+    </div>
+  );
 
   return (
     <>
       <section className={`${s.card} ${s.editor}`} aria-label="Sửa brand">
         <div className={s.head}>
           <h2>{brand.name}</h2>
-          <span className={s.path}>brands/{id}/brand.json</span>
+          <Button className={s.mobilePreview} onClick={() => setPreviewOpen(true)}>Xem CTA</Button>
         </div>
         <div className={s.grid2}>
           <Field label="Tên"><Input value={form.name} onChange={(e) => set({name: e.target.value})} /></Field>
@@ -149,7 +156,7 @@ function BrandEditor({summary, draft, setDraft}: {summary: BrandSummary; draft: 
           <Field label="Fanpage"><Input value={form.fanpage} placeholder="[FANPAGE] — để trống nếu không hiện" onChange={(e) => set({fanpage: e.target.value})} /></Field>
         </div>
         <Field label="Địa chỉ"><Input value={form.address} placeholder={PLACEHOLDER_ADDRESS} onChange={(e) => set({address: e.target.value})} /></Field>
-        <div className={s.actions}>
+        <div className={s.saveBar}>
           <Button variant="primary" disabled={!dirty} loading={save.isPending} loadingText="Đang lưu…" onClick={onSave}>Lưu brand</Button>
           {summary.isDefault
             ? <Chip tone="success">Đang là mặc định</Chip>
@@ -159,12 +166,12 @@ function BrandEditor({summary, draft, setDraft}: {summary: BrandSummary; draft: 
         </div>
       </section>
       <section className={s.preview} aria-label="Xem trước CTA">
-        <div className={s.previewBox}>
-          <Player component={CtaCard} inputProps={inputProps} compositionWidth={1080} compositionHeight={1920} fps={30} durationInFrames={90}
-            autoPlay loop acknowledgeRemotionLicense style={{width: '100%', height: '100%'}} />
-        </div>
-        <span className={s.muted}>Xem trước thẻ CTA cuối video</span>
+        <b>Xem trước CTA</b>
+        {preview}
       </section>
+      <Dialog open={previewOpen} onOpenChange={setPreviewOpen} title="Xem trước CTA" size="sm">
+        <div className={s.dialogPreview}>{preview}</div>
+      </Dialog>
     </>
   );
 }

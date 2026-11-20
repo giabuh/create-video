@@ -6,7 +6,8 @@ import {openFolder} from './procs.ts';
 import {startWatcher} from './watcher.ts';
 import {VoiceWorker} from './voiceWorker.ts';
 
-const API_PORT = 5316, UI_PORT = 5317;
+const API_PORT = Number(process.env.REEL_API_PORT ?? 5316);
+const UI_PORT = Number(process.env.REEL_UI_PORT ?? 5317);
 const bus = new EventBus();
 const jobs = new JobQueue(bus);
 const worker = new VoiceWorker(bus);
