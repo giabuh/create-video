@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {MessageSquare} from 'lucide-react';
 import {matchPath, useLocation} from 'react-router';
-import type {Engine} from '../../shared/types.ts';
+import {CHAT_EFFORTS, CHAT_MODELS, type ChatEffort, type ChatModel, type Engine} from '../../shared/types.ts';
 import {Button, Drawer, DropdownMenu, EmptyState, Select, Spinner, Textarea, toast} from '../ui/index.ts';
 import {useChat, useChatAccounts, useChatBusy, useChatDraft, useChats, useCreateChat, useSendChat, useStopChat} from '../api/chat.ts';
 import {isInterrupted, limitText} from './chatView.ts';
@@ -25,12 +25,18 @@ export function ChatPanel({open, onOpenChange}: {open: boolean; onOpenChange(o: 
   const send = useSendChat();
   const stop = useStopChat();
   const [account, setAccount] = useState('');
+  const [model, setModel] = useState<ChatModel | 'default'>('default'); // 'default' = the account's own model (Radix Select forbids '')
+  const [effort, setEffort] = useState<ChatEffort | 'default'>('default');
   const [text, setText] = useState('');
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLDivElement>(null);
 
   const chatAccount = detail.data?.chat.account;
   useEffect(() => { if (chatAccount) setAccount(chatAccount); }, [chatAccount]);
+  const chatModel = detail.data?.chat.model ?? 'default';
+  useEffect(() => { setModel(chatModel); }, [chatId, chatModel]);
+  const chatEffort = detail.data?.chat.effort ?? 'default';
+  useEffect(() => { setEffort(chatEffort); }, [chatId, chatEffort]);
   const engAccounts = (accounts.data ?? []).filter((a) => a.engine === engine);
   const hasCodex = (accounts.data ?? []).some((a) => a.engine === 'codex');
   const accountNames = engAccounts.map((a) => a.name);
@@ -68,7 +74,7 @@ export function ChatPanel({open, onOpenChange}: {open: boolean; onOpenChange(o: 
       let id = chatId;
       if (id === null) { id = (await create.mutateAsync({slug})).id; setPicked(id); }
       const n = id === chatId ? events.length : 0;
-      await send.mutateAsync({id, text: t, account: acct, screen: pathname, slug});
+      await send.mutateAsync({id, text: t, account: acct, model: model === 'default' ? undefined : model, effort: effort === 'default' ? undefined : effort, screen: pathname, slug});
       setWaiting({id, n});
       setText('');
     } catch (e) {
@@ -102,8 +108,18 @@ export function ChatPanel({open, onOpenChange}: {open: boolean; onOpenChange(o: 
               {label: 'Phiên Codex', onSelect: () => newChat('codex'), disabled: !hasCodex},
             ]} />
           </div>
-          <Select key={acct ? 'set' : 'none'} aria-label="Tài khoản Claude" value={acct || null} onChange={setAccount}
-            options={engAccounts.map((a) => ({value: a.name, label: a.name, hint: a.limit?.utilization != null ? `${Math.round(a.limit.utilization * 100)}%` : ''}))} />
+          <div className={s.pair}>
+            <Select key={acct ? 'set' : 'none'} aria-label="Tài khoản Claude" value={acct || null} onChange={setAccount}
+              options={engAccounts.map((a) => ({value: a.name, label: a.name, hint: a.limit?.utilization != null ? `${Math.round(a.limit.utilization * 100)}%` : ''}))} />
+            {engine === 'claude' && (
+              <Select<ChatModel | 'default'> aria-label="Model" value={model} onChange={setModel}
+                options={[{value: 'default', label: 'Model mặc định'}, ...CHAT_MODELS.map((m) => ({value: m, label: m[0].toUpperCase() + m.slice(1)}))]} />
+            )}
+            {engine === 'claude' && (
+              <Select<ChatEffort | 'default'> aria-label="Effort" value={effort} onChange={setEffort}
+                options={[{value: 'default', label: 'Effort mặc định'}, ...CHAT_EFFORTS.map((e) => ({value: e, label: e[0].toUpperCase() + e.slice(1)}))]} />
+            )}
+          </div>
         </div>
         <div className={s.log} role="log" aria-live="polite">
           {events.length === 0 && !running && <EmptyState icon={<MessageSquare size={28} />} title={`Hỏi ${engineName} bất cứ điều gì về video`} />}

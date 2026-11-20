@@ -11,13 +11,13 @@ export const claudeBin = (): string => process.env.REEL_CLAUDE_BIN ?? 'claude';
 export const codexBin = (): string => process.env.REEL_CODEX_BIN ?? 'codex';
 
 export type TurnOpts = {
-  sessionId: string; resume: boolean; account: Account; prompt: string; systemAppend: string; signal: AbortSignal;
+  sessionId: string; resume: boolean; account: Account; model?: string; effort?: string; prompt: string; systemAppend: string; signal: AbortSignal;
   onEvent(e: ChatEvent): void; onInit?(threadId: string | null): void; onLimit?(l: LimitInfo): void;
 };
 
-export function turnArgs(o: Pick<TurnOpts, 'sessionId' | 'resume' | 'systemAppend'>): string[] {
+export function turnArgs(o: Pick<TurnOpts, 'sessionId' | 'resume' | 'systemAppend' | 'model' | 'effort'>): string[] {
   return ['-p', '--output-format', 'stream-json', '--verbose', '--include-partial-messages', '--dangerously-skip-permissions',
-    o.resume ? '--resume' : '--session-id', o.sessionId, '--append-system-prompt', o.systemAppend];
+    o.resume ? '--resume' : '--session-id', o.sessionId, '--append-system-prompt', o.systemAppend, ...(o.model ? ['--model', o.model] : []), ...(o.effort ? ['--effort', o.effort] : [])];
 }
 
 export function codexArgs(o: Pick<TurnOpts, 'sessionId' | 'resume' | 'systemAppend'>): string[] {

@@ -1,3 +1,4 @@
+import {CHAT_EFFORTS, CHAT_MODELS, type ChatEffort, type ChatModel} from '../../shared/types.ts';
 import {Hono} from 'hono';
 import {SLUG_RE} from '../paths.ts';
 import {UUID_RE} from '../chat/service.ts';
@@ -33,8 +34,10 @@ export function chatRoutes({chat}: Deps): Hono {
     const b = await bodyOf(c);
     if (typeof b.text !== 'string' || !b.text.trim() || b.text.length > MAX_TEXT) throw new HttpError(400, 'text must be 1–20000 characters');
     if (typeof b.account !== 'string') throw new HttpError(400, 'account must be a string');
+    if (b.model != null && !CHAT_MODELS.includes(b.model as ChatModel)) throw new HttpError(400, 'unknown model'); // allow-list: it becomes an argv
+    if (b.effort != null && !CHAT_EFFORTS.includes(b.effort as ChatEffort)) throw new HttpError(400, 'unknown effort');
     const screen = typeof b.screen === 'string' && SCREEN_RE.test(b.screen) ? b.screen : '/'; // path-like only: it goes into the system prompt
-    await chat.send(id, {text: b.text, account: b.account, screen, slug: slugOf(b.slug)});
+    await chat.send(id, {text: b.text, account: b.account, model: (b.model ?? undefined) as ChatModel | undefined, effort: (b.effort ?? undefined) as ChatEffort | undefined, screen, slug: slugOf(b.slug)});
     return c.body(null, 202);
   });
   app.post('/chats/:id/stop', c => {

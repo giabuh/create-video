@@ -1,5 +1,5 @@
 import {randomUUID} from 'node:crypto';
-import type {ChatAccount, ChatDetail, ChatEvent, ChatMeta, Engine, LimitInfo} from '../../shared/types.ts';
+import type {ChatAccount, ChatDetail, ChatEvent, ChatMeta, ChatEffort, ChatModel, Engine, LimitInfo} from '../../shared/types.ts';
 import type {EventBus} from '../events.ts';
 import {HttpError} from '../routes/util.ts';
 import {listAccounts} from './accounts.ts';
@@ -41,7 +41,7 @@ export class ChatService {
     return chat ? {chat, events: await readEvents(id)} : null;
   }
 
-  async send(id: string, m: {text: string; account: string; screen: string; slug: string | null}): Promise<void> {
+  async send(id: string, m: {text: string; account: string; model?: ChatModel; effort?: ChatEffort; screen: string; slug: string | null}): Promise<void> {
     if (this.#active) throw new HttpError(409, 'Claude đang trả lời ở một phiên khác');
     let release!: () => void;
     const ac = new AbortController();
@@ -58,12 +58,12 @@ export class ChatService {
         w = w.then(() => appendEvent(id, e)).then(() => this.#bus.emit({type: 'chat', chatId: id, event: e}), err => console.error('chat append', err));
       };
       persist({kind: 'user', text: m.text, account: account.name, at: Date.now()});
-      await updateIndex(l => l.map(c => c.id === id ? {...c, account: account.name, title: c.title === NEW_TITLE ? titleOf(m.text) : c.title, updatedAt: Date.now()} : c));
+      await updateIndex(l => l.map(c => c.id === id ? {...c, account: account.name, model: m.model, effort: m.effort, title: c.title === NEW_TITLE ? titleOf(m.text) : c.title, updatedAt: Date.now()} : c));
       this.#bus.emit({type: 'chatBusy', chatId: id});
 
       const codex = chat.engine === 'codex';
       void runTurn({
-        sessionId: codex ? chat.threadId ?? '' : id, resume: codex ? chat.threadId !== null : chat.started, account, prompt: m.text, systemAppend: systemAppend(m.screen, m.slug), signal: ac.signal,
+        sessionId: codex ? chat.threadId ?? '' : id, resume: codex ? chat.threadId !== null : chat.started, account, model: codex ? undefined : m.model, effort: codex ? undefined : m.effort, prompt: m.text, systemAppend: systemAppend(m.screen, m.slug), signal: ac.signal,
         onEvent: e => { if (e.kind === 'delta') this.#bus.emit({type: 'chat', chatId: id, event: e}); else persist(e); },
         onInit: tid => {
           if (chat.started && (tid === null || tid === chat.threadId)) return;

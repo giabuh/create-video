@@ -22,6 +22,7 @@ describe('turnArgs', () => {
   it('new vs resume', () => {
     expect(turnArgs({sessionId: 'S', resume: false, systemAppend: 'X'})).toEqual(['-p', '--output-format', 'stream-json', '--verbose', '--include-partial-messages', '--dangerously-skip-permissions', '--session-id', 'S', '--append-system-prompt', 'X']);
     expect(turnArgs({sessionId: 'S', resume: true, systemAppend: 'X'})).toContain('--resume');
+    expect(turnArgs({sessionId: 'S', resume: true, systemAppend: 'X', model: 'haiku', effort: 'max'}).slice(-4)).toEqual(['--model', 'haiku', '--effort', 'max']);
   });
 });
 

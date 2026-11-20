@@ -36,7 +36,7 @@ async function run() {
     return;
   }
   const acc = process.env.CLAUDE_CONFIG_DIR ? path.basename(process.env.CLAUDE_CONFIG_DIR) : 'default';
-  const reply = `acc=${acc} mode=${mode} sys=${flag('--append-system-prompt') ? 'yes' : 'no'} prompt=${prompt.trim()}`;
+  const reply = `acc=${acc} mode=${mode} sys=${flag('--append-system-prompt') ? 'yes' : 'no'}${flag('--model') ? ` model=${flag('--model')}` : ''}${flag('--effort') ? ` effort=${flag('--effort')}` : ''} prompt=${prompt.trim()}`;
   for (const w of reply.split(/(?<= )/)) { out({type: 'stream_event', parent_tool_use_id: null, event: {type: 'content_block_delta', delta: {type: 'text_delta', text: w}}}); await sleep(5); }
   out({type: 'assistant', parent_tool_use_id: null, message: {content: [{type: 'text', text: reply}]}});
   out({type: 'assistant', parent_tool_use_id: null, message: {content: [{type: 'tool_use', id: 't1', name: 'Bash', input: {command: 'ls projects'}}]}});

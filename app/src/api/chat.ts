@@ -1,6 +1,6 @@
 import {useMutation, useQuery, useQueryClient, type QueryClient} from '@tanstack/react-query';
 import {useSyncExternalStore} from 'react';
-import type {ChatAccount, ChatDetail, ChatMeta, Engine, ServerEvent} from '../../shared/types.ts';
+import type {ChatAccount, ChatDetail, ChatMeta, ChatEffort, ChatModel, Engine, ServerEvent} from '../../shared/types.ts';
 import {draftAfter} from '../shell/chatView.ts';
 import {api} from './client.ts';
 
@@ -23,7 +23,7 @@ export function useCreateChat() {
 export function useSendChat() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({id, ...body}: {id: string; text: string; account: string; screen: string; slug: string | null}) => api<void>(`/chats/${id}/messages`, {body}),
+    mutationFn: ({id, ...body}: {id: string; text: string; account: string; model?: ChatModel; effort?: ChatEffort; screen: string; slug: string | null}) => api<void>(`/chats/${id}/messages`, {body}),
     onSuccess: (_r, {id}) => { void qc.invalidateQueries({queryKey: chatKeys.one(id)}); void qc.invalidateQueries({queryKey: chatKeys.list}); },
   });
 }

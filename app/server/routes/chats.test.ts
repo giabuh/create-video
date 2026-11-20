@@ -83,6 +83,16 @@ describe('chat routes', () => {
     expect(d.events.at(-1)?.kind).toBe('done');
   });
 
+  it('model and effort are passed as flags and remembered on the chat', async () => {
+    const {req, chat} = setup();
+    const c = await newChat(req);
+    expect((await req(`/api/chats/${c.id}/messages`, {method: 'POST', json: {text: 'hi', account: 'claude', model: 'haiku', effort: 'low', screen: '/', slug: null}})).status).toBe(202);
+    await chat.idle();
+    const d: ChatDetail = await (await req(`/api/chats/${c.id}`)).json();
+    expect(d.events.find(e => e.kind === 'text')).toMatchObject({text: expect.stringMatching(/ model=haiku effort=low /)});
+    expect(d.chat).toMatchObject({model: 'haiku', effort: 'low'});
+  });
+
   it('validation', async () => {
     const {req} = setup();
     const c = await newChat(req);
@@ -90,6 +100,8 @@ describe('chat routes', () => {
     expect((await send(req, c.id, 'x'.repeat(20_001))).status).toBe(400);
     expect((await send(req, c.id, 'hi', 'claude3')).status).toBe(400); // no credentials → not an account
     expect((await req(`/api/chats/${c.id}/messages`, {method: 'POST', json: {text: 'hi', account: 'claude', slug: '../x'}})).status).toBe(400);
+    expect((await req(`/api/chats/${c.id}/messages`, {method: 'POST', json: {text: 'hi', account: 'claude', model: 'gpt; rm'}})).status).toBe(400);
+    expect((await req(`/api/chats/${c.id}/messages`, {method: 'POST', json: {text: 'hi', account: 'claude', effort: 'ultra'}})).status).toBe(400);
     expect((await req('/api/chats', {method: 'POST', json: {slug: '../x'}})).status).toBe(400);
     expect((await req('/api/chats/not-a-uuid')).status).toBe(404);
     expect((await req('/api/chats/00000000-0000-4000-8000-000000000000')).status).toBe(404);
