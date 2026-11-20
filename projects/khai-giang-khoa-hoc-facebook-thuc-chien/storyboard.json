@@ -1,0 +1,536 @@
+{
+  "template": "fast-cut",
+  "brand": "demo",
+  "voice": "phuong",
+  "targetSeconds": 30,
+  "tts": {
+    "speed": 1,
+    "pauseAfter": 0.25
+  },
+  "captions": {
+    "size": 55,
+    "maxWords": 6,
+    "highlightColor": "#FFD400"
+  },
+  "music": {
+    "file": "Close Up - Michael Ramir C.mp3",
+    "volume": 0.32,
+    "duckTo": 0.095,
+    "fadeOut": 1.25
+  },
+  "sfx": {
+    "volume": 0.18,
+    "scene": "none",
+    "cta": "none"
+  },
+  "scenes": [
+    {
+      "id": "mo-lop",
+      "say": "Bạn muốn tự chạy quảng cáo Phây Búc cho sản phẩm mình bán?",
+      "caption": "Bạn muốn tự chạy quảng cáo Facebook cho sản phẩm mình bán?",
+      "media": [
+        {
+          "src": "video-doc-hoc-vien-nu-hoc-tren-laptop-ghi-chep.mp4",
+          "from": 0.6,
+          "effect": "none"
+        }
+      ],
+      "highlight": [
+        "Facebook"
+      ],
+      "transition": "cut",
+      "motion": [
+        {
+          "component": "Text",
+          "props": {
+            "text": "KHAI GIẢNG",
+            "size": 48,
+            "weight": "800",
+            "align": "left",
+            "color": "#101E36",
+            "shadow": false,
+            "background": "#FFD400",
+            "radius": 14
+          },
+          "box": {
+            "x": 7,
+            "y": 13,
+            "w": 57,
+            "h": 5.8
+          },
+          "backdrop": "none",
+          "exit": {
+            "type": "fade",
+            "duration": 0.18
+          },
+          "sfx": "none",
+          "duration": 2.45
+        },
+        {
+          "component": "Text",
+          "props": {
+            "text": "Quảng cáo Facebook",
+            "size": 87,
+            "weight": "800",
+            "align": "left",
+            "color": "#FFFFFF",
+            "shadow": true,
+            "background": "#101E36",
+            "radius": 14
+          },
+          "box": {
+            "x": 7,
+            "y": 19.4,
+            "w": 86,
+            "h": 8.2
+          },
+          "backdrop": "none",
+          "exit": {
+            "type": "fade",
+            "duration": 0.18
+          },
+          "sfx": "none",
+          "duration": 2.45,
+          "enter": {
+            "type": "slide-up",
+            "duration": 0.22
+          }
+        }
+      ]
+    },
+    {
+      "id": "lop-binh-duong",
+      "say": "Tại Bình Dương, Tin học Sao Việt khai giảng lớp quảng cáo Phây Búc cho người mới bắt đầu.",
+      "caption": "Tại Bình Dương, Tin Học Sao Việt khai giảng lớp quảng cáo Facebook cho người mới bắt đầu.",
+      "media": [
+        {
+          "src": "sv-facebook-giang-vien-trinh-bay.jpg",
+          "effect": "zoom-in",
+          "duration": 2.55
+        },
+        {
+          "src": "video-doc-hoc-vien-thuc-hanh-tai-phong-may-tuong-xanh.mp4",
+          "from": 3.9,
+          "effect": "none"
+        }
+      ],
+      "highlight": [
+        "Bình Dương",
+        "khai giảng"
+      ],
+      "transition": "cut",
+      "mediaTransition": "fade"
+    },
+    {
+      "id": "quy-trinh",
+      "say": "Bạn sẽ chọn nhóm khách hàng, viết mẫu quảng cáo, rồi đọc báo cáo để điều chỉnh ngân sách.",
+      "caption": "Bạn sẽ chọn nhóm khách hàng, viết mẫu quảng cáo, rồi đọc báo cáo để điều chỉnh ngân sách.",
+      "motion": [
+        {
+          "component": "Picture",
+          "props": {
+            "src": "sv-facebook-nen-xanh-muc.png",
+            "fit": "cover",
+            "shadow": false
+          },
+          "position": "full",
+          "backdrop": "none",
+          "exit": "none",
+          "sfx": "none",
+          "keyframes": [
+            {
+              "t": 0,
+              "scale": 1.06,
+              "x": -1.4,
+              "y": 0.8
+            },
+            {
+              "t": 6,
+              "scale": 1.13,
+              "x": 1.4,
+              "y": -0.8
+            }
+          ]
+        },
+        {
+          "component": "Text",
+          "props": {
+            "text": "THỰC HÀNH FACEBOOK ADS",
+            "size": 44,
+            "weight": "800",
+            "align": "left",
+            "color": "#FFD400",
+            "shadow": false
+          },
+          "box": {
+            "x": 7.5,
+            "y": 19,
+            "w": 85,
+            "h": 5
+          },
+          "backdrop": "none",
+          "exit": "none",
+          "sfx": "none"
+        },
+        {
+          "component": "Text",
+          "props": {
+            "text": "Ai sẽ xem?",
+            "size": 93,
+            "weight": "800",
+            "align": "left",
+            "color": "#FFF3D5",
+            "shadow": false
+          },
+          "box": {
+            "x": 7.5,
+            "y": 24.2,
+            "w": 87,
+            "h": 10.6
+          },
+          "backdrop": "none",
+          "exit": {
+            "type": "fade",
+            "duration": 0.12
+          },
+          "sfx": "none",
+          "enter": {
+            "type": "fade",
+            "duration": 0.15
+          },
+          "until": "khách hàng"
+        },
+        {
+          "component": "Picture",
+          "props": {
+            "src": "sv-facebook-minh-hoa-khach-hang.png",
+            "fit": "contain",
+            "shadow": false
+          },
+          "box": {
+            "x": 0,
+            "y": 35,
+            "w": 100,
+            "h": 32
+          },
+          "backdrop": "none",
+          "exit": {
+            "type": "fade",
+            "duration": 0.14
+          },
+          "sfx": "none",
+          "enter": {
+            "type": "slide-up",
+            "duration": 0.28
+          },
+          "keyframes": [
+            {
+              "t": 0,
+              "scale": 0.97
+            },
+            {
+              "t": 2.4,
+              "scale": 1.035
+            }
+          ],
+          "until": "khách hàng"
+        },
+        {
+          "component": "Text",
+          "props": {
+            "text": "Viết gì cho họ?",
+            "size": 93,
+            "weight": "800",
+            "align": "left",
+            "color": "#FFF3D5",
+            "shadow": false
+          },
+          "box": {
+            "x": 7.5,
+            "y": 24.2,
+            "w": 87,
+            "h": 10.6
+          },
+          "backdrop": "none",
+          "exit": {
+            "type": "fade",
+            "duration": 0.12
+          },
+          "sfx": "none",
+          "enter": {
+            "type": "fade",
+            "duration": 0.15
+          },
+          "at": "viết",
+          "until": "rồi"
+        },
+        {
+          "component": "Picture",
+          "props": {
+            "src": "sv-facebook-minh-hoa-mau-quang-cao.png",
+            "fit": "contain",
+            "shadow": false
+          },
+          "box": {
+            "x": 0,
+            "y": 35,
+            "w": 100,
+            "h": 32
+          },
+          "backdrop": "none",
+          "exit": {
+            "type": "fade",
+            "duration": 0.14
+          },
+          "sfx": "click-interface-option-select.mp3",
+          "enter": {
+            "type": "wipe",
+            "duration": 0.28
+          },
+          "keyframes": [
+            {
+              "t": 0,
+              "scale": 0.97
+            },
+            {
+              "t": 2.4,
+              "scale": 1.035
+            }
+          ],
+          "at": "viết",
+          "until": "rồi"
+        },
+        {
+          "component": "Text",
+          "props": {
+            "text": "Đọc số liệu ra sao?",
+            "size": 93,
+            "weight": "800",
+            "align": "left",
+            "color": "#FFF3D5",
+            "shadow": false
+          },
+          "box": {
+            "x": 7.5,
+            "y": 24.2,
+            "w": 87,
+            "h": 10.6
+          },
+          "backdrop": "none",
+          "exit": {
+            "type": "fade",
+            "duration": 0.12
+          },
+          "sfx": "none",
+          "enter": {
+            "type": "fade",
+            "duration": 0.15
+          },
+          "at": "đọc"
+        },
+        {
+          "component": "Picture",
+          "props": {
+            "src": "sv-facebook-minh-hoa-bao-cao.png",
+            "fit": "contain",
+            "shadow": false
+          },
+          "box": {
+            "x": 0,
+            "y": 35,
+            "w": 100,
+            "h": 32
+          },
+          "backdrop": "none",
+          "exit": {
+            "type": "fade",
+            "duration": 0.14
+          },
+          "sfx": "click-interface-option-select.mp3",
+          "enter": {
+            "type": "slide-left",
+            "duration": 0.28
+          },
+          "keyframes": [
+            {
+              "t": 0,
+              "scale": 0.97
+            },
+            {
+              "t": 2.4,
+              "scale": 1.035
+            }
+          ],
+          "at": "đọc"
+        }
+      ],
+      "highlight": [
+        "khách hàng",
+        "quảng cáo",
+        "ngân sách"
+      ],
+      "transition": "cut",
+      "pauseAfter": 0.25
+    },
+    {
+      "id": "tai-lop",
+      "say": "Mang sản phẩm hoặc dịch vụ của mình đến lớp, bạn sẽ cùng giảng viên lên kế hoạch và thử một chiến dịch thực tế.",
+      "caption": "Mang sản phẩm hoặc dịch vụ của mình đến lớp, bạn sẽ cùng giảng viên lên kế hoạch và thử một chiến dịch thực tế.",
+      "media": [
+        {
+          "src": "video-ngang-toan-canh-lop-hoc-tin-hoc-buoi-toi.mp4",
+          "from": 5.55,
+          "effect": "none",
+          "duration": 2.35
+        },
+        {
+          "src": "video-doc-giao-vien-giang-bai-tren-bang-lop-tin-hoc.mp4",
+          "from": 0.65,
+          "effect": "none"
+        }
+      ],
+      "highlight": [
+        "sản phẩm",
+        "giảng viên",
+        "chiến dịch"
+      ],
+      "transition": "cut",
+      "mediaTransition": "cut"
+    },
+    {
+      "id": "lich-khai-giang",
+      "say": "Lớp mới mở hằng tuần. Gọi Sao Việt để chọn ca học phù hợp với bạn.",
+      "caption": "Lớp mới mở hằng tuần. Gọi Sao Việt để chọn ca học phù hợp với bạn.",
+      "motion": [
+        {
+          "component": "Picture",
+          "props": {
+            "src": "sv-facebook-nen-xanh-muc.png",
+            "fit": "cover",
+            "shadow": false
+          },
+          "position": "full",
+          "backdrop": "none",
+          "exit": "none",
+          "sfx": "none",
+          "keyframes": [
+            {
+              "t": 0,
+              "scale": 1.06,
+              "x": -1.4,
+              "y": 0.8
+            },
+            {
+              "t": 6,
+              "scale": 1.13,
+              "x": 1.4,
+              "y": -0.8
+            }
+          ]
+        },
+        {
+          "component": "Text",
+          "props": {
+            "text": "BÌNH DƯƠNG",
+            "size": 45,
+            "weight": "800",
+            "align": "left",
+            "color": "#FFD400",
+            "shadow": false
+          },
+          "box": {
+            "x": 7.5,
+            "y": 14,
+            "w": 90,
+            "h": 5
+          },
+          "backdrop": "none",
+          "exit": "none",
+          "sfx": "none"
+        },
+        {
+          "component": "Text",
+          "props": {
+            "text": "Khai giảng hằng tuần",
+            "size": 78,
+            "weight": "800",
+            "align": "left",
+            "color": "#FFF3D5",
+            "shadow": false
+          },
+          "box": {
+            "x": 7.5,
+            "y": 19.5,
+            "w": 87,
+            "h": 9
+          },
+          "backdrop": "none",
+          "exit": "none",
+          "sfx": "none"
+        },
+        {
+          "component": "Picture",
+          "props": {
+            "src": "sv-facebook-hoc-vien-thuc-hanh.jpg",
+            "fit": "cover",
+            "shadow": false,
+            "border": "#F2E4BD",
+            "borderWidth": 5,
+            "radius": 20
+          },
+          "box": {
+            "x": 7.5,
+            "y": 31,
+            "w": 85,
+            "h": 34.7
+          },
+          "backdrop": "none",
+          "exit": "none",
+          "sfx": "none",
+          "enter": {
+            "type": "slide-up",
+            "duration": 0.28
+          }
+        },
+        {
+          "component": "Text",
+          "props": {
+            "text": "0812 114 345",
+            "size": 71,
+            "weight": "800",
+            "align": "center",
+            "color": "#FFD400",
+            "shadow": false
+          },
+          "box": {
+            "x": 7.5,
+            "y": 66.5,
+            "w": 85,
+            "h": 6.1
+          },
+          "backdrop": "none",
+          "exit": "none",
+          "sfx": "none",
+          "at": "Gọi",
+          "enter": {
+            "type": "fade",
+            "duration": 0.18
+          }
+        }
+      ],
+      "highlight": [
+        "hằng tuần",
+        "Sao Việt"
+      ],
+      "transition": "fade",
+      "pauseAfter": 0.35
+    }
+  ],
+  "cta": {
+    "title": "Nhận lịch lớp mới",
+    "phone": "0812 114 345",
+    "fanpage": "tinhocsaoviet.com",
+    "duration": 2.7,
+    "logoSize": 390
+  }
+}
