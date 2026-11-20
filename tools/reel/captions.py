@@ -6,6 +6,7 @@ from .align import caption_token_times, tokens
 
 DASH = re.compile(r"^[-–—]+$")
 END = re.compile(r"[,.;:!?…]$")
+DIGITS = re.compile(r"^\d+$")
 
 
 def _phrases(words: list[str]) -> list[list[str]]:
@@ -16,7 +17,10 @@ def _phrases(words: list[str]) -> list[list[str]]:
                 out.append(cur)
             cur = []
             continue
-        cur.append(w)
+        if cur and DIGITS.match(cur[-1].split()[-1]) and w[:1].isdigit():
+            cur[-1] += " " + w  # a phone number "0876 929 145" is one unit: never split across chunks
+        else:
+            cur.append(w)
         if END.search(w):
             out.append(cur)
             cur = []

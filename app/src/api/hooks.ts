@@ -1,6 +1,6 @@
 import {useMutation, useQuery, useQueryClient, type QueryClient, type UseMutationResult, type UseQueryResult} from '@tanstack/react-query';
 import type {
-  BrandFile, BrandSummary, Config, Job, Json, LibraryEntry, LibraryResponse, MusicFile, PreviewResult, ProjectDetail, ProjectMeta,
+  BrandFile, BrandSummary, Config, DriveStatus, Job, Json, LibraryEntry, LibraryResponse, MusicFile, PreviewResult, ProjectDetail, ProjectMeta,
   ProjectSummary, Tries, Versioned, VoiceInfo,
 } from '../../shared/types.ts';
 import {toast} from '../ui/index.ts';
@@ -8,7 +8,7 @@ import {api, type HttpError} from './client.ts';
 
 export const qk = {
   projects: ['projects'], project: (slug: string) => ['project', slug] as const, library: ['library'], music: ['music'], sfx: ['sfx'], voices: ['voices'],
-  tries: ['tries'], config: ['config'], brands: ['brands'], templates: ['templates'], motion: ['motion'], jobs: ['jobs'],
+  tries: ['tries'], drive: (slug: string) => ['drive', slug] as const, config: ['config'], brands: ['brands'], templates: ['templates'], motion: ['motion'], jobs: ['jobs'],
 } as const;
 
 const useGet = <T>(key: readonly unknown[], path: string): UseQueryResult<T> => useQuery({queryKey: key, queryFn: ({signal}) => api<T>(path, {signal})});
@@ -132,11 +132,20 @@ export function usePublish(slug: string): UseMutationResult<Job, HttpError, {ver
     onSettled: () => invalidate(qc, qk.project(slug), qk.projects),
   });
 }
-export function useDeleteRender(slug: string): UseMutationResult<{driveError?: string}, HttpError, {version: string; drive: boolean}> {
+export function useDeleteRender(slug: string): UseMutationResult<{driveJob?: Job}, HttpError, {version: string; drive: boolean}> {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({version, drive}) => api(`/projects/${enc(slug)}/renders/${enc(version)}?drive=${drive ? 1 : 0}`, {method: 'DELETE'}),
     onSettled: () => invalidate(qc, qk.project(slug), qk.projects),
+  });
+}
+
+export const useDriveStatus = (slug: string) => useGet<DriveStatus>(qk.drive(slug), `/projects/${enc(slug)}/drive`);
+export function useDriveDelete(slug: string): UseMutationResult<Job, HttpError, {version: string}> {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: post(({version}: {version: string}) => `/projects/${enc(slug)}/drive-delete`, (b) => b),
+    onSettled: () => invalidate(qc, qk.project(slug), qk.drive(slug)),
   });
 }
 

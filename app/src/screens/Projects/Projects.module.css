@@ -22,8 +22,9 @@
 .form { display: flex; flex-direction: column; gap: var(--sp-4); }
 
 @media (max-width: 850px) {
-  .statusFilter { width: 100%; }
-  .statusFilter > button { flex: 1; min-width: 0; white-space: normal; line-height: 1.1; padding-inline: 3px; font-size: var(--fs-xs); }
+  /* scroll instead of squeezing labels onto two lines */
+  .statusFilter { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+  .statusFilter > button { flex-shrink: 0; padding-inline: var(--sp-3); font-size: var(--fs-sm); }
   .legend { margin-left: 0; }
   .new { min-height: 7rem; }
 }
@@ -34,3 +35,8 @@
 .menuBtn { position: absolute; top: var(--sp-2); right: var(--sp-2); background: var(--panel); border-radius: 99px; }
 .failBar { display: flex; align-items: center; gap: var(--sp-2); padding: var(--sp-2) var(--sp-4); border: 1px solid var(--line); border-top: 0; border-radius: 0 0 var(--r-lg) var(--r-lg); background: var(--panel); }
 .failBar > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.delBar { display: flex; flex-direction: column; gap: var(--sp-2); padding: var(--sp-2) var(--sp-4) var(--sp-3); border: 1px solid var(--line); border-top: 0; border-radius: 0 0 var(--r-lg) var(--r-lg); background: var(--panel); min-width: 0; }
+.delBar > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.driveRow { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.bad { color: var(--danger); }
+.form { min-width: 0; }

@@ -19,6 +19,7 @@
 .pickThumb { position: relative; aspect-ratio: 9 / 14; border-radius: var(--r-sm); overflow: hidden; background: var(--line); display: grid; place-items: center; color: var(--muted); }
 .pickThumb img { width: 100%; height: 100%; object-fit: cover; }
 .pickBadge { position: absolute; right: 4px; bottom: 4px; background: rgba(0,0,0,.7); color: #fff; border-radius: 4px; padding: 0 6px; font-size: 0.8125rem; }
+.pickUsed { right: auto; left: 4px; }
 .pickName { font-size: 0.8125rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .banner .grow { flex: 1 1 12rem; }
 

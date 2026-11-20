@@ -1,16 +1,16 @@
 import {mkdir, readdir, stat, writeFile} from 'node:fs/promises';
 import {Hono} from 'hono';
-import {driveName} from '../drive.ts';
+import {driveName, driveSizes} from '../drive.ts';
 import {runDeleteProject} from '../deleteProject.ts';
 import {approveCommit} from '../git.ts';
 import type {JobCtx, JobQueue} from '../jobs.ts';
 import {SLUG_RE, safeJoin, slugify} from '../paths.ts';
 import {runPreview} from '../procs.ts';
-import {deleteRender, PUBLISHED_MSG, UPLOADING_MSG, uploadVersion} from '../publish.ts';
+import {deleteRender, PUBLISHED_MSG, runDriveDelete, UPLOADING_MSG, uploadVersion} from '../publish.ts';
 import {withSlugLock} from '../slugLock.ts';
 import {readJson, readJsonOr, writeJsonAtomic} from '../store.ts';
 import {listVersions, projectStatus, readMeta, writeMeta} from '../versions.ts';
-import type {Config, Mix, ProjectDetail, ProjectSummary, RenderProps, Storyboard, Timings} from '../../shared/types.ts';
+import type {Config, DriveStatus, Mix, ProjectDetail, ProjectSummary, RenderProps, Storyboard, Timings} from '../../shared/types.ts';
 import {bodyOf, HttpError, isObj, mtimeField, needEditable, needProject, readConfig, slugParam} from './util.ts';
 import type {Deps, WorkerLike} from './util.ts';
 
@@ -127,10 +127,15 @@ export function projectRoutes({jobs, worker}: Deps): Hono {
     }), 202);
   });
 
-  const enqueuePublish = (slug: string, version: string, name: string) => jobs.enqueue({
-    kind: 'publish', lane: 'io', label: `Đẩy ${version} lên Drive`, project: slug, cancellable: true,
-    run: async ctx => { await uploadVersion(slug, version, name, ctx, {unique: false}); },
+  const enqueuePublish = (slug: string, version: string, name: string, repush = false) => jobs.enqueue({
+    kind: 'publish', lane: 'io', label: `Đẩy ${version} lên Drive`, project: slug, ref: version, cancellable: true,
+    run: async ctx => { await uploadVersion(slug, version, name, ctx, {unique: false, repush}); },
   });
+  const enqueueDriveDelete = (slug: string, version: string) => jobs.enqueue({
+    kind: 'drive-delete', lane: 'io', label: `Xoá ${version} trên Drive`, project: slug, ref: version, cancellable: false,
+    run: async ctx => { await runDriveDelete(slug, version, ctx); },
+  });
+  const driveBusy = (slug: string, version: string) => jobs.list().some(j => (j.kind === 'publish' || j.kind === 'drive-delete') && j.project === slug && j.ref === version && (j.state === 'queued' || j.state === 'running'));
   const needNotPublished = (meta: {published?: Record<string, {state: string}>}, version: string) => {
     const st = meta.published?.[version]?.state;
     if (st === 'done') throw new HttpError(409, PUBLISHED_MSG);
@@ -174,8 +179,18 @@ export function projectRoutes({jobs, worker}: Deps): Hono {
     const name = nameOf(slug, b.version, b.name);
     const meta = (await readMeta(slug)).data;
     if (meta.approved !== b.version) throw new HttpError(409, 'not approved');
-    needNotPublished(meta, b.version);
-    return c.json(enqueuePublish(slug, b.version, name), 202);
+    if (driveBusy(slug, b.version)) throw new HttpError(409, UPLOADING_MSG);
+    const rec = meta.published?.[b.version];
+    if (rec?.state !== 'done') {
+      needNotPublished(meta, b.version);
+      return c.json(enqueuePublish(slug, b.version, name), 202);
+    }
+    // done record: only re-push when Drive no longer has the right file
+    const local = await stat(safeJoin('projects', slug, `${b.version}.mp4`)).catch(() => null);
+    if (!local) throw new HttpError(404, 'unknown version');
+    const sizes = await driveSizes().catch(e => { throw new HttpError(502, (e as Error).message); });
+    if (sizes.get(rec.name) === local.size) throw new HttpError(409, PUBLISHED_MSG);
+    return c.json(enqueuePublish(slug, b.version, rec.name, true), 202);
   });
 
   app.delete('/projects/:slug/renders/:version', async c => {
@@ -187,7 +202,36 @@ export function projectRoutes({jobs, worker}: Deps): Hono {
     const meta = (await readMeta(slug)).data;
     if (meta.approved === version && meta.published?.[version]?.state !== 'done') throw new HttpError(409, 'Bản đã duyệt chưa lên Drive');
     if (isBusy(jobs, slug)) throw new HttpError(409, 'Đang render hoặc đẩy lên Drive');
-    return c.json(await deleteRender(slug, version, {drive: c.req.query('drive') === '1'}));
+    const {driveName: onDrive} = await deleteRender(slug, version, {drive: c.req.query('drive') === '1'});
+    return c.json(onDrive && !driveBusy(slug, version) ? {driveJob: enqueueDriveDelete(slug, version)} : {}); // a queued drive-delete already covers it
+  });
+
+  app.post('/projects/:slug/drive-delete', async c => {
+    const slug = c.req.param('slug');
+    await needProject(slug);
+    await needEditable(slug);
+    const b = await bodyOf(c);
+    if (typeof b.version !== 'string' || !/^reel-v\d+$/.test(b.version)) throw new HttpError(400, 'bad version');
+    if ((await readMeta(slug)).data.published?.[b.version]?.state !== 'done') throw new HttpError(404, 'Không có bản đã lên Drive');
+    if (driveBusy(slug, b.version)) throw new HttpError(409, UPLOADING_MSG);
+    return c.json(enqueueDriveDelete(slug, b.version), 202);
+  });
+
+  app.get('/projects/:slug/drive', async c => {
+    const slug = c.req.param('slug');
+    await needProject(slug);
+    const published = (await readMeta(slug)).data.published ?? {};
+    const out: DriveStatus = {checkedAt: Date.now(), error: null, versions: {}, orphans: []};
+    let sizes: Map<string, number>;
+    try { sizes = await driveSizes(); } catch (e) { return c.json({...out, error: (e as Error).message}); }
+    for (const [v, rec] of Object.entries(published)) {
+      if (rec.state !== 'done') continue;
+      const local = await stat(safeJoin('projects', slug, `${v}.mp4`)).catch(() => null);
+      const size = sizes.get(rec.name);
+      out.versions[v] = size === undefined ? 'missing' : local && local.size !== size ? 'mismatch' : 'ok';
+      if (!local) out.orphans.push({version: v, name: rec.name, at: rec.at, onDrive: size !== undefined});
+    }
+    return c.json(out);
   });
 
   const hasJob = (slug: string) => jobs.list().some(j => j.project === slug && (j.state === 'queued' || j.state === 'running'));

@@ -3,11 +3,18 @@ import {Link, useNavigate, useParams} from 'react-router';
 import {Film} from 'lucide-react';
 import type {VersionInfo} from '../../../shared/types.ts';
 import {useJobs} from '../../api/events.ts';
-import {useCancelJob, useApprove, useDeleteRender, useOpenFolder, usePublish, useProject, useStartRender} from '../../api/hooks.ts';
+import {useCancelJob, useApprove, useDeleteRender, useDriveDelete, useDriveStatus, useOpenFolder, usePublish, useProject, useStartRender} from '../../api/hooks.ts';
 import {Button, Chip, Dialog, EmptyState, Input, ErrorState, PageHeader, ProgressBar, Skeleton, fmtPct, toast} from '../../ui/index.ts';
 import {VersionCard} from './VersionCard.tsx';
+import {deleteMessage, driveRow} from './driveRow.ts';
 import s from './Renders.module.css';
 
+type DeleteScope = 'local' | 'drive' | 'both';
+const SCOPE: Record<DeleteScope, {label: string; desc: string; btn: string}> = {
+  local: {label: 'Chỉ xoá trên máy (giữ bản trên Drive)', desc: 'Xoá file video trên máy này.', btn: 'Xoá trên máy'},
+  drive: {label: 'Chỉ xoá trên Drive (giữ file trên máy)', desc: 'Xoá bản trên Drive (thư mục xuat-ban/), file trên máy vẫn giữ.', btn: 'Xoá trên Drive'},
+  both: {label: 'Xoá cả trên máy và Drive', desc: 'Xoá file video trên máy này và bản trên Drive.', btn: 'Xoá cả hai'},
+};
 const mmss = (sec: number) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, '0')}`;
 
 export function RendersScreen(): React.JSX.Element {
@@ -23,11 +30,19 @@ export function RendersScreen(): React.JSX.Element {
   const register = useCallback((name: string, el: HTMLVideoElement | null) => { if (el) videos.current.set(name, el); else videos.current.delete(name); }, []);
   const publish = usePublish(slug);
   const del = useDeleteRender(slug);
-  const publishJobs = useJobs().filter((j) => j.kind === 'publish' && j.project === slug && (j.state === 'running' || j.state === 'queued'));
+  const allJobs = useJobs();
+  const driveJobs = allJobs.filter((j) => (j.kind === 'publish' || j.kind === 'drive-delete') && j.project === slug); // newest first
+  const drive = useDriveStatus(slug);
+  const driveDel = useDriveDelete(slug);
+  const settled = driveJobs.filter((j) => j.state !== 'running' && j.state !== 'queued').map((j) => j.id).join();
+  const firstSettled = useRef(true);
+  const refetchDrive = drive.refetch;
+  useEffect(() => { if (firstSettled.current) { firstSettled.current = false; return; } void refetchDrive(); }, [settled, refetchDrive]);
   const [confirm, setConfirm] = useState<{v: VersionInfo; retry: boolean} | null>(null);
   const [name, setName] = useState('');
   const [toDelete, setToDelete] = useState<VersionInfo | null>(null);
-  const [alsoDrive, setAlsoDrive] = useState(false);
+  const [scope, setScope] = useState<DeleteScope>('local');
+  const rmOnDrive = (version: string) => driveDel.mutate({version}, {onError: (e) => toast({title: 'Không xoá được trên Drive', description: e.message, tone: 'error'})});
   const askName = (v: VersionInfo, retry: boolean) => { setName(v.published?.name ?? `${slug}-${v.name}`); setConfirm({v, retry}); };
   const [now, setNow] = useState(Date.now());
   useEffect(() => { if (!job) return; const i = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(i); }, [job]);
@@ -48,8 +63,13 @@ export function RendersScreen(): React.JSX.Element {
   };
   const doDelete = () => {
     if (!toDelete) return;
-    del.mutate({version: toDelete.name, drive: alsoDrive}, {
-      onSuccess: (r) => { toast({title: `Đã xoá ${toDelete.name}`, tone: 'success'}); if (r.driveError) toast({title: 'Không xoá được trên Drive', description: r.driveError, tone: 'error'}); setToDelete(null); },
+    const v = toDelete.name;
+    if (scope === 'drive') return driveDel.mutate({version: v}, {
+      onSuccess: () => { toast({title: `Đang xoá ${v} trên Drive · bản trên máy vẫn giữ`, tone: 'info'}); setToDelete(null); },
+      onError: (e) => { toast({title: 'Không xoá được trên Drive', description: e.message, tone: 'error'}); setToDelete(null); },
+    });
+    del.mutate({version: v, drive: scope === 'both'}, {
+      onSuccess: (r) => { toast({title: deleteMessage(v, !!r.driveJob, toDelete.published?.state === 'done'), tone: 'success'}); setToDelete(null); },
       onError: (e) => { toast({title: 'Không xoá được', description: e.message, tone: 'error'}); setToDelete(null); },
     });
   };
@@ -72,15 +92,41 @@ export function RendersScreen(): React.JSX.Element {
     body = <EmptyState icon={<Film size={28} />} title="Chưa có bản render" description="Render một bản nháp để xem thử video."
       action={<Button variant="primary" loading={start.isPending || !!job} loadingText="Đang render…" onClick={render}>Render nháp</Button>} />;
   } else {
-    body = <div className={s.grid}>{versions.map((v) => <VersionCard key={v.name} v={v} register={register} publishJob={publishJobs.find((j) => j.label.includes(` ${v.name} `))} onApprove={() => askName(v, false)} onRetry={() => askName(v, true)} onDelete={() => { setAlsoDrive(false); setToDelete(v); }} onOpenFolder={() => open.mutate(`projects/${slug}`, {onError: (e) => toast({title: 'Không mở được thư mục', description: e.message, tone: 'error'})})} />)}</div>;
+    body = <div className={s.grid}>{versions.map((v) => <VersionCard key={v.name} v={v} register={register} row={driveRow(v.name, v.published, driveJobs.find((j) => j.ref === v.name), drive.isPending ? undefined : drive.data)} onCancel={(j) => cancel.mutate(j.id)} onApprove={() => askName(v, false)} onRetry={() => { const j = driveJobs.find((x) => x.ref === v.name); if (j?.kind === 'drive-delete' && j.state === 'failed') rmOnDrive(v.name); else askName(v, true); }} onDelete={() => { setScope('local'); setToDelete(v); }} onOpenFolder={() => open.mutate(`projects/${slug}`, {onError: (e) => toast({title: 'Không mở được thư mục', description: e.message, tone: 'error'})})} />)}</div>;
   }
 
+  const orphans = drive.data?.orphans ?? [];
+  const driveBar = (
+    <div className={s.driveBar}>
+      <span>{drive.isFetching ? 'Đang kiểm tra Drive…' : drive.data ? `Kiểm tra Drive lúc ${new Date(drive.data.checkedAt).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'})}` : 'Chưa kiểm tra Drive'}</span>
+      <Button size="sm" variant="ghost" loading={drive.isFetching} onClick={() => void drive.refetch()}>Kiểm tra lại</Button>
+      {(drive.data?.error || drive.isError) && <span className={s.driveErr}>Không kiểm tra được Drive: {drive.data?.error ?? drive.error?.message}</span>}
+    </div>
+  );
+  const orphanList = orphans.length > 0 && (
+    <section className={s.orphans} aria-label="Chỉ còn trên Drive">
+      <b>Chỉ còn trên Drive</b>
+      {orphans.map((o) => {
+        const running = driveJobs.some((j) => j.ref === o.version && j.kind === 'drive-delete' && (j.state === 'running' || j.state === 'queued'));
+        return (
+          <div key={o.version} className={s.orphan}>
+            <div className={s.oname}>
+              <span title={o.name}>{o.name}</span>
+              <span className={s.hint}>{o.version} · {new Date(o.at).toLocaleDateString('vi-VN')}{o.onDrive ? '' : ' · Không còn trên Drive'}</span>
+            </div>
+            <Button size="sm" variant="secondary" loading={running} loadingText="Đang xoá…" onClick={() => rmOnDrive(o.version)}>{o.onDrive ? 'Xoá trên Drive' : 'Xoá bản ghi'}</Button>
+          </div>
+        );
+      })}
+    </section>
+  );
   const elapsed = job?.startedAt ? (now - job.startedAt) / 1000 : 0;
   return (
     <div className={s.page}>
       {header}
+      {versions.length > 0 && driveBar}
       <div className={s.layout}>
-        {body}
+        <div className={s.main}>{body}{orphanList}</div>
         <aside className={s.side}>
           {job ? (
             <section className={s.card}>
@@ -111,14 +157,18 @@ export function RendersScreen(): React.JSX.Element {
           <span className={s.hint}>Lưu vào thư mục xuat-ban/ trên Drive</span>
         </label>
       </Dialog>
-      <Dialog open={!!toDelete} onOpenChange={(o) => { if (!o && !del.isPending) setToDelete(null); }} size="sm" title={`Xoá ${toDelete?.name ?? ''}?`}
-        description="Xoá file video trên máy này. Storyboard của dự án vẫn giữ."
+      <Dialog open={!!toDelete} onOpenChange={(o) => { if (!o && !del.isPending && !driveDel.isPending) setToDelete(null); }} size="sm" title={`Xoá ${toDelete?.name ?? ''}?`}
+        description={`${SCOPE[toDelete?.published?.state === 'done' ? scope : 'local'].desc} Storyboard của dự án vẫn giữ.`}
         footer={<>
-          <Button variant="ghost" disabled={del.isPending} onClick={() => setToDelete(null)}>Huỷ</Button>
-          <Button variant="danger" loading={del.isPending} onClick={doDelete}>Xoá</Button>
+          <Button variant="ghost" disabled={del.isPending || driveDel.isPending} onClick={() => setToDelete(null)}>Huỷ</Button>
+          <Button variant="danger" loading={del.isPending || driveDel.isPending} onClick={doDelete}>{SCOPE[toDelete?.published?.state === 'done' ? scope : 'local'].btn}</Button>
         </>}>
         {toDelete?.published?.state === 'done' && (
-          <label className={s.check}><input type="checkbox" checked={alsoDrive} onChange={(e) => setAlsoDrive(e.target.checked)} /> Xoá cả trên Drive</label>
+          <div className={s.radios} role="radiogroup" aria-label="Phạm vi xoá">
+            {(Object.keys(SCOPE) as DeleteScope[]).map((k) => (
+              <label key={k} className={s.check}><input type="radio" name="del-scope" checked={scope === k} onChange={() => setScope(k)} /> {SCOPE[k].label}</label>
+            ))}
+          </div>
         )}
       </Dialog>
     </div>

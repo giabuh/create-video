@@ -28,3 +28,8 @@ def test_timed_on_the_voice_with_words():
 
 def test_chunk_caption_empty():
     assert chunk_caption("   ", 6, 3.0) == []
+
+
+def test_phone_number_is_never_split():
+    chunks = split_caption("Nhắn tin hoặc gọi 0876 929 145 để biết lịch khai giảng.", 6)
+    assert any("0876 929 145" in c for c in chunks), chunks

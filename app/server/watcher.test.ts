@@ -1,4 +1,4 @@
-import {mkdir, rm, writeFile} from 'node:fs/promises';
+import {mkdir, rename, rm, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {afterEach, describe, expect, it} from 'vitest';
 import {EventBus} from './events.ts';
@@ -40,6 +40,20 @@ describe('watcher', () => {
     await writeFile(path.join(dir, 'voices/_uploads/a.wav'), 'x');
     await sleep(500);
     expect(paths).toEqual([]);
+  });
+  it('keeps emitting for a file replaced by rename (atomic writes), and for new dirs', async () => {
+    const {dir, paths} = await setup();
+    const f = path.join(dir, 'projects/p1/project.json');
+    for (const v of ['1', '2', '3']) {
+      await writeFile(f + '.tmp', v); await rename(f + '.tmp', f);
+      await sleep(300);
+    }
+    expect(paths.filter(p => p === 'projects/p1/project.json').length).toBe(3);
+    await mkdir(path.join(dir, 'projects/p2'));
+    await sleep(100);
+    await writeFile(path.join(dir, 'projects/p2/storyboard.json'), '{}');
+    await sleep(400);
+    expect(paths).toContain('projects/p2/storyboard.json');
   });
   it('survives a removed watched dir', async () => {
     const {dir} = await setup();

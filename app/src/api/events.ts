@@ -4,6 +4,7 @@ import type {Job, ServerEvent, WorkerStatus} from '../../shared/types.ts';
 import {toast} from '../ui/index.ts';
 import {onChatEvent, resetChatDrafts} from './chat.ts';
 import {api} from './client.ts';
+import {driveToast} from './driveToasts.ts';
 import {qk} from './hooks.ts';
 
 type Connection = 'open' | 'connecting' | 'lost';
@@ -61,6 +62,8 @@ export function mergeJobs(local: Map<string, Job>, snapshot: Job[]): {next: Map<
 }
 function toastFinished(job: Job, prev: Job | undefined) {
   if (!TERMINAL.has(job.state) || (prev && TERMINAL.has(prev.state))) return;
+  const d = driveToast(job);
+  if (d) return toast({title: d.title, description: d.description, tone: d.tone, action: {label: 'Xem', onClick: () => navigate(d.to)}});
   if (job.state === 'failed') return toast({title: `${job.label} — thất bại`, description: [job.error, ...job.log.slice(-20)].filter(Boolean).join('\n'), tone: 'error'});
   if (job.state !== 'done') return;
   const r = job.result ?? {};

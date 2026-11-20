@@ -87,12 +87,25 @@ export type Config = Json & {
   transition?: {scene: TransitionName; media: TransitionName; duration: number};
   sfx?: {volume: number; minGap: number; scene: string | null; cta: string | null; motion: Record<string, string | null>};
 };
-export type JobKind = 'voice' | 'render' | 'ingest' | 'try' | 'approve' | 'voice-add' | 'publish' | 'delete-project';
+export type JobKind = 'voice' | 'render' | 'ingest' | 'try' | 'approve' | 'voice-add' | 'publish' | 'delete-project' | 'drive-delete' | 'sync';
 export type JobState = 'queued' | 'running' | 'done' | 'failed' | 'cancelled';
 export type Job = {
   id: string; kind: JobKind; lane: 'gpu' | 'render' | 'io'; project: string | null; label: string;
+  ref: string | null; // what the job acts on: render version for publish/drive-delete, 'push'|'pull' for sync
   state: JobState; progress: number | null; step: string; startedAt: number | null; endedAt: number | null;
   etaSeconds: number | null; log: string[]; result: Json | null; error: string | null; cancellable: boolean;
+};
+/** GET /projects/:slug/drive — xuat-ban/ on Drive checked against project.json `published` records. */
+export type DriveStatus = {
+  checkedAt: number; error: string | null;
+  versions: Record<string, 'ok' | 'missing' | 'mismatch'>; // only versions whose published.state === 'done'
+  orphans: {version: string; name: string; at: string; onDrive: boolean}[]; // published done, local mp4 gone
+};
+export type SyncFolder = 'library' | 'music' | 'sfx' | 'reference';
+/** GET /sync/status — rclone check of each media folder against Drive. */
+export type SyncStatus = {
+  checkedAt: number; error: string | null; lastPush: number | null; lastPull: number | null;
+  folders: {name: SyncFolder; localOnly: number; driveOnly: number; differ: number; same: number}[];
 };
 export type WorkerStatus = {state: 'starting' | 'idle' | 'loading' | 'ready' | 'error'; device: 'cuda' | 'cpu' | null; error: string | null};
 export type LimitInfo = {status: string; resetsAt: number | null; utilization: number | null; type: string | null}; // resetsAt = epoch seconds

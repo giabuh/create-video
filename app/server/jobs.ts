@@ -2,7 +2,7 @@ import type {EventBus} from './events.ts';
 import type {Job, JobKind, Json} from '../shared/types.ts';
 
 export type JobCtx = {progress(p: number | null, step?: string): void; log(line: string): void; signal: AbortSignal};
-export type JobSpec = {kind: JobKind; lane: Job['lane']; label: string; project?: string | null; cancellable: boolean; run(ctx: JobCtx): Promise<Json | void>};
+export type JobSpec = {kind: JobKind; lane: Job['lane']; label: string; project?: string | null; ref?: string | null; cancellable: boolean; run(ctx: JobCtx): Promise<Json | void>};
 
 const MAX_LOG = 200;
 const KEEP_FINISHED = 50;
@@ -21,7 +21,7 @@ export class JobQueue {
   enqueue(spec: JobSpec): Job {
     const job: Job = {
       id: `j${Date.now().toString(36)}${(++this.#seq).toString(36)}`, kind: spec.kind, lane: spec.lane, project: spec.project ?? null,
-      label: spec.label, state: 'queued', progress: null, step: '', startedAt: null, endedAt: null,
+      label: spec.label, ref: spec.ref ?? null, state: 'queued', progress: null, step: '', startedAt: null, endedAt: null,
       etaSeconds: null, log: [], result: null, error: null, cancellable: spec.cancellable,
     };
     const e: Entry = {job, spec, ac: new AbortController(), lastEmit: 0};

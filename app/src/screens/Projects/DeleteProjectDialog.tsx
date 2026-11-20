@@ -1,11 +1,13 @@
 import {useState} from 'react';
 import {useDeleteProject, useProject} from '../../api/hooks.ts';
 import {Button, Dialog, ErrorState, Skeleton, fmtBytes, toast} from '../../ui/index.ts';
+import {driveRow, useProjectDrive} from './driveStatus.ts';
 import s from './Projects.module.css';
 
 export function DeleteProjectDialog({slug, open, onOpenChange}: {slug: string; open: boolean; onOpenChange(o: boolean): void}): React.JSX.Element {
   const q = useProject(slug);
   const del = useDeleteProject(slug);
+  const drive = useProjectDrive(slug, open);
   const [picked, setPicked] = useState<string[]>([]);
   const versions = q.data?.versions ?? [];
   const done = versions.filter((v) => v.published?.state === 'done');
@@ -32,7 +34,11 @@ export function DeleteProjectDialog({slug, open, onOpenChange}: {slug: string; o
               {v.name} · {v.kind === 'draft' ? 'Nháp 540p' : '1080p'} · {fmtBytes(v.bytes)} · {new Date(v.mtime).toLocaleDateString('vi-VN')}
             </label>
           ))}
-          {done.map((v) => <span key={v.name} className={s.sub}>{v.name} · Đã lên Drive · {v.published?.name}</span>)}
+          {done.map((v) => {
+            const r = driveRow(drive.data, v.name);
+            const txt = r === 'ok' ? 'Đã lên Drive ✓ đã kiểm tra' : r === 'missing' ? 'Không thấy trên Drive' : r === 'checking' ? 'Đang kiểm tra Drive…' : 'Chưa kiểm tra được Drive';
+            return <span key={v.name} className={`${s.sub} ${s.driveRow} ${r === 'missing' ? s.bad : ''}`} title={`${v.name} · ${txt} · ${v.published?.name ?? ''}`}>{v.name} · {txt} · {v.published?.name}</span>;
+          })}
         </div>
       )}
     </Dialog>

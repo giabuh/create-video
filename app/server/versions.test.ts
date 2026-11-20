@@ -18,6 +18,9 @@ describe('versions', () => {
     expect(v.map(x => x.name)).toEqual(['reel-v3', 'reel-v1']);
     expect(v[0]).toMatchObject({n: 3, kind: 'final', approved: true, hasSnapshot: true, file: 'projects/p1/reel-v3.mp4', bytes: 1});
     expect(v[1]).toMatchObject({kind: null, approved: false, hasSnapshot: false});
+    await writeMeta('p1', {...meta, renders: {...meta.renders, 'reel-v6': {kind: 'final', at: 'x'}}, published: {'reel-v9': {name: 'a.mp4', state: 'done', at: 'x'}}});
+    expect((await nextVersion('p1')).n).toBe(10); // published/renders keys count even with no local file
+    await writeMeta('p1', meta);
     await mkdir(path.join(root, 'projects/empty'));
     expect(await nextVersion('empty')).toEqual({n: 1, name: 'reel-v1'});
   });

@@ -1,5 +1,5 @@
 import {beforeEach, describe, expect, it} from 'vitest';
-import {DriveError, driveDelete, driveList, driveName, driveUpload, freeName, setRunner, withRetry, type Runner} from './drive.ts';
+import {DriveError, driveDelete, driveList, driveName, driveUpload, freeName, rcloneCheck, setRunner, withRetry, type Runner} from './drive.ts';
 import {makeTestRoot} from './testRoot.ts';
 
 const calls: string[][] = [];
@@ -63,5 +63,12 @@ describe('withRetry', () => {
     let n = 0;
     expect(await withRetry(async () => { if (++n < 2) throw new Error('x'); return 'ok'; }, [1, 1, 1], async () => {})).toBe('ok');
     expect(n).toBe(2);
+  });
+});
+
+describe('rcloneCheck', () => {
+  it('turns a stalled rclone into a DriveError after the deadline', async () => {
+    setRunner((_a, _o, signal) => new Promise((_r, rej) => signal?.addEventListener('abort', () => rej(signal.reason))));
+    await expect(rcloneCheck(['lsf', 'x:'], 20)).rejects.toThrow('Drive không phản hồi');
   });
 });

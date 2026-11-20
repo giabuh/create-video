@@ -1,6 +1,6 @@
 .chip {
   display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: var(--r-pill);
-  font: 600 var(--fs-xs)/1 var(--font); white-space: nowrap; background: var(--panel-3); color: var(--text-2);
+  font: 600 var(--fs-xs)/1 var(--font); white-space: nowrap; max-width: 100%; flex-shrink: 0; box-sizing: border-box; background: var(--panel-3); color: var(--text-2);
 }
 .neutral { background: var(--panel-3); color: var(--text-2); }
 .info { background: var(--info-soft); color: var(--info-text); }
@@ -16,3 +16,4 @@
 }
 .remove:hover { opacity: 1; background: color-mix(in srgb, currentColor 18%, transparent); }
 .remove::after { content: ""; position: absolute; inset: -4px; }
+.text { min-width: 0; overflow: hidden; text-overflow: ellipsis; }

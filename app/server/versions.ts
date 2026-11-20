@@ -28,8 +28,13 @@ export async function listVersions(slug: string, meta: ProjectMeta): Promise<Ver
 
 export async function nextVersion(slug: string): Promise<{n: number; name: string}> {
   let max = 0;
+  const meta = (await readMeta(slug)).data;
   for (const f of await ls(dirOf(slug))) {
     const m = /^reel-v(\d+)\.(?:mp4|tmp\.mp4|storyboard\.json)$/.exec(f);
+    if (m) max = Math.max(max, Number(m[1]));
+  }
+  for (const k of [...Object.keys(meta.published ?? {}), ...Object.keys(meta.renders)]) { // numbers kept on Drive/record after local delete
+    const m = /^reel-v(\d+)$/.exec(k);
     if (m) max = Math.max(max, Number(m[1]));
   }
   return {n: max + 1, name: `reel-v${max + 1}`};

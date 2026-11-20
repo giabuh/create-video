@@ -2,18 +2,20 @@ import {useMemo, useState} from 'react';
 import {ImageOff} from 'lucide-react';
 import {useLibrary} from '../../api/hooks.ts';
 import {Button, Drawer, EmptyState, ErrorState, Input, Segmented, Skeleton, fmtSec} from '../../ui/index.ts';
+import {byUsage, projectCounts, usageLabel} from '../Library/usageCount.ts';
 import s from './Inspector.module.css';
 
 const stem = (n: string) => n.replace(/\.[^.]+$/, '');
 type Kind = 'all' | 'video' | 'image';
 type Ori = 'all' | 'portrait' | 'landscape';
 
-function Tile({name, type, duration, on, onPick}: {name: string; type: 'video' | 'image'; duration: number | null; on: boolean; onPick(): void}): React.JSX.Element {
+function Tile({name, type, duration, used, on, onPick}: {name: string; type: 'video' | 'image'; duration: number | null; used: number; on: boolean; onPick(): void}): React.JSX.Element {
   const [bad, setBad] = useState(false);
   return (
     <button type="button" className={`${s.pickTile} ${on ? s.pickOn : ''}`} aria-pressed={on} onClick={onPick} title={name}>
       <span className={s.pickThumb}>
         {bad ? <ImageOff size={22} aria-hidden /> : <img src={`/library/thumbs/${encodeURIComponent(stem(name))}.jpg`} alt="" loading="lazy" onError={() => setBad(true)} />}
+        <span className={`${s.pickBadge} ${s.pickUsed}`} title="Số dự án đã dùng file này">{usageLabel(used)}</span>
         <span className={s.pickBadge}>{type === 'video' && duration != null ? fmtSec(duration) : 'Ảnh'}</span>
       </span>
       <span className={s.pickName}>{name}</span>
@@ -27,12 +29,13 @@ export function MediaPicker({open, onOpenChange, onAdd}: {open: boolean; onOpenC
   const [kind, setKind] = useState<Kind>('all');
   const [ori, setOri] = useState<Ori>('all');
   const [sel, setSel] = useState<string[]>([]);
+  const counts = useMemo(() => projectCounts(lib.data?.usage ?? {}), [lib.data?.usage]);
   const rows = useMemo(() => {
     const t = q.trim().toLowerCase();
     return Object.entries(lib.data?.data ?? {}).filter(([n, e]) =>
       (kind === 'all' || e.type === kind) && (ori === 'all' || e.orientation === ori)
-      && (!t || `${n} ${e.description} ${e.tags.join(' ')}`.toLowerCase().includes(t)));
-  }, [lib.data, q, kind, ori]);
+      && (!t || `${n} ${e.description} ${e.tags.join(' ')}`.toLowerCase().includes(t))).sort(byUsage(counts));
+  }, [lib.data, q, kind, ori, counts]);
   const close = (o: boolean) => { if (!o) setSel([]); onOpenChange(o); };
   const toggle = (n: string) => setSel((c) => (c.includes(n) ? c.filter((x) => x !== n) : [...c, n]));
   return (
@@ -47,7 +50,7 @@ export function MediaPicker({open, onOpenChange, onAdd}: {open: boolean; onOpenC
         {lib.isPending ? <Skeleton height={200} />
           : lib.isError ? <ErrorState error={lib.error} onRetry={() => void lib.refetch()} />
           : rows.length === 0 ? <EmptyState icon={<ImageOff size={28} aria-hidden />} title="Không có file phù hợp" description="Thử đổi bộ lọc hoặc nạp thêm media ở màn Thư viện." />
-          : <div className={s.pickGrid}>{rows.map(([n, e]) => <Tile key={n} name={n} type={e.type} duration={e.duration} on={sel.includes(n)} onPick={() => toggle(n)} />)}</div>}
+          : <div className={s.pickGrid}>{rows.map(([n, e]) => <Tile key={n} name={n} type={e.type} duration={e.duration} used={counts[n] ?? 0} on={sel.includes(n)} onPick={() => toggle(n)} />)}</div>}
       </div>
     </Drawer>
   );

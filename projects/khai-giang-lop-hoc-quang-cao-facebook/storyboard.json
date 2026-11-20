@@ -144,7 +144,7 @@
           },
           "at": "tạo tài khoản",
           "backdrop": "scrim",
-          "duration": 4.8
+          "until": "sách"
         }
       ]
     },
@@ -181,7 +181,7 @@
           },
           "at": "Đăng ký",
           "backdrop": "none",
-          "duration": 2.2
+          "until": "phí"
         }
       ]
     },
@@ -212,12 +212,12 @@
             "x": 6,
             "y": 12,
             "w": 88,
-            "h": 10
+            "h": 11
           },
           "at": "gọi",
           "enter": "pop",
           "backdrop": "none",
-          "duration": 1.8
+          "until": "giảng"
         }
       ]
     }

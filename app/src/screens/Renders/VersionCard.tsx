@@ -1,14 +1,15 @@
 import {useEffect, useRef, useState} from 'react';
 import {Pause, Play, FolderOpen, Trash2} from 'lucide-react';
 import type {Job, VersionInfo} from '../../../shared/types.ts';
-import {Button, Chip, IconButton, Slider, Tooltip, fmtBytes, fmtPct} from '../../ui/index.ts';
+import {Button, Chip, IconButton, ProgressBar, Slider, Tooltip, fmtBytes, fmtPct} from '../../ui/index.ts';
+import type {DriveRow} from './driveRow.ts';
 import s from './Renders.module.css';
 
 const QUALITY = {draft: 'Nháp 0,5×', final: '1080×1920'} as const;
 const clock = (t: number) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
 
-export function VersionCard({v, register, publishJob, onApprove, onRetry, onDelete, onOpenFolder}: {
-  v: VersionInfo; register(name: string, el: HTMLVideoElement | null): void; publishJob?: Job; onApprove(): void; onRetry(): void; onDelete(): void; onOpenFolder(): void;
+export function VersionCard({v, register, row, onApprove, onRetry, onCancel, onDelete, onOpenFolder}: {
+  v: VersionInfo; register(name: string, el: HTMLVideoElement | null): void; row: DriveRow; onApprove(): void; onRetry(): void; onCancel?(job: Job): void; onDelete(): void; onOpenFolder(): void;
 }): React.JSX.Element {
   const p = v.published;
   const blocked = v.approved && p?.state !== 'done';
@@ -22,22 +23,12 @@ export function VersionCard({v, register, publishJob, onApprove, onRetry, onDele
 
   return (
     <article className={s.card} aria-label={v.name}>
-      <div className={s.row}>
+      <div className={`${s.row} ${s.head}`}>
         <h2 className={s.name}>{v.name}</h2>
         {v.approved && <Chip tone="success">Đã duyệt</Chip>}
         {v.kind === 'draft' && <Chip>{QUALITY.draft}</Chip>}
       </div>
-      {v.approved && !p && <div className={s.row}><Button size="sm" variant="secondary" onClick={onRetry}>Đẩy lên Drive</Button></div>}
-      {p && (
-        <div className={s.row}>
-          {p.state === 'uploading' && <Chip tone="info">Đang tải lên Drive{publishJob?.progress != null ? ` · ${fmtPct(publishJob.progress)}` : ''}</Chip>}
-          {p.state === 'done' && <Chip tone="success">Đã lên Drive · {p.name}</Chip>}
-          {p.state === 'failed' && <>
-            <Tooltip content={p.error ?? 'Lỗi không rõ'}><span><Chip tone="danger">Lỗi Drive</Chip></span></Tooltip>
-            <Button size="sm" variant="ghost" onClick={onRetry}>Thử lại</Button>
-          </>}
-        </div>
-      )}
+      <DriveStatusRow row={row} approved={v.approved} onRetry={onRetry} onCancel={onCancel} />
       <div className={s.frame}>
         <video ref={ref} src={`/${v.file}`} preload="metadata" playsInline onClick={toggle}
           onLoadedMetadata={(e) => { setDur(e.currentTarget.duration); setState('ready'); }}
@@ -69,4 +60,23 @@ export function VersionCard({v, register, publishJob, onApprove, onRetry, onDele
       </div>
     </article>
   );
+}
+
+function DriveStatusRow({row, approved, onRetry, onCancel}: {row: DriveRow; approved: boolean; onRetry(): void; onCancel?(job: Job): void}): React.JSX.Element {
+  const retry = (label: string) => <Button size="sm" variant="secondary" onClick={onRetry}>{label}</Button>;
+  let line: React.ReactNode; let extra: React.ReactNode = null;
+  switch (row.kind) {
+    case 'local': line = <><span className={s.muted}>Chỉ trên máy</span>{approved && retry('Đẩy lên Drive')}</>; break;
+    case 'checking': line = <><Chip>Đã lên Drive · đang kiểm tra…</Chip><span className={s.fname} title={row.name}>{row.name}</span></>; break; // show the record at once; Drive can take seconds to answer
+    case 'ok': line = <><Chip tone="success">{row.verified ? 'Có trên Drive ✓' : 'Đã đẩy lên Drive'}</Chip><span className={s.fname} title={row.name}>{row.name}</span></>; break;
+    case 'bad': line = <><Chip tone="danger">Không thấy trên Drive</Chip>{retry('Đẩy lại')}</>; break;
+    case 'failed': line = <><Tooltip content={row.error}><span className={s.err}>{row.error}</span></Tooltip>{retry('Thử lại')}</>; break;
+    case 'deleting': line = <span className={s.muted}>{row.job.step || 'Đang xoá trên Drive…'}</span>; extra = <ProgressBar size="sm" value={row.job.progress} tone="danger" label="Đang xoá trên Drive" />; break;
+    case 'uploading': {
+      const j = row.job;
+      line = <><span className={s.muted}>{j?.step || 'Đang tải lên Drive…'}{j?.progress != null ? ` · ${fmtPct(j.progress)}` : ''}</span>{j?.cancellable && onCancel && <Button size="sm" variant="ghost" onClick={() => onCancel(j)}>Huỷ</Button>}</>;
+      extra = <ProgressBar size="sm" value={j?.progress ?? null} tone="info" label="Đang tải lên Drive" />;
+    }
+  }
+  return <div className={s.status}><div className={s.statusLine}>{line}</div>{extra}</div>;
 }

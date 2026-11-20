@@ -12,6 +12,7 @@ import {jobRoutes} from './routes/jobs.ts';
 import {libraryRoutes} from './routes/library.ts';
 import {projectRoutes} from './routes/projects.ts';
 import {settingsRoutes} from './routes/settings.ts';
+import {syncRoutes} from './routes/sync.ts';
 import {uploadRoutes} from './routes/uploads.ts';
 import {HttpError} from './routes/util.ts';
 import type {Deps} from './routes/util.ts';
@@ -41,7 +42,7 @@ export function createApp(deps: Deps): Hono {
     {type: 'worker', status: deps.worker.status()},
     {type: 'chatBusy', chatId: deps.chat.busy()},
   ]));
-  for (const r of [projectRoutes, libraryRoutes, uploadRoutes, voiceRoutes, settingsRoutes, jobRoutes, chatRoutes]) api.route('/', r(deps));
+  for (const r of [projectRoutes, libraryRoutes, uploadRoutes, voiceRoutes, settingsRoutes, jobRoutes, syncRoutes, chatRoutes]) api.route('/', r(deps));
   app.route('/api', api);
 
   for (const [dir, exts] of Object.entries(STATIC_EXTS)) {

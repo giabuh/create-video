@@ -1,6 +1,7 @@
 import {readFile, writeFile} from 'node:fs/promises';
 import path from 'node:path';
-import {describe, expect, it, vi} from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+import * as drive from '../drive.ts';
 import {makeTestRoot} from '../testRoot.ts';
 import {setup, settle} from './testApp.ts';
 import {readMeta, recordRender} from '../versions.ts';
@@ -8,10 +9,19 @@ import {readMeta, recordRender} from '../versions.ts';
 vi.mock('../git.ts', () => ({approveCommit: vi.fn(async () => 'abc123'), deleteProjectCommit: vi.fn(async () => null)}));
 vi.mock('../drive.ts', async (orig) => ({
   ...(await orig<typeof import('../drive.ts')>()),
-  driveList: vi.fn(async () => []), driveUpload: vi.fn(async () => {}), driveDelete: vi.fn(async () => {}),
+  driveList: vi.fn(async () => []), driveSizes: vi.fn(async () => new Map<string, number>()), driveUpload: vi.fn(async () => {}), driveDelete: vi.fn(async () => {}),
 }));
 
 describe('projects routes', () => {
+  beforeEach(() => {
+    // fake Drive: uploads are listed with their (1 byte) local size
+    vi.mocked(drive.driveUpload).mockReset();
+    vi.mocked(drive.driveSizes).mockReset();
+    const files = new Map<string, number>();
+    vi.mocked(drive.driveUpload).mockImplementation(async (_l, name) => { files.set(name, 1); });
+    vi.mocked(drive.driveSizes).mockImplementation(async () => new Map(files));
+  });
+
   it('lists, creates, conflicts', async () => {
     await makeTestRoot();
     const {req} = setup();
@@ -95,10 +105,76 @@ describe('projects routes', () => {
     expect((await readMeta('p1')).data.approved).toBeNull();
     const ok = await req('/api/projects/p1/approve', {method: 'POST', json: {version: 'reel-v2'}});
     expect(ok.status).toBe(200);
-    await settle(jobs, (await ok.json()).job.id);
+    const {job: pubJob} = await ok.json();
+    await settle(jobs, pubJob.id);
+    expect(pubJob.ref).toBe('reel-v2');
     expect((await readMeta('p1')).data.published?.['reel-v2']).toMatchObject({state: 'done', name: 'p1-reel-v2.mp4'});
     expect((await req('/api/projects/p1/renders/reel-v9', {method: 'DELETE'})).status).toBe(404);
-    expect((await req('/api/projects/p1/renders/reel-v2?drive=1', {method: 'DELETE'})).status).toBe(200);
+    const del = await req('/api/projects/p1/renders/reel-v2?drive=1', {method: 'DELETE'});
+    expect(del.status).toBe(200);
+    const {driveJob} = await del.json();
+    expect(driveJob).toMatchObject({kind: 'drive-delete', ref: 'reel-v2'});
+    await settle(jobs, driveJob.id);
+    expect((await readMeta('p1')).data.published?.['reel-v2']).toBeUndefined();
+  });
+
+  it('delete without drive returns {} and keeps the record; drive-delete route (orphan) and 404', async () => {
+    const root = await makeTestRoot();
+    const {req, jobs} = setup();
+    const dir = path.join(root, 'projects/p1');
+    await writeFile(path.join(dir, 'reel-v1.mp4'), 'x');
+    await writeFile(path.join(dir, 'project.json'), JSON.stringify({approved: null, renders: {}, published: {'reel-v1': {name: 'a.mp4', state: 'done', at: 'x'}}}));
+    const del = await req('/api/projects/p1/renders/reel-v1', {method: 'DELETE'});
+    expect(await del.json()).toEqual({});
+    expect((await readMeta('p1')).data.published?.['reel-v1']?.state).toBe('done');
+    expect((await req('/api/projects/p1/drive-delete', {method: 'POST', json: {version: 'reel-v7'}})).status).toBe(404);
+    const r = await req('/api/projects/p1/drive-delete', {method: 'POST', json: {version: 'reel-v1'}});
+    expect(r.status).toBe(202);
+    const job = await r.json();
+    expect(job).toMatchObject({kind: 'drive-delete', label: 'Xoá reel-v1 trên Drive', ref: 'reel-v1', cancellable: false});
+    await settle(jobs, job.id);
+    expect((await readMeta('p1')).data.published?.['reel-v1']).toBeUndefined();
+  });
+
+  it('GET drive: ok / missing / mismatch / orphan / error', async () => {
+    const root = await makeTestRoot();
+    const {req} = setup();
+    const dir = path.join(root, 'projects/p1');
+    for (const v of ['reel-v1', 'reel-v2', 'reel-v3']) await writeFile(path.join(dir, `${v}.mp4`), 'x');
+    const rec = (name: string) => ({name, state: 'done', at: 'x'});
+    await writeFile(path.join(dir, 'project.json'), JSON.stringify({approved: null, renders: {}, published: {
+      'reel-v1': rec('a.mp4'), 'reel-v2': rec('b.mp4'), 'reel-v3': rec('c.mp4'), 'reel-v4': rec('d.mp4'), 'reel-v5': rec('e.mp4'), 'reel-v6': {name: 'f.mp4', state: 'failed', at: 'x'},
+    }}));
+    vi.mocked(drive.driveSizes).mockResolvedValue(new Map([['a.mp4', 1], ['c.mp4', 5], ['d.mp4', 9]]));
+    const s = await (await req('/api/projects/p1/drive')).json();
+    expect(s).toMatchObject({error: null, versions: {'reel-v1': 'ok', 'reel-v2': 'missing', 'reel-v3': 'mismatch', 'reel-v4': 'ok', 'reel-v5': 'missing'}});
+    expect(s.versions['reel-v6']).toBeUndefined();
+    expect(s.orphans).toEqual([{version: 'reel-v4', name: 'd.mp4', at: 'x', onDrive: true}, {version: 'reel-v5', name: 'e.mp4', at: 'x', onDrive: false}]);
+    vi.mocked(drive.driveSizes).mockRejectedValue(new drive.DriveError('offline'));
+    const e = await (await req('/api/projects/p1/drive')).json();
+    expect(e).toMatchObject({error: 'offline', versions: {}, orphans: []});
+  });
+
+  it('re-push: done+missing and done+mismatch enqueue an overwrite under the recorded name; done+ok is 409', async () => {
+    const root = await makeTestRoot();
+    const {req, jobs} = setup();
+    const dir = path.join(root, 'projects/p1');
+    await writeFile(path.join(dir, 'reel-v1.mp4'), 'x');
+    await writeFile(path.join(dir, 'project.json'), JSON.stringify({approved: 'reel-v1', renders: {}, published: {'reel-v1': {name: 'a.mp4', state: 'done', at: 'x'}}}));
+    vi.mocked(drive.driveSizes).mockResolvedValue(new Map([['a.mp4', 1]]));
+    expect((await req('/api/projects/p1/publish', {method: 'POST', json: {version: 'reel-v1'}})).status).toBe(409);
+    for (const sizes of [new Map<string, number>(), new Map([['a.mp4', 7]])]) {
+      vi.mocked(drive.driveUpload).mockClear();
+      vi.mocked(drive.driveSizes).mockResolvedValueOnce(sizes); // route check
+      const r = await req('/api/projects/p1/publish', {method: 'POST', json: {version: 'reel-v1', name: 'ignored'}});
+      expect(r.status).toBe(202);
+      const job = await r.json();
+      expect(job.ref).toBe('reel-v1');
+      vi.mocked(drive.driveSizes).mockResolvedValue(new Map([['a.mp4', 1]])); // verify after upload
+      await settle(jobs, job.id);
+      expect(vi.mocked(drive.driveUpload).mock.calls[0][1]).toBe('a.mp4');
+      expect((await readMeta('p1')).data.published?.['reel-v1']).toMatchObject({state: 'done', name: 'a.mp4'});
+    }
   });
 
   it('delete of approved render not on Drive is 409', async () => {
@@ -117,6 +193,7 @@ describe('projects routes', () => {
     const dir = path.join(root, 'projects/p1');
     await writeFile(path.join(dir, 'reel-v1.mp4'), 'x');
     const seed = (state: string) => writeFile(path.join(dir, 'project.json'), JSON.stringify({approved: 'reel-v1', renders: {}, published: {'reel-v1': {name: 'a.mp4', state, at: 'x'}}}));
+    vi.mocked(drive.driveSizes).mockResolvedValue(new Map([['a.mp4', 1]]));
     for (const [state, msg] of [['done', 'Bản này đã lên Drive'], ['uploading', 'Đang tải lên Drive']]) {
       await seed(state);
       for (const url of ['approve', 'publish']) {
@@ -135,6 +212,7 @@ describe('projects routes', () => {
     await writeFile(path.join(dir, 'project.json'), JSON.stringify({approved: null, renders: {}, deleting: {uploads: [], state: 'failed', error: 'x'}}));
     expect((await (await req('/api/projects')).json())[0]).toMatchObject({status: 'deleting', deleting: {state: 'failed'}});
     expect((await req('/api/projects/p1/storyboard', {method: 'PUT', json: {storyboard: {scenes: []}, baseMtime: 0}})).status).toBe(423);
+    expect((await req('/api/projects/p1/drive-delete', {method: 'POST', json: {version: 'reel-v1'}})).status).toBe(423);
     expect((await req('/api/projects/p1/delete-cancel', {method: 'POST'})).status).toBe(200);
     expect((await readMeta('p1')).data.deleting).toBeUndefined();
     expect((await req('/api/projects/p1', {method: 'DELETE', json: {upload: ['reel-v9']}})).status).toBe(400);

@@ -1,10 +1,12 @@
 import {useEffect, useMemo, useState} from 'react';
+import {byUsage, projectCounts, usageLabel} from './usageCount.ts';
 import {ImageOff, SearchX} from 'lucide-react';
 import type {LibraryEntry} from '../../../shared/types.ts';
 import {useLibrary, useMusic, useSfx} from '../../api/hooks.ts';
 import {useUploads} from '../../api/upload.ts';
 import {Button, Drawer, DropZone, EmptyState, ErrorState, Input, PageHeader, Segmented, Skeleton, Tabs, fmtSec} from '../../ui/index.ts';
 import {Detail} from './Detail.tsx';
+import {DriveButton, DriveDrawer} from './DriveSync.tsx';
 import {MEDIA_EXTS} from './exts.ts';
 import {MusicTab} from './Music.tsx';
 import {SfxTab} from './Sfx.tsx';
@@ -27,13 +29,14 @@ function useWide(): boolean {
   return w;
 }
 
-function Tile({name, e, on, onPick}: {name: string; e: LibraryEntry; on: boolean; onPick(): void}): React.JSX.Element {
+function Tile({name, e, used, on, onPick}: {name: string; e: LibraryEntry; used: number; on: boolean; onPick(): void}): React.JSX.Element {
   const [bad, setBad] = useState(false);
   return (
     <button type="button" className={`${s.tile} ${on ? s.on : ''}`} aria-pressed={on} onClick={onPick}>
       <div className={s.thumb}>
         {bad ? <div style={{display: 'grid', placeItems: 'center', height: '100%', color: 'var(--muted)'}}><ImageOff size={24} aria-hidden /></div>
           : <img src={`/library/thumbs/${encodeURIComponent(stem(name))}.jpg`} alt="" loading="lazy" onError={() => setBad(true)} />}
+        <span className={`${s.badge} ${s.usedBadge}`} title="Số dự án đã dùng file này">{usageLabel(used)}</span>
         <span className={s.badge}>{e.type === 'video' && e.duration != null ? fmtSec(e.duration) : 'Ảnh'}</span>
       </div>
       <div className={s.meta}>
@@ -55,12 +58,13 @@ function MediaTab(): React.JSX.Element {
   const [sel, setSel] = useState<string | null>(null);
   const data = q.data?.data;
   const entries = useMemo(() => Object.entries(data ?? {}), [data]);
+  const counts = useMemo(() => projectCounts(q.data?.usage ?? {}), [q.data?.usage]);
   const missing = entries.filter(([, e]) => noDesc(e)).length;
   const shown = useMemo(() => {
     const t = search.trim().toLowerCase();
     return entries.filter(([n, e]) => (kind === 'all' || e.type === kind) && (ori === 'all' || e.orientation === ori) && (!todo || noDesc(e))
-      && (!t || n.toLowerCase().includes(t) || e.description.toLowerCase().includes(t) || e.tags.some((x) => x.toLowerCase().includes(t))));
-  }, [entries, kind, ori, todo, search]);
+      && (!t || n.toLowerCase().includes(t) || e.description.toLowerCase().includes(t) || e.tags.some((x) => x.toLowerCase().includes(t)))).sort(byUsage(counts));
+  }, [entries, kind, ori, todo, search, counts]);
   const reset = () => { setKind('all'); setOri('all'); setTodo(false); setSearch(''); };
   const current = q.data && sel && q.data.data[sel] ? sel : null;
   const detail = q.data && current ? <Detail key={current} name={current} lib={q.data} onGone={() => setSel(null)} /> : null;
@@ -85,7 +89,7 @@ function MediaTab(): React.JSX.Element {
                 {q.isPending && Array.from({length: 8}, (_, i) => (
                   <div key={i} style={{display: 'flex', flexDirection: 'column', gap: 8}}><Skeleton height={128} radius={12} /><Skeleton height={14} width="70%" /><Skeleton height={12} width="50%" /></div>
                 ))}
-                {shown.map(([n, e]) => <Tile key={n} name={n} e={e} on={n === current} onPick={() => setSel(n)} />)}
+                {shown.map(([n, e]) => <Tile key={n} name={n} e={e} used={counts[n] ?? 0} on={n === current} onPick={() => setSel(n)} />)}
               </div>
               {wide && detail && <aside className={s.detail} aria-label="Chi tiết media">{detail}</aside>}
             </div>
@@ -105,9 +109,11 @@ export function LibraryScreen(): React.JSX.Element {
   const lib = useLibrary();
   const music = useMusic();
   const sfx = useSfx();
+  const [drive, setDrive] = useState(false);
   return (
     <>
-      <PageHeader title="Thư viện" subtitle="Ảnh, video học viên và nhạc nền. File gốc không bị sửa — app tạo bản chuẩn hoá trong library/." />
+      <PageHeader title="Thư viện" subtitle="Ảnh, video học viên và nhạc nền. File gốc không bị sửa — app tạo bản chuẩn hoá trong library/." actions={<DriveButton onClick={() => setDrive(true)} />} />
+      <DriveDrawer open={drive} onOpenChange={setDrive} />
       <div className={s.tabs}>
         <Tabs<'media' | 'music' | 'sfx'> aria-label="Loại thư viện" value={tab} onChange={setTab} tabs={[
           {value: 'media', label: `Ảnh & video${lib.data ? ` · ${Object.keys(lib.data.data).length}` : ''}`},

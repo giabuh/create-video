@@ -2,8 +2,9 @@ import {useMemo, useState} from 'react';
 import {Link, useNavigate} from 'react-router';
 import {FolderPlus, MoreVertical, Plus} from 'lucide-react';
 import type {ProjectStatus, ProjectSummary} from '../../../shared/types.ts';
+import {useJobs} from '../../api/events.ts';
 import {useBrands, useCancelDelete, useCreateProject, useDeleteProject, useProjects, useTemplates, useVoices} from '../../api/hooks.ts';
-import {Button, Chip, Dialog, DropdownMenu, EmptyState, ErrorState, Field, IconButton, Input, NumberField, PageHeader, Segmented, Select, Skeleton, VideoThumb, fmtRelTime, fmtSec, toast} from '../../ui/index.ts';
+import {Button, Chip, Dialog, DropdownMenu, EmptyState, ErrorState, Field, IconButton, Input, NumberField, PageHeader, ProgressBar, Segmented, Select, Skeleton, VideoThumb, fmtRelTime, fmtSec, toast} from '../../ui/index.ts';
 import type {Tone} from '../../ui/index.ts';
 import {DeleteProjectDialog} from './DeleteProjectDialog.tsx';
 import s from './Projects.module.css';
@@ -35,6 +36,7 @@ function Card({p}: {p: ProjectSummary}): React.JSX.Element {
   const retry = useDeleteProject(p.slug), cancel = useCancelDelete(p.slug);
   const deleting = p.status === 'deleting';
   const failed = p.deleting?.state === 'failed';
+  const job = useJobs().find((j) => j.kind === 'delete-project' && j.project === p.slug && (j.state === 'running' || j.state === 'queued'));
   const inner = (
     <>
       <div className={s.thumb}><VideoThumb src={p.latest ? `/${p.latest.file}` : null} label={p.firstCaption || 'Chưa render'} /></div>
@@ -54,6 +56,12 @@ function Card({p}: {p: ProjectSummary}): React.JSX.Element {
       {deleting
         ? <div className={s.card} aria-disabled>{inner}</div>
         : <Link to={`/p/${encodeURIComponent(p.slug)}`} className={s.card}>{inner}</Link>}
+      {deleting && !failed && (
+        <div className={s.delBar}>
+          <ProgressBar value={job?.progress ?? null} size="sm" label={`Đang xoá ${p.slug}`} />
+          <span className={s.sub} title={job?.step}>{job?.step || 'Đang xoá…'}</span>
+        </div>
+      )}
       {failed && (
         <div className={s.failBar}>
           <span className={s.sub} title={p.deleting?.error}>{p.deleting?.error ?? 'Đẩy lên Drive lỗi'}</span>
