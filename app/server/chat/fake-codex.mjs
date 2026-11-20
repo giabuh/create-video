@@ -23,9 +23,10 @@ function run() {
     out({type: 'turn.failed', error: {message: "You've hit your usage limit."}});
     process.exit(1);
   }
+  const pick = (f, pre) => { const i = args.findIndex((a, j) => args[j - 1] === f && a.startsWith(pre)); return i < 0 ? '' : ` ${f}=${args[i].slice(pre.length)}`; };
   const c = args.indexOf('-c');
   const dev = c >= 0 && args[c + 1].startsWith('developer_instructions=') ? 'yes' : 'no';
-  const reply = `engine=codex mode=${resume ? 'resume' : 'new'} thread=${thread} dev=${dev} prompt=${prompt.trim()}`;
+  const reply = `engine=codex mode=${resume ? 'resume' : 'new'} thread=${thread} dev=${dev}${pick('-m', '')}${pick('-c', 'model_reasoning_effort=')} prompt=${prompt.trim()}`;
   const cmd = "/bin/bash -lc 'ls projects'";
   out({type: 'item.started', item: {id: 'item_0', type: 'command_execution', command: cmd, aggregated_output: '', exit_code: null, status: 'in_progress'}});
   out({type: 'item.completed', item: {id: 'item_0', type: 'command_execution', command: cmd, aggregated_output: '_smoke\n', exit_code: 0, status: 'completed'}});

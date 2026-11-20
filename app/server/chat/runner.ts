@@ -20,9 +20,10 @@ export function turnArgs(o: Pick<TurnOpts, 'sessionId' | 'resume' | 'systemAppen
     o.resume ? '--resume' : '--session-id', o.sessionId, '--append-system-prompt', o.systemAppend, ...(o.model ? ['--model', o.model] : []), ...(o.effort ? ['--effort', o.effort] : [])];
 }
 
-export function codexArgs(o: Pick<TurnOpts, 'sessionId' | 'resume' | 'systemAppend'>): string[] {
+export function codexArgs(o: Pick<TurnOpts, 'sessionId' | 'resume' | 'systemAppend' | 'model' | 'effort'>): string[] {
   // JSON string escapes are valid TOML basic-string escapes
-  const common = ['--json', '--yolo', '--skip-git-repo-check', '-c', `developer_instructions=${JSON.stringify(o.systemAppend)}`];
+  const common = ['--json', '--yolo', '--skip-git-repo-check', '-c', `developer_instructions=${JSON.stringify(o.systemAppend)}`,
+    ...(o.model ? ['-m', o.model] : []), ...(o.effort ? ['-c', `model_reasoning_effort=${JSON.stringify(o.effort)}`] : [])];
   return o.resume ? ['exec', 'resume', ...common, o.sessionId, '-'] : ['exec', ...common, '-'];
 }
 

@@ -126,6 +126,24 @@ describe('chat routes', () => {
     expect(d2.events.filter(e => e.kind === 'text').at(-1)).toEqual({kind: 'text', text: `engine=codex mode=resume thread=${d1.chat.threadId} dev=yes prompt=again`});
   });
 
+  it('codex: model list from models_cache.json, -m and reasoning effort passed, effort checked against the model', async () => {
+    const {req, chat} = setup();
+    const models = await (await req('/api/chat/models')).json();
+    expect(models.codex).toEqual([{value: 'gpt-a', efforts: ['low', 'ultra']}, {value: 'gpt-b', efforts: ['low', 'max']}]);
+    expect(models.claude.map((m: {value: string}) => m.value)).toEqual(['opus', 'sonnet', 'haiku']);
+    const c: ChatMeta = await (await req('/api/chats', {method: 'POST', json: {engine: 'codex'}})).json();
+    const post = (json: object) => req(`/api/chats/${c.id}/messages`, {method: 'POST', json: {text: 'hi', account: 'codex', ...json}});
+    expect((await post({model: 'gpt-hidden'})).status).toBe(400);
+    expect((await post({model: 'gpt-b', effort: 'ultra'})).status).toBe(400); // gpt-b has no ultra
+    expect((await post({effort: 'ultra'})).status).toBe(400); // default model: only efforts every model has
+    expect((await post({model: 'opus'})).status).toBe(400); // claude model on a codex chat
+    expect((await post({model: 'gpt-a', effort: 'ultra'})).status).toBe(202);
+    await chat.idle();
+    const d: ChatDetail = await (await req(`/api/chats/${c.id}`)).json();
+    expect(d.events.find(e => e.kind === 'text')).toMatchObject({text: expect.stringMatching(/ -m=gpt-a -c="ultra" /)});
+    expect(d.chat).toMatchObject({model: 'gpt-a', effort: 'ultra'});
+  });
+
   it('claude account cannot be used on a codex chat and vice versa; bad engine → 400', async () => {
     const {req} = setup();
     expect((await req('/api/chats', {method: 'POST', json: {engine: 'gpt'}})).status).toBe(400);

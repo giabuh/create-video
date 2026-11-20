@@ -7,6 +7,7 @@ Start a reel with the `/make-reel` skill.
 ## Commands (run from repo root)
 - Ingest: `python3 tools/ingest.py`. Then describe each new file in `library/media-index.json`
   (description, tags, goodRanges) by viewing `library/thumbs/<name>.jpg`; more than 5 files -> delegate to a subagent.
+- Usage (least-used first): `python3 tools/usage.py` (media); `python3 tools/usage.py --motion` (motion component/variant + last project's combo).
 - Prepare: `VieNeu-TTS/.venv/bin/python tools/prepare.py projects/<slug>`
 - Still: `cd studio && npx remotion still Reel ../projects/<slug>/preview/<id>.png --frame=<n> --props=../projects/<slug>/render-props.json`
 - Render: `cd studio && npx remotion render Reel ../projects/<slug>/reel-v<N>.mp4 --props=../projects/<slug>/render-props.json`
@@ -15,6 +16,7 @@ Start a reel with the `/make-reel` skill.
 - Sync media with Google Drive: `tools/sync.sh push|pull` (rclone remote in config.json `sync.remote`).
 - Word timings for motion `at` (optional, once per machine): `node tools/whisper/setup.mjs` (builds whisper.cpp into `.whisper/`).
 - App (visual UI for the user): `cd app && npm start`  → http://127.0.0.1:5317 (dev with API auto-restart: `npm run dev`)
+  Or from repo root: `make app` / `make restart` (kills whatever holds ports 5316/5317, then starts dev) / `make stop` / `make test` / `make push|pull|sync` (Drive, `ARGS=--dry-run` to preview).
 - Tests: `uv run --with pytest python -m pytest tools/tests -q`, `cd studio && npx tsc --noEmit`, `cd app && npm test && npx tsc --noEmit` (E2E: `cd app && npm run e2e`, `cd app && npm run e2e:chat`).
 
 ## Rules

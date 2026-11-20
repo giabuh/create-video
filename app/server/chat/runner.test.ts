@@ -82,6 +82,7 @@ describe('codexArgs', () => {
   it('new vs resume', () => {
     expect(codexArgs({sessionId: '', resume: false, systemAppend: 'a "b"'})).toEqual(['exec', '--json', '--yolo', '--skip-git-repo-check', '-c', 'developer_instructions="a \\"b\\""', '-']);
     expect(codexArgs({sessionId: 'T', resume: true, systemAppend: 'x'})).toEqual(['exec', 'resume', '--json', '--yolo', '--skip-git-repo-check', '-c', 'developer_instructions="x"', 'T', '-']);
+    expect(codexArgs({sessionId: 'T', resume: true, systemAppend: 'x', model: 'gpt-6-sol', effort: 'ultra'}).slice(7, -2)).toEqual(['-m', 'gpt-6-sol', '-c', 'model_reasoning_effort="ultra"']);
   });
 });
 

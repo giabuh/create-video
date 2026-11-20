@@ -21,5 +21,10 @@ export async function makeClaudeHome(): Promise<string> {
   await acc(10);
   await mkdir(path.join(home, '.codex'), {recursive: true});
   await writeFile(path.join(home, '.codex', 'auth.json'), '{}');
+  await writeFile(path.join(home, '.codex', 'models_cache.json'), JSON.stringify({models: [
+    {slug: 'gpt-a', visibility: 'list', supported_reasoning_levels: [{effort: 'low'}, {effort: 'ultra'}]},
+    {slug: 'gpt-b', visibility: 'list', supported_reasoning_levels: [{effort: 'low'}, {effort: 'max'}]},
+    {slug: 'gpt-hidden', visibility: 'hide', supported_reasoning_levels: [{effort: 'low'}]},
+  ]}));
   return home;
 }

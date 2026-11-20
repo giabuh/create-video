@@ -1,9 +1,9 @@
 import {useEffect, useRef, useState} from 'react';
 import {MessageSquare} from 'lucide-react';
 import {matchPath, useLocation} from 'react-router';
-import {CHAT_EFFORTS, CHAT_MODELS, type ChatEffort, type ChatModel, type Engine} from '../../shared/types.ts';
+import type {Engine} from '../../shared/types.ts';
 import {Button, Drawer, DropdownMenu, EmptyState, Select, Spinner, Textarea, toast} from '../ui/index.ts';
-import {useChat, useChatAccounts, useChatBusy, useChatDraft, useChats, useCreateChat, useSendChat, useStopChat} from '../api/chat.ts';
+import {useChat, useChatAccounts, useChatBusy, useChatDraft, useChatModels, useChats, useCreateChat, useSendChat, useStopChat} from '../api/chat.ts';
 import {isInterrupted, limitText} from './chatView.ts';
 import {mdToHtml} from './markdown.ts';
 import s from './ChatPanel.module.css';
@@ -13,6 +13,7 @@ export function ChatPanel({open, onOpenChange}: {open: boolean; onOpenChange(o: 
   const slug = matchPath('/p/:slug/*', pathname)?.params.slug ?? matchPath('/p/:slug', pathname)?.params.slug ?? null;
   const chats = useChats();
   const accounts = useChatAccounts();
+  const models = useChatModels();
   const [picked, setPicked] = useState<string | null>(null);
   const chatId = picked ?? chats.data?.[0]?.id ?? null; // newest by default
   const [waiting, setWaiting] = useState<{id: string; n: number} | null>(null); // a turn we sent and have not seen finish
@@ -25,8 +26,8 @@ export function ChatPanel({open, onOpenChange}: {open: boolean; onOpenChange(o: 
   const send = useSendChat();
   const stop = useStopChat();
   const [account, setAccount] = useState('');
-  const [model, setModel] = useState<ChatModel | 'default'>('default'); // 'default' = the account's own model (Radix Select forbids '')
-  const [effort, setEffort] = useState<ChatEffort | 'default'>('default');
+  const [model, setModel] = useState('default'); // 'default' = the CLI's own model/effort (Radix Select forbids '')
+  const [effort, setEffort] = useState('default');
   const [text, setText] = useState('');
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLDivElement>(null);
@@ -37,6 +38,12 @@ export function ChatPanel({open, onOpenChange}: {open: boolean; onOpenChange(o: 
   useEffect(() => { setModel(chatModel); }, [chatId, chatModel]);
   const chatEffort = detail.data?.chat.effort ?? 'default';
   useEffect(() => { setEffort(chatEffort); }, [chatId, chatEffort]);
+  const modelOpts = models.data?.[engine] ?? [];
+  const mdl = modelOpts.some((o) => o.value === model) ? model : 'default';
+  // default model: offer only efforts every listed model supports
+  const effortOpts = modelOpts.find((o) => o.value === mdl)?.efforts ?? (modelOpts.length ? modelOpts.map((o) => o.efforts).reduce((a, b) => a.filter((e) => b.includes(e))) : []);
+  const eff = effortOpts.includes(effort) ? effort : 'default';
+  const cap = (v: string) => engine === 'claude' ? v[0].toUpperCase() + v.slice(1) : v;
   const engAccounts = (accounts.data ?? []).filter((a) => a.engine === engine);
   const hasCodex = (accounts.data ?? []).some((a) => a.engine === 'codex');
   const accountNames = engAccounts.map((a) => a.name);
@@ -74,7 +81,7 @@ export function ChatPanel({open, onOpenChange}: {open: boolean; onOpenChange(o: 
       let id = chatId;
       if (id === null) { id = (await create.mutateAsync({slug})).id; setPicked(id); }
       const n = id === chatId ? events.length : 0;
-      await send.mutateAsync({id, text: t, account: acct, model: model === 'default' ? undefined : model, effort: effort === 'default' ? undefined : effort, screen: pathname, slug});
+      await send.mutateAsync({id, text: t, account: acct, model: mdl === 'default' ? undefined : mdl, effort: eff === 'default' ? undefined : eff, screen: pathname, slug});
       setWaiting({id, n});
       setText('');
     } catch (e) {
@@ -111,14 +118,10 @@ export function ChatPanel({open, onOpenChange}: {open: boolean; onOpenChange(o: 
           <div className={s.pair}>
             <Select key={acct ? 'set' : 'none'} aria-label="Tài khoản Claude" value={acct || null} onChange={setAccount}
               options={engAccounts.map((a) => ({value: a.name, label: a.name, hint: a.limit?.utilization != null ? `${Math.round(a.limit.utilization * 100)}%` : ''}))} />
-            {engine === 'claude' && (
-              <Select<ChatModel | 'default'> aria-label="Model" value={model} onChange={setModel}
-                options={[{value: 'default', label: 'Model mặc định'}, ...CHAT_MODELS.map((m) => ({value: m, label: m[0].toUpperCase() + m.slice(1)}))]} />
-            )}
-            {engine === 'claude' && (
-              <Select<ChatEffort | 'default'> aria-label="Effort" value={effort} onChange={setEffort}
-                options={[{value: 'default', label: 'Effort mặc định'}, ...CHAT_EFFORTS.map((e) => ({value: e, label: e[0].toUpperCase() + e.slice(1)}))]} />
-            )}
+            <Select aria-label="Model" value={mdl} onChange={setModel}
+              options={[{value: 'default', label: 'Model mặc định'}, ...modelOpts.map((o) => ({value: o.value, label: cap(o.value)}))]} />
+            <Select aria-label="Effort" value={eff} onChange={setEffort}
+              options={[{value: 'default', label: 'Effort mặc định'}, ...effortOpts.map((e) => ({value: e, label: e[0].toUpperCase() + e.slice(1)}))]} />
           </div>
         </div>
         <div className={s.log} role="log" aria-live="polite">

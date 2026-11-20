@@ -1,8 +1,8 @@
 import {randomUUID} from 'node:crypto';
-import type {ChatAccount, ChatDetail, ChatEvent, ChatMeta, ChatEffort, ChatModel, Engine, LimitInfo} from '../../shared/types.ts';
+import type {ChatAccount, ChatDetail, ChatEvent, ChatMeta, ChatModels, Engine, LimitInfo} from '../../shared/types.ts';
 import type {EventBus} from '../events.ts';
 import {HttpError} from '../routes/util.ts';
-import {listAccounts} from './accounts.ts';
+import {chatModels, listAccounts} from './accounts.ts';
 import {runTurn} from './runner.ts';
 import {appendEvent, readEvents, readIndex, updateIndex} from './store.ts';
 
@@ -21,6 +21,8 @@ export class ChatService {
 
   busy(): string | null { return this.#active?.chatId ?? null; }
   idle(): Promise<void> { return this.#active?.done ?? Promise.resolve(); }
+
+  models(): Promise<ChatModels> { return chatModels(); }
 
   async accounts(): Promise<ChatAccount[]> {
     return (await listAccounts()).map(a => ({name: a.name, engine: a.engine, limit: this.#limits.get(a.name) ?? null}));
@@ -41,7 +43,7 @@ export class ChatService {
     return chat ? {chat, events: await readEvents(id)} : null;
   }
 
-  async send(id: string, m: {text: string; account: string; model?: ChatModel; effort?: ChatEffort; screen: string; slug: string | null}): Promise<void> {
+  async send(id: string, m: {text: string; account: string; model?: string; effort?: string; screen: string; slug: string | null}): Promise<void> {
     if (this.#active) throw new HttpError(409, 'Claude đang trả lời ở một phiên khác');
     let release!: () => void;
     const ac = new AbortController();
@@ -52,6 +54,12 @@ export class ChatService {
       const account = (await listAccounts()).find(a => a.name === m.account);
       if (!account) throw new HttpError(400, 'unknown account');
       if (account.engine !== chat.engine) throw new HttpError(400, 'account does not match the chat engine');
+      // allow-list: model and effort become argv
+      const options = (await chatModels())[chat.engine];
+      const picked = m.model === undefined ? null : options.find(o => o.value === m.model);
+      if (picked === undefined) throw new HttpError(400, 'unknown model');
+      const efforts = picked ? picked.efforts : options.length ? options.map(o => o.efforts).reduce((a, b) => a.filter(e => b.includes(e))) : [];
+      if (m.effort !== undefined && !efforts.includes(m.effort)) throw new HttpError(400, 'unknown effort');
 
       let w: Promise<void> = Promise.resolve();
       const persist = (e: ChatEvent) => { // write, then emit: a client refetch after the event sees it
@@ -63,7 +71,7 @@ export class ChatService {
 
       const codex = chat.engine === 'codex';
       void runTurn({
-        sessionId: codex ? chat.threadId ?? '' : id, resume: codex ? chat.threadId !== null : chat.started, account, model: codex ? undefined : m.model, effort: codex ? undefined : m.effort, prompt: m.text, systemAppend: systemAppend(m.screen, m.slug), signal: ac.signal,
+        sessionId: codex ? chat.threadId ?? '' : id, resume: codex ? chat.threadId !== null : chat.started, account, model: m.model, effort: m.effort, prompt: m.text, systemAppend: systemAppend(m.screen, m.slug), signal: ac.signal,
         onEvent: e => { if (e.kind === 'delta') this.#bus.emit({type: 'chat', chatId: id, event: e}); else persist(e); },
         onInit: tid => {
           if (chat.started && (tid === null || tid === chat.threadId)) return;

@@ -1,8 +1,8 @@
-import {lstat, readdir, realpath, stat} from 'node:fs/promises';
+import {lstat, readdir, readFile, realpath, stat} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-import type {Engine} from '../../shared/types.ts';
+import type {ChatModelOption, ChatModels, Engine} from '../../shared/types.ts';
 export type Account = {name: string; engine: Engine; configDir: string | null};
 export const claudeHome = (): string => process.env.REEL_CLAUDE_HOME ?? os.homedir();
 
@@ -26,6 +26,23 @@ export async function listAccounts(home: string = claudeHome()): Promise<Account
   }
   if (await exists(path.join(home, '.codex', 'auth.json'))) out.push({name: 'codex', engine: 'codex', configDir: null}); // codex uses ~/.codex, CODEX_HOME untouched
   return out;
+}
+
+const CLAUDE_EFFORTS = ['low', 'medium', 'high', 'xhigh', 'max'];
+const CLAUDE_MODELS: ChatModelOption[] = ['opus', 'sonnet', 'haiku'].map(value => ({value, efforts: CLAUDE_EFFORTS})); // claude --model aliases
+
+/** Codex keeps its model list in ~/.codex/models_cache.json and refreshes it itself; only models it shows in its picker. */
+async function codexModels(home: string): Promise<ChatModelOption[]> {
+  try {
+    const d = JSON.parse(await readFile(path.join(home, '.codex', 'models_cache.json'), 'utf8'));
+    const list: unknown[] = Array.isArray(d?.models) ? d.models : [];
+    return list.flatMap((m: any) => m?.visibility === 'list' && typeof m.slug === 'string'
+      ? [{value: m.slug, efforts: (m.supported_reasoning_levels ?? []).map((e: any) => e?.effort).filter((e: unknown) => typeof e === 'string')}] : []);
+  } catch { return []; } // no cache yet: only the default model is offered
+}
+
+export async function chatModels(home: string = claudeHome()): Promise<ChatModels> {
+  return {claude: CLAUDE_MODELS, codex: await codexModels(home)};
 }
 
 // Set when the app is started from inside a Claude Code session; a child must not inherit them.

@@ -118,11 +118,10 @@ export type ChatEvent =
   | {kind: 'error'; message: string; limit?: {account: string; resetsAt: number | null}};
 export type Engine = 'claude' | 'codex';
 export type ChatAccount = {name: string; engine: Engine; limit: LimitInfo | null};
-export const CHAT_MODELS = ['opus', 'sonnet', 'haiku'] as const; // claude --model aliases; absent = the account's default
-export type ChatModel = typeof CHAT_MODELS[number];
-export const CHAT_EFFORTS = ['low', 'medium', 'high', 'xhigh', 'max'] as const; // claude --effort; absent = the account's default
-export type ChatEffort = typeof CHAT_EFFORTS[number];
-export type ChatMeta = {id: string; title: string; engine: Engine; account: string; model?: ChatModel; effort?: ChatEffort; slug: string | null; started: boolean; threadId: string | null; createdAt: number; updatedAt: number};
+/** Models a chat may pick per engine, each with the efforts it supports. No model/effort on a turn = the CLI's own default. */
+export type ChatModelOption = {value: string; efforts: string[]};
+export type ChatModels = Record<Engine, ChatModelOption[]>;
+export type ChatMeta = {id: string; title: string; engine: Engine; account: string; model?: string; effort?: string; slug: string | null; started: boolean; threadId: string | null; createdAt: number; updatedAt: number};
 export type ChatDetail = {chat: ChatMeta; events: ChatEvent[]};
 export type ServerEvent =
   | {type: 'changed'; path: string}             // posix path relative to repo root, e.g. "projects/_smoke/storyboard.json"

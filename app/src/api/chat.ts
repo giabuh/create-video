@@ -1,12 +1,13 @@
 import {useMutation, useQuery, useQueryClient, type QueryClient} from '@tanstack/react-query';
 import {useSyncExternalStore} from 'react';
-import type {ChatAccount, ChatDetail, ChatMeta, ChatEffort, ChatModel, Engine, ServerEvent} from '../../shared/types.ts';
+import type {ChatAccount, ChatDetail, ChatMeta, ChatModels, Engine, ServerEvent} from '../../shared/types.ts';
 import {draftAfter} from '../shell/chatView.ts';
 import {api} from './client.ts';
 
-export const chatKeys = {accounts: ['chat-accounts'] as const, list: ['chats'] as const, one: (id: string) => ['chat', id] as const};
+export const chatKeys = {accounts: ['chat-accounts'] as const, models: ['chat-models'] as const, list: ['chats'] as const, one: (id: string) => ['chat', id] as const};
 
 export const useChatAccounts = () => useQuery({queryKey: chatKeys.accounts, queryFn: ({signal}) => api<ChatAccount[]>('/chat/accounts', {signal})});
+export const useChatModels = () => useQuery({queryKey: chatKeys.models, queryFn: ({signal}) => api<ChatModels>('/chat/models', {signal})});
 export const useChats = () => useQuery({queryKey: chatKeys.list, queryFn: ({signal}) => api<ChatMeta[]>('/chats', {signal})});
 // poll: fallback while a turn we sent is open, in case the SSE stream silently died (e.g. the API restarted behind the dev proxy)
 export const useChat = (id: string | null, poll = false) => useQuery({
@@ -23,7 +24,7 @@ export function useCreateChat() {
 export function useSendChat() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({id, ...body}: {id: string; text: string; account: string; model?: ChatModel; effort?: ChatEffort; screen: string; slug: string | null}) => api<void>(`/chats/${id}/messages`, {body}),
+    mutationFn: ({id, ...body}: {id: string; text: string; account: string; model?: string; effort?: string; screen: string; slug: string | null}) => api<void>(`/chats/${id}/messages`, {body}),
     onSuccess: (_r, {id}) => { void qc.invalidateQueries({queryKey: chatKeys.one(id)}); void qc.invalidateQueries({queryKey: chatKeys.list}); },
   });
 }
