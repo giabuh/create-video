@@ -58,7 +58,7 @@ export const Headline: React.FC<MotionProps<typeof HeadlineSchema>> = ({kicker, 
             const w = interpolate(frame, [(APPEAR + p.m * STAGGER) * fps, (APPEAR + p.m * STAGGER + SWEEP) * fps], [0, 100], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.out(Easing.cubic)});
             return (
               <span key={i} style={{backgroundImage: `linear-gradient(${brand.colors.accent2}, ${brand.colors.accent2})`, backgroundRepeat: 'no-repeat', backgroundSize: `${w}% 100%`,
-                color: '#FFFFFF', boxDecorationBreak: 'clone', WebkitBoxDecorationBreak: 'clone', padding: '0 0.12em'}}>{p.t}</span>
+                color: w >= 50 ? '#FFFFFF' : ink, boxDecorationBreak: 'clone', WebkitBoxDecorationBreak: 'clone', padding: '0 0.12em'}}>{p.t}</span>
             );
           })}
         </div>
