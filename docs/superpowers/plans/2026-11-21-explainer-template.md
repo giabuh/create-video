@@ -170,6 +170,7 @@ After Tasks 1–5.
 - [ ] `CLAUDE.md` rule 5: replace the mix sentence with "real footage is the backbone; motion explains on top of it (no numeric target)". Drop "prepare.py prints the actual mix" and the "prefer bands/boxes over… pure-motion page" clause.
 - [ ] `CLAUDE.md` rule 6: for `explainer`, write new components each video under `studio/src/videos/<slug>/` (see its README). Rule 7: landscape QA uses `--platform youtube` / `--safe youtube`. The still-check list drops "mix".
 - [ ] `.claude/skills/make-reel/SKILL.md`: drop "and mix". Add the explainer branch (spec §4, steps 1–6). Every template reads `brands/<brand>/facts.md` and uses only facts marked confirmed.
+- [ ] `CLAUDE.md` rule 1: add "When the user states a new ad fact in any session, append or update it in `brands/<brand>/facts.md` right away (confirmed, source: user, date) and say so in one line" (spec §6).
 - [ ] `docs/superpowers/specs/2026-11-18-reel-pipeline-design.md` lines ~28, 96, 160, 199, 285: remove the mix target.
 - [ ] Commit: `Rules: no mix target, explainer workflow, facts file`.
 

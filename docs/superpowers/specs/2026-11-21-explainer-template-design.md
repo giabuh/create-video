@@ -136,6 +136,10 @@ the backbone; motion explains on top of it" (no numbers), for every template.
   ratings per campus; certifications; ca sáng/chiều/tối; học liệu miễn phí trọn đời; kèm 1-1; không giới hạn số buổi;
   mô-đun AI). **The user confirms each one before it is used.** Unconfirmed facts are marked and never shown.
 - The make-reel skill reads it for every template, not only `explainer`.
+- Keep it growing in every session: whenever the user states a new fact in conversation (any task, not only
+  reel-making), Claude appends it to the brand's `facts.md` right away as confirmed (source: user, date), or updates
+  the existing line if it changes a fact, and says so in one line. Facts Claude only infers or reads off footage go in
+  as unconfirmed.
 
 ## Done means
 - Mix is gone: no `mix` key in `config.json`, no mix UI, no mix in pipeline output, docs updated, all tests pass.
