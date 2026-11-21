@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {cardSlot} from '../../../../studio/src/components/storyLayout.ts';
+import {cardSlot, isCard, mediaCardRect} from '../../../../studio/src/components/storyLayout.ts';
 
 const L = (position: 'top' | 'center' | 'bottom' | 'free' | 'full', extra = {}) =>
   ({position, box: null, start: 0, duration: 2, ...extra}) as Parameters<typeof cardSlot>[0][number];
@@ -27,5 +27,27 @@ describe('story card slot', () => {
   it('two gaps: the larger one', () => {
     const box = (y: number, h: number) => L('free', {box: {x: 0, y, w: 50, h}});
     near(cardSlot([box(30, 10), box(60, 20)], 1), 0.415, 0.585);
+  });
+});
+
+describe('media card rect', () => {
+  const W = 1080, H = 1920;
+  it('landscape 16:9 clamps to the 28% minimum height, centred at 0.40', () => {
+    const r = mediaCardRect(16 / 9, W, H);
+    expect(r.top).toBeCloseTo(0.26, 6); expect(r.bottom).toBeCloseTo(0.54, 6); expect(r.width).toBeCloseTo(0.88, 6);
+  });
+  it('square keeps 88% width, height 0.495', () => {
+    const r = mediaCardRect(1, W, H);
+    expect(r.bottom - r.top).toBeCloseTo(0.88 * 1080 / 1920, 6); expect(r.width).toBeCloseTo(0.88, 6);
+  });
+  it('9:16 portrait caps at 60% height and narrows the card', () => {
+    const r = mediaCardRect(9 / 16, W, H);
+    expect(r.bottom - r.top).toBeCloseTo(0.6, 6); expect(r.width).toBeCloseTo((0.6 * 1920 * 9 / 16) / 1080, 6);
+  });
+  it('invalid aspect falls back to square', () => expect(mediaCardRect(0, W, H)).toEqual(mediaCardRect(1, W, H)));
+  it('item frame wins over look', () => {
+    expect(isCard({}, {mediaFrame: 'card'})).toBe(true);
+    expect(isCard({frame: 'full'}, {mediaFrame: 'card'})).toBe(false);
+    expect(isCard({}, undefined)).toBe(false);
   });
 });

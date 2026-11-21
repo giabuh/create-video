@@ -2,7 +2,9 @@
 export type Effect = 'none' | 'zoom-in' | 'zoom-out' | 'pan-left' | 'pan-right' | 'glitch';
 export type Transition = 'cut' | 'fade' | 'slide';
 export type CaptionChunk = {text: string; start: number; end: number; times?: number[]};
-export type MediaItem = {src: string; type: 'video' | 'image'; from: number; start: number; duration: number; effect: Effect};
+export type MediaItem = {src: string; type: 'video' | 'image'; from: number; start: number; duration: number; effect: Effect;
+  aspect?: number; frame?: MediaFrame}; // aspect = width/height from library/media-index.json; frame overrides look.mediaFrame
+export type MediaFrame = 'full' | 'card';
 // Placement: 'full' = the component lays itself out on the whole frame; top/center/bottom = preset bands;
 // 'free' = `box` (percent of the frame: x/y = top-left corner, w/h = size).
 export type MotionPosition = 'full' | 'top' | 'center' | 'bottom' | 'free';
@@ -38,7 +40,7 @@ export type RenderProps = {
   template: string; fps: number; width: number; height: number;
   brand: Brand; captions: CaptionStyle; music: Music | null;
   scenes: Scene[]; cta: Cta | null; totalSeconds: number;
-  look?: {grain: number; scanlines: number; logo: boolean}; // story template: film grain / scan lines (0..1), logo on/off
+  look?: {grain: number; scanlines: number; logo: boolean; mediaFrame?: MediaFrame}; // story template: film grain / scan lines (0..1), logo on/off
   transitionSeconds?: number; // crossfade/slide length for scene and clip transitions
   sfx?: {src: string; start: number; volume: number; until?: number}[]; // sound effects; start is absolute seconds
   overlays?: MotionItem[]; // video-wide motion track; start is absolute (seconds from the beginning)

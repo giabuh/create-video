@@ -24,6 +24,14 @@ def write_json(path: Path, data) -> None:
 SFX_EXTS = {".mp3", ".wav", ".m4a", ".ogg", ".aac"}
 
 
+def _media_sizes() -> dict[str, tuple[int, int]]:
+    """{library file: (width, height)} from library/media-index.json; missing or unreadable -> {} (framed media then assume a square)."""
+    try:
+        return {k: (v["width"], v["height"]) for k, v in load_json(ROOT / "library" / "media-index.json").items()}
+    except (OSError, ValueError, KeyError, TypeError):
+        return {}
+
+
 def _sfx_peaks(files: list[str]) -> dict[str, float]:
     """Seconds from each sfx file's start to its loudest moment (a whoosh swells, a ting hits at once)."""
     try:
@@ -123,7 +131,7 @@ def prepare(proj: Path, get_model=None, synth: bool = True, on_progress=None) ->
     try:
         sfx_files = sorted(f.name for f in (ROOT / "sfx").glob("*") if f.suffix.lower() in SFX_EXTS)
         props = build_render_props({**sb, "scenes": scenes}, settings, brand, audio, words, sfx_files,
-                                   _sfx_peaks(sfx_files) if settings.get("sfx") else None)
+                                   _sfx_peaks(sfx_files) if settings.get("sfx") else None, _media_sizes())
         _warn_sfx(sb, settings.get("sfx"), sfx_files)
     except AnchorError as e:
         return {"ok": False, "stage": "anchor", "errors": e.problems, "stale": stale, "totalSeconds": None, "mix": None,

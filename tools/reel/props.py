@@ -9,7 +9,7 @@ OWNS_EXIT = {"Ribbon", "TwoTier", "Callout", "PinLabel", "GlossyPill", "GiantTex
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp"}
 
 
-def _media(items: list[dict], scene_dur: float) -> list[dict]:
+def _media(items: list[dict], scene_dur: float, sizes: dict | None = None) -> list[dict]:
     fixed = sum(m["duration"] for m in items if m.get("duration"))
     free = [m for m in items if not m.get("duration")]
     each = max(scene_dur - fixed, 0) / len(free) if free else 0
@@ -23,6 +23,8 @@ def _media(items: list[dict], scene_dur: float) -> list[dict]:
             "start": round(t, 3),
             "duration": round(d, 3),
             "effect": m.get("effect", "none"),
+            **({"frame": m["frame"]} if "frame" in m else {}),
+            **({"aspect": round(sizes[m["src"]][0] / sizes[m["src"]][1], 4)} if (sizes or {}).get(m["src"], (0, 0))[1] else {}),
         })
         t += d
     return out
@@ -198,8 +200,8 @@ def _sfx_events(storyboard: dict, scenes: list[dict], overlays: list[dict], cta_
 
 
 def build_render_props(storyboard: dict, settings: dict, brand: dict, audio: dict, words: dict | None = None,
-                       sfx_files: list[str] | None = None, sfx_peaks: dict[str, float] | None = None) -> dict:
-    """`sfx_files`: audio file names in sfx/ (none -> no sound effects are emitted); `sfx_peaks`: {file: seconds to its loudest moment}. `words`: {scene id: word timings} from align.py; spoken scenes without an entry use the estimate.
+                       sfx_files: list[str] | None = None, sfx_peaks: dict[str, float] | None = None, media_sizes: dict[str, tuple[int, int]] | None = None) -> dict:
+    """`sfx_files`: audio file names in sfx/ (none -> no sound effects are emitted); `sfx_peaks`: {file: seconds to its loudest moment}. `media_sizes`: {library file: (width, height)}, gives media their `aspect` (framed media). `words`: {scene id: word timings} from align.py; spoken scenes without an entry use the estimate.
     Raises AnchorError when an `at`/`until`/track anchor cannot be resolved."""
     cap = settings["captions"]
     tr = settings.get("transition") or {"scene": "cut", "media": "cut", "duration": 0.4}
@@ -220,7 +222,7 @@ def build_render_props(storyboard: dict, settings: dict, brand: dict, audio: dic
             "highlight": sc.get("highlight", []),
             **({"bg": sc["bg"]} if "bg" in sc else {}),
             "overlay": sc.get("overlay"),
-            "media": _media(sc.get("media") or [], dur),
+            "media": _media(sc.get("media") or [], dur, media_sizes),
             "motion": _motion(sc.get("motion") or [], dur, bool(sc.get("media")), words.get(sc["id"]),
                               sc.get("caption") or "", sc["id"], problems),
             "transition": sc.get("transition", tr["scene"]),

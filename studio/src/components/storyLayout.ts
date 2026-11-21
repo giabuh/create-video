@@ -28,3 +28,13 @@ export const cardSlot = (layers: Layer[], t: number, safe: [number, number] = [0
   take(cur, safe[1]);
   return best;
 };
+
+/** True when a media item renders as a floating card (item.frame wins over look.mediaFrame; default full-bleed). */
+export const isCard = (item: {frame?: string}, look?: {mediaFrame?: string}): boolean => (item.frame ?? look?.mediaFrame) === 'card';
+
+/** Framed-media card: width 88% of the frame (narrower when the 60% height cap bites), height from the aspect clamped to 28-60% of the frame height, centred at y 0.40. All fractions. */
+export const mediaCardRect = (aspect: number, frameW: number, frameH: number): {top: number; bottom: number; width: number} => {
+  const a = aspect > 0 ? aspect : 1;
+  const h = Math.min(0.6, Math.max(0.28, (0.88 * frameW) / a / frameH));
+  return {top: 0.4 - h / 2, bottom: 0.4 + h / 2, width: Math.min(0.88, (h * frameH * a) / frameW)};
+};

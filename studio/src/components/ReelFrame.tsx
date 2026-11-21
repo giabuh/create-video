@@ -9,6 +9,7 @@ import {MusicTrack} from '../components/MusicTrack';
 import {Overlay} from '../components/Overlay';
 import {SceneTransition} from '../components/SceneTransition';
 import {SfxTrack} from '../components/SfxTrack';
+import {isCard} from './storyLayout';
 import type {RenderProps, Scene} from '../types';
 
 export const ReelFrame: React.FC<{
@@ -16,8 +17,9 @@ export const ReelFrame: React.FC<{
   captions: (sc: Scene) => React.ReactNode;
   empty: (sc: Scene) => React.ReactNode;
   logo: boolean;
+  ctaCenter?: boolean;
   children?: React.ReactNode;
-}> = ({p, captions, empty, logo, children}) => {
+}> = ({p, captions, empty, logo, ctaCenter, children}) => {
   const {fps} = useVideoConfig();
   const f = (s: number) => Math.max(1, Math.round(s * fps));
   const {colors} = p.brand;
@@ -39,7 +41,7 @@ export const ReelFrame: React.FC<{
               {sc.media.map((m, i) => (
                 <Sequence key={`media-${i}`} from={Math.round(m.start * fps)}
                   durationInFrames={f(m.duration) + (i === sc.media.length - 1 ? tail : mt !== 'cut' ? tf : 0)}>
-                  <SceneTransition type={i === 0 ? 'cut' : mt} seconds={ts}><MediaShot item={m} /></SceneTransition>
+                  <SceneTransition type={i === 0 ? 'cut' : mt} seconds={ts}><MediaShot item={m} card={isCard(m, p.look)} light={sc.bg === 'light'} /></SceneTransition>
                 </Sequence>
               ))}
               {/* captions, motion and voice end with the scene; only the picture carries into the transition */}
@@ -62,7 +64,7 @@ export const ReelFrame: React.FC<{
       )}
       {p.cta && (
         <Sequence name="cta" from={Math.round(ctaStart * fps)} durationInFrames={f(p.cta.duration)}>
-          <CtaCard cta={p.cta} brand={p.brand} bg={p.scenes[p.scenes.length - 1]?.media[0]} />
+          <CtaCard cta={p.cta} brand={p.brand} bg={p.scenes[p.scenes.length - 1]?.media[0]} centerY={ctaCenter ? 0.45 : undefined} />
         </Sequence>
       )}
       {(p.overlays ?? []).map((m, i) => (

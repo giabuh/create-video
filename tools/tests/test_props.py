@@ -243,3 +243,10 @@ def test_scene_bg_and_look_land_in_props():
     assert [s.get("bg") for s in p["scenes"]] == ["light", None]
     assert p["look"] == {"grain": 0.5, "scanlines": 1, "logo": True}
     assert build_render_props(sb, SETTINGS, BRAND, {})["look"] == {"grain": 0, "scanlines": 0, "logo": False}
+
+
+def test_media_aspect_and_frame_land_in_props():
+    sb = {"scenes": [{"id": "s", "duration": 2, "media": [{"src": "a.mp4", "frame": "full"}, {"src": "b.jpg"}]}]}
+    m = build_render_props(sb, SETTINGS, BRAND, {}, media_sizes={"a.mp4": (1080, 1920)})["scenes"][0]["media"]
+    assert m[0]["aspect"] == 0.5625 and m[0]["frame"] == "full"
+    assert "aspect" not in m[1] and "frame" not in m[1]

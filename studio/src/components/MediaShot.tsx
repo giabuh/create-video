@@ -1,14 +1,16 @@
 // contain-fit media over a blurred cover copy (never crops students)
 import React, {useCallback, useId, useRef} from 'react';
-import {AbsoluteFill, Img, staticFile, useCurrentFrame, useRemotionEnvironment, useVideoConfig, type OnVideoFrame} from 'remotion';
+import {AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame, useRemotionEnvironment, useVideoConfig, type OnVideoFrame} from 'remotion';
 import {effectTransform, glitchAt} from '../effects';
 import type {MediaItem} from '../types';
 import {ReelVideo} from './ReelVideo';
+import {mediaCardRect} from './storyLayout';
 
 // library/<name>.<ext> -> library/thumbs/<name>.jpg (written by tools/ingest.py)
 const thumbOf = (src: string) => src.replace(/^library\/(.+)\.[^./]+$/, 'library/thumbs/$1.jpg');
 
-export const MediaShot: React.FC<{item: MediaItem}> = ({item}) => {
+// card: story template's floating picture on a lit backdrop (light = light text-card scenes)
+export const MediaShot: React.FC<{item: MediaItem; card?: boolean; light?: boolean}> = ({item, card = false, light = false}) => {
   const frame = useCurrentFrame();
   const {fps, width, height} = useVideoConfig();
   const env = useRemotionEnvironment();
@@ -36,11 +38,10 @@ export const MediaShot: React.FC<{item: MediaItem}> = ({item}) => {
   const bg = item.type !== 'video' ? layer('cover', {})
     : env.isRendering ? <canvas ref={bgRef} width={Math.round(width / 8)} height={Math.round(height / 8)} style={full} />
     : <img src={staticFile(thumbOf(item.src))} style={{...full, objectFit: 'cover'}} onError={(e) => { e.currentTarget.style.display = 'none'; }} />;
-  return (
-    <AbsoluteFill>
-      <AbsoluteFill style={{filter: 'blur(40px) brightness(0.7)', transform: 'scale(1.2)'}}>{bg}</AbsoluteFill>
+  const picture = (
+    <>
       <AbsoluteFill style={g.split > 0 ? {filter: `url(#${fid})`, transform: `translate(${g.dx}px, ${g.dy}px)`} : undefined}>
-        {layer('contain', {transform: effectTransform(item.effect, p)}, env.isRendering ? drawBg : undefined)}
+        {layer('contain', {transform: effectTransform(item.effect, p)}, env.isRendering && !card ? drawBg : undefined)}
       </AbsoluteFill>
       {g.split > 0 && (
         // R shifted +split, G+B shifted -split, summed: split 0 would equal the original picture
@@ -54,6 +55,34 @@ export const MediaShot: React.FC<{item: MediaItem}> = ({item}) => {
           </filter>
         </svg>
       )}
+    </>
+  );
+  if (card) {
+    const r = mediaCardRect(item.aspect ?? 1, width, height);
+    const enter = interpolate(frame / fps, [0, 0.25], [0, 1], {extrapolateRight: 'clamp', easing: Easing.out(Easing.cubic)});
+    const streak = (top: number, speed: number, a: number): React.CSSProperties => ({
+      position: 'absolute', filter: 'blur(36px)', top: `${top}%`, left: '-30%', width: '160%', height: '14%', transform: `rotate(-22deg) translateX(${(frame / fps) * speed}px)`,
+      background: `linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,${a}), rgba(255,255,255,0))`,
+    });
+    return (
+      <AbsoluteFill style={{backgroundColor: light ? '#F3EFE6' : '#0B0B0F'}}>
+        <AbsoluteFill style={{overflow: 'hidden'}}>
+          <div style={streak(22, 14, light ? 0.25 : 0.1)} />
+          <div style={streak(64, -10, light ? 0.18 : 0.06)} />
+        </AbsoluteFill>
+        <div style={{
+          position: 'absolute', left: `${((1 - r.width) / 2) * 100}%`, width: `${r.width * 100}%`, top: `${r.top * 100}%`, height: `${(r.bottom - r.top) * 100}%`,
+          borderRadius: 28, border: `4px solid ${light ? '#111114' : '#FFFFFF'}`, overflow: 'hidden', boxSizing: 'border-box', backgroundColor: light ? '#E7E2D6' : '#15151B',
+          boxShadow: light ? '0 30px 80px rgba(0,0,0,.25)' : '0 30px 80px rgba(0,0,0,.6)',
+          transform: `scale(${(0.92 + 0.08 * enter) * (1 + 0.06 * p)})`, filter: enter < 1 ? `blur(${10 * (1 - enter)}px)` : undefined,
+        }}>{picture}</div>
+      </AbsoluteFill>
+    );
+  }
+  return (
+    <AbsoluteFill>
+      <AbsoluteFill style={{filter: 'blur(40px) brightness(0.7)', transform: 'scale(1.2)'}}>{bg}</AbsoluteFill>
+      {picture}
     </AbsoluteFill>
   );
 };

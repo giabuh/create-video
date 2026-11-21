@@ -2,9 +2,9 @@ import React, {useMemo} from 'react';
 import {AbsoluteFill, useCurrentFrame, useVideoConfig} from 'remotion';
 import {widthOf, useFontsLoaded} from '../fit';
 import {fontFamily} from '../fonts';
-import type {CaptionChunk, CaptionStyle, MotionItem} from '../types';
+import type {CaptionChunk, CaptionStyle, MediaItem, MotionItem} from '../types';
 import {captionUnits} from './Captions';
-import {cardSlot} from './storyLayout';
+import {cardSlot, mediaCardRect} from './storyLayout';
 
 const LH = 1.15;
 const FADE = 0.18;
@@ -22,13 +22,16 @@ const lineCount = (words: string[], size: number, avail: number): number => {
 
 export const StoryCaptions: React.FC<{
   chunks: CaptionChunk[]; highlight: string[]; style: CaptionStyle; dark: boolean;
-  footage?: boolean; motion?: MotionItem[];
-}> = ({chunks, highlight, style, dark, footage = false, motion = []}) => {
+  footage?: boolean; motion?: MotionItem[]; media?: MediaItem[]; // media = the scene's framed (card) items
+}> = ({chunks, highlight, style, dark, footage = false, motion = [], media = []}) => {
   const frame = useCurrentFrame();
   const {fps, width, height} = useVideoConfig();
   const t = frame / fps;
   const loaded = useFontsLoaded();
-  const slot = cardSlot(motion, t);
+  // the current framed picture is an obstacle like a full-width box layer
+  const m = media.find((x) => t >= x.start && t < x.start + x.duration);
+  const r = m && mediaCardRect(m.aspect ?? 1, width, height);
+  const slot = cardSlot(r ? [...motion, {position: 'free', box: {x: 0, y: r.top * 100, w: 100, h: (r.bottom - r.top) * 100}, start: 0, duration: Infinity}] : motion, t);
   const avail = width * 0.84, slotH = slot ? (slot.bottom - slot.top) * height : 0, maxH = Math.min(height * 0.48, slotH);
   const c = chunks.find((x) => t >= x.start && t < x.end);
   // largest size at which this chunk fits 3 lines in the free slot, capped: 200 px on a text card, 130 px over footage

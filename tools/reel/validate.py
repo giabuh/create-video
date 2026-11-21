@@ -70,6 +70,8 @@ def validate(storyboard: dict, config: dict, root) -> list[str]:
                 errs.append(f"{sid}: library/{m.get('src')} not found")
             if m.get("effect", "none") not in EFFECTS:
                 errs.append(f"{sid}: effect '{m.get('effect')}' not in {sorted(EFFECTS)}")
+            if m.get("frame", "full") not in ("full", "card"):
+                errs.append(f"{sid}: frame '{m.get('frame')}' not in ['card', 'full']")
         for i, mo in enumerate(sc.get("motion") or []):
             errs += _layer_errors(mo, f"{sid}: motion[{i}]", root)
             for k in ("at", "until"):

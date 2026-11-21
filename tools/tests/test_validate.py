@@ -129,3 +129,10 @@ def test_story_allows_text_card_scene_without_media(root, cfg):
     sb = {"template": "story", "music": {"file": "m.mp3"}, "scenes": [{"id": "s1", "say": "Xin chào"}]}
     assert validate(sb, cfg, root) == []
     assert "s1: needs 'media' or 'motion'" in validate({**sb, "template": "fast-cut"}, cfg, root)
+
+
+def test_media_frame_must_be_full_or_card(root, cfg):
+    ok = {"scenes": [{"id": "s1", "say": "x", "media": [{"src": "a.mp4", "frame": "card"}]}]}
+    assert not any("frame" in e for e in validate(ok, cfg, root))
+    bad = {"scenes": [{"id": "s1", "say": "x", "media": [{"src": "a.mp4", "frame": "round"}]}]}
+    assert any("frame 'round'" in e for e in validate(bad, cfg, root))
