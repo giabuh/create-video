@@ -33,7 +33,7 @@ function EditorBody(): React.JSX.Element {
       <TopBar />
       <div className={s.work}>
         <div className={s.center}><PreviewPane /><SceneStrip /></div>
-        <aside className={s.chat} data-chat-docked aria-label="Chat"><ChatBody active /></aside>
+        <aside className={s.chat} data-chat-docked aria-label="Chat"><ChatBody active autoFocus={false} /></aside>
       </div>
     </div>
   );

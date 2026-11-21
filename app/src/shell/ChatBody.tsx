@@ -8,8 +8,8 @@ import {isInterrupted, limitText} from './chatView.ts';
 import {mdToHtml} from './markdown.ts';
 import s from './ChatPanel.module.css';
 
-/** The whole chat column (header, log, input). `active` = the panel is visible. */
-export function ChatBody({active}: {active: boolean}): React.JSX.Element {
+/** The whole chat column (header, log, input). `active` = the panel is visible; `autoFocus` = focus the input when shown. */
+export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus?: boolean}): React.JSX.Element {
   const {pathname} = useLocation();
   const slug = matchPath('/p/:slug/*', pathname)?.params.slug ?? matchPath('/p/:slug', pathname)?.params.slug ?? null;
   const chats = useChats();
@@ -36,6 +36,7 @@ export function ChatBody({active}: {active: boolean}): React.JSX.Element {
   useEffect(() => {
     if (!pending) return;
     const t = takeChatInsert();
+    if (!t) return; // StrictMode re-run after the first one took the text
     setText((cur) => (cur === '' || cur.endsWith(' ') || cur.endsWith('\n') ? cur + t : `${cur} ${t}`));
     inputRef.current?.querySelector('textarea')?.focus();
   }, [pending]);
@@ -80,7 +81,14 @@ export function ChatBody({active}: {active: boolean}): React.JSX.Element {
     return () => { cancelAnimationFrame(f); clearTimeout(t1); clearTimeout(t2); };
   }, [events.length, draft, active, chatId, detail.isSuccess, busy]);
 
-  useEffect(() => { if (busy === null && active) inputRef.current?.querySelector('textarea')?.focus(); }, [busy, active]);
+  // Docked chat (autoFocus off) refocuses only after a turn ends: on load it would take Space from the player and open the phone keyboard.
+  const wasBusy = useRef(false);
+  useEffect(() => {
+    if (!active) return;
+    if (busy !== null) { wasBusy.current = true; return; }
+    if (autoFocus || wasBusy.current) inputRef.current?.querySelector('textarea')?.focus();
+    wasBusy.current = false;
+  }, [busy, active, autoFocus]);
   const last = events.at(-1)?.kind;
   useEffect(() => { if (waiting && waiting.id === chatId && events.length > waiting.n && (last === 'done' || last === 'error')) setWaiting(null); }, [waiting, chatId, events.length, last]);
   const running = (busy !== null && busy === chatId) || waiting?.id === chatId;
