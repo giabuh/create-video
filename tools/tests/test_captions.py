@@ -33,3 +33,26 @@ def test_chunk_caption_empty():
 def test_phone_number_is_never_split():
     chunks = split_caption("Nhắn tin hoặc gọi 0876 929 145 để biết lịch khai giảng.", 6)
     assert any("0876 929 145" in c for c in chunks), chunks
+
+
+def _check_times(out):
+    for c in out:
+        t = c["times"]
+        assert len(t) == len(c["text"].split()) and t[0] == c["start"]
+        assert t == sorted(t) and all(x < c["end"] for x in t)
+
+
+def test_word_times_on_the_voice():
+    words = [{"w": w, "start": i * 0.3, "end": i * 0.3 + 0.28} for i, w in enumerate("Chỉ chín trăm nghìn cho cả khóa học tin học văn phòng".split())]
+    out = chunk_caption("Chỉ 900K, cho cả khóa học tin học văn phòng", 6, 4.0, words)
+    _check_times(out)
+    assert out[0]["times"][2] == 1.2  # 'cho' is the 5th spoken word
+    assert out[1]["times"] == [2.4, 2.7, 3.0, 3.3]
+
+
+def test_word_times_spread_evenly_without_words():
+    out = chunk_caption("Một hai ba bốn năm sáu bảy tám", 4, 4.0)
+    _check_times(out)
+    for c in out:
+        n = len(c["times"])
+        assert c["times"] == [round(c["start"] + i * (c["end"] - c["start"]) / n, 3) for i in range(n)]

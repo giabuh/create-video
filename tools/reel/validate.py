@@ -1,9 +1,11 @@
 """Storyboard validation. Reports every problem at once, keyed by scene id, before any model loads."""
+import re
+import unicodedata
 from pathlib import Path
 
 from .config import apply_template, pick, resolve_names, resolve_scene_voice
 
-EFFECTS = {"none", "zoom-in", "zoom-out", "pan-left", "pan-right"}
+EFFECTS = {"none", "zoom-in", "zoom-out", "pan-left", "pan-right", "glitch"}
 TRANSITIONS = {"cut", "fade", "slide"}
 POSITIONS = {"top", "center", "bottom"}
 MOTION_POSITIONS = {"full", "top", "center", "bottom", "free"}
@@ -46,8 +48,18 @@ def validate(storyboard: dict, config: dict, root) -> list[str]:
             errs.append(f"{sid}: 'say' is empty")
         if say is None and not sc.get("duration"):
             errs.append(f"{sid}: silent scene needs 'duration' > 0")
-        if not sc.get("media") and not sc.get("motion"):
+        if not sc.get("media") and not sc.get("motion") and template != "story":  # story: no media = text card
             errs.append(f"{sid}: needs 'media' or 'motion'")
+        punch = sc.get("punch")
+        if punch is not None:
+            if not isinstance(punch, list) or not all(isinstance(x, str) and x.strip() for x in punch):
+                errs.append(f"{sid}: 'punch' must be a list of non-empty strings")
+            else:
+                toks = [_word_key(w) for w in (sc.get("caption") or sc.get("say") or "").split()]
+                for ph in punch:
+                    want = [_word_key(w) for w in ph.split()]
+                    if not any(toks[i:i + len(want)] == want for i in range(len(toks) - len(want) + 1)):
+                        errs.append(f"{sid}: punch '{ph}' is not in the caption")
         if say is not None:
             name = pick(sc.get("voice"), storyboard.get("voice"), config["defaults"]["voice"])
             if name not in config["voices"]:
@@ -70,6 +82,8 @@ def validate(storyboard: dict, config: dict, root) -> list[str]:
                 errs.append(f"{sid}: library/{m.get('src')} not found")
             if m.get("effect", "none") not in EFFECTS:
                 errs.append(f"{sid}: effect '{m.get('effect')}' not in {sorted(EFFECTS)}")
+            if m.get("frame", "full") not in ("full", "card"):
+                errs.append(f"{sid}: frame '{m.get('frame')}' not in ['card', 'full']")
         for i, mo in enumerate(sc.get("motion") or []):
             errs += _layer_errors(mo, f"{sid}: motion[{i}]", root)
             for k in ("at", "until"):
@@ -82,6 +96,15 @@ def validate(storyboard: dict, config: dict, root) -> list[str]:
         for k in ("transition", "mediaTransition"):
             if sc.get(k, "cut") not in TRANSITIONS:
                 errs.append(f"{sid}: {k} '{sc.get(k)}' not in {sorted(TRANSITIONS)}")
+        if sc.get("bg", "dark") not in ("light", "dark"):
+            errs.append(f"{sid}: bg '{sc.get('bg')}' not in ['dark', 'light']")
+        if "layout" in sc:
+            if sc["layout"] != "collage":
+                errs.append(f"{sid}: layout '{sc['layout']}' not in ['collage']")
+            elif template != "story":
+                errs.append(f"{sid}: layout 'collage' is only for the story template")
+            elif not 2 <= len(sc.get("media") or []) <= 4:
+                errs.append(f"{sid}: layout 'collage' needs 2-4 media items")
         overlay = sc.get("overlay")
         if overlay and overlay.get("position", "top") not in POSITIONS:
             errs.append(f"{sid}: overlay position '{overlay.get('position')}' not in {sorted(POSITIONS)}")
@@ -103,6 +126,11 @@ def validate(storyboard: dict, config: dict, root) -> list[str]:
             if v.get("edge", "start") not in {"start", "end"}:
                 errs.append(f"{where}.{k}.edge must be 'start' or 'end'")
     return errs
+
+
+def _word_key(w: str) -> str:
+    w = unicodedata.normalize("NFC", w)  # same as wordKey in studio storyLayout.ts
+    return re.sub(r"^[^\w%]+|[^\w%]+$", "", w).lower()
 
 
 def _sfx_ok(v) -> bool:
@@ -127,6 +155,9 @@ def _layer_errors(mo: dict, where: str, root: Path) -> list[str]:
     comp = mo.get("component", "")
     if not (root / "studio/src/motion" / f"{comp}.tsx").is_file():
         errs.append(f"{where}: motion component '{comp}' not found in studio/src/motion/")
+    # shortcut: per-component check, upgrade to schema-driven validation if more components need required props
+    if comp in ("BarChart", "LineChart", "Headline") and not str((mo.get("props") or {}).get("source") or "").strip():
+        errs.append(f"{where} {comp}: props.source is required (Nguồn số liệu)")
     if mo.get("position", "full") not in MOTION_POSITIONS:
         errs.append(f"{where}: motion position '{mo.get('position')}' not in {sorted(MOTION_POSITIONS)}")
     box = mo.get("box")

@@ -3,15 +3,11 @@
 import React from 'react';
 import {AbsoluteFill, Easing, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
 import {MOTION} from '../motion/registry';
+import {BANDS} from './bands';
 import {parseMotionProps} from '../motion/schema';
-import {BRAND_COLOR_DEFAULTS, type Anim, type Brand, type FullBrand, type Keyframe, type MotionItem, type MotionPosition} from '../types';
+import {BRAND_COLOR_DEFAULTS, type Anim, type Brand, type FullBrand, type Keyframe, type MotionItem} from '../types';
 
-// Bands as fractions of the frame height. 'bottom' ends above the captions and the Reels/TikTok UI.
-export const BANDS: Record<Exclude<MotionPosition, 'full' | 'free'>, [number, number]> = {
-  top: [0.09, 0.42],
-  center: [0.3, 0.7],
-  bottom: [0.46, 0.72],
-};
+export {BANDS} from './bands';
 const SCRIM = 'rgba(0,0,0,0.62)';
 const SCRIM_IN = 0.4; // seconds
 const NONE: Anim = {type: 'none', duration: 0};

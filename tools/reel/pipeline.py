@@ -6,7 +6,7 @@ from pathlib import Path
 from .align import estimate_words, scene_words
 from .cache import cache_key
 from .config import ROOT, apply_template, load_json, resolve_names, resolve_scene_voice, resolve_video
-from .mix import mix
+from .mix import mix, shots
 from .props import AnchorError, build_render_props, sfx_files_for
 from .tts import probe_duration, synth_to_file
 from .validate import validate
@@ -22,6 +22,14 @@ def write_json(path: Path, data) -> None:
 
 
 SFX_EXTS = {".mp3", ".wav", ".m4a", ".ogg", ".aac"}
+
+
+def _media_sizes() -> dict[str, tuple[int, int]]:
+    """{library file: (width, height)} from library/media-index.json; missing or unreadable -> {} (framed media then assume a square)."""
+    try:
+        return {k: (v["width"], v["height"]) for k, v in load_json(ROOT / "library" / "media-index.json").items()}
+    except (OSError, ValueError, KeyError, TypeError):
+        return {}
 
 
 def _sfx_peaks(files: list[str]) -> dict[str, float]:
@@ -123,7 +131,7 @@ def prepare(proj: Path, get_model=None, synth: bool = True, on_progress=None) ->
     try:
         sfx_files = sorted(f.name for f in (ROOT / "sfx").glob("*") if f.suffix.lower() in SFX_EXTS)
         props = build_render_props({**sb, "scenes": scenes}, settings, brand, audio, words, sfx_files,
-                                   _sfx_peaks(sfx_files) if settings.get("sfx") else None)
+                                   _sfx_peaks(sfx_files) if settings.get("sfx") else None, _media_sizes())
         _warn_sfx(sb, settings.get("sfx"), sfx_files)
     except AnchorError as e:
         return {"ok": False, "stage": "anchor", "errors": e.problems, "stale": stale, "totalSeconds": None, "mix": None,
@@ -135,7 +143,7 @@ def prepare(proj: Path, get_model=None, synth: bool = True, on_progress=None) ->
     if synth:
         write_json(proj / "timings.json", {"scenes": timings, "totalSeconds": props["totalSeconds"], "mix": actual})
     return {"ok": True, "stage": None, "errors": [], "stale": stale, "totalSeconds": props["totalSeconds"],
-            "mix": actual, "target": target, "targetSeconds": sb.get("targetSeconds"),
+            "mix": actual, "target": target, "targetSeconds": sb.get("targetSeconds"), "shots": shots(props["scenes"]),
             "words": {k: v for k, v in engines.items() if k in needed}}
 
 

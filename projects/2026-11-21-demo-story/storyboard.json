@@ -1,0 +1,279 @@
+{
+  "template": "story",
+  "brand": "demo",
+  "voice": "phuong",
+  "targetSeconds": 35,
+  "tts": {
+    "speed": 1.05,
+    "pauseAfter": 0.2
+  },
+  "captions": {
+    "maxWords": 6,
+    "highlightColor": "#FFD400"
+  },
+  "music": {
+    "file": "Close Up - Michael Ramir C.mp3",
+    "volume": 0.32,
+    "duckTo": 0.095,
+    "fadeOut": 1.25
+  },
+  "cta": {
+    "title": "Theo dõi để xem thêm",
+    "duration": 2.7
+  },
+  "sources": [
+    {
+      "id": "dr2027",
+      "title": "DataReportal, Digital 2027: Vietnam (5/11/2026)",
+      "url": "https://datareportal.com/reports/digital-2027-vietnam",
+      "note": "potential ad reach, not active users"
+    },
+    {
+      "id": "econ2025",
+      "title": "e-Conomy SEA 2025 (Google, Temasek, Bain), via Vietnamnet 26/11/2025",
+      "url": "https://vietnamnet.vn/en/vietnam-s-digital-economy-hits-usd-39-billion-ai-and-e-commerce-drive-growth-2466540.html",
+      "note": "secondary source, user accepted 2026-11-21"
+    }
+  ],
+  "musicDrop": [
+    {
+      "start": {
+        "scene": "s6"
+      },
+      "end": {
+        "scene": "s6",
+        "edge": "end"
+      },
+      "to": 0
+    }
+  ],
+  "scenes": [
+    {
+      "id": "s1",
+      "sources": [
+        "dr2027"
+      ],
+      "say": "Bảy mươi bảy phẩy sáu triệu người Việt có thể thấy quảng cáo của bạn.",
+      "caption": "77,6 triệu người Việt có thể thấy quảng cáo của bạn.",
+      "transition": "cut",
+      "motion": [
+        {
+          "component": "CountUp",
+          "props": {
+            "from": 0,
+            "to": 77.6,
+            "decimals": 1,
+            "label": "triệu người",
+            "size": 230,
+            "seconds": 2,
+            "vi": true
+          },
+          "position": "top"
+        }
+      ],
+      "media": [
+        {
+          "src": "video-doc-hoc-vien-nam-thuc-hanh-excel.mp4",
+          "from": 0,
+          "duration": 1.2,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-lop-hoc-dong-hoc-vien-tai-phong-may.mp4",
+          "from": 0,
+          "effect": "zoom-in"
+        }
+      ],
+      "punch": [
+        "của bạn."
+      ],
+      "layout": "collage"
+    },
+    {
+      "id": "s2",
+      "sources": [
+        "dr2027"
+      ],
+      "say": "Đó là số người quảng cáo Phây Búc tiếp cận được ở Việt Nam, bằng tám mươi bảy phần trăm người dùng internet.",
+      "caption": "Đó là số người quảng cáo Facebook tiếp cận được ở Việt Nam, bằng 87% người dùng internet.",
+      "bg": "dark",
+      "transition": "cut",
+      "punch": [
+        "87%"
+      ],
+      "motion": [
+        {
+          "component": "Headline",
+          "position": "top",
+          "props": {
+            "kicker": "DataReportal · Digital 2027: Vietnam",
+            "headline": "Quảng cáo Facebook tiếp cận 77,6 triệu người tại Việt Nam",
+            "mark": [
+              "77,6 triệu người"
+            ],
+            "bg": "dark",
+            "source": "DataReportal, Digital 2027: Vietnam (11/2026)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "s3",
+      "sources": [
+        "dr2027"
+      ],
+      "say": "YouTube: sáu mươi ba phẩy chín triệu. Instagram: chỉ mười hai phẩy hai triệu.",
+      "caption": "YouTube: 63,9 triệu. Instagram: chỉ 12,2 triệu.",
+      "bg": "dark",
+      "transition": "cut",
+      "motion": [
+        {
+          "component": "BarChart",
+          "props": {
+            "title": "Tiếp cận quảng cáo (triệu người)",
+            "bars": [
+              "Facebook | 77.6",
+              "YouTube | 63.9",
+              "Instagram | 12.2"
+            ],
+            "unit": "",
+            "seconds": 1.5,
+            "source": "DataReportal, Digital 2027: Vietnam"
+          },
+          "position": "top"
+        }
+      ],
+      "punch": [
+        "chỉ 12,2 triệu."
+      ]
+    },
+    {
+      "id": "s4",
+      "sources": [
+        "econ2025"
+      ],
+      "say": "Thương mại điện tử Việt Nam năm hai nghìn không trăm hai mươi lăm đạt khoảng hai mươi lăm tỷ đô.",
+      "caption": "Thương mại điện tử Việt Nam năm 2025 đạt khoảng 25 tỷ USD.",
+      "transition": "cut",
+      "bg": "light",
+      "punch": [
+        "25 tỷ USD."
+      ],
+      "motion": [
+        {
+          "component": "Headline",
+          "position": "top",
+          "props": {
+            "kicker": "e-Conomy SEA 2025 · Google, Temasek, Bain",
+            "headline": "Thương mại điện tử Việt Nam năm 2025 đạt khoảng 25 tỷ USD",
+            "mark": [
+              "25 tỷ USD"
+            ],
+            "bg": "light",
+            "source": "e-Conomy SEA 2025, qua Vietnamnet (26/11/2025)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "s5",
+      "sources": [
+        "econ2025"
+      ],
+      "say": "Số người bán hàng qua video tăng sáu mươi phần trăm, lên sáu trăm năm mươi nghìn.",
+      "caption": "Số người bán hàng qua video tăng 60%, lên 650.000.",
+      "highlight": [
+        "650.000"
+      ],
+      "media": [
+        {
+          "src": "video-doc-hoc-vien-nu-hoc-tren-laptop-ghi-chep.mp4",
+          "from": 0,
+          "duration": 1.2,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-hoc-vien-nu-thuc-hanh-excel-tren-laptop.mp4",
+          "from": 0,
+          "duration": 1.2,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-hoc-vien-nu-deo-khau-trang-thuc-hanh-word-excel.mp4",
+          "from": 0,
+          "effect": "none"
+        }
+      ],
+      "transition": "cut",
+      "motion": [
+        {
+          "component": "CountUp",
+          "props": {
+            "from": 0,
+            "to": 650000,
+            "decimals": 0,
+            "label": "người bán qua video",
+            "suffix": "",
+            "size": 170,
+            "seconds": 1.8,
+            "vi": true
+          },
+          "position": "top",
+          "at": "lên"
+        }
+      ],
+      "layout": "collage"
+    },
+    {
+      "id": "s6",
+      "sources": [],
+      "say": "Nhưng khách ở đó, không có nghĩa là họ thấy bạn.",
+      "caption": "Nhưng khách ở đó… không có nghĩa là họ thấy bạn.",
+      "bg": "dark",
+      "transition": "cut",
+      "sfx": "impact",
+      "punch": [
+        "thấy bạn."
+      ]
+    },
+    {
+      "id": "s7",
+      "sources": [],
+      "say": "Biết chạy quảng cáo, bạn chọn được đúng người sẽ thấy sản phẩm của mình.",
+      "caption": "Biết chạy quảng cáo, bạn chọn được đúng người sẽ thấy sản phẩm của mình.",
+      "media": [
+        {
+          "src": "sv-facebook-hoc-vien-thuc-hanh.jpg",
+          "effect": "zoom-in",
+          "duration": 1.2
+        },
+        {
+          "src": "sv-facebook-minh-hoa-khach-hang.png",
+          "effect": "glitch",
+          "duration": 1.3
+        },
+        {
+          "src": "video-doc-hoc-vien-nu-thuc-hanh-tin-hoc-van-phong.mp4",
+          "from": 0,
+          "effect": "none"
+        }
+      ],
+      "transition": "cut",
+      "punch": [
+        "đúng người"
+      ],
+      "layout": "collage"
+    },
+    {
+      "id": "s8",
+      "sources": [],
+      "say": "Theo dõi để học chạy quảng cáo từ con số không.",
+      "caption": "Theo dõi để học chạy quảng cáo từ con số 0.",
+      "bg": "light",
+      "transition": "cut",
+      "punch": [
+        "từ con số 0."
+      ]
+    }
+  ]
+}

@@ -52,6 +52,7 @@ def resolve_video(config: dict, brand: dict, storyboard: dict) -> dict:
         "brand": brand_id,
         "video": deep_merge(config["video"], storyboard.get("video")),
         "captions": captions,
+        "look": deep_merge(deep_merge({"grain": 0, "scanlines": 0, "logo": False}, config.get("look")), storyboard.get("look")),
         "music": None if music is None else deep_merge(config["music"], music),
         "sfx": None if sfx is None or ("sfx" in storyboard and storyboard["sfx"] is None) else deep_merge(sfx, storyboard.get("sfx")),
         "transition": deep_merge({"scene": "cut", "media": "cut", "duration": 0.4}, config.get("transition")),

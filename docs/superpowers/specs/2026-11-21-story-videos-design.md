@@ -117,7 +117,8 @@ Added to `studio/src/motion/fx/textFx.ts`.
   `app/shared` `Effect` type updated to match.
 
 ### 3d. New components
-- `BarChart`: labelled bars (optional logo image), values grow in, optional rank swap.
+- `BarChart`: labelled bars (optional logo image), values grow in, optional rank swap (`rankSwap`). Rows are
+  entered as text lines ("Nhãn | Giá trị | ảnh") because the Editor form supports only flat fields and string lists.
 - `LineChart`: lines draw in, label at each line end.
 - Both have a required `source` field shown as a small "Nguồn: …" line. Zod schemas with Vietnamese titles,
   registered with `defineMotion`; draw content only.
@@ -161,3 +162,67 @@ Added to `studio/src/motion/fx/textFx.ts`.
 - Part 3: tsc + tests pass; `fast-cut` stills unchanged; demo story rendered.
 - Part 4: `/make-reel` makes a story video end to end with sources and script approval; `prepare.py` source errors
   covered by tests.
+
+## Part 3b: reference look (added 2026-11-21 after the first demo)
+
+The first demo (`projects/2026-11-21-demo-story/reel-v1.mp4`) read as "just text and data". Side-by-side sheets of the
+reference (48 s, 14 hard cuts, but the picture changes inside shots too: words, cards, camera moves) show the gap is
+pictures and type hierarchy, not effects. The user asked Claude to design and build it and review only the result.
+
+### 3b.1 Framed media (`look.mediaFrame`)
+- Render prop `look.mediaFrame: "full" | "card"` (default `"full"`, so fast-cut is unchanged); `templates.story.look.mediaFrame = "card"`.
+  A media item may override it with `frame: "full" | "card"`.
+- Card: the picture (contain-fit, never cropped) floats on a backdrop: width up to 88% of the frame (narrower when the height cap bites, so portrait pictures get no side bars), height from the media
+  aspect clamped to 28–60% of the frame height, centre at y = 0.40; radius 28 px, 4 px border (white on dark bg,
+  ink on light bg), soft shadow. Slow push-in scale 1.00 → 1.06 over the shot. Each new card enters with scale
+  0.92 → 1 and blur 10 px → 0 over 0.25 s.
+- Backdrop: scene `bg` (dark #0B0B0F / light #F3EFE6) with two soft diagonal light streaks drifting slowly
+  (white 6–10% opacity on dark, 18–25% on light).
+- Story captions treat the card rectangle like a motion layer (the caption card goes in the free gap, usually below).
+- Several `media` items per scene, including the same file with different `from` or a `zoom-in`, are separate shots.
+
+### 3b.2 Caption hierarchy
+- Story captions use a serif italic display font (Playfair Display italic 700/800, Vietnamese subset bundled in
+  `studio/src/assets/fonts/`, SIL OFL), chosen by `captions.font: "serif"` in `templates.story`; numbers, charts and
+  other components keep Be Vietnam Pro. Must render "Được nghĩa ưở ỹ Ự" correctly (still checked).
+- Lead text (the chunk) is small: cap 96 px on a text-card scene, 72 px when the scene has media.
+- Scene field `punch: ["phrase", …]` (words of the caption, like `highlight`): when the phrase is spoken it replaces
+  the chunk as one giant line (fit to the x 8–85% safe area, i.e. 77% width, cap 420 px, highlight colour off, serif italic), with the lead text of
+  the same chunk kept small above it. Enter: scale 1.15 → 1 and blur 12 → 0 over 0.2 s.
+- Caption safe area x 8–85% (TikTok right-hand buttons), y 22–70% unchanged.
+
+### 3b.3 Headline card (`Headline` motion component)
+- Generic design of its own (never a real publication's name, logo or layout): kicker line (plain text, e.g. the
+  source name), headline in the serif font, `mark` phrases get a marker sweep (accent2-coloured box growing left →
+  right behind the words over 0.35 s, staggered 0.25 s). Required `source` (shown as "Nguồn: …", same rule as charts).
+  `bg: dark | light`. Several in a row make the news-montage beat for facts that have no picture.
+
+### 3b.4 Story CTA and cadence
+- In the story template the CTA card sits centred vertically (centre y = 0.45), out of the bottom UI zone.
+- `prepare.py` prints `Shots: N, avg X s` (media items + media-less scenes); story target avg ≤ 2.5 s.
+  Print only, like the mix.
+
+### 3b.7 Collage (several pictures at once)
+User feedback on `reel-v2`: one clip per frame is still thin; show 2–3 clips or photos moving together.
+- Scene field `layout: "collage"` (story template only; validate rejects it elsewhere and requires 2–4 media items).
+  Media timing is unchanged: item i enters at its `start` and then **stays until the scene ends**, so cards pile up
+  (1 → 2 → 3). The newest card is on top.
+- Slots (card centre x, y as frame fractions, card width fraction, rotation), height from the media aspect, each card's
+  height capped at 44% of the frame (raised from 36% and slots moved 0.05 lower after the first stills left the bottom half empty):
+  - 2 items: (0.36, 0.38, 0.54, −6°), (0.64, 0.55, 0.54, +5°)
+  - 3 items: (0.31, 0.35, 0.48, −7°), (0.69, 0.41, 0.48, +6°), (0.50, 0.58, 0.52, −3°)
+  - 4 items: (0.30, 0.34, 0.46, −6°), (0.70, 0.36, 0.46, +5°), (0.32, 0.56, 0.46, +4°), (0.68, 0.58, 0.46, −5°)
+- Card look as 3b.1 (border, radius, shadow, backdrop with streaks; effects such as zoom-in/glitch still apply inside).
+- Enter: from 140 px off its slot towards the nearer side edge, extra rotation +8° in its tilt direction, scale
+  0.85 → 1, blur 10 → 0, spring-like over 0.35 s. Then drift: ±12 px sine translate and ±1.5° rotation, period 4–6 s,
+  phase per index; push-in 1.00 → 1.04 over the scene.
+- All videos play at once (muted, like other media).
+- Story captions: the obstacle is the bounding box of the visible cards (with drift margin); the existing fallback
+  (over the lower part of the media when there is no free gap) applies.
+
+### 3b.5 Deferred
+Particles/confetti, app-UI chart reskin, face tracking, money rain.
+
+### 3b.6 Done
+Demo re-cut as `reel-v2` with the approved script and sources (no new facts): framed media, punch words, headline
+cards; a same-scale contact sheet next to the reference's; `check.py` 0 FAIL; nothing in the shaded safe zones.

@@ -9,7 +9,7 @@ const out = Easing.bezier(0.22, 1, 0.36, 1);
 const PHONE_PATH = 'M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z';
 
 // Glass card at the bottom (mockup frame 5, px x3); a navy gradient sits behind it so it also works without footage.
-export const CtaCard: React.FC<{cta: Cta; brand: Brand; bg?: MediaItem}> = ({cta, brand, bg}) => {
+export const CtaCard: React.FC<{cta: Cta; brand: Brand; bg?: MediaItem; centerY?: number}> = ({cta, brand, bg, centerY}) => {
   const frame = useCurrentFrame();
   const {fps, durationInFrames} = useVideoConfig();
   const t = frame / fps;
@@ -34,10 +34,10 @@ export const CtaCard: React.FC<{cta: Cta; brand: Brand; bg?: MediaItem}> = ({cta
       )}
       {bg && <AbsoluteFill style={{background: `linear-gradient(180deg, ${background}59 0%, ${background}00 25%, ${background}00 50%, ${background}99 100%)`}} />}
       <div style={{
-        ...GLASS, position: 'absolute', left: 72, right: 72, bottom: 150, padding: 60,
+        ...GLASS, position: 'absolute', left: 72, right: 72, padding: 60, ...(centerY === undefined ? {bottom: 150} : {top: `${centerY * 100}%`}),
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 36,
         boxShadow: '0 54px 120px rgba(0,0,0,.35)',
-        opacity: card, transform: `translateY(${(1 - card) * 84}px)`,
+        opacity: card, transform: `${centerY === undefined ? '' : 'translateY(-50%) '}translateY(${(1 - card) * 84}px)`,
       }}>
         {brand.logo && <Img src={staticFile(brand.logo)} style={{width: cta.logoSize ?? 360, maxWidth: '100%', maxHeight: 420, objectFit: 'contain', opacity: Math.min(1, logo), transform: `scale(${0.4 + 0.6 * logo})`}} />}
         <div style={{width: '100%', opacity: Math.min(1, btn), transform: `scale(${0.4 + 0.6 * btn})`}}>

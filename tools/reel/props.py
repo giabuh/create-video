@@ -9,7 +9,7 @@ OWNS_EXIT = {"Ribbon", "TwoTier", "Callout", "PinLabel", "GlossyPill", "GiantTex
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp"}
 
 
-def _media(items: list[dict], scene_dur: float) -> list[dict]:
+def _media(items: list[dict], scene_dur: float, sizes: dict | None = None) -> list[dict]:
     fixed = sum(m["duration"] for m in items if m.get("duration"))
     free = [m for m in items if not m.get("duration")]
     each = max(scene_dur - fixed, 0) / len(free) if free else 0
@@ -23,6 +23,8 @@ def _media(items: list[dict], scene_dur: float) -> list[dict]:
             "start": round(t, 3),
             "duration": round(d, 3),
             "effect": m.get("effect", "none"),
+            **({"frame": m["frame"]} if "frame" in m else {}),
+            **({"aspect": round(sizes[m["src"]][0] / sizes[m["src"]][1], 4)} if (sizes or {}).get(m["src"], (0, 0))[1] else {}),
         })
         t += d
     return out
@@ -154,6 +156,12 @@ def sfx_files_for(value, files: list[str]) -> list[str]:
     return sorted(f for f in files if f.split("-", 1)[0] == value)
 
 
+def _held(duration: float, raw_layer: dict) -> float:
+    """A held sound lasts the layer, or only its animation when the layer sets props.seconds (CountUp, charts)."""
+    secs = (raw_layer.get("props") or {}).get("seconds")  # shortcut: schema default (1.2 s) not known here; set seconds explicitly
+    return min(duration, secs) if isinstance(secs, (int, float)) and secs > 0 else duration
+
+
 def _sfx_events(storyboard: dict, scenes: list[dict], overlays: list[dict], cta_start: float, cta, sfx: dict,
                 files: list[str], peaks: dict[str, float]) -> list[dict]:
     """Automatic + explicit sound effects (see spec "Sound effects"); explicit ones (own `sfx` key) always play."""
@@ -170,10 +178,10 @@ def _sfx_events(storyboard: dict, scenes: list[dict], overlays: list[dict], cta_
                 ev.append((sc["start"] + m["start"], sfx.get("media"), False, 0.0, None))
         for m, rm in zip(sc["motion"], raw.get("motion") or []):
             ev.append((sc["start"] + m["start"], rm.get("sfx", motion.get(m["component"], motion.get("default"))), "sfx" in rm, 0.0,
-                       sc["start"] + m["start"] + m["duration"]))
+                       sc["start"] + m["start"] + _held(m["duration"], rm)))
     for m, rm in zip(overlays, storyboard.get("motion") or []):
         ev.append((m["start"], rm.get("sfx", motion.get(m["component"], motion.get("default"))), "sfx" in rm, 0.0,
-                   m["start"] + m["duration"]))
+                   m["start"] + _held(m["duration"], rm)))
     if cta:
         ev.append((cta_start, sfx.get("cta"), False, 0.0, None))
     out, counter, last = [], {}, None
@@ -192,8 +200,8 @@ def _sfx_events(storyboard: dict, scenes: list[dict], overlays: list[dict], cta_
 
 
 def build_render_props(storyboard: dict, settings: dict, brand: dict, audio: dict, words: dict | None = None,
-                       sfx_files: list[str] | None = None, sfx_peaks: dict[str, float] | None = None) -> dict:
-    """`sfx_files`: audio file names in sfx/ (none -> no sound effects are emitted); `sfx_peaks`: {file: seconds to its loudest moment}. `words`: {scene id: word timings} from align.py; spoken scenes without an entry use the estimate.
+                       sfx_files: list[str] | None = None, sfx_peaks: dict[str, float] | None = None, media_sizes: dict[str, tuple[int, int]] | None = None) -> dict:
+    """`sfx_files`: audio file names in sfx/ (none -> no sound effects are emitted); `sfx_peaks`: {file: seconds to its loudest moment}. `media_sizes`: {library file: (width, height)}, gives media their `aspect` (framed media). `words`: {scene id: word timings} from align.py; spoken scenes without an entry use the estimate.
     Raises AnchorError when an `at`/`until`/track anchor cannot be resolved."""
     cap = settings["captions"]
     tr = settings.get("transition") or {"scene": "cut", "media": "cut", "duration": 0.4}
@@ -212,8 +220,11 @@ def build_render_props(storyboard: dict, settings: dict, brand: dict, audio: dic
             "voice": {"src": a["src"], "duration": a["duration"]} if a else None,
             "captions": chunk_caption(sc.get("caption") or "", cap["maxWords"], a["duration"] if a else dur, words.get(sc["id"])),
             "highlight": sc.get("highlight", []),
+            **({"punch": sc["punch"]} if sc.get("punch") else {}),
+            **({"bg": sc["bg"]} if "bg" in sc else {}),
+            **({"layout": sc["layout"]} if "layout" in sc else {}),
             "overlay": sc.get("overlay"),
-            "media": _media(sc.get("media") or [], dur),
+            "media": _media(sc.get("media") or [], dur, media_sizes),
             "motion": _motion(sc.get("motion") or [], dur, bool(sc.get("media")), words.get(sc["id"]),
                               sc.get("caption") or "", sc["id"], problems),
             "transition": sc.get("transition", tr["scene"]),
@@ -246,6 +257,7 @@ def build_render_props(storyboard: dict, settings: dict, brand: dict, audio: dic
                   "logo": f"brands/{settings['brand']}/{brand['logo']}" if brand.get("logo") else None,
                   "colors": brand["colors"]},
         "captions": {**{k: cap[k] for k in ("font", "size", "color", "highlightColor")}, "box": bool(cap.get("box"))},
+        "look": settings.get("look") or {"grain": 0, "scanlines": 0, "logo": False},
         "music": None if music is None else {"src": f"music/{music['file']}", "volume": music["volume"],
                                              "duckTo": music["duckTo"], "fadeOut": music["fadeOut"], "drops": sorted(drops)},
         "scenes": scenes,

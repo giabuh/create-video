@@ -2,11 +2,12 @@
 // Frame-driven and deterministic (scramble uses remotion's seeded random), so every render is identical.
 import {Easing, random} from 'remotion';
 
-export const TEXT_FX = ['none', 'typewriter', 'words', 'pop', 'scramble', 'mask', 'wave'] as const;
+export const TEXT_FX = ['none', 'typewriter', 'words', 'pop', 'scramble', 'mask', 'wave', 'blur-in', 'glitch'] as const;
 export type TextFx = (typeof TEXT_FX)[number];
 export const TEXT_FX_LABELS: Record<TextFx, string> = {
   none: 'Hiện ngay', typewriter: 'Gõ phím', words: 'Từng từ trượt lên', pop: 'Bật từng chữ cái',
   scramble: 'Xáo chữ', mask: 'Trồi lên từ vạch che', wave: 'Sóng nghiêng',
+  'blur-in': 'Mờ → rõ', glitch: 'Nhiễu màu',
 };
 export const PACE = {fast: 0.7, normal: 1, slow: 1.4} as const;
 export type Pace = keyof typeof PACE;
@@ -20,6 +21,8 @@ const SPEC: Record<TextFx, {unit: 'char' | 'word'; gap: number; dur: number}> = 
   scramble: {unit: 'char', gap: 0.04, dur: 0.3},
   mask: {unit: 'word', gap: 0.08, dur: 0.52},
   wave: {unit: 'char', gap: 0.028, dur: 0.38},
+  'blur-in': {unit: 'word', gap: 0.06, dur: 0.5},
+  glitch: {unit: 'char', gap: 0.02, dur: 0.3},
 };
 export const fxUnit = (fx: TextFx) => SPEC[fx].unit;
 
@@ -55,7 +58,7 @@ export const scrambleSlots = (n: number, seed: number): number[] => {
 
 const ease = Easing.out(Easing.cubic);
 const back = Easing.out(Easing.back(1.7));
-export type UnitStyle = {opacity: number; transform: string; filter?: string};
+export type UnitStyle = {opacity: number; transform: string; filter?: string; textShadow?: string};
 
 /** Style of unit i (of n) at t seconds after the effect starts, at pace multiplier k. */
 export const unitStyle = (fx: TextFx, i: number, n: number, t: number, k = 1, seed = 0): UnitStyle => {
@@ -76,6 +79,16 @@ export const unitStyle = (fx: TextFx, i: number, n: number, t: number, k = 1, se
         : {opacity: e, transform: `translateY(${(e - 1) * 40}%) scale(${1.4 - 0.4 * e})`, filter: `blur(${(1 - e) * 4}px)`};
     }
     case 'mask': { const e = ease(p); return {opacity: 1, transform: done ? 'none' : `translateY(${(1 - e) * 110}%)`}; }
+    case 'blur-in': {
+      const e = ease(p);
+      return {opacity: p, transform: done ? 'none' : `scale(${1.15 - 0.15 * e})`, filter: done ? 'none' : `blur(${(1 - e) * 16}px)`};
+    }
+    case 'glitch': {
+      if (done) return {opacity: 1, transform: 'none'};
+      const jitter = (random(`glitch-${seed}-${i}-${Math.floor(t * 30)}`) * 2 - 1) * 6;
+      const dx = 4 * (1 - p);
+      return {opacity: p > 0 ? 1 : 0, transform: `translateX(${jitter}px)`, textShadow: `${dx}px 0 #ff2a6d, ${-dx}px 0 #05d9e8`};
+    }
     case 'wave': {
       // pop in, then bob forever: 14% amplitude, 1.1 s period, phase 0.055 s per grapheme
       const bob = t <= t0 ? 0 : -14 * (0.5 - 0.5 * Math.cos((2 * Math.PI * (t - t0 - i * 0.055 * k)) / (1.1 * k)));

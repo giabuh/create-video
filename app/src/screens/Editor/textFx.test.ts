@@ -34,4 +34,22 @@ describe('text effects', () => {
     expect([...a].sort((x, y) => x - y)).toEqual([...Array(12).keys()]);
     expect(scrambleSlots(12, 4)).not.toEqual(a);
   });
+  it('blur-in starts heavily blurred and settles', () => {
+    const a = unitStyle('blur-in', 0, 4, 0, 1, 1);
+    expect(a.opacity).toBe(0);
+    expect(parseFloat(a.filter!.match(/blur\(([\d.]+)px/)![1])).toBeGreaterThanOrEqual(12);
+    for (let i = 0; i < 4; i++) expect(unitStyle('blur-in', i, 4, 2, 1, 1)).toEqual({opacity: 1, transform: 'none', filter: 'none'});
+    expect(unitStyle('blur-in', 1, 4, 0.3, 1, 1)).toEqual(unitStyle('blur-in', 1, 4, 0.3, 1, 1));
+  });
+  it('glitch splits colours while revealing and settles', () => {
+    const a = unitStyle('glitch', 0, 5, 0.1, 1, 1);
+    expect(a.textShadow).toContain('#ff2a6d');
+    expect(a.textShadow).toContain('#05d9e8');
+    expect(a).toEqual(unitStyle('glitch', 0, 5, 0.1, 1, 1));
+    for (let i = 0; i < 5; i++) {
+      const s = unitStyle('glitch', i, 5, 2, 1, 1);
+      expect(s).toMatchObject({opacity: 1, transform: 'none'});
+      expect(s.textShadow).toBeUndefined();
+    }
+  });
 });

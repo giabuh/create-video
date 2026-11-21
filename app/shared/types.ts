@@ -2,7 +2,7 @@ import type {RenderProps} from '../../studio/src/types.ts';
 export type {RenderProps};
 
 export type Json = Record<string, unknown>;
-export type Effect = 'none' | 'zoom-in' | 'zoom-out' | 'pan-left' | 'pan-right';
+export type Effect = 'none' | 'zoom-in' | 'zoom-out' | 'pan-left' | 'pan-right' | 'glitch';
 export type TransitionName = 'cut' | 'fade' | 'slide';
 export type MediaSpec = {src: string; from?: number; duration?: number; effect?: Effect};
 export type MotionPosition = 'full' | 'top' | 'center' | 'bottom' | 'free';
@@ -24,7 +24,7 @@ export type MotionSpec = {
 };
 export type SceneSpec = {
   id: string; say?: string; caption?: string; duration?: number; voice?: string; tts?: Json;
-  highlight?: string[]; overlay?: {text: string; position: 'top' | 'center' | 'bottom'} | null;
+  highlight?: string[]; bg?: 'light' | 'dark'; overlay?: {text: string; position: 'top' | 'center' | 'bottom'} | null;
   sfx?: string | null; media?: MediaSpec[]; motion?: MotionSpec[]; transition?: TransitionName; mediaTransition?: TransitionName; pauseAfter?: number;
 };
 export type CtaSpec = {title?: string; logoSize?: number; phone?: string; fanpage?: string; address?: string; duration?: number};

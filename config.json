@@ -61,7 +61,14 @@
   "sync": {
     "remote": "video-syn:create-video"
   },
-  "templates": {},
+  "templates": {
+    "story": {
+      "captions": { "font": "serif" },
+      "look": { "grain": 0.6, "scanlines": 0.5, "logo": false, "mediaFrame": "card" },
+      "sfx": { "cut": "whoosh", "media": "click", "minGap": 0.4, "cta": "impact", "hold": ["tick"],
+               "motion": { "CountUp": "tick", "BarChart": "whoosh", "LineChart": "whoosh" } }
+    }
+  },
   "align": {
     "enabled": true,
     "model": "large-v3-turbo",

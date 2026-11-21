@@ -1,0 +1,93 @@
+import {describe, expect, it} from 'vitest';
+import {cardSlot, collageRect, collageSlots, collageSpan, findPunch, isCard, mediaCardRect} from '../../../../studio/src/components/storyLayout.ts';
+
+const L = (position: 'top' | 'center' | 'bottom' | 'free' | 'full', extra = {}) =>
+  ({position, box: null, start: 0, duration: 2, ...extra}) as Parameters<typeof cardSlot>[0][number];
+const near = (s: {top: number; bottom: number} | null, top: number, bottom: number) => {
+  expect(s).not.toBeNull();
+  expect(s!.top).toBeCloseTo(top, 6);
+  expect(s!.bottom).toBeCloseTo(bottom, 6);
+};
+
+describe('story card slot', () => {
+  it('no layers: whole safe range', () => near(cardSlot([], 1), 0.22, 0.7));
+  it('bottom band', () => near(cardSlot([L('bottom', {})], 1), 0.22, 0.445));
+  it('top band', () => near(cardSlot([L('top')], 1), 0.435, 0.7));
+  it('centre band', () => near(cardSlot([L('center')], 1), 0.22, 0.285));
+  it('full layer: null', () => expect(cardSlot([L('full')], 1)).toBeNull());
+  it('inactive layer ignored', () => {
+    near(cardSlot([L('center')], 2.5), 0.22, 0.7);
+    near(cardSlot([L('center')], -0.1), 0.22, 0.7);
+  });
+  it('video-wide track layer (shifted to scene time) counts', () => {
+    const track = {...L('full'), start: 10 - 8};
+    expect(cardSlot([track], 2.5)).toBeNull();
+    near(cardSlot([track], 1), 0.22, 0.7);
+  });
+  it('two gaps: the larger one', () => {
+    const box = (y: number, h: number) => L('free', {box: {x: 0, y, w: 50, h}});
+    near(cardSlot([box(30, 10), box(60, 20)], 1), 0.415, 0.585);
+  });
+});
+
+describe('media card rect', () => {
+  const W = 1080, H = 1920;
+  it('landscape 16:9 clamps to the 28% minimum height, centred at 0.40', () => {
+    const r = mediaCardRect(16 / 9, W, H);
+    expect(r.top).toBeCloseTo(0.26, 6); expect(r.bottom).toBeCloseTo(0.54, 6); expect(r.width).toBeCloseTo(0.88, 6);
+  });
+  it('square keeps 88% width, height 0.495', () => {
+    const r = mediaCardRect(1, W, H);
+    expect(r.bottom - r.top).toBeCloseTo(0.88 * 1080 / 1920, 6); expect(r.width).toBeCloseTo(0.88, 6);
+  });
+  it('9:16 portrait caps at 60% height and narrows the card', () => {
+    const r = mediaCardRect(9 / 16, W, H);
+    expect(r.bottom - r.top).toBeCloseTo(0.6, 6); expect(r.width).toBeCloseTo((0.6 * 1920 * 9 / 16) / 1080, 6);
+  });
+  it('invalid aspect falls back to square', () => expect(mediaCardRect(0, W, H)).toEqual(mediaCardRect(1, W, H)));
+  it('item frame wins over look', () => {
+    expect(isCard({}, {mediaFrame: 'card'})).toBe(true);
+    expect(isCard({frame: 'full'}, {mediaFrame: 'card'})).toBe(false);
+    expect(isCard({}, undefined)).toBe(false);
+  });
+});
+
+describe('findPunch', () => {
+  it('matches words case-insensitively, ignoring edge punctuation', () => {
+    expect(findPunch('Họ thấy bạn.', ['THẤY BẠN'])).toEqual({from: 1, len: 2});
+    expect(findPunch('chỉ 87% học viên', ['87%'])).toEqual({from: 1, len: 1});
+  });
+  it('no match, or a partial word: null', () => {
+    expect(findPunch('của bạn bè', ['bạn'])).toEqual({from: 1, len: 1});
+    expect(findPunch('bạnbè', ['bạn'])).toBeNull();
+    expect(findPunch('a b', [])).toBeNull();
+  });
+  it('earliest phrase wins', () => expect(findPunch('x a b c', ['c', 'a'])).toEqual({from: 1, len: 1}));
+});
+
+describe('collage', () => {
+  it('slot counts, clamped to 2-4', () => {
+    expect(collageSlots(2)).toHaveLength(2);
+    expect(collageSlots(3)).toHaveLength(3);
+    expect(collageSlots(4)).toHaveLength(4);
+    expect(collageSlots(1)).toHaveLength(2);
+    expect(collageSlots(9)).toHaveLength(4);
+  });
+  it('rect height from aspect, capped at 44% of the frame', () => {
+    const s = collageSlots(2)[0];
+    const wide = collageRect(s, 16 / 9, 1080, 1920);
+    expect(wide.w).toBeCloseTo(0.54, 6);
+    expect(wide.h).toBeCloseTo((0.54 * 1080) / (16 / 9) / 1920, 6);
+    const tall = collageRect(s, 9 / 16, 1080, 1920);
+    expect(tall.h).toBeCloseTo(0.44, 6);
+    expect(tall.w * 1080).toBeCloseTo(0.44 * 1920 * (9 / 16), 6);
+  });
+  it('span: nothing before the first card, grows as cards enter', () => {
+    const items = [{start: 0, aspect: 1}, {start: 2, aspect: 1}];
+    expect(collageSpan(items, -0.1, 1080, 1920)).toBeNull();
+    const one = collageSpan(items, 1, 1080, 1920)!, two = collageSpan(items, 3, 1080, 1920)!;
+    expect(one.top).toBeLessThan(0.33);
+    expect(two.top).toBeCloseTo(one.top, 6);
+    expect(two.bottom).toBeGreaterThan(one.bottom);
+  });
+});

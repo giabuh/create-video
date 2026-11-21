@@ -11,7 +11,7 @@ SETTINGS = {
 BRAND = {"name": "Demo", "logo": "logo.png",
          "colors": {"primary": "#1", "accent": "#2", "text": "#3", "background": "#4"}, "cta": {"phone": "0900"}}
 SB = {"scenes": [
-    {"id": "s1", "say": "x", "caption": "Một hai ba", "highlight": ["hai"], "transition": "fade",
+    {"id": "s1", "say": "x", "caption": "Một hai ba", "highlight": ["hai"], "punch": ["ba"], "transition": "fade",
      "media": [{"src": "a.mp4", "from": 1.5, "effect": "zoom-in"}, {"src": "b.jpg", "duration": 1.0}]},
     {"id": "s2", "duration": 2, "motion": [{"component": "CountUp", "props": {"to": 7.5}, "start": 0.5}]},
 ], "cta": {"title": "Đăng ký"}}
@@ -28,6 +28,7 @@ def test_build_render_props():
         {"src": "library/b.jpg", "type": "image", "from": 0.0, "start": 2.5, "duration": 1.0, "effect": "none"},
     ]
     assert s1["captions"][-1]["end"] == 3.0  # captions follow speech, not the pause
+    assert s1["punch"] == ["ba"] and "punch" not in s2
     assert s1["highlight"] == ["hai"] and s1["overlay"] is None
     assert (s1["transition"], s2["transition"]) == ("fade", "cut")
     tr = build_render_props(SB, {**SETTINGS, "transition": {"scene": "slide", "media": "fade", "duration": 0.5}}, BRAND, AUDIO)
@@ -229,3 +230,26 @@ def test_sfx_hold_group_lasts_the_layer():
     count = p["scenes"][2]["motion"][0]
     assert tick["until"] == round(p["scenes"][2]["start"] + count["start"] + count["duration"], 3)
     assert all("until" not in x for x in p["sfx"] if x is not tick)
+    sb = _sb()
+    sb["scenes"][2]["motion"][0].setdefault("props", {})["seconds"] = 0.5
+    _, p = _sfx(sb, sfx, files)
+    tick = next(x for x in p["sfx"] if x["src"] == "sfx/tick-a.mp3")
+    assert tick["until"] == round(p["scenes"][2]["start"] + p["scenes"][2]["motion"][0]["start"] + 0.5, 3)
+
+
+def test_scene_bg_and_look_land_in_props():
+    sb = {"scenes": [{"id": "a", "duration": 1, "bg": "light", "motion": [{"component": "CountUp", "props": {}}]},
+                     {"id": "b", "duration": 1, "motion": [{"component": "CountUp", "props": {}}]}]}
+    p = build_render_props(sb, {**SETTINGS, "look": {"grain": 0.5, "scanlines": 1, "logo": True}}, BRAND, {})
+    assert [s.get("bg") for s in p["scenes"]] == ["light", None]
+    sb["scenes"][0]["layout"] = "collage"
+    assert [s.get("layout") for s in build_render_props(sb, SETTINGS, BRAND, {})["scenes"]] == ["collage", None]
+    assert p["look"] == {"grain": 0.5, "scanlines": 1, "logo": True}
+    assert build_render_props(sb, SETTINGS, BRAND, {})["look"] == {"grain": 0, "scanlines": 0, "logo": False}
+
+
+def test_media_aspect_and_frame_land_in_props():
+    sb = {"scenes": [{"id": "s", "duration": 2, "media": [{"src": "a.mp4", "frame": "full"}, {"src": "b.jpg"}]}]}
+    m = build_render_props(sb, SETTINGS, BRAND, {}, media_sizes={"a.mp4": (1080, 1920)})["scenes"][0]["media"]
+    assert m[0]["aspect"] == 0.5625 and m[0]["frame"] == "full"
+    assert "aspect" not in m[1] and "frame" not in m[1]
