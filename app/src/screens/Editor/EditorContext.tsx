@@ -10,7 +10,7 @@ import {toast} from '../../ui/index.ts';
 import {sceneStart, shouldAdopt} from './editorState.ts';
 
 export type EditorCtx = {
-  slug: string; storyboard: Storyboard;
+  slug: string; storyboard: Storyboard; update(fn: (sb: Storyboard) => Storyboard): void;
   detail: ProjectDetail; renderProps: RenderProps | null; stale: string[]; errors: string[];
   playerRef: React.RefObject<PlayerRef | null>; seekToScene(id: string): void;
   save: SaveState & {flush(): Promise<void>; retry(): Promise<void>; dirty: boolean};
@@ -78,7 +78,7 @@ export function EditorProvider({slug, detail, children}: {slug: string; detail: 
   }, [preview.renderProps]);
 
   const value = useMemo<EditorCtx>(() => ({
-    slug, storyboard, detail, renderProps: preview.renderProps, stale: preview.stale, errors: preview.errors,
+    slug, storyboard, update: setStoryboard, detail, renderProps: preview.renderProps, stale: preview.stale, errors: preview.errors,
     playerRef, seekToScene, save, previewing: inflight > 0, previewOk: preview.ok,
   }), [slug, storyboard, detail, preview, seekToScene, save, inflight]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

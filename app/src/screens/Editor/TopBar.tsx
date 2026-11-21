@@ -3,8 +3,8 @@ import {Link, useNavigate} from 'react-router';
 import {Clapperboard, Mic, MoreVertical, Upload} from 'lucide-react';
 import type {Job} from '../../../shared/types.ts';
 import {useJobs, useWorkerStatus} from '../../api/events.ts';
-import {useStartRender, useStartVoice} from '../../api/hooks.ts';
-import {Button, ConfirmDialog, DropdownMenu, IconButton, ProgressBar, fmtPct, toast} from '../../ui/index.ts';
+import {useStartRender, useStartVoice, useVoices} from '../../api/hooks.ts';
+import {Button, ConfirmDialog, DropdownMenu, IconButton, ProgressBar, Select, fmtPct, toast} from '../../ui/index.ts';
 import {useEditor} from './EditorContext.tsx';
 import {DeleteProjectDialog} from '../Projects/DeleteProjectDialog.tsx';
 import s from './TopBar.module.css';
@@ -30,7 +30,8 @@ export function useVoiceAction(): {loading: boolean; label: string; start(): voi
 }
 
 export function TopBar(): React.JSX.Element {
-  const {slug, detail, stale, save} = useEditor();
+  const {slug, detail, stale, save, storyboard, update} = useEditor();
+  const voices = useVoices();
   const nav = useNavigate();
   const jobs = useJobs();
   const voice = useVoiceAction();
@@ -51,6 +52,14 @@ export function TopBar(): React.JSX.Element {
   const voiceBusy = voice.loading || deleting;
   const rendering = startRender.isPending || !!renderJob || deleting;
 
+  // this video only: the new voice makes every spoken scene stale, so the next "Tạo giọng"/Render re-synthesizes
+  const curVoice = storyboard.voice ?? voices.data?.find((v) => v.isDefault)?.name ?? null;
+  const voicePick = (
+    <div className={s.voice}><Select aria-label="Giọng đọc của video" value={curVoice} disabled={voiceBusy || rendering}
+      options={Array.from(new Set([...(voices.data ?? []).map((v) => v.name), ...(curVoice ? [curVoice] : [])])).map((v) => ({value: v, label: `Giọng: ${v}`}))}
+      onChange={(v) => update((sb) => ({...sb, voice: v}))} /></div>
+  );
+
   const doRender = () => {
     setConfirm(false);
     void save.flush().then(() => startRender.mutateAsync()).catch((e: unknown) => toast({title: 'Không bắt đầu được render', description: e instanceof Error ? e.message : String(e), tone: 'error'}));
@@ -70,6 +79,7 @@ export function TopBar(): React.JSX.Element {
         <nav className={s.crumb} aria-label="Đường dẫn"><Link to="/">Dự án</Link><span aria-hidden>/</span><b title={slug}>{slug}</b></nav>
       </div>
       <div className={s.compactActions}>
+        {voicePick}
         <DropdownMenu align="end" trigger={<Button variant="primary" icon={<Upload size={16} aria-hidden />}>Xuất video</Button>} items={[
           {label: 'Render', disabled: voiceBusy || rendering, onSelect: ask},
           {label: `Bản render (${detail.versions.length})`, onSelect: openVersions},
@@ -82,8 +92,9 @@ export function TopBar(): React.JSX.Element {
       {progress}
       {deleting && <div className={s.banner} role="alert">Dự án đang được xoá</div>}
       <div className={s.actions}>
-        <Button icon={<Clapperboard size={16} aria-hidden />} onClick={openVersions}>Bản render ({detail.versions.length})</Button>
         <Button icon={<Mic size={16} aria-hidden />} loading={voiceBusy} loadingText={voice.label} disabled={rendering || voice.disabled} onClick={voice.start}>Tạo giọng</Button>
+        {voicePick}
+        <Button icon={<Clapperboard size={16} aria-hidden />} onClick={openVersions}>Bản render ({detail.versions.length})</Button>
         <Button variant="primary" disabled={voiceBusy || rendering} loading={startRender.isPending} onClick={ask}>Render</Button>
         <DropdownMenu align="end" trigger={<IconButton label="Thêm" icon={<MoreVertical size={18} aria-hidden />} />}
           items={[{label: 'Xoá dự án', danger: true, onSelect: () => setAskDelete(true)}]} />
