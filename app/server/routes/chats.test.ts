@@ -1,6 +1,9 @@
+import {readdir} from 'node:fs/promises';
 import path from 'node:path';
 import {beforeEach, describe, expect, it} from 'vitest';
 import type {ChatDetail, ChatMeta, ServerEvent} from '../../shared/types.ts';
+import {IMAGE_NAME_RE, MAX_IMAGE_BYTES, imageDir} from '../chat/images.ts';
+import {chatDir} from '../chat/store.ts';
 import {makeTestRoot} from '../testRoot.ts';
 import {makeClaudeHome} from '../chat/testHome.ts';
 import {setup} from './testApp.ts';
@@ -150,5 +153,78 @@ describe('chat routes', () => {
     const c = await newChat(req); // claude chat
     expect(c.engine).toBe('claude');
     expect((await send(req, c.id, 'hi', 'codex')).status).toBe(400);
+  });
+});
+
+const PNG = Uint8Array.from(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64')) as Uint8Array<ArrayBuffer>;
+const upload = (req: ReturnType<typeof setup>['req'], id: string, file: string, body: Uint8Array<ArrayBuffer> = PNG) =>
+  req(`/api/chats/${id}/images/${encodeURIComponent(file)}`, {method: 'PUT', body, headers: {'content-type': 'application/octet-stream'}});
+const sendRaw = (req: ReturnType<typeof setup>['req'], id: string, body: object) =>
+  req(`/api/chats/${id}/messages`, {method: 'POST', json: {account: 'claude', screen: '/p/p1', slug: 'p1', ...body}});
+
+describe('chat images', () => {
+  it('upload then serve', async () => {
+    const {req} = setup();
+    const c = await newChat(req);
+    const r = await upload(req, c.id, 'shot.png');
+    expect(r.status).toBe(201);
+    const {name} = await r.json();
+    expect(name).toMatch(IMAGE_NAME_RE);
+    expect(name.endsWith('.png')).toBe(true);
+    const g = await req(`/api/chats/${c.id}/images/${name}`);
+    expect(g.status).toBe(200);
+    expect(g.headers.get('content-type')).toBe('image/png');
+    expect(g.headers.get('x-content-type-options')).toBe('nosniff');
+    expect(new Uint8Array(await g.arrayBuffer())).toEqual(PNG);
+  });
+
+  it('upload rejections', async () => {
+    const {req} = setup();
+    const c = await newChat(req);
+    expect((await upload(req, '00000000-0000-4000-8000-000000000000', 'a.png')).status).toBe(404);
+    expect((await upload(req, c.id, 'a.svg')).status).toBe(400);
+    expect((await upload(req, c.id, 'a.txt')).status).toBe(400);
+    expect((await upload(req, c.id, 'a.png', new Uint8Array(MAX_IMAGE_BYTES + 1))).status).toBe(413);
+    expect(await readdir(imageDir(c.id)).catch(() => [])).toEqual([]);
+  });
+
+  it('serve rejections', async () => {
+    const {req} = setup();
+    const c = await newChat(req);
+    for (const n of ['x.png', '..%2Findex.json', '00000000-0000-4000-8000-000000000000.png'])
+      expect((await req(`/api/chats/${c.id}/images/${n}`)).status).toBe(404);
+  });
+
+  it('images go to the prompt and the user event', async () => {
+    const {req, chat} = setup();
+    const c = await newChat(req);
+    const n1 = (await (await upload(req, c.id, 'a.png')).json()).name, n2 = (await (await upload(req, c.id, 'b.png')).json()).name;
+    expect((await sendRaw(req, c.id, {text: 'xem ảnh', images: [n1, n2]})).status).toBe(202);
+    await chat.idle();
+    const d: ChatDetail = await (await req(`/api/chats/${c.id}`)).json();
+    expect(d.events.find(e => e.kind === 'user')).toMatchObject({images: [n1, n2]});
+    const text = d.events.filter(e => e.kind === 'text').map(e => (e as {text: string}).text).join('\n');
+    expect(text).toContain(`Attached images (open each file to look at it):\n- ${path.join(chatDir(), 'images', c.id, n1)}`);
+    expect(text).toContain(`- ${path.join(chatDir(), 'images', c.id, n2)}`);
+  });
+
+  it('image-only message gets the title Ảnh', async () => {
+    const {req, chat} = setup();
+    const c = await newChat(req);
+    const n = (await (await upload(req, c.id, 'a.png')).json()).name;
+    expect((await sendRaw(req, c.id, {text: '', images: [n]})).status).toBe(202);
+    await chat.idle();
+    expect(((await (await req(`/api/chats/${c.id}`)).json()) as ChatDetail).chat.title).toBe('Ảnh');
+  });
+
+  it('send rejections', async () => {
+    const {req} = setup();
+    const c = await newChat(req);
+    const ok = '00000000-0000-4000-8000-000000000000.png';
+    expect((await sendRaw(req, c.id, {text: 'x', images: 'a'})).status).toBe(400);
+    expect((await sendRaw(req, c.id, {text: 'x', images: [ok, ok, ok, ok, ok]})).status).toBe(400);
+    expect((await sendRaw(req, c.id, {text: 'x', images: [ok]})).status).toBe(400);
+    expect((await sendRaw(req, c.id, {text: 'x', images: ['../x.png']})).status).toBe(400);
+    expect((await sendRaw(req, c.id, {text: '', images: []})).status).toBe(400);
   });
 });

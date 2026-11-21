@@ -3,6 +3,7 @@ import type {ChatAccount, ChatDetail, ChatEvent, ChatMeta, ChatModels, Engine, L
 import type {EventBus} from '../events.ts';
 import {HttpError} from '../routes/util.ts';
 import {chatModels, listAccounts} from './accounts.ts';
+import {imageExists, imagePath, promptWithImages} from './images.ts';
 import {runTurn} from './runner.ts';
 import {appendEvent, readEvents, readIndex, updateIndex} from './store.ts';
 
@@ -45,7 +46,7 @@ export class ChatService {
     return chat ? {chat, events: await readEvents(id)} : null;
   }
 
-  async send(id: string, m: {text: string; account: string; model?: string; effort?: string; screen: string; slug: string | null}): Promise<void> {
+  async send(id: string, m: {text: string; account: string; model?: string; effort?: string; screen: string; slug: string | null; images: string[]}): Promise<void> {
     if (this.#active) throw new HttpError(409, 'Claude đang trả lời ở một phiên khác');
     let release!: () => void;
     const ac = new AbortController();
@@ -56,6 +57,7 @@ export class ChatService {
       const account = (await listAccounts()).find(a => a.name === m.account);
       if (!account) throw new HttpError(400, 'unknown account');
       if (account.engine !== chat.engine) throw new HttpError(400, 'account does not match the chat engine');
+      for (const n of m.images) if (!(await imageExists(id, n))) throw new HttpError(400, 'image not found');
       // allow-list: model and effort become argv
       const options = (await chatModels())[chat.engine];
       const picked = m.model === undefined ? null : options.find(o => o.value === m.model);
@@ -67,13 +69,13 @@ export class ChatService {
       const persist = (e: ChatEvent) => { // write, then emit: a client refetch after the event sees it
         w = w.then(() => appendEvent(id, e)).then(() => this.#bus.emit({type: 'chat', chatId: id, event: e}), err => console.error('chat append', err));
       };
-      persist({kind: 'user', text: m.text, account: account.name, at: Date.now()});
-      await updateIndex(l => l.map(c => c.id === id ? {...c, account: account.name, model: m.model, effort: m.effort, title: c.title === NEW_TITLE ? titleOf(m.text) : c.title, updatedAt: Date.now()} : c));
+      persist({kind: 'user', text: m.text, account: account.name, at: Date.now(), ...(m.images.length ? {images: m.images} : {})});
+      await updateIndex(l => l.map(c => c.id === id ? {...c, account: account.name, model: m.model, effort: m.effort, title: c.title === NEW_TITLE ? titleOf(m.text || 'Ảnh') : c.title, updatedAt: Date.now()} : c));
       this.#bus.emit({type: 'chatBusy', chatId: id});
 
       const codex = chat.engine === 'codex';
       void runTurn({
-        sessionId: codex ? chat.threadId ?? '' : id, resume: codex ? chat.threadId !== null : chat.started, account, model: m.model, effort: m.effort, prompt: m.text, systemAppend: systemAppend(m.screen, m.slug), signal: ac.signal,
+        sessionId: codex ? chat.threadId ?? '' : id, resume: codex ? chat.threadId !== null : chat.started, account, model: m.model, effort: m.effort, prompt: promptWithImages(m.text, m.images.map(n => imagePath(id, n))), systemAppend: systemAppend(m.screen, m.slug), signal: ac.signal,
         onEvent: e => { if (e.kind === 'delta') this.#bus.emit({type: 'chat', chatId: id, event: e}); else persist(e); },
         onInit: tid => {
           if (chat.started && (tid === null || tid === chat.threadId)) return;
