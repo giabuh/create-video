@@ -1,0 +1,6 @@
+.strip { display: flex; gap: var(--sp-2); overflow-x: auto; overscroll-behavior: contain; padding: var(--sp-2) var(--sp-3); }
+.chip { all: unset; box-sizing: border-box; flex: none; display: flex; align-items: center; gap: var(--sp-2); padding: var(--sp-1) var(--sp-2); border-radius: var(--r-lg); background: var(--panel); border: 1px solid var(--line); color: var(--text); font-size: var(--fs-sm); cursor: pointer; }
+.chip:focus-visible { box-shadow: var(--focus); }
+.chip[aria-current='true'] { border-color: var(--accent); background: var(--panel-2); }
+.info { display: flex; flex-direction: column; gap: 2px; }
+.dur { color: var(--dim); font-size: var(--fs-xs); font-variant-numeric: tabular-nums; }

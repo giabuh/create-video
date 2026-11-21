@@ -1,0 +1,2 @@
+.thumb { width: 38px; height: 62px; border-radius: 6px; flex: none; object-fit: cover; overflow: hidden; background: var(--panel-3); }
+.swatch { display: grid; place-items: center; font-size: var(--fs-xs); color: #fff; text-align: center; word-break: break-word; padding: 2px; }

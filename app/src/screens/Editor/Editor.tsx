@@ -6,7 +6,7 @@ import {EditorProvider, useEditor} from './EditorContext.tsx';
 import {Inspector} from './Inspector.tsx';
 import {PreviewPane} from './PreviewPane.tsx';
 import {SceneList} from './SceneList.tsx';
-import {Timeline} from './Timeline.tsx';
+import {SceneStrip} from './SceneStrip.tsx';
 import {TopBar} from './TopBar.tsx';
 import s from './Editor.module.css';
 
@@ -53,7 +53,7 @@ function EditorBody(): React.JSX.Element {
           {value: 'scenes', label: 'Cảnh'}, {value: 'edit', label: 'Chỉnh sửa'}, {value: 'timeline', label: 'Timeline'},
         ]} />
       </div>
-      <div id="editor-timeline" className={s.timeline}><Timeline /></div>
+      <div id="editor-timeline" className={s.timeline}><SceneStrip /></div>
     </div>
   );
 }

@@ -1,15 +1,14 @@
 import {useEffect, useState} from 'react';
 import {Player} from '@remotion/player';
-import {Expand, Film, Pause, Play, Plus, Volume2, VolumeX} from 'lucide-react';
+import {Expand, Film, MessageSquarePlus, Pause, Play, Volume2, VolumeX} from 'lucide-react';
 import {Reel} from '@studio/Reel';
-import {Button, EmptyState, IconButton, Popover, Segmented, Skeleton} from '../../ui/index.ts';
-import {BoxOverlay} from './BoxOverlay.tsx';
+import {Button, EmptyState, IconButton, Popover, Skeleton} from '../../ui/index.ts';
 import {useEditor} from './EditorContext.tsx';
-import {sceneRange} from './editorState.ts';
+import {insertChatText} from '../../api/chat.ts';
+import {momentTag, sceneAtFrame} from './moment.ts';
 import {useVoiceAction} from './TopBar.tsx';
 import s from './PreviewPane.module.css';
 
-type Mode = 'scene' | 'video';
 const playbackEvents = ['play', 'pause', 'ended', 'timeupdate', 'seeked', 'fullscreenchange', 'mutechange', 'volumechange'] as const;
 const timestamp = (frame: number, fps: number) => {
   const seconds = Math.floor(frame / fps);
@@ -22,9 +21,8 @@ const mediaError = ({error}: {error: Error}): React.ReactNode => {
 };
 
 export function PreviewPane(): React.JSX.Element {
-  const {storyboard, renderProps, stale, errors, previewOk, previewing, selectedId, playerRef, addSceneAt} = useEditor();
+  const {storyboard, renderProps, stale, errors, previewOk, previewing, playerRef} = useEditor();
   const voice = useVoiceAction();
-  const [mode, setMode] = useState<Mode>('scene');
   const [playback, setPlayback] = useState({frame: 0, playing: false, muted: false, fullscreen: false, volume: 1});
   const ready = !!renderProps && previewOk && storyboard.scenes.length > 0;
 
@@ -43,16 +41,10 @@ export function PreviewPane(): React.JSX.Element {
 
   const fps = renderProps?.fps ?? 30;
   const total = renderProps ? Math.max(1, Math.ceil(renderProps.totalSeconds * fps)) : 1;
-  const range = mode === 'scene' && selectedId ? sceneRange(renderProps, selectedId) : null;
-  const inFrame = range ? Math.min(total - 2, Math.round(range[0] * fps)) : null;
-  const outFrame = range && inFrame !== null ? Math.min(total - 1, Math.max(inFrame + 1, Math.round(range[1] * fps) - 1)) : null;
-  const loopOk = inFrame !== null && inFrame >= 0 && outFrame !== null && outFrame > inFrame;
-
-  useEffect(() => { if (loopOk) playerRef.current?.seekTo(inFrame); }, [loopOk, inFrame, outFrame, playerRef]);
 
   let body: React.ReactNode;
   if (storyboard.scenes.length === 0) {
-    body = <EmptyState icon={<Film size={28} />} title="Chưa có cảnh nào" description="Thêm cảnh đầu tiên để xem trước." action={<Button variant="primary" icon={<Plus size={16} aria-hidden />} onClick={() => addSceneAt(null)}>+ Thêm cảnh</Button>} />;
+    body = <EmptyState icon={<Film size={28} />} title="Chưa có cảnh nào" description="Nhắn Claude/Codex ở khung chat để dựng cảnh đầu tiên." />;
   } else if (!previewOk) {
     body = (
       <div className={s.errors} role="alert">
@@ -66,12 +58,11 @@ export function PreviewPane(): React.JSX.Element {
     body = (
       <div className={s.frame}>
         <Player ref={playerRef} component={Reel} inputProps={renderProps} durationInFrames={total} fps={fps}
-          compositionWidth={renderProps.width} compositionHeight={renderProps.height} controls={playback.fullscreen} loop={loopOk}
-          inFrame={loopOk ? inFrame : null} outFrame={loopOk ? outFrame : null} spaceKeyToPlayOrPause={false}
+          compositionWidth={renderProps.width} compositionHeight={renderProps.height} controls={playback.fullscreen} loop={false}
+          spaceKeyToPlayOrPause={false}
           defaultPremountInSeconds={1} // load each clip 1 s before it appears; 0 stutters at every cut, 2 mounts too many videos
           acknowledgeRemotionLicense errorFallback={mediaError} style={{width: '100%'}} />
         {previewing && <div className={s.shimmer} aria-hidden />}
-        <BoxOverlay />
       </div>
     );
   }
@@ -98,10 +89,17 @@ export function PreviewPane(): React.JSX.Element {
             onChange={(event) => playerRef.current?.seekTo(Number(event.target.value))} />
           <IconButton className={s.control} label="Xem toàn màn hình" icon={<Expand size={18} aria-hidden />}
             onClick={() => playerRef.current?.requestFullscreen()} />
+          <Button size="sm" icon={<MessageSquarePlus size={16} aria-hidden />} disabled={!renderProps} onClick={() => {
+            const p = playerRef.current;
+            if (!p || !renderProps) return;
+            p.pause();
+            const f = p.getCurrentFrame();
+            const scene = sceneAtFrame(renderProps, f);
+            if (scene) insertChatText(momentTag(scene, f, renderProps.fps));
+          }}>Sửa chỗ này</Button>
         </div>
       )}
       <div className={s.bar}>
-        <Segmented<Mode> size="sm" value={mode} onChange={setMode} aria-label="Phạm vi xem trước" options={[{value: 'scene', label: 'Cảnh'}, {value: 'video', label: 'Cả video'}]} />
         {previewing && <span className={s.hint} role="status">Đang cập nhật…</span>}
       </div>
       {stale.length > 0 && (

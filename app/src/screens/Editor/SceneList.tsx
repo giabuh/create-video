@@ -1,25 +1,14 @@
 import {useState} from 'react';
 import {ArrowDown, ArrowUp, Copy, GripVertical, MoreHorizontal, Plus, Trash2} from 'lucide-react';
-import type {SceneSpec} from '../../../shared/types.ts';
 import {useConfig} from '../../api/hooks.ts';
-import {Button, Chip, ConfirmDialog, DropdownMenu, IconButton, SortableList, Tooltip, VideoThumb, fmtSec} from '../../ui/index.ts';
+import {Button, Chip, ConfirmDialog, DropdownMenu, IconButton, SortableList, Tooltip, fmtSec} from '../../ui/index.ts';
 import {useEditor} from './EditorContext.tsx';
 import {duplicateScene, errorsByScene, removeScene, sceneKind} from './editorState.ts';
+import {Thumb} from './SceneThumb.tsx';
 import s from './SceneList.module.css';
 
 const KIND = {real: ['Cảnh thật', 'info'], motion: ['Motion', 'accent'], other: ['Khác', 'neutral']} as const;
 const TRANSITION = {cut: 'Cắt', fade: 'Mờ dần', slide: 'Trượt'} as const;
-const IMAGE = /\.(jpe?g|png|webp|gif|avif)$/i;
-const url = (src: string) => `/library/${src.split('/').map(encodeURIComponent).join('/')}`;
-
-function Thumb({scene, bg}: {scene: SceneSpec; bg: string | undefined}): React.JSX.Element {
-  const src = scene.media?.[0]?.src;
-  const [broken, setBroken] = useState<string | null>(null);
-  if (src && IMAGE.test(src) && broken !== src) return <img className={s.thumb} src={url(src)} alt="" loading="lazy" onError={() => setBroken(src)} />;
-  if (src && !IMAGE.test(src)) return <div className={s.thumb}><VideoThumb src={url(src)} label={src} /></div>;
-  return <div className={`${s.thumb} ${s.swatch}`} style={{background: bg}}>{scene.motion?.[0]?.component ?? (src ? 'ảnh' : '—')}</div>;
-}
-
 export function SceneList(): React.JSX.Element {
   const {storyboard: sb, setStoryboard, selectedId, select, seekToScene, renderProps, stale, errors, addSceneAt} = useEditor();
   const defTransition = useConfig().data?.data.transition?.scene ?? 'cut';
