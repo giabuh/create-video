@@ -23,3 +23,5 @@ voices/_uploads/
 app/.data/
 .whisper/
 .playwright-mcp/
+projects/*/hyperframes/assets/
+projects/*/compare/
