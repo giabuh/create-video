@@ -129,7 +129,7 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
         </div>
       </div>
       <div className={s.log} ref={logRef} role="log" aria-live="polite">
-        {events.length === 0 && !running && <EmptyState icon={<MessageSquare size={28} />} title={`Hỏi ${engineName} bất cứ điều gì về video`} />}
+        {events.length === 0 && !running && <div className={s.empty}><EmptyState icon={<MessageSquare size={28} />} title={`Hỏi ${engineName} bất cứ điều gì về video`} /></div>}
         {events.map((e, i) => {
           switch (e.kind) {
             case 'user': return <div key={i} style={{display: 'contents'}}><span className={s.cap}>{e.account}</span><div className={s.me}>{e.text}</div></div>;

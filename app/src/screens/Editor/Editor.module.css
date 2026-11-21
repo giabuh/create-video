@@ -5,10 +5,10 @@
 .center { display: flex; flex-direction: column; min-height: 0; min-width: 0; background: radial-gradient(ellipse at center, #2c394e, #151d2b 80%); }
 .center > :first-child { flex: 1 1 0; height: auto; min-height: 0; }
 .center > :last-child:not(:first-child) { flex: none; background: var(--panel); border-top: 1px solid var(--line); }
-.chat { display: flex; min-width: 0; min-height: 0; background: var(--panel); border-left: 1px solid var(--line); }
+.chat { display: flex; min-width: 0; min-height: 0; padding: var(--sp-3) var(--sp-4); background: var(--panel); border-left: 1px solid var(--line); }
 .chat > * { flex: 1; min-width: 0; }
 @media (max-width: 850px) {
   .work { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
   .center > :first-child { flex: none; height: 45vh; max-height: 45vh; }
-  .chat { border-left: 0; border-top: 1px solid var(--line); }
+  .chat { padding: var(--sp-2) var(--sp-3); border-left: 0; border-top: 1px solid var(--line); }
 }

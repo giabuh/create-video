@@ -30,3 +30,4 @@
 .foot .note { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); }
 .dot { position: absolute; top: 4px; right: 4px; width: 9px; height: 9px; border-radius: 50%; background: var(--info); pointer-events: none; }
 .pair { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-2); }
+@media (max-width: 850px) { :global([data-chat-docked]) .empty { display: none; } } /* phone docked log is too short for it */
