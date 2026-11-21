@@ -1,6 +1,11 @@
 {
   "approved": "reel-v2",
-  "renders": {},
+  "renders": {
+    "reel-v4": {
+      "kind": "final",
+      "at": "2026-11-21T01:19:36.021Z"
+    }
+  },
   "published": {
     "reel-v3": {
       "name": "2026-11-20-demo-card-moi-reel-v3.mp4",
@@ -9,8 +14,8 @@
     },
     "reel-v2": {
       "name": "2026-11-20-demo-card-moi-reel-v2.mp4",
-      "state": "uploading",
-      "at": "2026-11-20T09:26:53.414Z"
+      "state": "done",
+      "at": "2026-11-20T09:29:52.687Z"
     }
   }
 }

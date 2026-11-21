@@ -1,0 +1,222 @@
+{
+  "template": "fast-cut",
+  "brand": "demo",
+  "voice": "phuong",
+  "targetSeconds": 45,
+  "tts": {
+    "speed": 1,
+    "pauseAfter": 0.25
+  },
+  "captions": {
+    "size": 55,
+    "maxWords": 6,
+    "highlightColor": "#FFD400"
+  },
+  "music": {
+    "file": "Close Up - Michael Ramir C.mp3",
+    "volume": 0.32,
+    "duckTo": 0.095,
+    "fadeOut": 1.25
+  },
+  "sfx": {
+    "volume": 0.18,
+    "scene": "none",
+    "cta": "none"
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "say": "Bạn đang kinh doanh, có sản phẩm muốn bán, nhưng chưa biết bắt đầu chạy quảng cáo Phây Búc từ đâu?",
+      "caption": "Bạn đang kinh doanh, có sản phẩm muốn bán nhưng chưa biết bắt đầu chạy quảng cáo Facebook từ đâu?",
+      "media": [
+        {
+          "src": "video-doc-hoc-vien-tre-thuc-hanh-lap-trinh-va-van-phong.mp4",
+          "from": 0,
+          "effect": "none"
+        }
+      ],
+      "highlight": [
+        "quảng cáo",
+        "Facebook"
+      ],
+      "transition": "cut",
+      "motion": [
+        {
+          "component": "Ribbon",
+          "props": {
+            "title": "Chạy quảng cáo Facebook?",
+            "sub": "Chưa biết bắt đầu từ đâu",
+            "fx": "words"
+          },
+          "position": "bottom",
+          "duration": 3.5
+        }
+      ]
+    },
+    {
+      "id": "gioi-thieu",
+      "say": "Đến với Tin Học Sao Việt, bạn được hướng dẫn quảng cáo Phây Búc từ cơ bản, từng bước dễ hiểu, ngay cả khi chưa có kinh nghiệm.",
+      "caption": "Đến với Tin Học Sao Việt, bạn được hướng dẫn quảng cáo Facebook từ cơ bản, từng bước dễ hiểu, ngay cả khi chưa có kinh nghiệm.",
+      "media": [
+        {
+          "src": "sv-facebook-giang-vien-trinh-bay.jpg",
+          "effect": "zoom-in",
+          "duration": 3
+        },
+        {
+          "src": "video-doc-giao-vien-giang-bai-tren-bang-lop-tin-hoc.mp4",
+          "from": 0,
+          "effect": "none"
+        }
+      ],
+      "highlight": [
+        "từ cơ bản",
+        "chưa có kinh nghiệm"
+      ],
+      "transition": "cut",
+      "mediaTransition": "fade"
+    },
+    {
+      "id": "noi-dung",
+      "say": "Từ xây dựng Phây-pếch, xác định khách hàng mục tiêu, sáng tạo nội dung, đến tự thiết lập chiến dịch quảng cáo.",
+      "caption": "Từ xây dựng Fanpage, xác định khách hàng mục tiêu, sáng tạo nội dung, đến tự thiết lập chiến dịch quảng cáo.",
+      "media": [
+        {
+          "src": "video-ngang-hoc-vien-thuc-hanh-do-hoa-va-excel.mp4",
+          "from": 0,
+          "effect": "none"
+        }
+      ],
+      "highlight": [
+        "khách hàng mục tiêu",
+        "chiến dịch"
+      ],
+      "transition": "cut",
+      "motion": [
+        {
+          "component": "Checklist",
+          "props": {
+            "items": [
+              "Xây dựng Fanpage",
+              "Xác định khách hàng",
+              "Sáng tạo nội dung",
+              "Thiết lập chiến dịch"
+            ],
+            "variant": "grid",
+            "size": 52,
+            "itemsAt": [
+              "Phây-pếch",
+              "khách",
+              "sáng",
+              "thiết"
+            ],
+            "fx": "pop"
+          },
+          "box": {
+            "x": 6,
+            "y": 12,
+            "w": 88,
+            "h": 34
+          },
+          "duration": 9
+        }
+      ]
+    },
+    {
+      "id": "thuc-hanh",
+      "say": "Đặc biệt, bạn thực hành trực tiếp trên chính sản phẩm hoặc dịch vụ mình đang kinh doanh, có người hướng dẫn suốt quá trình học.",
+      "caption": "Đặc biệt, bạn thực hành trực tiếp trên chính sản phẩm hoặc dịch vụ mình đang kinh doanh, với sự hướng dẫn trong suốt quá trình học.",
+      "media": [
+        {
+          "src": "sv-facebook-hoc-vien-thuc-hanh.jpg",
+          "effect": "zoom-in",
+          "duration": 3
+        },
+        {
+          "src": "video-doc-hoc-vien-nu-thuc-hanh-tin-hoc-van-phong.mp4",
+          "from": 0,
+          "effect": "none"
+        }
+      ],
+      "highlight": [
+        "thực hành trực tiếp",
+        "chính sản phẩm"
+      ],
+      "transition": "cut",
+      "mediaTransition": "fade",
+      "motion": [
+        {
+          "component": "Stamp",
+          "props": {
+            "main": "THỰC HÀNH"
+          },
+          "box": {
+            "x": 22,
+            "y": 14,
+            "w": 56,
+            "h": 24
+          },
+          "at": "trực",
+          "duration": 3.5
+        }
+      ]
+    },
+    {
+      "id": "ket-qua",
+      "say": "Không chỉ biết cách chạy quảng cáo, bạn còn học cách đọc kết quả, quản lý ngân sách và điều chỉnh chiến dịch.",
+      "caption": "Không chỉ biết cách chạy quảng cáo, bạn còn học cách đọc kết quả, quản lý ngân sách và điều chỉnh chiến dịch.",
+      "media": [
+        {
+          "src": "video-doc-nhom-hoc-vien-hoc-autocad.mp4",
+          "from": 0,
+          "effect": "none"
+        }
+      ],
+      "highlight": [
+        "đọc kết quả",
+        "ngân sách"
+      ],
+      "transition": "cut",
+      "motion": [
+        {
+          "component": "Picture",
+          "props": {
+            "src": "sv-facebook-minh-hoa-bao-cao.png",
+            "fit": "contain",
+            "shadow": false
+          },
+          "box": {
+            "x": 55,
+            "y": 14,
+            "w": 40,
+            "h": 22
+          },
+          "at": "đọc",
+          "duration": 5
+        }
+      ]
+    },
+    {
+      "id": "chot",
+      "say": "Hãy bắt đầu cùng Tin Học Sao Việt! Nhắn tin ngay cho Phây-pếch, hoặc gọi không tám bảy sáu, chín hai chín, một bốn năm, để được tư vấn khóa học!",
+      "caption": "Hãy bắt đầu cùng Tin Học Sao Việt! Nhắn tin ngay cho Fanpage hoặc gọi 0876 929 145 để được tư vấn khóa học!",
+      "media": [
+        {
+          "src": "video-ngang-toan-canh-lop-hoc-tin-hoc-buoi-toi.mp4",
+          "from": 0,
+          "effect": "none"
+        }
+      ],
+      "highlight": [
+        "0876 929 145"
+      ],
+      "transition": "cut"
+    }
+  ],
+  "cta": {
+    "title": "Tư vấn khóa học",
+    "phone": "0876 929 145",
+    "duration": 2.7,
+    "logoSize": 390
+  }
+}
