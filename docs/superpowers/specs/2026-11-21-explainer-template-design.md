@@ -85,9 +85,8 @@ for bespoke motion design.
   colors), the logo placement, a caption style that fits it, soft continuous scene transitions, and the CTA ending.
   It must lay out correctly at both 1080x1920 and 1920x1080: read `useVideoConfig()` and design for the shorter
   side, with no hard-coded 1080/1920.
-- **Captions:** the template supports them, and `config.json templates.explainer` sets the default (my call: off,
-  like the reference, where the on-screen text carries the message). Claude may turn them on per video. Vertical
-  social video usually benefits from captions.
+- **Captions:** the template supports them, and `config.json templates.explainer` sets the default: **on** (user's
+  decision: feed video often plays muted). A video may turn them off in its storyboard.
 - `config.json templates.explainer`: the template's defaults (captions, transitions, music, look), in the same shape
   as the other template entries.
 - **Per-video components:** each explainer video's bespoke components live in
@@ -153,6 +152,20 @@ Each kind of lesson has one fixed file. Claude appends to it the moment the user
   mistake seen twice to the still-check list in the make-reel skill.
 - Later, not now: `brands/<brand>/results.md` with post performance (views, 3-s retention, inbox), once videos from
   this repo are published.
+
+### 8. Expert review before the user sees a draft
+- `docs/style/expert-review.md`: the checklist of a course-ad creative director / performance marketer:
+  1. Brief: audience, their pain, one promise, proof (confirmed facts), one concrete action at the end.
+  2. Hook: the first 3 s hit the pain or a curious number, with real people on screen.
+  3. Muted viewing: the message survives with sound off (captions on, key on-screen text).
+  4. Proof: real students and real numbers beat effects; missing testimonial shots go to `library/wishlist.md`.
+  5. Ad policy: no guarantees ("cam kết 100%", "đảm bảo đậu"), no exaggerated before/after; checked on the script
+     before render.
+  (Hook variants for A/B testing come later, together with `results.md`.)
+- Before showing a draft, a fresh `worker-sonnet` reviewer (not the session that made it) reads the storyboard and the
+  per-scene still sheet against this checklist and returns findings; Claude fixes them first. A finding raised on
+  two videos goes into `taste.md` or `concepts.md`.
+- The make-reel skill writes the brief (point 1) at the start, for every template.
 
 ## Done means
 - Mix is gone: no `mix` key in `config.json`, no mix UI, no mix in pipeline output, docs updated, all tests pass.

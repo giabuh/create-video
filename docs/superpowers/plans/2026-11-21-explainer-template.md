@@ -137,7 +137,7 @@ Agent: worker-sonnet. It can run in parallel with Tasks 1–4.
 **Files:**
 - Create: `studio/src/templates/explainer/Explainer.tsx`, plus its own size-aware `ExplainerCaptions.tsx`, `ExplainerCta.tsx` and logo placement in the same folder
 - Modify: `studio/src/templates/index.ts` (register `explainer: Explainer`)
-- Modify: `config.json` `templates.explainer` (captions off by default, soft scene transitions such as `fade`, look without grain or scanlines, logo on). Use the existing keys only.
+- Modify: `config.json` `templates.explainer` (captions on by default, soft scene transitions such as `fade`, look without grain or scanlines, logo on). Use the existing keys only.
 - Create: `studio/fixtures/explainer-doc.json`, `studio/fixtures/explainer-ngang.json` (render props for 2 scenes with footage, one plain motion layer, a CTA; the same content at 1080x1920 and 1920x1080)
 
 **Must do:** Light brand canvas from `brand.colors`, soft shadows, logo top-left, continuous scene transitions, a CTA that
@@ -163,9 +163,11 @@ Agent: worker-sonnet (needs vision for frames). It can run in parallel with ever
 
 - Create (spec §7): `brands/demo/taste.md`, `brands/demo/pronounce.md`, `docs/style/concepts.md`, `library/wishlist.md`, each with a one-line purpose and an empty table header; `concepts.md` seeded with the reference's concepts (video: reference, verdict: style bar).
 
+- Create (spec §8): `docs/style/expert-review.md` with the five checklist points.
+
 - [ ] **Step 1:** Read the frames at full resolution (crop or upscale with ffmpeg where text is small) and transcribe every visible fact exactly. Write "không đọc được" instead of guessing.
 - [ ] **Step 2:** Write both docs. `facts.md` has sections: Cơ sở, Đánh giá, Khóa học, Quyền lợi, Lịch học, Chứng chỉ, Liên hệ (leave Liên hệ empty if no phone or URL is visible).
-- [ ] **Step 3:** Commit `docs/style/explainer.md`, `brands/demo/facts.md` and the four spec §7 files (`reference/` is git-ignored): `Explainer style bar and Sao Viet facts draft`.
+- [ ] **Step 3:** Commit `docs/style/explainer.md`, `brands/demo/facts.md`, the four spec §7 files and `docs/style/expert-review.md` (`reference/` is git-ignored): `Explainer style bar and Sao Viet facts draft`.
 
 ### Task 7: Rules and skill (main session)
 After Tasks 1–5.
@@ -174,6 +176,7 @@ After Tasks 1–5.
 - [ ] `.claude/skills/make-reel/SKILL.md`: drop "and mix". Add the explainer branch (spec §4, steps 1–6). Every template reads `brands/<brand>/facts.md` and uses only facts marked confirmed.
 - [ ] `CLAUDE.md` rule 1: add "When the user states a new ad fact in any session, append or update it in `brands/<brand>/facts.md` right away (confirmed, source: user, date) and say so in one line" (spec §6).
 - [ ] `CLAUDE.md` + make-reel `SKILL.md`: the spec §7 learning files: append on the spot, read at `/make-reel` start, 3-line retro on accepting a version.
+- [ ] make-reel `SKILL.md`: spec §8: write the brief first; fresh `worker-sonnet` expert review of storyboard + still sheet before showing a draft.
 - [ ] `docs/superpowers/specs/2026-11-18-reel-pipeline-design.md` lines ~28, 96, 160, 199, 285: remove the mix target.
 - [ ] Commit: `Rules: no mix target, explainer workflow, facts file`.
 
