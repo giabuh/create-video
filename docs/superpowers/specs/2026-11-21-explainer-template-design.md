@@ -141,6 +141,19 @@ the backbone; motion explains on top of it" (no numbers), for every template.
   the existing line if it changes a fact, and says so in one line. Facts Claude only infers or reads off footage go in
   as unconfirmed.
 
+### 7. Learning files (the repo gets smarter each video)
+Each kind of lesson has one fixed file. Claude appends to it the moment the user says something that belongs there
+(any session, any task) and says so in one line; it reads them all at the start of `/make-reel`.
+- `brands/<brand>/taste.md`: what the user praised or rejected, with video slug and version.
+- `brands/<brand>/pronounce.md`: words VieNeu-TTS reads wrong and the `say` spelling that fixes them.
+- `docs/style/concepts.md`: visual concepts used (video, component, user verdict). A per-video component the user
+  praises twice is a candidate to promote into shared `motion/`; Claude proposes it, the user decides.
+- `library/wishlist.md`: shots an idea needed but the library lacks, for the user to film.
+- On accepting a version (rule 8), Claude also runs a 3-line retro: update `concepts.md` and `wishlist.md`, and add any
+  mistake seen twice to the still-check list in the make-reel skill.
+- Later, not now: `brands/<brand>/results.md` with post performance (views, 3-s retention, inbox), once videos from
+  this repo are published.
+
 ## Done means
 - Mix is gone: no `mix` key in `config.json`, no mix UI, no mix in pipeline output, docs updated, all tests pass.
 - `explainer` is selectable in the app. The "Khổ" choice appears for it only, and a landscape project previews and

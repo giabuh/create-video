@@ -161,9 +161,11 @@ Agent: worker-sonnet (needs vision for frames). It can run in parallel with ever
 - Create: `docs/style/explainer.md`, per spec §5. Cover: palette roles, card shape and shadow, type scale, logo placement, motion principles, "real footage is the backbone; motion explains on top of it", "one idea = one visual", and the reference's concepts listed as examples, not a menu.
 - Create: `brands/demo/facts.md`, per spec §6. Every fact that is read off the frames gets `status: chưa xác nhận`, its timestamp and a `source: reference video` note.
 
+- Create (spec §7): `brands/demo/taste.md`, `brands/demo/pronounce.md`, `docs/style/concepts.md`, `library/wishlist.md`, each with a one-line purpose and an empty table header; `concepts.md` seeded with the reference's concepts (video: reference, verdict: style bar).
+
 - [ ] **Step 1:** Read the frames at full resolution (crop or upscale with ffmpeg where text is small) and transcribe every visible fact exactly. Write "không đọc được" instead of guessing.
 - [ ] **Step 2:** Write both docs. `facts.md` has sections: Cơ sở, Đánh giá, Khóa học, Quyền lợi, Lịch học, Chứng chỉ, Liên hệ (leave Liên hệ empty if no phone or URL is visible).
-- [ ] **Step 3:** Commit `docs/style/explainer.md` and `brands/demo/facts.md` (`reference/` is git-ignored): `Explainer style bar and Sao Viet facts draft`.
+- [ ] **Step 3:** Commit `docs/style/explainer.md`, `brands/demo/facts.md` and the four spec §7 files (`reference/` is git-ignored): `Explainer style bar and Sao Viet facts draft`.
 
 ### Task 7: Rules and skill (main session)
 After Tasks 1–5.
@@ -171,6 +173,7 @@ After Tasks 1–5.
 - [ ] `CLAUDE.md` rule 6: for `explainer`, write new components each video under `studio/src/videos/<slug>/` (see its README). Rule 7: landscape QA uses `--platform youtube` / `--safe youtube`. The still-check list drops "mix".
 - [ ] `.claude/skills/make-reel/SKILL.md`: drop "and mix". Add the explainer branch (spec §4, steps 1–6). Every template reads `brands/<brand>/facts.md` and uses only facts marked confirmed.
 - [ ] `CLAUDE.md` rule 1: add "When the user states a new ad fact in any session, append or update it in `brands/<brand>/facts.md` right away (confirmed, source: user, date) and say so in one line" (spec §6).
+- [ ] `CLAUDE.md` + make-reel `SKILL.md`: the spec §7 learning files: append on the spot, read at `/make-reel` start, 3-line retro on accepting a version.
 - [ ] `docs/superpowers/specs/2026-11-18-reel-pipeline-design.md` lines ~28, 96, 160, 199, 285: remove the mix target.
 - [ ] Commit: `Rules: no mix target, explainer workflow, facts file`.
 
