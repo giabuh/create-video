@@ -22,6 +22,8 @@ const setJobs = () => {
   emit();
 };
 
+/** Forget a job the server no longer knows (e.g. the API restarted mid-render). */
+export const dropJob = (id: string): void => { if (jobs.delete(id)) { jobs = new Map(jobs); setJobs(); } };
 export const useJobs = (): Job[] => useSyncExternalStore(subscribe, () => jobList);
 export const useJob = (id: string | null): Job | undefined => useJobs().find((j) => j.id === id);
 export const useWorkerStatus = (): WorkerStatus => useSyncExternalStore(subscribe, () => worker);

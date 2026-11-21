@@ -5,6 +5,7 @@ import type {
 } from '../../shared/types.ts';
 import {toast} from '../ui/index.ts';
 import {api, type HttpError} from './client.ts';
+import {dropJob} from './events.ts';
 
 export const qk = {
   projects: ['projects'], project: (slug: string) => ['project', slug] as const, library: ['library'], music: ['music'], sfx: ['sfx'], voices: ['voices'],
@@ -119,7 +120,13 @@ export const useTemplates = () => useGet<string[]>(qk.templates, '/templates');
 export const useMotionNames = () => useGet<string[]>(qk.motion, '/motion');
 
 export function useCancelJob(): UseMutationResult<Job, HttpError, string> {
-  return useMutation({mutationFn: (id) => api(`/jobs/${enc(id)}/cancel`, {method: 'POST'})});
+  return useMutation({
+    mutationFn: (id) => api(`/jobs/${enc(id)}/cancel`, {method: 'POST'}),
+    onError: (e, id) => {
+      if (e.status === 404) dropJob(id); // server restarted: the job died with it, so the card is a ghost
+      else toast({title: 'Không huỷ được', description: e.message, tone: 'error'});
+    },
+  });
 }
 export function useOpenFolder(): UseMutationResult<void, HttpError, string> {
   return useMutation({mutationFn: (path) => api('/open', {method: 'POST', body: {path}})});

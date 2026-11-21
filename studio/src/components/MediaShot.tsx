@@ -19,6 +19,10 @@ export const CardBackdrop: React.FC<{light: boolean}> = ({light}) => {
   });
   return (
     <AbsoluteFill style={{overflow: 'hidden'}}>
+      {/* shortcut: fixed blue/gold tint, not brand-driven; plumb the brand colors in if other brands need it */}
+      <AbsoluteFill style={{background: light
+        ? 'radial-gradient(70% 45% at 50% 20%, rgba(255,212,0,0.28), transparent 70%), radial-gradient(80% 50% at 50% 95%, rgba(30,58,138,0.16), transparent 70%)'
+        : 'radial-gradient(75% 45% at 50% 22%, rgba(37,80,200,0.55), transparent 70%), radial-gradient(70% 40% at 50% 92%, rgba(255,212,0,0.16), transparent 70%)'}} />
       <div style={streak(22, 14, light ? 0.25 : 0.1)} />
       <div style={streak(64, -10, light ? 0.18 : 0.06)} />
     </AbsoluteFill>
