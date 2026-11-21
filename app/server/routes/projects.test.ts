@@ -37,6 +37,28 @@ describe('projects routes', () => {
     expect((await req('/api/projects', {method: 'POST', body: '{bad', headers: {'content-type': 'application/json'}})).status).toBe(400);
   });
 
+  it('format: ngang only for explainer, validated, reflected in size', async () => {
+    await makeTestRoot();
+    const {req} = setup();
+    const post = (json: object) => req('/api/projects', {method: 'POST', json});
+    expect((await post({name: 'Ngang', template: 'explainer', format: 'ngang'})).status).toBe(201);
+    const d = await (await req('/api/projects/ngang')).json();
+    expect(d.storyboard.data.video).toEqual({width: 1920, height: 1080});
+    expect(d.size).toEqual({width: 1920, height: 1080});
+    expect((await post({name: 'Doc', template: 'explainer', format: 'doc'})).status).toBe(201);
+    expect((await post({name: 'Khong', template: 'explainer'})).status).toBe(201);
+    for (const n of ['doc', 'khong']) {
+      const x = await (await req(`/api/projects/${n}`)).json();
+      expect(x.storyboard.data).not.toHaveProperty('video');
+      expect(x.size).toEqual({width: 1080, height: 1920});
+    }
+    const bad = await post({name: 'Story', template: 'story', format: 'ngang'});
+    expect(bad.status).toBe(400);
+    expect((await bad.json()).error).toMatch(/explainer/);
+    expect((await post({name: 'Sq', template: 'explainer', format: 'square'})).status).toBe(400);
+    expect((await post({name: 'Sq2', template: 'explainer', format: 'toString'})).status).toBe(400);
+  });
+
   it('storyboard PUT with baseMtime, stale, legacy mix ignored, traversal', async () => {
     const root = await makeTestRoot();
     const {req} = setup();
@@ -55,6 +77,10 @@ describe('projects routes', () => {
     expect(d2.stale).toEqual(['s1']);
     const listed = await (await req('/api/projects')).json();
     expect(listed[0]).not.toHaveProperty('mix');
+    expect(d2).not.toHaveProperty('mix');
+    expect(d2).not.toHaveProperty('mixTarget');
+    expect(d2.size).toEqual({width: 1080, height: 1920});   // legacy project, no storyboard.video
+    expect(listed[0].size).toEqual({width: 1080, height: 1920});
     expect([400, 404]).toContain((await req('/api/projects/..%2Fetc')).status);
     expect((await req('/api/projects/nope')).status).toBe(404);
   });

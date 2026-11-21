@@ -1,15 +1,15 @@
 import {useEffect, useRef, useState} from 'react';
 import {Pause, Play, FolderOpen, Trash2} from 'lucide-react';
-import type {Job, VersionInfo} from '../../../shared/types.ts';
+import type {Job, VersionInfo, VideoSize} from '../../../shared/types.ts';
 import {Button, Chip, IconButton, ProgressBar, Slider, Tooltip, fmtBytes, fmtPct} from '../../ui/index.ts';
 import type {DriveRow} from './driveRow.ts';
 import s from './Renders.module.css';
 
-const QUALITY = {draft: 'Nháp 0,5×', final: '1080×1920'} as const;
+const QUALITY = {draft: 'Nháp 0,5×'} as const;
 const clock = (t: number) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
 
-export function VersionCard({v, register, row, onApprove, onRetry, onCancel, onDelete, onOpenFolder}: {
-  v: VersionInfo; register(name: string, el: HTMLVideoElement | null): void; row: DriveRow; onApprove(): void; onRetry(): void; onCancel?(job: Job): void; onDelete(): void; onOpenFolder(): void;
+export function VersionCard({v, size, register, row, onApprove, onRetry, onCancel, onDelete, onOpenFolder}: {
+  v: VersionInfo; size: VideoSize; register(name: string, el: HTMLVideoElement | null): void; row: DriveRow; onApprove(): void; onRetry(): void; onCancel?(job: Job): void; onDelete(): void; onOpenFolder(): void;
 }): React.JSX.Element {
   const p = v.published;
   const blocked = v.approved && p?.state !== 'done';
@@ -29,7 +29,7 @@ export function VersionCard({v, register, row, onApprove, onRetry, onCancel, onD
         {v.kind === 'draft' && <Chip>{QUALITY.draft}</Chip>}
       </div>
       <DriveStatusRow row={row} approved={v.approved} onRetry={onRetry} onCancel={onCancel} />
-      <div className={s.frame}>
+      <div className={s.frame} style={{'--ar': `${size.width} / ${size.height}`} as React.CSSProperties}>
         <video ref={ref} src={`/${v.file}`} preload="metadata" playsInline onClick={toggle}
           onLoadedMetadata={(e) => { setDur(e.currentTarget.duration); setState('ready'); }}
           onError={() => setState('error')}
@@ -48,7 +48,7 @@ export function VersionCard({v, register, row, onApprove, onRetry, onCancel, onD
       </div>
       <dl className={s.meta}>
         <dt>Ngày</dt><dd>{new Date(v.mtime).toLocaleString('vi-VN', {dateStyle: 'short', timeStyle: 'short'})}</dd>
-        <dt>Chất lượng</dt><dd>{v.kind ? QUALITY[v.kind] : '—'}</dd>
+        <dt>Chất lượng</dt><dd>{v.kind === 'draft' ? QUALITY.draft : v.kind ? `${size.width}×${size.height}` : '—'}</dd>
         <dt>Dung lượng</dt><dd>{fmtBytes(v.bytes)}</dd>
         <dt>Snapshot</dt><dd>{v.hasSnapshot ? 'Có' : 'Không'}</dd>
       </dl>

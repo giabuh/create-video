@@ -26,11 +26,19 @@ async function summarize(jobs: JobQueue, slug: string, config: Config): Promise<
   return {
     slug, status: meta.deleting ? 'deleting' : projectStatus(versions, meta, isRendering(jobs, slug)), approved: meta.approved, latest: versions[0] ?? null,
     sceneCount: sb.data.scenes.length, totalSeconds: timings?.totalSeconds ?? props?.totalSeconds ?? null,
-    mtime: sb.mtime, firstCaption: first?.caption ?? first?.say ?? '', voice: sb.data.voice ?? config.defaults.voice, deleting: meta.deleting ?? null,
+    mtime: sb.mtime, size: sizeOf(sb.data, config), firstCaption: first?.caption ?? first?.say ?? '', voice: sb.data.voice ?? config.defaults.voice, deleting: meta.deleting ?? null,
   };
 }
 
 const isBusy = (jobs: JobQueue, slug: string) => jobs.list().some(j => (j.kind === 'render' || j.kind === 'publish') && j.project === slug && (j.state === 'queued' || j.state === 'running'));
+
+const FORMATS: Record<string, {width: number; height: number} | undefined> = {doc: undefined, ngang: {width: 1920, height: 1080}};
+
+/** storyboard.video deep-merged over config.video (only width/height matter here). */
+const sizeOf = (sb: Storyboard, config: Config) => {
+  const v = (sb.video ?? {}) as {width?: unknown; height?: unknown};
+  return {width: typeof v.width === 'number' ? v.width : config.video.width, height: typeof v.height === 'number' ? v.height : config.video.height};
+};
 
 const optStr = (v: unknown, what: string): string | undefined => {
   if (v === undefined) return undefined;
@@ -60,6 +68,14 @@ export function projectRoutes({jobs, worker}: Deps): Hono {
     if (template) sb.template = template;
     if (brand) sb.brand = brand;
     if (voice) sb.voice = voice;
+    if (b.format !== undefined) {
+      if (typeof b.format !== 'string' || !Object.hasOwn(FORMATS, b.format)) throw new HttpError(400, 'Khổ video không hợp lệ (doc hoặc ngang)');
+      const size = FORMATS[b.format];
+      if (size) {
+        if (template !== 'explainer') throw new HttpError(400, 'Chỉ mẫu explainer mới chọn được khổ ngang');
+        sb.video = size;
+      }
+    }
     if (b.targetSeconds !== undefined) {
       if (typeof b.targetSeconds !== 'number' || !(b.targetSeconds > 0) || b.targetSeconds > 600) throw new HttpError(400, 'bad targetSeconds');
       sb.targetSeconds = b.targetSeconds;
@@ -85,7 +101,7 @@ export function projectRoutes({jobs, worker}: Deps): Hono {
       ? storyboard.data.scenes.filter(s => s.say?.trim() && !renderProps.scenes.find(r => r.id === s.id)?.voice).map(s => s.id)
       : [];
     const detail: ProjectDetail = {
-      slug, storyboard, timings, renderProps, stale, versions, meta,
+      slug, storyboard, timings, renderProps, stale, versions, meta, size: sizeOf(storyboard.data, config),
       status: projectStatus(versions, meta, isRendering(jobs, slug)),
     };
     return c.json(detail);

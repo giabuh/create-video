@@ -53,15 +53,16 @@ export type VersionInfo = {
 export type PublishInfo = {name: string; state: 'uploading' | 'done' | 'failed'; error?: string; at: string};
 export type ProjectMeta = {approved: string | null; renders: Record<string, {kind: 'draft' | 'final'; at: string}>;
   published?: Record<string, PublishInfo>; deleting?: {uploads: string[]; state: 'uploading' | 'failed'; error?: string}};
+export type VideoSize = {width: number; height: number};
 export type ProjectSummary = {
   slug: string; status: ProjectStatus; approved: string | null; latest: VersionInfo | null;
   sceneCount: number; totalSeconds: number | null; mtime: number;
-  firstCaption: string; voice: string | null; deleting: ProjectMeta['deleting'] | null;
+  size: VideoSize; firstCaption: string; voice: string | null; deleting: ProjectMeta['deleting'] | null;
 };
 export type ProjectDetail = {
   slug: string; storyboard: Versioned<Storyboard>; timings: Timings | null;
   renderProps: RenderProps | null; stale: string[]; versions: VersionInfo[];
-  meta: ProjectMeta; status: ProjectStatus;
+  meta: ProjectMeta; status: ProjectStatus; size: VideoSize;
 };
 export type PreviewResult = {ok: boolean; errors: string[]; stale: string[]; renderProps: RenderProps | null};
 export type LibraryEntry = {

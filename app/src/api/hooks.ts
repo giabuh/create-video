@@ -19,7 +19,7 @@ const invalidate = (qc: QueryClient, ...keys: readonly (readonly unknown[])[]) =
 export const useProjects = () => useGet<ProjectSummary[]>(qk.projects, '/projects');
 export const useProject = (slug: string) => useGet<ProjectDetail>(qk.project(slug), `/projects/${enc(slug)}`);
 
-export function useCreateProject(): UseMutationResult<ProjectSummary, HttpError, {name: string; template?: string; brand?: string; voice?: string; targetSeconds?: number}> {
+export function useCreateProject(): UseMutationResult<ProjectSummary, HttpError, {name: string; template?: string; brand?: string; voice?: string; targetSeconds?: number; format?: 'doc' | 'ngang'}> {
   const qc = useQueryClient();
   return useMutation({mutationFn: (b) => api('/projects', {method: 'POST', body: b}), onSuccess: () => invalidate(qc, qk.projects)});
 }

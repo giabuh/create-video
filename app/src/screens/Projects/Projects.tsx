@@ -38,7 +38,7 @@ function Card({p}: {p: ProjectSummary}): React.JSX.Element {
   const job = useJobs().find((j) => j.kind === 'delete-project' && j.project === p.slug && (j.state === 'running' || j.state === 'queued'));
   const inner = (
     <>
-      <div className={s.thumb}><VideoThumb src={p.latest ? `/${p.latest.file}` : null} label={p.firstCaption || 'Chưa render'} /></div>
+      <div className={s.thumb}><VideoThumb aspect={`${p.size.width} / ${p.size.height}`} src={p.latest ? `/${p.latest.file}` : null} label={p.firstCaption || 'Chưa render'} /></div>
       <div className={s.meta}>
         <div className={s.row}><span className={s.name} title={p.slug}>{p.slug}</span>{statusChip(p)}</div>
         <div className={s.sub}>{meta}</div>
@@ -85,6 +85,7 @@ function NewDialog({open, onOpenChange}: {open: boolean; onOpenChange(o: boolean
   const [brand, setBrand] = useState<string | null>(null);
   const [voice, setVoice] = useState<string | null>(null);
   const [secs, setSecs] = useState<number | null>(30);
+  const [format, setFormat] = useState<'doc' | 'ngang'>('doc');
   const [err, setErr] = useState<string>();
   // fall back to the server defaults (first entry marked default) until the user picks
   const tplV = tpl ?? templates.data?.[0] ?? null;
@@ -94,7 +95,7 @@ function NewDialog({open, onOpenChange}: {open: boolean; onOpenChange(o: boolean
   const submit = () => {
     if (!valid || create.isPending) return;
     setErr(undefined);
-    create.mutate({name: name.trim(), template: tplV ?? undefined, brand: brandV ?? undefined, voice: voiceV ?? undefined, targetSeconds: secs ?? 30}, {
+    create.mutate({name: name.trim(), template: tplV ?? undefined, brand: brandV ?? undefined, voice: voiceV ?? undefined, targetSeconds: secs ?? 30, ...(tplV === 'explainer' ? {format} : {})}, {
       onSuccess: (p) => nav(`/p/${encodeURIComponent(p.slug)}`),
       onError: (e) => setErr(e.status === 409 ? 'Đã có dự án tên này' : e.message),
     });
@@ -107,6 +108,7 @@ function NewDialog({open, onOpenChange}: {open: boolean; onOpenChange(o: boolean
           <Input value={name} autoFocus onChange={(e) => { setName(e.target.value); setErr(undefined); }} placeholder="vd. Khai giảng lớp mới" />
         </Field>
         <Field label="Mẫu"><Select value={tplV} onChange={setTpl} options={(templates.data ?? []).map((t) => ({value: t, label: t}))} placeholder="Chọn mẫu" /></Field>
+        {tplV === 'explainer' && <Field label="Khổ"><Segmented aria-label="Khổ video" value={format} onChange={(v) => setFormat(v === 'ngang' ? 'ngang' : 'doc')} options={[{value: 'doc' as const, label: 'Dọc 9:16'}, {value: 'ngang' as const, label: 'Ngang 16:9'}]} /></Field>}
         <Field label="Brand"><Select value={brandV} onChange={setBrand} options={(brands.data ?? []).map((b) => ({value: b.id, label: b.brand.name || b.id}))} placeholder="Chọn brand" /></Field>
         <Field label="Giọng"><Select value={voiceV} onChange={setVoice} options={(voices.data ?? []).map((v) => ({value: v.name, label: cap(v.name)}))} placeholder="Chọn giọng" /></Field>
         <Field label="Thời lượng mục tiêu (giây)"><NumberField value={secs} onChange={setSecs} min={5} max={120} /></Field>

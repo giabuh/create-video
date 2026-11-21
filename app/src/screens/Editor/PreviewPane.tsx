@@ -40,6 +40,7 @@ export function PreviewPane(): React.JSX.Element {
   }, [ready, playerRef]);
 
   const fps = renderProps?.fps ?? 30;
+  const frameVars = renderProps ? {'--ar': `${renderProps.width} / ${renderProps.height}`, '--fw': renderProps.width > renderProps.height ? '56rem' : undefined} as React.CSSProperties : undefined;
   const total = renderProps ? Math.max(1, Math.ceil(renderProps.totalSeconds * fps)) : 1;
 
   let body: React.ReactNode;
@@ -53,10 +54,10 @@ export function PreviewPane(): React.JSX.Element {
       </div>
     );
   } else if (!renderProps) {
-    body = <div className={s.frame}><Skeleton height="100%" radius={18} /><span className={s.wait}>Đang dựng bản xem trước…</span></div>;
+    body = <div className={s.frame} style={frameVars}><Skeleton height="100%" radius={18} /><span className={s.wait}>Đang dựng bản xem trước…</span></div>;
   } else {
     body = (
-      <div className={s.frame}>
+      <div className={s.frame} style={frameVars}>
         <Player ref={playerRef} component={Reel} inputProps={renderProps} durationInFrames={total} fps={fps}
           compositionWidth={renderProps.width} compositionHeight={renderProps.height} controls={playback.fullscreen} loop={false}
           spaceKeyToPlayOrPause={false}
