@@ -25,3 +25,4 @@ app/.data/
 .playwright-mcp/
 projects/*/hyperframes/assets/
 projects/*/compare/
+.claude/worktrees/
