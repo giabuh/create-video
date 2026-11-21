@@ -2,7 +2,7 @@ import type {RenderProps} from '../../studio/src/types.ts';
 export type {RenderProps};
 
 export type Json = Record<string, unknown>;
-export type Effect = 'none' | 'zoom-in' | 'zoom-out' | 'pan-left' | 'pan-right';
+export type Effect = 'none' | 'zoom-in' | 'zoom-out' | 'pan-left' | 'pan-right' | 'glitch';
 export type TransitionName = 'cut' | 'fade' | 'slide';
 export type MediaSpec = {src: string; from?: number; duration?: number; effect?: Effect};
 export type MotionPosition = 'full' | 'top' | 'center' | 'bottom' | 'free';

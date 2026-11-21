@@ -37,6 +37,11 @@ def test_reports_all_errors_at_once(root, cfg):
         assert needle in text, needle
 
 
+def test_glitch_effect_accepted(root, cfg):
+    sb = {"scenes": [{"id": "s1", "say": "x", "media": [{"src": "a.mp4", "effect": "glitch"}]}]}
+    assert validate(sb, cfg, root) == []
+
+
 def test_missing_template_and_brand(root, cfg):
     errs = validate({"template": "x", "brand": "y", "scenes": GOOD}, cfg, root)
     assert any("templates/x" in e for e in errs) and any("brands/y" in e for e in errs)

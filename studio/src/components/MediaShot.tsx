@@ -1,7 +1,7 @@
 // contain-fit media over a blurred cover copy (never crops students)
-import React, {useCallback, useRef} from 'react';
+import React, {useCallback, useId, useRef} from 'react';
 import {AbsoluteFill, Img, staticFile, useCurrentFrame, useRemotionEnvironment, useVideoConfig, type OnVideoFrame} from 'remotion';
-import {effectTransform} from '../effects';
+import {effectTransform, glitchAt} from '../effects';
 import type {MediaItem} from '../types';
 import {ReelVideo} from './ReelVideo';
 
@@ -15,6 +15,8 @@ export const MediaShot: React.FC<{item: MediaItem}> = ({item}) => {
   const p = Math.min(1, frame / Math.max(1, Math.round(item.duration * fps)));
   const src = staticFile(item.src);
   const full: React.CSSProperties = {width: '100%', height: '100%'};
+  const fid = 'glitch' + useId().replace(/\W/g, '');
+  const g = item.effect === 'glitch' ? glitchAt(frame, fps, item.src.length) : {dx: 0, dy: 0, split: 0};
   const bgRef = useRef<HTMLCanvasElement>(null);
   // Render: paint the blurred cover copy from the foreground's decoded frame (cover-fit into a 1/8-size canvas), so
   // each clip is decoded once; a second <Video> of the same file cost ~17% of render time. 40px blur hides the downscale.
@@ -37,7 +39,21 @@ export const MediaShot: React.FC<{item: MediaItem}> = ({item}) => {
   return (
     <AbsoluteFill>
       <AbsoluteFill style={{filter: 'blur(40px) brightness(0.7)', transform: 'scale(1.2)'}}>{bg}</AbsoluteFill>
-      <AbsoluteFill>{layer('contain', {transform: effectTransform(item.effect, p)}, env.isRendering ? drawBg : undefined)}</AbsoluteFill>
+      <AbsoluteFill style={g.split > 0 ? {filter: `url(#${fid})`, transform: `translate(${g.dx}px, ${g.dy}px)`} : undefined}>
+        {layer('contain', {transform: effectTransform(item.effect, p)}, env.isRendering ? drawBg : undefined)}
+      </AbsoluteFill>
+      {g.split > 0 && (
+        // R shifted +split, G+B shifted -split, summed: split 0 would equal the original picture
+        <svg width={0} height={0} style={{position: 'absolute'}}>
+          <filter id={fid} x="0" y="0" width="100%" height="100%" colorInterpolationFilters="sRGB">
+            <feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="r" />
+            <feOffset in="r" dx={g.split} result="ro" />
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" result="gb" />
+            <feOffset in="gb" dx={-g.split} result="gbo" />
+            <feComposite in="ro" in2="gbo" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" />
+          </filter>
+        </svg>
+      )}
     </AbsoluteFill>
   );
 };

@@ -3,7 +3,7 @@ from pathlib import Path
 
 from .config import apply_template, pick, resolve_names, resolve_scene_voice
 
-EFFECTS = {"none", "zoom-in", "zoom-out", "pan-left", "pan-right"}
+EFFECTS = {"none", "zoom-in", "zoom-out", "pan-left", "pan-right", "glitch"}
 TRANSITIONS = {"cut", "fade", "slide"}
 POSITIONS = {"top", "center", "bottom"}
 MOTION_POSITIONS = {"full", "top", "center", "bottom", "free"}

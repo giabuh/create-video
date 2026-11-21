@@ -1,5 +1,5 @@
 // mirrors tools/reel/props.py build_render_props()
-export type Effect = 'none' | 'zoom-in' | 'zoom-out' | 'pan-left' | 'pan-right';
+export type Effect = 'none' | 'zoom-in' | 'zoom-out' | 'pan-left' | 'pan-right' | 'glitch';
 export type Transition = 'cut' | 'fade' | 'slide';
 export type CaptionChunk = {text: string; start: number; end: number; times?: number[]};
 export type MediaItem = {src: string; type: 'video' | 'image'; from: number; start: number; duration: number; effect: Effect};

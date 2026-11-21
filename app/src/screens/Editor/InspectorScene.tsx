@@ -14,7 +14,7 @@ import s from './Inspector.module.css';
 
 type Section = 'content' | 'media' | 'transition';
 
-const EFFECTS = [{value: 'zoom-in', label: 'Zoom vào'}, {value: 'zoom-out', label: 'Zoom ra'}, {value: 'pan-left', label: 'Lia trái'}, {value: 'pan-right', label: 'Lia phải'}, {value: 'none', label: 'Không'}] as const;
+const EFFECTS = [{value: 'zoom-in', label: 'Zoom vào'}, {value: 'zoom-out', label: 'Zoom ra'}, {value: 'pan-left', label: 'Lia trái'}, {value: 'pan-right', label: 'Lia phải'}, {value: 'glitch', label: 'Nhiễu màu (glitch)'}, {value: 'none', label: 'Không'}] as const;
 const TRANSITIONS: {value: TransitionName; label: string}[] = [{value: 'cut', label: 'Cắt'}, {value: 'fade', label: 'Mờ dần'}, {value: 'slide', label: 'Trượt'}];
 const stem = (n: string) => n.replace(/\.[^.]+$/, '');
 
