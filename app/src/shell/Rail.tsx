@@ -4,6 +4,7 @@ import {useChatBusy} from '../api/chat.ts';
 import {JobsPanel, useActiveJobCount} from './JobsPanel.tsx';
 import {NavList} from './nav.tsx';
 import {Mark} from './Sidebar.tsx';
+import {SystemStats} from './SystemStats.tsx';
 import {ThemeControls} from './ThemeControls.tsx';
 import {WorkerStatus} from './WorkerStatus.tsx';
 import s from './Rail.module.css';
@@ -24,6 +25,7 @@ export function Rail({onChat}: {onChat(): void}): React.JSX.Element {
         }>
           <div className={s.pop}><JobsPanel /></div>
         </Popover>
+        <SystemStats />
         <WorkerStatus dotOnly />
         <Popover side="right" align="end" trigger={<IconButton label="Giao diện và cỡ chữ" icon={<Palette size={22} />} />}>
           <ThemeControls />

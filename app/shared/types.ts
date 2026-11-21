@@ -75,6 +75,7 @@ export type LibraryResponse = Versioned<LibraryIndex> & {usage: Record<string, s
 export type MusicFile = {name: string; bytes: number};
 export type TryVariant = {file: string; ref: string; tts: Json; seconds: number};
 export type Tries = {voice: string; text: string; variants: Record<string, TryVariant>};
+export type SystemStats = {cpu: number; ram: {usedMiB: number; totalMiB: number}; gpu: {percent: number; usedMiB: number; totalMiB: number; name: string} | null};
 export type VoiceInfo = {name: string; ref: string; refs: string[]; isDefault: boolean; seconds: number | null};
 export type BrandFile = {name: string; logo: string | null; colors: {primary: string; accent: string; text: string; background: string; accent2?: string; surface?: string}; cta?: {title?: string; logoSize?: number; phone?: string; fanpage?: string; address?: string}; captions?: Json};
 export type BrandSummary = {id: string; brand: BrandFile; isDefault: boolean; mtime: number}; // mtime of brands/<id>/brand.json, used as baseMtime

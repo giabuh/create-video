@@ -2,6 +2,7 @@ import {stat} from 'node:fs/promises';
 import {Hono} from 'hono';
 import {PathError, safeJoin, type RootKey} from '../paths.ts';
 import {openFolder, runIngest} from '../procs.ts';
+import {systemStats} from '../system.ts';
 import {bodyOf, HttpError} from './util.ts';
 import type {Deps} from './util.ts';
 
@@ -10,6 +11,7 @@ const OPENABLE = new Set<string>(['projects', 'library', 'music', 'sfx', 'brands
 export function jobRoutes({jobs}: Deps): Hono {
   const app = new Hono();
   app.get('/jobs', c => c.json(jobs.list().slice(0, 50)));
+  app.get('/system', async c => c.json(await systemStats()));
   app.post('/jobs/:id/cancel', c => {
     const id = c.req.param('id');
     if (!jobs.get(id)) throw new HttpError(404, 'job not found');
