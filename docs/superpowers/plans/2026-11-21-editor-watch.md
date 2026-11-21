@@ -63,10 +63,10 @@
 - [ ] **Step 1: Install dependencies in the worktree** (it has no `node_modules`)
 
 ```bash
-cd /home/giabao/dev/create-video-watch/studio && npm ci
-cd /home/giabao/dev/create-video-watch/app && npm ci
+cd /home/giabao/dev/create-video-watch && npm ci
 ```
-Expected: both finish without errors. App tests import studio code through the `@studio` alias, so both are needed.
+Expected: finishes without errors. `studio/` and `app/` are npm workspaces, so install once at the root (per-package
+`npm ci` leaves `tsc` failing).
 
 - [ ] **Step 2: Write the failing tests**
 
