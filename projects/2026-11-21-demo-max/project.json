@@ -1,0 +1,13 @@
+{
+  "approved": "reel-v2",
+  "renders": {
+    "reel-v1": {
+      "kind": "final",
+      "at": "2026-11-21T07:21:22.000Z"
+    },
+    "reel-v2": {
+      "kind": "final",
+      "at": "2026-11-21T07:22:49.000Z"
+    }
+  }
+}
