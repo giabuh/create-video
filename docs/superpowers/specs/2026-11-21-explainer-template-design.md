@@ -147,7 +147,7 @@ Each kind of lesson has one fixed file. Claude appends to it the moment the user
 - `brands/<brand>/pronounce.md`: words VieNeu-TTS reads wrong and the `say` spelling that fixes them.
 - `docs/style/concepts.md`: visual concepts used (video, component, user verdict). A per-video component the user
   praises twice is a candidate to promote into shared `motion/`; Claude proposes it, the user decides.
-- `library/wishlist.md`: shots an idea needed but the library lacks, for the user to film.
+- `brands/demo/wishlist.md`: shots an idea needed but the library lacks, for the user to film.
 - On accepting a version (rule 8), Claude also runs a 3-line retro: update `concepts.md` and `wishlist.md`, and add any
   mistake seen twice to the still-check list in the make-reel skill.
 - Later, not now: `brands/<brand>/results.md` with post performance (views, 3-s retention, inbox), once videos from
@@ -158,7 +158,7 @@ Each kind of lesson has one fixed file. Claude appends to it the moment the user
   1. Brief: audience, their pain, one promise, proof (confirmed facts), one concrete action at the end.
   2. Hook: the first 3 s hit the pain or a curious number, with real people on screen.
   3. Muted viewing: the message survives with sound off (captions on, key on-screen text).
-  4. Proof: real students and real numbers beat effects; missing testimonial shots go to `library/wishlist.md`.
+  4. Proof: real students and real numbers beat effects; missing testimonial shots go to `brands/demo/wishlist.md`.
   5. Ad policy: no guarantees ("cam kết 100%", "đảm bảo đậu"), no exaggerated before/after; checked on the script
      before render.
   (Hook variants for A/B testing come later, together with `results.md`.)

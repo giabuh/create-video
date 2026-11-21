@@ -161,7 +161,7 @@ Agent: worker-sonnet (needs vision for frames). It can run in parallel with ever
 - Create: `docs/style/explainer.md`, per spec §5. Cover: palette roles, card shape and shadow, type scale, logo placement, motion principles, "real footage is the backbone; motion explains on top of it", "one idea = one visual", and the reference's concepts listed as examples, not a menu.
 - Create: `brands/demo/facts.md`, per spec §6. Every fact that is read off the frames gets `status: chưa xác nhận`, its timestamp and a `source: reference video` note.
 
-- Create (spec §7): `brands/demo/taste.md`, `brands/demo/pronounce.md`, `docs/style/concepts.md`, `library/wishlist.md`, each with a one-line purpose and an empty table header; `concepts.md` seeded with the reference's concepts (video: reference, verdict: style bar).
+- Create (spec §7): `brands/demo/taste.md`, `brands/demo/pronounce.md`, `docs/style/concepts.md`, `brands/demo/wishlist.md`, each with a one-line purpose and an empty table header; `concepts.md` seeded with the reference's concepts (video: reference, verdict: style bar).
 
 - Create (spec §8): `docs/style/expert-review.md` with the five checklist points.
 
