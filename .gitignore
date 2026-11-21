@@ -25,3 +25,9 @@ app/.data/
 .playwright-mcp/
 projects/*/hyperframes/assets/
 projects/*/compare/
+showcase/out/
+showcase/shared/*.webm
+showcase/shared/*.mp4
+showcase/hyperframes/*/assets/
+showcase/hyperframes/*/.hyperframes/
+compare-r2/
