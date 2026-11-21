@@ -46,7 +46,7 @@ def validate(storyboard: dict, config: dict, root) -> list[str]:
             errs.append(f"{sid}: 'say' is empty")
         if say is None and not sc.get("duration"):
             errs.append(f"{sid}: silent scene needs 'duration' > 0")
-        if not sc.get("media") and not sc.get("motion"):
+        if not sc.get("media") and not sc.get("motion") and template != "story":  # story: no media = text card
             errs.append(f"{sid}: needs 'media' or 'motion'")
         if say is not None:
             name = pick(sc.get("voice"), storyboard.get("voice"), config["defaults"]["voice"])

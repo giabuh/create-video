@@ -122,3 +122,10 @@ def test_bg_must_be_light_or_dark(root, cfg):
     assert validate(ok, cfg, root) == []
     ok["scenes"][0]["bg"] = "blue"
     assert any("bg 'blue'" in e for e in validate(ok, cfg, root))
+
+
+def test_story_allows_text_card_scene_without_media(root, cfg):
+    (root / "studio/src/templates/story").mkdir()
+    sb = {"template": "story", "music": {"file": "m.mp3"}, "scenes": [{"id": "s1", "say": "Xin chào"}]}
+    assert validate(sb, cfg, root) == []
+    assert "s1: needs 'media' or 'motion'" in validate({**sb, "template": "fast-cut"}, cfg, root)
