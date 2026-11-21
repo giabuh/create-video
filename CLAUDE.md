@@ -1,6 +1,7 @@
 # create-video — rules for Claude
 
-Vertical course-promo reels: student footage + VieNeu-TTS voice + Remotion motion graphics.
+Course-promo videos: student footage + VieNeu-TTS voice + Remotion motion graphics. Vertical 1080x1920 by default;
+template `explainer` may be landscape 1920x1080 (one format per video, storyboard `video`).
 Spec: docs/superpowers/specs/2026-11-18-reel-pipeline-design.md. Talk to the user in Vietnamese.
 Start a reel with the `/make-reel` skill.
 
@@ -21,25 +22,34 @@ Start a reel with the `/make-reel` skill.
 - Tests: `uv run --with pytest python -m pytest tools/tests -q`, `cd studio && npx tsc --noEmit`, `cd app && npm test && npx tsc --noEmit` (E2E: `cd app && npm run e2e`, `cd app && npm run e2e:chat`).
 
 ## Rules
-1. Never invent ad facts (price, phone, dates, address, scores, results). Ask the user.
+1. Never invent ad facts (price, phone, dates, address, scores, results). Ask the user. Use only facts marked confirmed in
+   `brands/<brand>/facts.md`. When the user states a new ad fact in any session, append or update it there right away
+   (confirmed, source: user, date) and say so in one line.
 2. "từ giờ / mặc định / lần sau cũng…" -> edit `config.json` ("từ giờ video <template>…" -> `config.json` `templates.<template>`). About the current video -> edit only its `storyboard.json`.
    Ambiguous -> ask "Chỉ video này hay lưu làm mặc định?".
 3. "Lưu thiết lập này làm mặc định" -> copy the resolved values from `projects/<slug>/timings.json` into `config.json`.
 4. `say` = spoken text: spell numbers, prices, phone numbers and English words the way they must be read.
    `caption` = displayed text with normal spelling.
-5. Aim for `config.mix` (≈60% real footage / 30% motion / 10% other). `prepare.py` prints the actual mix.
-   Motion on top of footage counts as motion: prefer bands/boxes over footage (`position` top/center/bottom, or `box`)
-   to cutting to a pure-motion page. Write one scene per spoken idea (several `media` in it) so the voice is not split mid-thought.
+5. Real footage is the backbone; motion explains on top of it or beside it (no numeric target). Keep pure-motion pages
+   short, only for what footage can't show, and log the missing shot in `brands/<brand>/wishlist.md`.
+   Write one scene per spoken idea (several `media` in it) so the voice is not split mid-thought.
    Time key motion on the voice with `at`/`until` (a word of `say` or `caption`) instead of guessing seconds; use the
    video-wide track (top-level `motion`) for things that span scenes. Full layer reference: spec "Storyboard format".
 6. Motion graphics: reuse `studio/src/motion/*`, or write a new `studio/src/motion/<Name>.tsx` exporting `<Name>` and
    `<Name>Schema` (zod via the helpers in `motion/schema.ts`, Vietnamese `title`s), and register it in `registry.ts` with
    `defineMotion`. Draw content only (use `brand` colors, `layerSeconds` if it needs its length); placement, enter/exit,
    keyframes and colors come from the layer. Be creative per video: a new component is fine when the built-ins don't fit.
-7. Before every draft: render one still per scene and look at it (overflow, covered faces, wrong shot, mix).
+   Template `explainer`: write new components each video under `studio/src/videos/<slug>/` (see its README); the
+   style bar is `docs/style/explainer.md`.
+7. Before every draft: render one still per scene and look at it (overflow, covered faces, wrong shot), then get a fresh
+   `worker-sonnet` expert review of the storyboard + still sheet against `docs/style/expert-review.md` and fix its findings.
+   Landscape videos use `--platform youtube` / `--safe youtube` below instead of tiktok.
    After every render: `python3 .claude/skills/ffmpeg-skill/scripts/check.py <mp4> --platform tiktok` and
    `python3 .claude/skills/ffmpeg-skill/scripts/look.py <mp4> --safe tiktok -o projects/<slug>/preview/safe.png`;
    look at the sheet and report FAILs and text/CTA inside the shaded (platform UI) zones.
 8. Never overwrite a render: use the next `reel-v<N>`. Commit `storyboard.json` when the user accepts a version.
 9. `VieNeu-TTS/` is upstream code: never edit it.
 10. When the app is running, tell the user to check the result in the app (Editor / Bản render) instead of describing frames.
+11. Learning files: append on the spot when the user says something that belongs there, and say so in one line:
+   `brands/<brand>/taste.md` (praise/rejections), `brands/<brand>/pronounce.md` (TTS fixes), `docs/style/concepts.md`
+   (visual concepts + verdict), `brands/<brand>/wishlist.md` (missing shots). Read them all at the start of `/make-reel`.

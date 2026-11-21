@@ -1,31 +1,50 @@
 ---
 name: make-reel
-description: Make or revise a vertical course-promo reel (storyboard -> voice -> Remotion render). Use when the user asks for a reel/video quảng cáo khóa học, or to change an existing one.
+description: Make or revise a course-promo video (storyboard -> voice -> Remotion render): vertical reels, or a vertical/landscape `explainer`. Use when the user asks for a reel/video quảng cáo khóa học, or to change an existing one.
 ---
 
 # Make a reel
 
 Follow CLAUDE.md rules. Steps:
 
+0. **Read first:** `brands/<brand>/facts.md` (use only confirmed facts), `taste.md`, `pronounce.md`, `wishlist.md`,
+   `docs/style/concepts.md`, `docs/style/expert-review.md`; for `explainer` also `docs/style/explainer.md`.
 1. **Media:** if `inbox/` has files, run `python3 tools/ingest.py` and describe the new entries in `library/media-index.json`.
-2. **Brief:** get course, offer, target length, voice (default from config), brand, music yes/no.
-   Ask for any missing fact (price, phone, dates); never invent them.
-3. **Project:** create `projects/<YYYY-MM-DD>-<slug>/storyboard.json` (format: spec "Storyboard format").
-   - Mode A (default): write the script yourself; choose shots from `media-index.json` (`description`, `goodRanges`);
-     run `python3 tools/usage.py` first: among shots that fit the idea equally well, pick the least-used (fit beats freshness); add motion layers to reach ~60/30/10 —
-     mostly on top of footage (bands/boxes), timed on the voice with `at`/`until`, plus a video-wide `motion` track when something spans scenes.
-     Write a new motion component (with its schema) when the idea needs one.
+2. **Brief** (write it into the storyboard notes): audience, their pain, one promise, proof (confirmed facts), one concrete
+   action at the end; plus course, offer, template, format (`explainer` only: dọc 1080x1920 or ngang 1920x1080), target
+   length, voice (default from config), brand, music yes/no. Ask for any missing fact once, at the start; never invent them.
+3. **Project:** create `projects/<YYYY-MM-DD>-<slug>/storyboard.json` (format: spec "Storyboard format"; landscape adds
+   `"video": {"width":1920,"height":1080}`).
+   - Mode A (default): write the script yourself, one scene per spoken idea; the first 3 s hit the pain or a curious number
+     with real people on screen. Choose shots from `media-index.json` (`description`, `goodRanges`); run
+     `python3 tools/usage.py` first: among shots that fit the idea equally well, pick the least-used (fit beats freshness).
+     Real footage is the backbone: add motion on top of or beside it, timed on the voice with `at`/`until`, plus a
+     video-wide `motion` track when something spans scenes. Write a new motion component (with its schema) when the idea needs one.
+   - Template `explainer` (no per-scene questions to the user): for each idea pick a **visual concept** that makes it
+     understood instantly. Start from the footage that shows it, then decide the motion on top (annotation, framed
+     footage, chart beside a shot, map, timeline, UI mockup, kinetic type…). Write the concepts into the storyboard
+     notes before coding; don't repeat a concept from this brand's last explainer (`docs/style/concepts.md`). Write the
+     components in `studio/src/videos/<slug>/` (README there); several components -> `worker-sonnet` workers in
+     parallel, one component each. No fitting footage -> borrow a near shot or keep a short motion page, and log the
+     missing shot in `wishlist.md`.
    - Mode B: the user dictated script/shots — transcribe faithfully, don't rewrite.
 4. **Prepare:** `VieNeu-TTS/.venv/bin/python tools/prepare.py projects/<slug>`. Fix any reported errors.
    Over `targetSeconds` -> shorten `say` and rerun (only changed scenes re-synthesize).
-5. **Self-check:** render a still at the middle frame of each scene and look at every one; fix problems before rendering.
+5. **Self-check:** render a still at the middle frame of each scene (2–3 for heavy-motion scenes) and look at every one;
+   for `explainer` critique them against `docs/style/explainer.md`. Then a fresh `worker-sonnet` reviewer reads the
+   storyboard + still sheet against `docs/style/expert-review.md` (brief, hook, muted viewing, proof, ad policy); fix its
+   findings before rendering. `worker-haiku` may describe stills against a checklist or run the QA commands.
 6. **Render:** render `reel-v<N>.mp4` at full quality (no `--scale`). Then run the post-render check (CLAUDE.md rule 7:
-   `check.py --platform tiktok` + `look.py --safe tiktok`) and fix or report what it flags. Reply in Vietnamese with:
+   `check.py` + `look.py`, `--platform/--safe tiktok` for vertical, `youtube` for landscape) and fix or report what it
+   flags. Reply in Vietnamese with:
    - the absolute path;
    - a table (scene | lời đọc | hình | motion | giây);
-   - total length and mix.
-7. **Iterate:** apply feedback per CLAUDE.md rule 2. Re-run prepare -> stills -> next `reel-v<N>`.
-8. **Approve:** on approval, commit `storyboard.json` (no sync push of the mp4).
+   - total length.
+7. **Iterate:** apply feedback per CLAUDE.md rule 2; log praise/rejections in `taste.md` and TTS fixes in `pronounce.md`.
+   Re-run prepare -> stills -> next `reel-v<N>`.
+8. **Approve:** on approval, commit `storyboard.json` (no sync push of the mp4), then a 3-line retro: update
+   `docs/style/concepts.md` (concepts + verdict) and `wishlist.md`; add any mistake seen twice to the step-5 check list.
+   A per-video component praised twice -> propose promoting it into `studio/src/motion/` (user decides).
 
 ## Thẻ và hiệu ứng chữ
 

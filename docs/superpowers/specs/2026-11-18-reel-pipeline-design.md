@@ -25,7 +25,7 @@ Produce vertical course-promotion reels (Facebook/TikTok/Shorts, 9:16, ~15–60 
   - All four reference wavs are committed so every machine has the same voices.
 - **Two authoring modes, one storyboard format:** Mode A (most common): Claude writes the script and picks the shots. Mode B: the user dictates the script/shots, and Claude transcribes it into the storyboard faithfully.
 - **Multiple templates and brands are supported as folders**; v1 ships one template (`fast-cut`) and one sample brand.
-- **Creative mix, not a fixed layout.** By screen time the target is ~60 % real footage, ~30 % Remotion-generated motion graphics, ~10 % the rest (CTA, logo, transitions). The target lives in `config.json` (`mix`).
+- **Creative mix, not a fixed layout.** Real footage is the backbone; motion explains on top of it or beside it. No numeric target (the 60/30/10 `mix` target was removed 2026-11-21, see docs/superpowers/specs/2026-11-21-explainer-template-design.md).
   - Every scene is a stack of layers: an optional `media` layer (student footage/photos) plus optional `motion` layers (generated graphics). That gives pure-footage scenes, footage with graphics on top, and pure motion scenes.
   - Motion components live in `studio/src/motion/`. **Claude may write new motion components freely for any video**; components the user likes are kept and reused.
   - A template only defines style (fonts, colors, caption look, transitions, pacing), not layout.
@@ -93,7 +93,6 @@ Resolution order (later wins): `config.json` → `config.templates.<template>` �
     "phuong": { "ref": "voices/phuong-short.wav" },
     "vy":     { "ref": "voices/vy-short.wav" }
   },
-  "mix":      { "real": 0.6, "motion": 0.3, "other": 0.1 },   // target share of screen time
   "sync":     { "remote": "video-syn:create-video" },            // rclone remote:path
   "video":    { "fps": 30, "width": 1080, "height": 1920 },
   "music":    { "volume": 0.25, "duckTo": 0.08, "fadeOut": 1.5 },
@@ -155,9 +154,8 @@ TTS keys map 1:1 onto `Vieneu` v3 Turbo `infer()` kwargs (`src/vieneu/v3turbo.py
     - **Keyframes:** `keyframes: [{t, x?, y?, scale?, rotate?, opacity?}]` — `t` seconds from the layer start, `x`/`y` offsets in percent of the frame, `scale`/`rotate`/`opacity` multiply/add to the layer's values; eased (in-out cubic) between keys.
     - **Colors:** `colors: {primary?, accent?, text?, background?, accent2?, surface?}` overrides the brand for this layer only.
   - **Timing on the voice (scene layers):** `at` = a word/phrase (or `{word, occurrence?, offset?}`) — the layer starts when it is spoken; `until` = same, the layer ends when that word ends. Words are looked up in `say`; a phrase only in `caption` (e.g. `999K` read as "chín trăm chín mươi chín nghìn") is placed between its matched neighbours. Unknown words are reported by `prepare.py` (stage `anchor`) and nothing renders.
-  - **Video-wide track:** top-level `motion: [...]` — layers that run across scenes and draw on top of everything (progress bar, sticker, a line bridging two scenes). `start` = seconds or `{scene, at?, offset?, edge?}` (default 0); `end` = seconds, `"video"` (end incl. CTA), or `{scene, at?, offset?, edge?}` (scene default edge `end`); or `duration`; default = end of the last scene. Not counted in the mix.
+  - **Video-wide track:** top-level `motion: [...]` — layers that run across scenes and draw on top of everything (progress bar, sticker, a line bridging two scenes). `start` = seconds or `{scene, at?, offset?, edge?}` (default 0); `end` = seconds, `"video"` (end incl. CTA), or `{scene, at?, offset?, edge?}` (scene default edge `end`); or `duration`; default = end of the last scene.
   - Prefer bands/boxes over footage for text/price/checklist moments; keep `full` for pure motion scenes and for components that carry their own panel (`LowerThird`).
-- Mix accounting: a motion-only scene counts as `motion`; in a scene with `media`, the time covered by its motion layers (union of their spans) counts as `motion` and the rest as `real`; the CTA counts as `other`; the video-wide track is not counted. (The app's top bar computes the same in `editorState.ts mixOf`.) `prepare.py` prints the actual mix against `config.mix`.
 - Captions (`tools/reel/captions.py`) are split at punctuation first (`, . ; : ! ? …` and standalone dashes), then each phrase into the fewest chunks of ≤ `captions.maxWords` words, cut where it reads best: never inside a known two-word term (`VI_COMPOUNDS`: tin học, khai giảng, học viên…), not right after a function word (và, của, cho…), sizes as even as possible; a 1–2 word chunk joins a neighbour that still fits. Each chunk starts when its first word is spoken (word timings from align.py — whisper or the estimate; caption-only tokens such as `999K` are placed between their spoken neighbours). The template measures each chunk with the real font (`@remotion/layout-utils`, `studio/src/fit.ts`) and shrinks it to fit two lines.
 - **Sound effects (SFX)** — files in repo-root `sfx/` (gitignored, synced like `music/`, served to Remotion via the `studio/public/sfx` symlink, managed in the app's Library tab "Hiệu ứng âm thanh"). A file's *group* is its name prefix before the first `-` (`whoosh`, `impact`, `ting`, `sparkle`, `pop`, `click`; any other prefix is its own group). Added automatically by type, from `config.json` `sfx`:
   ```json
@@ -196,7 +194,7 @@ Claude fills `description`/`tags`/`goodRanges` by viewing the thumbnail once per
 1. Validate the storyboard: template/brand/voice exist, media files exist in `library/`, spoken scenes have non-empty `say`, ids are unique. All errors are reported at once, keyed by scene id. Exit non-zero before loading the model.
 2. Resolve the layered config per scene.
 3. TTS: load the model once. For each spoken scene, compute the cache key = hash(voice ref file content + `say` + all resolved TTS params incl. speed). Reuse `audio/<id>-<hash>.wav` if present, else synthesize, then post-process in one ffmpeg pass (`atempo` if speed ≠ 1, trim leading/trailing silence with a threshold 25 dB under the take's own loudness, loudness-normalize to `loudness`), and save. Failures are reported per scene; other scenes still complete.
-4. Write `timings.json` (per-scene duration + resolved params) and `render-props.json` (storyboard + resolved config + brand + timings, with all paths relative to the Remotion public dir). Print the total duration vs `targetSeconds`, and the real/motion/other mix vs `config.mix`.
+4. Write `timings.json` (per-scene duration + resolved params) and `render-props.json` (storyboard + resolved config + brand + timings, with all paths relative to the Remotion public dir). Print the total duration vs `targetSeconds`.
 
 Validation also checks that every `motion[].component` exists in `studio/src/motion/`, and the placement/animation/anchor fields above (props themselves are checked by the component's zod schema at preview/render time).
 
@@ -282,7 +280,7 @@ Schemas not shown above (as emitted by the engine):
 { "scenes": { "s1": { "duration": 2.4, "pauseAfter": 0.3, "voice": "phuong", "ref": "voices/phuong-short.wav",
                       "tts": { "temperature": 0.8, "top_k": 25, "...": "...", "speed": 1.0 }, "cacheKey": "a1b2c3d4e5f6" },
               "s3": { "duration": 2.0 } },          // silent scene: duration only
-  "totalSeconds": 13.02, "mix": { "real": 0.62, "motion": 0.15, "other": 0.23 } }
+  "totalSeconds": 13.02 }
 // voices/tries/tries.json — written by voice_try.py (overwritten each run)
 { "voice": "phuong", "text": "…", "variants": { "A": { "file": "voices/tries/phuong-A.wav", "ref": "voices/phuong-short.wav",
                                                     "tts": { "...": "..." }, "seconds": 1.52 } } }
