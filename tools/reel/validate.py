@@ -132,7 +132,7 @@ def _layer_errors(mo: dict, where: str, root: Path) -> list[str]:
     if not (root / "studio/src/motion" / f"{comp}.tsx").is_file():
         errs.append(f"{where}: motion component '{comp}' not found in studio/src/motion/")
     # shortcut: per-component check, upgrade to schema-driven validation if more components need required props
-    if comp in ("BarChart", "LineChart") and not str((mo.get("props") or {}).get("source") or "").strip():
+    if comp in ("BarChart", "LineChart", "Headline") and not str((mo.get("props") or {}).get("source") or "").strip():
         errs.append(f"{where} {comp}: props.source is required (Nguồn số liệu)")
     if mo.get("position", "full") not in MOTION_POSITIONS:
         errs.append(f"{where}: motion position '{mo.get('position')}' not in {sorted(MOTION_POSITIONS)}")
