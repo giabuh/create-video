@@ -1,0 +1,127 @@
+{
+ "template": "explainer",
+ "fps": 30,
+ "width": 1080,
+ "height": 1920,
+ "brand": {
+  "name": "Demo",
+  "logo": "brands/demo/logo-marketing-sao-viet-3-nobg.png",
+  "colors": {
+   "primary": "#1E3A8A",
+   "accent": "#FFD400",
+   "text": "#0B1530",
+   "background": "#F4F7FC",
+   "accent2": "#E11D2E",
+   "surface": "#FFFFFF"
+  }
+ },
+ "captions": {
+  "font": "Be Vietnam Pro",
+  "size": 64,
+  "color": "#0B1530",
+  "highlightColor": "#E11D2E",
+  "box": true
+ },
+ "music": null,
+ "transitionSeconds": 0.5,
+ "look": {
+  "grain": 0,
+  "scanlines": 0,
+  "logo": true
+ },
+ "scenes": [
+  {
+   "id": "s1",
+   "start": 0,
+   "duration": 3,
+   "voice": null,
+   "captions": [
+    {
+     "text": "Học viên đạt IELTS 7.5 chỉ sau 3 tháng",
+     "start": 0,
+     "end": 3
+    }
+   ],
+   "highlight": [
+    "7.5"
+   ],
+   "overlay": null,
+   "media": [
+    {
+     "src": "library/_smoke-landscape.mp4",
+     "type": "video",
+     "from": 1,
+     "start": 0,
+     "duration": 3,
+     "effect": "zoom-in"
+    }
+   ],
+   "motion": [],
+   "transition": "cut"
+  },
+  {
+   "id": "s2",
+   "start": 3,
+   "duration": 3,
+   "voice": null,
+   "captions": [
+    {
+     "text": "Lớp học sôi động mỗi ngày",
+     "start": 0,
+     "end": 3
+    }
+   ],
+   "highlight": [],
+   "overlay": null,
+   "media": [
+    {
+     "src": "library/_smoke.jpg",
+     "type": "image",
+     "from": 0,
+     "start": 0,
+     "duration": 3,
+     "effect": "pan-left"
+    }
+   ],
+   "motion": [
+    {
+     "component": "Checklist",
+     "props": {
+      "title": "Lộ trình 3 bước",
+      "items": [
+       "Kiểm tra đầu vào",
+       "Học 1 kèm 1",
+       "Thi thử hằng tuần"
+      ]
+     },
+     "start": 0.3,
+     "duration": 2.5,
+     "position": "center",
+     "box": null,
+     "backdrop": "none",
+     "scale": 1,
+     "rotate": 0,
+     "opacity": 1,
+     "enter": {
+      "type": "fade",
+      "duration": 0.3
+     },
+     "exit": {
+      "type": "fade",
+      "duration": 0.3
+     },
+     "keyframes": [],
+     "colors": null
+    }
+   ],
+   "transition": "fade"
+  }
+ ],
+ "cta": {
+  "title": "Đăng ký ngay",
+  "phone": "0900 000 000",
+  "fanpage": "fb.com/demo",
+  "duration": 3
+ },
+ "totalSeconds": 9
+}

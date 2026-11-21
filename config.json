@@ -136,6 +136,18 @@
           "LineChart": "whoosh"
         }
       }
+    },
+    "explainer": {
+      "transition": {
+        "scene": "fade",
+        "media": "fade",
+        "duration": 0.5
+      },
+      "look": {
+        "grain": 0,
+        "scanlines": 0,
+        "logo": true
+      }
     }
   },
   "align": {
