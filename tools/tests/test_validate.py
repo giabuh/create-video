@@ -94,3 +94,19 @@ def test_sfx_field_types(root, cfg):
             "motion": [{"component": "CountUp", "sfx": ["x"]}]}]
     errs = validate({"scenes": bad}, cfg, root)
     assert len([e for e in errs if "sfx" in e]) == 2
+
+
+def test_chart_requires_source(root, cfg):
+    (root / "studio/src/motion/BarChart.tsx").write_bytes(b"x")
+    (root / "studio/src/motion/LineChart.tsx").write_bytes(b"x")
+    bad = {"scenes": [{"id": "s1", "duration": 2, "motion": [
+        {"component": "BarChart", "props": {"bars": ["a | 1"]}},
+        {"component": "LineChart", "props": {"source": "  "}}]}],
+        "motion": [{"component": "BarChart"}]}
+    errs = validate(bad, cfg, root)
+    assert "s1: motion[0] BarChart: props.source is required (Nguồn số liệu)" in errs
+    assert "s1: motion[1] LineChart: props.source is required (Nguồn số liệu)" in errs
+    assert "motion track[0] BarChart: props.source is required (Nguồn số liệu)" in errs
+    ok = {"scenes": [{"id": "s1", "duration": 2, "motion": [
+        {"component": "BarChart", "props": {"source": "GSO 2024"}}]}]}
+    assert validate(ok, cfg, root) == []

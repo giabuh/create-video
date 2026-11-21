@@ -1,6 +1,7 @@
 // One entry per file studio/src/motion/<Name>.tsx exporting <Name> and <Name>Schema.
 // The app reads this registry directly: titles, descriptions and schemas drive its forms.
 import {Annotate, AnnotateSchema} from './Annotate';
+import {BarChart, BarChartSchema} from './BarChart';
 import {Callout, CalloutSchema} from './Callout';
 import {Checklist, ChecklistSchema} from './Checklist';
 import {CountUp, CountUpSchema} from './CountUp';
@@ -8,6 +9,7 @@ import {DateBadge, DateBadgeSchema} from './DateBadge';
 import {GlossyPill, GlossyPillSchema} from './GlossyPill';
 import {GiantText, GiantTextSchema} from './GiantText';
 import {KineticText, KineticTextSchema} from './KineticText';
+import {LineChart, LineChartSchema} from './LineChart';
 import {LowerThird, LowerThirdSchema} from './LowerThird';
 import {Picture, PictureSchema} from './Picture';
 import {PinLabel, PinLabelSchema} from './PinLabel';
@@ -39,4 +41,6 @@ export const MOTION: Record<string, MotionDef> = {
   Callout: defineMotion({component: Callout, schema: CalloutSchema, title: 'Nhãn chỉ điểm', description: 'Ô chữ có đường kẻ chỉ vào người/vật', ownsExit: true}),
   GiantText: defineMotion({component: GiantText, schema: GiantTextSchema, title: 'Chữ khổng lồ', description: 'Chữ to lướt ngang màn hình rồi đọng lại một dòng', ownsExit: true}),
   Stamp: defineMotion({component: Stamp, schema: StampSchema, title: 'Con dấu', description: 'Con dấu đỏ đóng xuống, vòng sóng lan ra', ownsExit: true}),
+  BarChart: defineMotion({component: BarChart, schema: BarChartSchema, title: 'Biểu đồ cột', description: 'Cột ngang có nhãn, số chạy lên, ghi nguồn'}),
+  LineChart: defineMotion({component: LineChart, schema: LineChartSchema, title: 'Biểu đồ đường', description: 'Đường vẽ dần theo thời gian, ghi nguồn'}),
 };
