@@ -34,7 +34,10 @@ export const StoryCaptions: React.FC<{
   // the current framed picture is an obstacle like a full-width box layer, grown by its 1.06 push-in about y 0.40
   const m = media.find((x) => t >= x.start && t < x.start + x.duration);
   const r = m && mediaCardRect(m.aspect ?? 1, width, height);
-  const slot = cardSlot(r ? [...motion, {position: 'free', box: {x: 0, y: (0.4 - (0.4 - r.top) * 1.06) * 100, w: 100, h: (r.bottom - r.top) * 1.06 * 100}, start: 0, duration: Infinity}] : motion, t);
+  const free = cardSlot(r ? [...motion, {position: 'free', box: {x: 0, y: (0.4 - (0.4 - r.top) * 1.06) * 100, w: 100, h: (r.bottom - r.top) * 1.06 * 100}, start: 0, duration: Infinity}] : motion, t);
+  // no room beside a tall card (portrait clips): sit over the card's lower part, like the reference, shadowed as over footage
+  const over = r && (!free || free.bottom - free.top < 0.12) ? cardSlot(motion, t, [Math.max(0.22, r.bottom - 0.22), Math.min(0.7, r.bottom - 0.02)]) : null;
+  const slot = over ?? free;
   const avail = width * 0.77, slotH = slot ? (slot.bottom - slot.top) * height : 0, maxH = Math.min(height * 0.48, slotH); // 77% = safe area x 8-85%
   const c = chunks.find((x) => t >= x.start && t < x.end);
   const toks = c ? c.text.split(' ').filter(Boolean) : [];
