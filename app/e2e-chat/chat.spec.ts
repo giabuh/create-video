@@ -44,8 +44,8 @@ test('codex chat with the fake codex CLI', async ({page}) => {
   const dialog = page.getByRole('dialog');
   await dialog.getByRole('button', {name: 'Phiên mới'}).click();
   await page.getByRole('menuitem', {name: 'Phiên Codex'}).click();
-  await expect(dialog.getByRole('heading', {name: 'Chat với Codex'})).toBeVisible();
-  const box = page.getByLabel('Tin nhắn cho Claude');
+  const box = page.getByLabel('Tin nhắn cho Codex');
+  await expect(box).toBeVisible();
   await box.fill('xin chào codex'); await box.press('Enter');
   const first = dialog.getByText(/engine=codex mode=new thread=[0-9a-f-]{36} dev=yes prompt=xin chào codex/);
   await expect(first).toBeVisible();

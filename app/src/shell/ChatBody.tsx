@@ -81,12 +81,12 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
     return () => { cancelAnimationFrame(f); clearTimeout(t1); clearTimeout(t2); };
   }, [events.length, draft, active, chatId, detail.isSuccess, busy]);
 
-  // Docked chat (autoFocus off) refocuses only after a turn ends: on load it would take Space from the player and open the phone keyboard.
+  // Docked chat (autoFocus off) refocuses only after a turn ends, and not on a phone: focus there opens the keyboard over the player.
   const wasBusy = useRef(false);
   useEffect(() => {
     if (!active) return;
     if (busy !== null) { wasBusy.current = true; return; }
-    if (autoFocus || wasBusy.current) inputRef.current?.querySelector('textarea')?.focus();
+    if (autoFocus || (wasBusy.current && !window.matchMedia('(max-width: 850px)').matches)) inputRef.current?.querySelector('textarea')?.focus();
     wasBusy.current = false;
   }, [busy, active, autoFocus]);
   const last = events.at(-1)?.kind;
