@@ -2,5 +2,6 @@
 import type React from 'react';
 import type {RenderProps} from '../types';
 import {FastCut} from './fast-cut/FastCut';
+import {Story} from './story/Story';
 
-export const TEMPLATES: Record<string, React.FC<RenderProps>> = {'fast-cut': FastCut};
+export const TEMPLATES: Record<string, React.FC<RenderProps>> = {'fast-cut': FastCut, story: Story};

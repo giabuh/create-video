@@ -65,3 +65,9 @@ def test_apply_template_layer():
     out = apply_template(cfg, {"template": "story"})
     assert out["sfx"] == {"volume": 0.5, "cut": "whoosh"}
     assert apply_template({k: v for k, v in cfg.items() if k != "templates"}, {"template": "story"})["sfx"]["cut"] == "none"
+
+
+def test_resolve_video_look(cfg):
+    assert resolve_video(cfg, {}, {})["look"] == {"grain": 0, "scanlines": 0, "logo": False}
+    s = resolve_video({**cfg, "look": {"grain": 0.4, "scanlines": 0.2}}, {}, {"look": {"grain": 1}})
+    assert s["look"] == {"grain": 1, "scanlines": 0.2, "logo": False}

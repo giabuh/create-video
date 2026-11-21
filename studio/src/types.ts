@@ -26,6 +26,7 @@ export type Scene = {
   captions: CaptionChunk[]; highlight: string[]; overlay: Overlay | null;
   media: MediaItem[]; motion: MotionItem[]; transition: Transition;
   mediaTransition?: Transition; // between clips inside the scene
+  bg?: 'light' | 'dark'; // story template: flat text-card background (default dark)
 };
 export type Brand = {name: string; logo: string | null; colors: {primary: string; accent: string; text: string; background: string; accent2?: string; surface?: string}};
 export type FullBrand = Omit<Brand, 'colors'> & {colors: Required<Brand['colors']>};
@@ -37,6 +38,7 @@ export type RenderProps = {
   template: string; fps: number; width: number; height: number;
   brand: Brand; captions: CaptionStyle; music: Music | null;
   scenes: Scene[]; cta: Cta | null; totalSeconds: number;
+  look?: {grain: number; scanlines: number; logo: boolean}; // story template: film grain / scan lines (0..1), logo on/off
   transitionSeconds?: number; // crossfade/slide length for scene and clip transitions
   sfx?: {src: string; start: number; volume: number; until?: number}[]; // sound effects; start is absolute seconds
   overlays?: MotionItem[]; // video-wide motion track; start is absolute (seconds from the beginning)

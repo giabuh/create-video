@@ -115,3 +115,10 @@ def test_chart_requires_source(root, cfg):
     ok = {"scenes": [{"id": "s1", "duration": 2, "motion": [
         {"component": "BarChart", "props": {"source": "GSO 2024"}}]}]}
     assert validate(ok, cfg, root) == []
+
+
+def test_bg_must_be_light_or_dark(root, cfg):
+    ok = {"scenes": [{"id": "s1", "duration": 2, "bg": "light", "motion": [{"component": "CountUp", "props": {}}]}]}
+    assert validate(ok, cfg, root) == []
+    ok["scenes"][0]["bg"] = "blue"
+    assert any("bg 'blue'" in e for e in validate(ok, cfg, root))

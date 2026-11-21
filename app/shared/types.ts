@@ -24,7 +24,7 @@ export type MotionSpec = {
 };
 export type SceneSpec = {
   id: string; say?: string; caption?: string; duration?: number; voice?: string; tts?: Json;
-  highlight?: string[]; overlay?: {text: string; position: 'top' | 'center' | 'bottom'} | null;
+  highlight?: string[]; bg?: 'light' | 'dark'; overlay?: {text: string; position: 'top' | 'center' | 'bottom'} | null;
   sfx?: string | null; media?: MediaSpec[]; motion?: MotionSpec[]; transition?: TransitionName; mediaTransition?: TransitionName; pauseAfter?: number;
 };
 export type CtaSpec = {title?: string; logoSize?: number; phone?: string; fanpage?: string; address?: string; duration?: number};

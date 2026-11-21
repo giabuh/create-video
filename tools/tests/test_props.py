@@ -229,3 +229,12 @@ def test_sfx_hold_group_lasts_the_layer():
     count = p["scenes"][2]["motion"][0]
     assert tick["until"] == round(p["scenes"][2]["start"] + count["start"] + count["duration"], 3)
     assert all("until" not in x for x in p["sfx"] if x is not tick)
+
+
+def test_scene_bg_and_look_land_in_props():
+    sb = {"scenes": [{"id": "a", "duration": 1, "bg": "light", "motion": [{"component": "CountUp", "props": {}}]},
+                     {"id": "b", "duration": 1, "motion": [{"component": "CountUp", "props": {}}]}]}
+    p = build_render_props(sb, {**SETTINGS, "look": {"grain": 0.5, "scanlines": 1, "logo": True}}, BRAND, {})
+    assert [s.get("bg") for s in p["scenes"]] == ["light", None]
+    assert p["look"] == {"grain": 0.5, "scanlines": 1, "logo": True}
+    assert build_render_props(sb, SETTINGS, BRAND, {})["look"] == {"grain": 0, "scanlines": 0, "logo": False}

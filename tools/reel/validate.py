@@ -82,6 +82,8 @@ def validate(storyboard: dict, config: dict, root) -> list[str]:
         for k in ("transition", "mediaTransition"):
             if sc.get(k, "cut") not in TRANSITIONS:
                 errs.append(f"{sid}: {k} '{sc.get(k)}' not in {sorted(TRANSITIONS)}")
+        if sc.get("bg", "dark") not in ("light", "dark"):
+            errs.append(f"{sid}: bg '{sc.get('bg')}' not in ['dark', 'light']")
         overlay = sc.get("overlay")
         if overlay and overlay.get("position", "top") not in POSITIONS:
             errs.append(f"{sid}: overlay position '{overlay.get('position')}' not in {sorted(POSITIONS)}")
