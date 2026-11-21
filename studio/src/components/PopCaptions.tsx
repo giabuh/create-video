@@ -29,7 +29,7 @@ export const PopCaptions: React.FC<{chunks: CaptionChunk[]; highlight: string[];
   const size = loaded ? fitFontSize({text: c.text, maxSize: 82, width: width * 0.84, height: 82 * 1.3 * 2 + 1, weight: 800, lineHeight: 1.3}) : 72;
   const chunkIn = spring({frame: Math.round((t - c.start) * fps), fps, config: {damping: 14}});
   return (
-    <AbsoluteFill style={{justifyContent: 'flex-end', alignItems: 'center', paddingBottom: height * 0.2}}>
+    <AbsoluteFill style={{justifyContent: 'flex-end', alignItems: 'center', paddingBottom: height * 0.27}}>
       <div style={{fontFamily, fontWeight: 800, fontSize: size, lineHeight: 1.3, textAlign: 'center', maxWidth: '88%', textWrap: 'balance', opacity: Math.min(1, chunkIn * 3), transform: `translateY(${(1 - chunkIn) * 30}px)`}}>
         {units.map((u, i) => {
           const hit = spring({frame: Math.round((t - starts[i]) * fps), fps, config: {damping: 9, stiffness: 220}});
@@ -37,9 +37,9 @@ export const PopCaptions: React.FC<{chunks: CaptionChunk[]; highlight: string[];
           return (
             <React.Fragment key={i}>
               <span style={{
-                display: 'inline-block', whiteSpace: 'nowrap', padding: '0 10px', borderRadius: 18, margin: '0 -2px',
+                display: 'inline-block', whiteSpace: 'nowrap', padding: '0 10px', borderRadius: 18, margin: '0 4px',
                 background: on ? accent : 'transparent', color: on ? ink : u.mark ? accent : text,
-                opacity: t >= starts[i] ? 1 : 0.45, transform: `scale(${on ? 1 + 0.16 * Math.min(1, hit) : 1}) rotate(${on ? -2 * (1 - Math.min(1, hit)) : 0}deg)`,
+                opacity: t >= starts[i] ? 1 : 0.45, transform: `scale(${on ? 1 + 0.08 * Math.min(1, hit) : 1}) rotate(${on ? -2 * (1 - Math.min(1, hit)) : 0}deg)`,
                 textShadow: on ? 'none' : `0 5px 0 ${ink}d9, 0 0 22px rgba(0,0,0,.7)`, WebkitTextStroke: on ? undefined : `0.5px ${ink}99`,
               }}>{u.text}</span>{' '}
             </React.Fragment>
