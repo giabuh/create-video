@@ -65,3 +65,7 @@ Thêm: "Lộ trình phù hợp từng học viên", bước "Trình độ hiện
 
 ## Liên hệ
 (Trống: video không hiện số điện thoại, website, địa chỉ hay fanpage. Hỏi user. Không lấy từ `brand.json` khi chưa xác nhận.)
+
+## Khóa Quảng cáo Facebook thực chiến
+- Số điện thoại tư vấn khóa marketing / quảng cáo Facebook: 0876 929 145 — `status: đã xác nhận` · `source: user, 2026-11-21`.
+- Nơi mở lớp: Bình Dương (Thuận An, Dĩ An) và Biên Hòa (Đồng Nai) — `status: đã xác nhận` · `source: user, 2026-11-21`.
