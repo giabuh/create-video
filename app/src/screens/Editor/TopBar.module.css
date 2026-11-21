@@ -4,7 +4,7 @@
 .crumb a { color: var(--muted); text-decoration: none; border-radius: var(--r-sm); white-space: nowrap; }
 .crumb a:hover { color: var(--text); }
 .crumb b { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.actions { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+.actions { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; margin-left: auto; }
 .progress { display: flex; align-items: center; gap: var(--sp-2); width: 10rem; font-size: var(--fs-sm); font-variant-numeric: tabular-nums; color: var(--text-2); }
 .progress > :first-child { flex: 1; }
 

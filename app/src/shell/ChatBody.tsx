@@ -114,7 +114,7 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
         <div className={s.row}>
           <Select key={chatId === null ? 'none' : 'set'} aria-label="Phiên chat" value={chatId} placeholder="Chưa có phiên" onChange={setPicked}
             options={(chats.data ?? []).map((c) => ({value: c.id, label: c.title, hint: [c.engine === 'codex' ? 'Codex' : 'Claude', c.slug].filter(Boolean).join(' · ')}))} />
-          <DropdownMenu align="end" trigger={<Button size="sm" loading={create.isPending}>Phiên mới</Button>} items={[
+          <DropdownMenu align="end" trigger={<Button loading={create.isPending}>Phiên mới</Button>} items={[
             {label: 'Phiên Claude', onSelect: () => newChat('claude')},
             {label: 'Phiên Codex', onSelect: () => newChat('codex'), disabled: !hasCodex},
           ]} />
