@@ -79,11 +79,6 @@
     "box": true,
     "maxWords": 6
   },
-  "mix": {
-    "real": 0.6,
-    "motion": 0.3,
-    "other": 0.1
-  },
   "sync": {
     "remote": "video-syn:create-video"
   },
