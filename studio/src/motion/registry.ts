@@ -2,6 +2,7 @@
 // The app reads this registry directly: titles, descriptions and schemas drive its forms.
 import {Annotate, AnnotateSchema} from './Annotate';
 import {BarChart, BarChartSchema} from './BarChart';
+import {Headline, HeadlineSchema} from './Headline';
 import {Callout, CalloutSchema} from './Callout';
 import {Checklist, ChecklistSchema} from './Checklist';
 import {CountUp, CountUpSchema} from './CountUp';
@@ -43,4 +44,5 @@ export const MOTION: Record<string, MotionDef> = {
   Stamp: defineMotion({component: Stamp, schema: StampSchema, title: 'Con dấu', description: 'Con dấu đỏ đóng xuống, vòng sóng lan ra', ownsExit: true}),
   BarChart: defineMotion({component: BarChart, schema: BarChartSchema, title: 'Biểu đồ cột', description: 'Cột ngang có nhãn, số chạy lên, ghi nguồn'}),
   LineChart: defineMotion({component: LineChart, schema: LineChartSchema, title: 'Biểu đồ đường', description: 'Đường vẽ dần theo thời gian, ghi nguồn'}),
+  Headline: defineMotion({component: Headline, schema: HeadlineSchema, title: 'Tiêu đề báo (tự thiết kế)', description: 'Tiêu đề chữ có chân, cụm từ được tô nổi như bút dạ, ghi nguồn'}),
 };

@@ -1,4 +1,4 @@
-// Be Vietnam Pro and Barlow Condensed are bundled with the repo (studio/src/assets/fonts/{be-vietnam-pro,barlow-condensed}, SIL OFL 1.1),
+// Be Vietnam Pro, Barlow Condensed and Playfair Display italic are bundled with the repo (studio/src/assets/fonts/{be-vietnam-pro,barlow-condensed,playfair-display}, SIL OFL 1.1),
 // so renders and the app's Player work offline. Subsets and unicode ranges follow Google Fonts / Fontsource.
 // shortcut: only Be Vietnam Pro is loaded; another captions.font needs its own files + loadFont here.
 import {loadFont} from '@remotion/fonts';
@@ -18,10 +18,18 @@ import bcLatinExt800 from './assets/fonts/barlow-condensed/barlow-condensed-lati
 import bcLatinExt900 from './assets/fonts/barlow-condensed/barlow-condensed-latin-ext-900-normal.woff2';
 import bcLatin800 from './assets/fonts/barlow-condensed/barlow-condensed-latin-800-normal.woff2';
 import bcLatin900 from './assets/fonts/barlow-condensed/barlow-condensed-latin-900-normal.woff2';
+import pfVi700 from './assets/fonts/playfair-display/playfair-display-vietnamese-700-italic.woff2';
+import pfVi800 from './assets/fonts/playfair-display/playfair-display-vietnamese-800-italic.woff2';
+import pfLatinExt700 from './assets/fonts/playfair-display/playfair-display-latin-ext-700-italic.woff2';
+import pfLatinExt800 from './assets/fonts/playfair-display/playfair-display-latin-ext-800-italic.woff2';
+import pfLatin700 from './assets/fonts/playfair-display/playfair-display-latin-700-italic.woff2';
+import pfLatin800 from './assets/fonts/playfair-display/playfair-display-latin-800-italic.woff2';
 
 export const fontFamily = 'Be Vietnam Pro';
 /** Heading/number font (Barlow Condensed 800/900, uppercase), bundled like the body font. */
 export const headingFamily = 'Barlow Condensed';
+/** Serif display font for newspaper-style headlines (Playfair Display italic 700/800). */
+export const serifFamily = 'Playfair Display';
 
 const RANGES = {
   vietnamese: 'U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB',
@@ -40,10 +48,17 @@ const HEADING_FILES: Array<[keyof typeof RANGES, string, string]> = [
   ['latin', '800', bcLatin800], ['latin', '900', bcLatin900],
 ];
 
+const SERIF_FILES: Array<[keyof typeof RANGES, string, string]> = [
+  ['vietnamese', '700', pfVi700], ['vietnamese', '800', pfVi800],
+  ['latinExt', '700', pfLatinExt700], ['latinExt', '800', pfLatinExt800],
+  ['latin', '700', pfLatin700], ['latin', '800', pfLatin800],
+];
+
 /** Resolves when every face is loaded (immediately outside a browser, e.g. unit tests importing the motion registry). */
 export const fontsReady: Promise<unknown> = typeof FontFace === 'undefined'
   ? Promise.resolve()
   : Promise.all([
     ...FILES.map(([subset, weight, url]) => loadFont({family: fontFamily, url, weight, style: 'normal', unicodeRange: RANGES[subset], format: 'woff2'})),
     ...HEADING_FILES.map(([subset, weight, url]) => loadFont({family: headingFamily, url, weight, style: 'normal', unicodeRange: RANGES[subset], format: 'woff2'})),
+    ...SERIF_FILES.map(([subset, weight, url]) => loadFont({family: serifFamily, url, weight, style: 'italic', unicodeRange: RANGES[subset], format: 'woff2'})),
   ]);
