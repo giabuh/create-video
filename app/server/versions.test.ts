@@ -12,6 +12,8 @@ describe('versions', () => {
     for (const f of ['reel-v1.mp4', 'reel-v3.mp4', 'reel-v4.tmp.mp4', 'reel-v3.storyboard.json']) await writeFile(path.join(d, f), 'x');
     expect(await nextVersion('p1')).toEqual({n: 5, name: 'reel-v5'});
     expect((await readMeta('p1')).data).toEqual({approved: null, renders: {}});
+    await writeFile(path.join(d, 'project.json'), '{}'); // partial meta still gets defaults
+    expect((await readMeta('p1')).data).toEqual({approved: null, renders: {}});
     const meta = {approved: 'reel-v3', renders: {'reel-v3': {kind: 'final' as const, at: 'now'}}};
     await writeMeta('p1', meta);
     const v = await listVersions('p1', (await readMeta('p1')).data);

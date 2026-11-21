@@ -40,7 +40,11 @@ export async function nextVersion(slug: string): Promise<{n: number; name: strin
   return {n: max + 1, name: `reel-v${max + 1}`};
 }
 
-export const readMeta = (slug: string): Promise<Versioned<ProjectMeta>> => readJsonOr<ProjectMeta>(metaFile(slug), {approved: null, renders: {}});
+// a partial project.json (e.g. `{}`) gets the defaults, so the project still lists
+export const readMeta = async (slug: string): Promise<Versioned<ProjectMeta>> => {
+  const v = await readJsonOr<Partial<ProjectMeta>>(metaFile(slug), {});
+  return {...v, data: {approved: null, ...v.data, renders: v.data.renders ?? {}}};
+};
 export const writeMeta = (slug: string, meta: ProjectMeta): Promise<number> => writeJsonAtomic(metaFile(slug), meta);
 
 export function projectStatus(versions: VersionInfo[], meta: ProjectMeta, renderingNow: boolean): ProjectStatus {
