@@ -34,7 +34,8 @@ export const LineChart: React.FC<MotionProps<typeof LineChartSchema>> = ({title,
   const lo = Math.min(0, ...all), hi = Math.max(...all, lo + 1e-9);
   const x = (i: number) => PAD + (i / (n - 1)) * (W - 2 * PAD - 150);
   const y = (v: number) => H - PAD - ((v - lo) / (hi - lo)) * (H - 2 * PAD);
-  const colors = [brand.colors.primary, brand.colors.accent, brand.colors.accent2 ?? '#E11D2E'];
+  // the card is the brand background, so lines use colours that contrast with it (primary is often the background hue)
+  const colors = [brand.colors.accent, brand.colors.accent2, brand.colors.text];
   return (
     <AbsoluteFill style={{justifyContent: 'center', alignItems: 'center', fontFamily}}>
       <div style={{width: 980, background: brand.colors.background + 'E6', borderRadius: 40, padding: '40px 20px 32px', boxShadow: '0 20px 60px rgba(0,0,0,.45)'}}>
