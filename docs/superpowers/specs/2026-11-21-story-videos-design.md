@@ -81,7 +81,7 @@ Along the way, fix two delivery problems found by `ffmpeg-skill` on `reel-v4` (t
 
 ### 2d. Counter tick
 - An SFX event may carry `until` (absolute seconds): the template stops the file there with a 0.1 s fade.
-- `templates.story` maps `sfx.motion.CountUp` to group `tick` (one long counter-roll file); the event's `until` is
+- Groups listed in `sfx.hold` are held this way. `templates.story` sets `hold: ["tick"]` and maps `sfx.motion.CountUp` to group `tick` (one long counter-roll file); the event's `until` is
   the layer end, so the tick lasts exactly as long as the count.
 
 ### 2e. New SFX files

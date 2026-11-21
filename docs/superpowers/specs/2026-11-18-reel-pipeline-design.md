@@ -170,8 +170,10 @@ TTS keys map 1:1 onto `Vieneu` v3 Turbo `infer()` kwargs (`src/vieneu/v3turbo.py
   - A value is a group name (the file is picked in rotation through that group's files, sorted by name, so repeated events vary), an exact file name in `sfx/`, or `"none"`/`null` (no sound).
   - Overrides: motion layer `sfx` (same value kinds) and scene `sfx` (the scene-transition sound); storyboard top-level `sfx` deep-merges over `config.sfx`, and `"sfx": null` turns all SFX off for that video.
   - Breathing room: an *automatic* event closer than `minGap` seconds to the previous kept event is dropped; explicitly set ones (a layer's or scene's own `sfx`) always play. A group with no files left (the user deleted them) just plays nothing; `prepare.py` warns.
-  - Render props: top-level `sfx: [{src: "sfx/<file>", start: <absolute s>, volume}]`; the template plays each as `<Audio>` in a `<Sequence from=start>`. Music ducking ignores SFX.
+  - Held sounds: `config.sfx.hold: ["tick", …]` lists groups that last as long as their motion layer: such an event starts on the layer start (no peak lead) and gets `until` = layer end.
+  - Render props: top-level `sfx: [{src: "sfx/<file>", start: <absolute s>, volume, until?}]`; the template plays them with `SfxTrack` (each `<Audio>` in a `<Sequence from=start>`; with `until` the sequence ends there after a 0.1 s fade). Music ducking ignores SFX.
 - Music ducks to `duckTo` while a spoken scene plays and fades out over `fadeOut` at the end. Gaps between two voice clips shorter than 1 s stay ducked (no swell at every scene change); it ramps back up only for longer silent stretches. All of this is computed in Remotion from known timings (`studio/src/components/duck.ts`), with no FFmpeg sidechain.
+- Music drops: storyboard top-level `musicDrop: [{start, end, to?}]` (`start`/`end` in the video-track time format: seconds, `"video"`, or `{scene, at?, offset?, edge?}`; `to` default 0) drops the music to `to` between the two times with 0.15 s ramps, for emphasis. Resolved by `props.py` into `music.drops: [[start, end, to]]`; an unresolvable anchor or an `end` not after `start` is an `AnchorError`.
 
 ## Components
 
