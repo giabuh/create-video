@@ -62,7 +62,11 @@
     "remote": "video-syn:create-video"
   },
   "templates": {
-    "story": { "look": { "grain": 0.6, "scanlines": 0.5, "logo": false } }
+    "story": {
+      "look": { "grain": 0.6, "scanlines": 0.5, "logo": false },
+      "sfx": { "cut": "whoosh", "media": "click", "minGap": 0.4, "cta": "impact", "hold": ["tick"],
+               "motion": { "CountUp": "tick", "BarChart": "whoosh", "LineChart": "whoosh" } }
+    }
   },
   "align": {
     "enabled": true,
