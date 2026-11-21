@@ -92,16 +92,25 @@ token of `text`, same length as `text.split()`, non-decreasing, each within `[st
 (add cases), `tools/tests/test_validate.py`.
 
 **Interfaces:**
-- `BarChartSchema`: `title: optText('Tiêu đề')`, `bars: z.array(z.object({label: text('Nhãn'), value: num('Giá trị'), image: media('Ảnh/logo').optional()})).min(1).max(6).meta({title: 'Các cột'})`, `unit: optText('Đơn vị')` (shown after values), `sort: bool('Xếp hạng theo giá trị', true)`, `seconds: numDefault('Chạy trong (giây)', 1.2, {min: 0.2, max: 6, step: 0.1})`, `source: text('Nguồn')`.
-  Draw: horizontal bars, label left, value at bar end counting up with the bar, bars grow over `seconds`;
-  when `sort` is true, rows are ordered by value (largest on top). Colours: bars `brand.colors.primary`, the largest
+- The Editor builds its form from these schemas and only supports flat fields and string arrays (`lines`); nested
+  `z.array(z.object(...))` is NOT supported (`app/src/screens/Editor/motionSchema.ts:25-32`). So rows are text lines
+  parsed in the component; a malformed line is skipped (never crash the render).
+- `BarChartSchema`: `title: optText('Tiêu đề')`, `bars: lines('Cột (mỗi dòng: Nhãn | Giá trị | ảnh tuỳ chọn)')`
+  (1–6 rows; value parsed with `,` or `.` decimals), `unit: optText('Đơn vị')` (shown after values),
+  `rankSwap: bool('Đổi hạng khi chạy', false)`, `seconds: numDefault('Chạy trong (giây)', 1.2, {min: 0.2, max: 6, step: 0.1})`,
+  `source: text('Nguồn')`.
+  Draw: horizontal bars, label left, value at bar end counting up with the bar, bars grow over `seconds`.
+  Rows are shown largest on top; with `rankSwap`, rows start in the listed order and slide to value order during the
+  last 40% of `seconds` (the reference video's "2 overtakes 1"). Colours: bars `brand.colors.primary`, the largest
   bar `brand.colors.accent`; source line small at the bottom: `Nguồn: <source>`.
 - `LineChartSchema`: `title: optText('Tiêu đề')`, `labels: lines('Nhãn trục X (mỗi dòng một nhãn)')`,
-  `series: z.array(z.object({name: text('Tên'), values: z.array(z.number()).meta({title: 'Giá trị'}), image: media('Ảnh/logo').optional()})).min(1).max(3).meta({title: 'Các đường'})`,
+  `series: lines('Đường (mỗi dòng: Tên | v1, v2, v3… | ảnh tuỳ chọn)')` (1–3 rows; values separated by `,` or spaces),
   `unit: optText('Đơn vị')`, `seconds: numDefault('Vẽ trong (giây)', 1.5, {min: 0.2, max: 6, step: 0.1})`, `source: text('Nguồn')`.
   Draw: SVG lines drawn in left→right over `seconds` (stroke-dashoffset), x labels under the axis, the series name (and
   image if any) at each line end; series colours `primary`, `accent`, `accent2`; same source line.
-  (If `lines`/`media` helper signatures differ, use them as they are in `schema.ts`; keep the titles.)
+  (Use `lines` exactly as defined in `schema.ts`; image paths are library-relative like other components' media.)
+  Test cases must also cover the row parser (pure function exported from each file, e.g. `parseBars(lines)`), incl.
+  malformed rows skipped.
 - Registry titles: `BarChart` → `Biểu đồ cột`, description `Cột ngang có nhãn, số chạy lên, ghi nguồn`;
   `LineChart` → `Biểu đồ đường`, description `Đường vẽ dần theo thời gian, ghi nguồn`.
 - `validate.py`: for a motion layer whose component is `BarChart` or `LineChart`, error
@@ -130,19 +139,19 @@ function like `musicDuck.test.ts` does), `tools/tests/test_validate.py`.
 
 **Interfaces:** `export const glitchAt = (frame: number, fps: number, seed = 0): {dx: number; dy: number; split: number}`
 in `studio/src/effects.ts` (pure). Bursts: active 3 frames out of every `round(fps * 0.9)` (offset by seed), plus the
-first 4 frames of the shot; when active `split` in 6..14 px and `dx`,`dy` in ±10 / ±3 px; otherwise `split` 1.5 and
-`dx = dy = 0`. Deterministic (hash, no Math.random).
+first 4 frames of the shot; when active `split` in 6..14 px and `dx`,`dy` in ±10 / ±3 px; otherwise
+`split = dx = dy = 0` (a quiet frame is identical to the un-glitched shot). Deterministic (hash, no Math.random).
 
-- [ ] Step 1: failing tests: `glitchAt` deterministic, burst frames have `split ≥ 6`, quiet frames `split === 1.5`
-  and zero offsets, roughly 3 burst frames per 27 at 30 fps; `validate` accepts `effect: "glitch"`.
+- [ ] Step 1: failing tests: `glitchAt` deterministic, burst frames have `split ≥ 6`, quiet frames all zero, roughly 3 burst frames per 27 at 30 fps; `validate` accepts `effect: "glitch"`.
 - [ ] Step 2: run → FAIL.
-- [ ] Step 3: implement. In MediaShot, when `item.effect === 'glitch'`: keep the normal picture, and overlay the same
-  source twice with `mixBlendMode: 'screen'`, one tinted red and shifted `+split` px, one tinted cyan shifted `-split`
-  px (tint via CSS `filter` on an image, or an inline SVG `feColorMatrix` filter for video), whole stack translated by
-  `dx, dy`. `effectTransform('glitch', p)` returns `'none'`. Only add the two overlays for `glitch` (no cost for other
-  effects).
-- [ ] Step 4: tests + both tsc → PASS; render one still of a photo scene and one of a video scene with `glitch` on a
-  burst frame and view them.
+- [ ] Step 3: implement. MediaShot decodes each clip once and paints the blurred cover layer from it
+  (`MediaShot.tsx:19-39`): do NOT add extra `<Video>` copies. Apply the split only to the contain (foreground) layer,
+  with one inline SVG filter per shot (unique id): `feColorMatrix` keeps R only → `feOffset dx=+split`; another
+  `feColorMatrix` keeps G+B only → `feOffset dx=-split`; combine with `feComposite operator="arithmetic" k2=1 k3=1`
+  (sum, so with split 0 the picture is unchanged, no over-exposure). Translate the foreground by `dx, dy` on burst
+  frames. Set the filter only when `split > 0`. `effectTransform('glitch', p)` returns `'none'`.
+- [ ] Step 4: tests + both tsc → PASS; render stills of a photo scene and a video scene with `glitch`, one burst frame
+  and one quiet frame each; view them; the quiet frame must match the same scene rendered with `effect: "none"`.
 - [ ] Step 5: commit `Add glitch media effect`.
 
 ---
@@ -158,7 +167,11 @@ gradient is now; `children` render on top of everything (used later for the look
 `<ReelFrame p={p} logo captions={sc => <Captions …same props…/>} empty={() => <AbsoluteFill …same gradient…/>} />`.
 
 - [ ] Step 1: before the change, render stills of `projects/2026-11-20-demo-card-moi/render-props.json` at frames
-  30, 200, 400, 700 and of `projects/test/render-props.json` at 30, 600, 1200 (keep them).
+  30, 200, 400, 700 and of `projects/test/render-props.json` at 30, 600, 1200 (keep them). Those videos only use
+  `cut`: also make a scratch copy of `projects/test/render-props.json` with scene 2 `transition: "fade"` and scene 3
+  `transition: "slide"` and a clip change with `mediaTransition: "fade"`, and render frames in the middle of each
+  transition plus one frame of the CTA. First render one frame twice and confirm the two PNGs are identical (if not,
+  compare with a small tolerance and say so in the report).
 - [ ] Step 2: refactor.
 - [ ] Step 3: render the same stills again; compare each pair pixel-exactly
   (`ffmpeg -v error -i a.png -i b.png -filter_complex "[0][1]blend=all_mode=difference,blackframe=99:1" -f null -`
@@ -185,8 +198,11 @@ Tests: `tools/tests/test_props.py`, `tools/tests/test_validate.py`, `tools/tests
 - `StoryCaptions: React.FC<{chunks: CaptionChunk[]; highlight: string[]; style: CaptionStyle; dark: boolean}>`:
   the current chunk, centred in the safe area (x 8%–92%, y 22%–70%), large (`style.size * 1.6`, auto-shrink so the
   longest chunk fits in 3 lines), weight 800, no box; each word appears at its `times[i]` (fallback: even spread) with
-  a 0.18 s fade + 6 px rise; highlighted units use `style.highlightColor`; text colour near-white on dark, near-black
-  on light.
+  a 0.18 s fade + 6 px rise; highlighted units use `style.highlightColor` and take the time of their first token;
+  text colour near-white on dark, near-black on light. Over footage (scene has media) add
+  `textShadow: 0 4px 24px rgba(0,0,0,.85)` and a soft dark radial scrim behind the text block.
+  Collision rule: while a motion layer of the same scene with `position` `center` or `full` (or a free `box` whose
+  centre is in the middle third) is on screen, the card is hidden (pass the scene's motion items in as a prop).
 - `Look: React.FC<{grain: number; scanlines: number}>`: full-frame overlay, `pointerEvents: none`: scan lines as a
   repeating linear gradient (2 px dark line every 4 px, opacity `0.12 * scanlines`); grain as an SVG `feTurbulence`
   noise whose `seed` changes every 2 frames, opacity `0.10 * grain`, `mixBlendMode: overlay`. Renders nothing when

@@ -117,7 +117,8 @@ Added to `studio/src/motion/fx/textFx.ts`.
   `app/shared` `Effect` type updated to match.
 
 ### 3d. New components
-- `BarChart`: labelled bars (optional logo image), values grow in, optional rank swap.
+- `BarChart`: labelled bars (optional logo image), values grow in, optional rank swap (`rankSwap`). Rows are
+  entered as text lines ("Nhãn | Giá trị | ảnh") because the Editor form supports only flat fields and string lists.
 - `LineChart`: lines draw in, label at each line end.
 - Both have a required `source` field shown as a small "Nguồn: …" line. Zod schemas with Vietnamese titles,
   registered with `defineMotion`; draw content only.
