@@ -3,12 +3,13 @@ import {Link, useNavigate} from 'react-router';
 import {Clapperboard, Mic, MoreVertical, Upload} from 'lucide-react';
 import type {Job} from '../../../shared/types.ts';
 import {useJobs, useWorkerStatus} from '../../api/events.ts';
-import {useStartRender, useStartVoice, useVoices} from '../../api/hooks.ts';
+import {useMusic, useStartRender, useStartVoice, useVoices} from '../../api/hooks.ts';
 import {Button, ConfirmDialog, DropdownMenu, IconButton, ProgressBar, Select, fmtPct, toast} from '../../ui/index.ts';
 import {useEditor} from './EditorContext.tsx';
 import {DeleteProjectDialog} from '../Projects/DeleteProjectDialog.tsx';
 import s from './TopBar.module.css';
 
+const NO_MUSIC = 'none'; // track files always have an extension, so no clash
 const ACTIVE = (j: Job) => j.state === 'queued' || j.state === 'running';
 
 /** "Tạo giọng" state shared by the top bar and the stale banner. */
@@ -32,6 +33,7 @@ export function useVoiceAction(): {loading: boolean; label: string; start(): voi
 export function TopBar(): React.JSX.Element {
   const {slug, detail, stale, save, storyboard, update} = useEditor();
   const voices = useVoices();
+  const music = useMusic();
   const nav = useNavigate();
   const jobs = useJobs();
   const voice = useVoiceAction();
@@ -59,6 +61,16 @@ export function TopBar(): React.JSX.Element {
       options={Array.from(new Set([...(voices.data ?? []).map((v) => v.name), ...(curVoice ? [curVoice] : [])])).map((v) => ({value: v, label: `Giọng: ${v}`}))}
       onChange={(v) => update((sb) => ({...sb, voice: v}))} /></div>
   );
+  // no `music` in the storyboard = no music (config.json has no default track)
+  const curMusic = storyboard.music?.file ?? NO_MUSIC;
+  const musicPick = (
+    <div className={s.voice}><Select aria-label="Nhạc nền của video" value={curMusic} disabled={rendering}
+      options={[{value: NO_MUSIC, label: 'Nhạc: không'}, ...Array.from(new Set([...(music.data ?? []).map((f) => f.name), ...(curMusic !== NO_MUSIC ? [curMusic] : [])])).map((f) => ({value: f, label: `Nhạc: ${f.replace(/\.[^.]+$/, '')}`}))]}
+      onChange={(v) => update((sb) => {
+        const {music: old, ...rest} = sb;
+        return v === NO_MUSIC ? rest : {...rest, music: {...(old ?? {}), file: v}};
+      })} /></div>
+  );
 
   const doRender = () => {
     setConfirm(false);
@@ -80,6 +92,7 @@ export function TopBar(): React.JSX.Element {
       </div>
       <div className={s.compactActions}>
         {voicePick}
+        {musicPick}
         <DropdownMenu align="end" trigger={<Button variant="primary" icon={<Upload size={16} aria-hidden />}>Xuất video</Button>} items={[
           {label: 'Render', disabled: voiceBusy || rendering, onSelect: ask},
           {label: `Bản render (${detail.versions.length})`, onSelect: openVersions},
@@ -94,6 +107,7 @@ export function TopBar(): React.JSX.Element {
       <div className={s.actions}>
         <Button icon={<Mic size={16} aria-hidden />} loading={voiceBusy} loadingText={voice.label} disabled={rendering || voice.disabled} onClick={voice.start}>Tạo giọng</Button>
         {voicePick}
+        {musicPick}
         <Button icon={<Clapperboard size={16} aria-hidden />} onClick={openVersions}>Bản render ({detail.versions.length})</Button>
         <Button variant="primary" disabled={voiceBusy || rendering} loading={startRender.isPending} onClick={ask}>Render</Button>
         <DropdownMenu align="end" trigger={<IconButton label="Thêm" icon={<MoreVertical size={18} aria-hidden />} />}
