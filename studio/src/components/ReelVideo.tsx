@@ -1,11 +1,11 @@
 // @remotion/media Video when rendering, OffthreadVideo in Studio preview
 import React from 'react';
-import {OffthreadVideo, useRemotionEnvironment} from 'remotion';
+import {OffthreadVideo, useRemotionEnvironment, type OnVideoFrame} from 'remotion';
 import {Video} from '@remotion/media';
 
-export const ReelVideo: React.FC<{src: string; trimBefore: number; objectFit: 'contain' | 'cover'; style: React.CSSProperties}> = (p) => {
+export const ReelVideo: React.FC<{src: string; trimBefore: number; objectFit: 'contain' | 'cover'; style: React.CSSProperties; onVideoFrame?: OnVideoFrame}> = (p) => {
   const env = useRemotionEnvironment();
   return env.isRendering
-    ? <Video src={p.src} muted trimBefore={p.trimBefore} objectFit={p.objectFit} style={p.style} />
+    ? <Video src={p.src} muted trimBefore={p.trimBefore} objectFit={p.objectFit} style={p.style} onVideoFrame={p.onVideoFrame} />
     : <OffthreadVideo src={p.src} muted trimBefore={p.trimBefore} style={{...p.style, objectFit: p.objectFit}} />;
 };

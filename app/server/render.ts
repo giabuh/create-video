@@ -1,7 +1,10 @@
+import {execFile} from 'node:child_process';
+import {existsSync} from 'node:fs';
 import {readdir, readFile, rename, rm, stat, writeFile} from 'node:fs/promises';
 import path from 'node:path';
+import {promisify} from 'node:util';
 import {bundle} from '@remotion/bundler';
-import {makeCancelSignal, renderMedia, selectComposition} from '@remotion/renderer';
+import {combineChunks, makeCancelSignal, renderMedia, selectComposition, type RenderMediaOptions} from '@remotion/renderer';
 import type {JobCtx} from './jobs.ts';
 import {readJson} from './store.ts';
 import {repoRoot, safeJoin} from './paths.ts';
@@ -9,6 +12,21 @@ import {withSlugLock} from './slugLock.ts';
 import {nextVersion, recordRender} from './versions.ts';
 import type {VoiceWorker} from './voiceWorker.ts';
 import type {Json, RenderProps} from '../shared/types.ts';
+
+// NVENC (GPU) encode when an NVIDIA driver is loaded: at 12 Mbps even the worst frame of the busiest stretch beats
+// x264 veryfast/CRF 16 (8 Mbps did not), same speed, and it frees the CPU for Chrome. Remotion only checks that its
+// bundled ffmpeg lists h264_nvenc (it always does), so check the driver here.
+const NVENC = existsSync('/dev/nvidiactl');
+const ENCODE = NVENC
+  ? {hardwareAcceleration: 'required', videoBitrate: '12M'} as const
+  : {x264Preset: 'veryfast', crf: 16} as const; // same SSIM as medium/CRF 18, ~26% faster
+// One browser serializes its tabs through its shared GPU/browser processes: 3 browsers x 2 tabs render a 3-min reel
+// ~30% faster than 1 x 4. Measured with NVENC; with x264 the CPU is already saturated, so x264 stays single.
+const CHUNKS = NVENC ? 3 : 1;
+const execFileP = promisify(execFile);
+// 3 render browsers take ~2.6 GB of VRAM (4 GB GTX 1650; peak 3.5 GB with the TTS model resident): split only with room.
+const vramFreeMiB = () => execFileP('nvidia-smi', ['--query-gpu=memory.free', '--format=csv,noheader,nounits'])
+  .then(r => Number.parseInt(r.stdout, 10) || 0, () => 0);
 
 let cached: {key: string; serveUrl: string} | null = null;
 let bundleChain: Promise<unknown> = Promise.resolve();
@@ -74,10 +92,14 @@ export async function renderVersion(slug: string, ctx: JobCtx, worker: VoiceWork
     if (ctx.signal.aborted) cancel();
     const inputProps = props as unknown as Record<string, unknown>;
     const onBrowserDownload = () => { ctx.progress(null, 'Đang tải trình duyệt render'); return {version: null, onProgress: () => {}}; };
-    const composition = await selectComposition({serveUrl, id: 'Reel', inputProps, onBrowserDownload});
+    // GPU (Vulkan) raster: ~4x faster than the default CPU SwiftShader on the full-frame blurs, same pixels (PSNR >36dB)
+    const chromiumOptions = {gl: 'vulkan'} as const;
+    const composition = await selectComposition({serveUrl, id: 'Reel', inputProps, onBrowserDownload, chromiumOptions});
     tmp = safeJoin('projects', slug, `${name}.tmp.mp4`);
-    await renderMedia({
-      composition, serveUrl, codec: 'h264', outputLocation: tmp, inputProps, onBrowserDownload, cancelSignal,
+    const opts: Chunkable = {composition, serveUrl, codec: 'h264', inputProps, onBrowserDownload, cancelSignal, chromiumOptions, ...ENCODE};
+    if (CHUNKS > 1 && composition.durationInFrames >= 300 && await vramFreeMiB() >= 3000) await renderChunked(opts, tmp, cancel, ctx);
+    else await renderMedia({
+      ...opts, outputLocation: tmp,
       onProgress: ({progress, renderedFrames, stitchStage}) =>
         ctx.progress(0.25 + 0.75 * progress, stitchStage === 'muxing' ? 'Ghép âm thanh' : `Khung ${renderedFrames}/${composition.durationInFrames}`),
     });
@@ -89,5 +111,39 @@ export async function renderVersion(slug: string, ctx: JobCtx, worker: VoiceWork
   } catch (e) {
     await Promise.all([tmp as string | null, snapshot as string | null].map(f => f && rm(f, {force: true})));
     throw e;
+  }
+}
+
+type Chunkable = Omit<RenderMediaOptions, 'outputLocation'>;
+
+/** Contiguous [first, last] frame ranges covering 0..total-1: chunks of ceil(total/n) frames, the last may be shorter. */
+export const chunkRanges = (total: number, n: number): [number, number][] => {
+  const per = Math.ceil(total / n);
+  return Array.from({length: Math.ceil(total / per)}, (_, i) => [i * per, Math.min(total, (i + 1) * per) - 1]);
+};
+
+async function renderChunked(opts: Chunkable, out: string, cancel: () => void, ctx: JobCtx): Promise<void> {
+  const total = opts.composition.durationInFrames, ranges = chunkRanges(total, CHUNKS), per = ranges[0][1] + 1;
+  const parts = ranges.map((frameRange, i) => ({frameRange, video: `${out}.${i}.mp4`, audio: `${out}.${i}.aac`, done: 0}));
+  const report = () => {
+    const n = Math.min(total, parts.reduce((sum, p) => sum + p.done, 0));
+    ctx.progress(0.25 + 0.7 * n / total, `Khung ${n}/${total}`);
+  };
+  try {
+    const results = await Promise.allSettled(parts.map(p => renderMedia({
+      ...opts, concurrency: 2, frameRange: p.frameRange, outputLocation: p.video, separateAudioTo: p.audio, forSeamlessAacConcatenation: true,
+      onProgress: ({renderedFrames}) => { p.done = renderedFrames; report(); },
+    }).catch((e: unknown) => { cancel(); throw e; }))); // one failed chunk stops the others
+    const failed = results.find(r => r.status === 'rejected');
+    if (failed) throw failed.reason;
+    ctx.progress(0.96, 'Ghép âm thanh');
+    // combineChunks byte-concatenates h264 chunks, which only works on MPEG-TS; codec h264-ts can't use NVENC -> remux
+    for (const p of parts) await execFileP('ffmpeg', ['-v', 'error', '-y', '-i', p.video, '-c', 'copy', '-bsf:v', 'h264_mp4toannexb', '-f', 'mpegts', `${p.video}.ts`]);
+    await combineChunks({
+      outputLocation: out, codec: 'h264', fps: opts.composition.fps, framesPerChunk: per, preferLossless: false, compositionDurationInFrames: total,
+      videoFiles: parts.map(p => `${p.video}.ts`), audioFiles: parts.map(p => p.audio), cancelSignal: opts.cancelSignal,
+    });
+  } finally {
+    await Promise.all(parts.flatMap(p => [p.video, `${p.video}.ts`, p.audio]).map(f => rm(f, {force: true})));
   }
 }
