@@ -27,12 +27,12 @@ def test_reports_all_errors_at_once(root, cfg):
     sb = {"music": {"file": "nope.mp3"}, "scenes": [
         {"id": "s1", "say": "  ", "media": [{"src": "missing.mp4", "effect": "spin"}]},
         {"id": "s1", "motion": [{"component": "Nope"}]},
-        {"say": "hi", "voice": "ghost", "media": [{"src": "a.mp4"}], "transition": "wipe"},
+        {"say": "hi", "voice": "ghost", "media": [{"src": "a.mp4"}], "transition": "spin"},
         {"id": "s4", "overlay": {"text": "X", "position": "left"}},
     ]}
     text = "\n".join(validate(sb, cfg, root))
     for needle in ["music/nope.mp3", "s1: 'say' is empty", "library/missing.mp4", "effect 'spin'",
-                   "s1: duplicate id", "'Nope'", "#3: missing id", "voice 'ghost'", "transition 'wipe'",
+                   "s1: duplicate id", "'Nope'", "#3: missing id", "voice 'ghost'", "transition 'spin'",
                    "s4: needs 'media' or 'motion'", "s4: silent scene needs 'duration'", "position 'left'"]:
         assert needle in text, needle
 
@@ -160,3 +160,15 @@ def test_collage_layout(root, cfg):
     assert any("layout 'grid'" in e for e in validate(sb, cfg, root))
     sb["scenes"][0]["layout"] = "collage"
     assert any("only for the story template" in e for e in validate({**sb, "template": "fast-cut"}, cfg, root))
+
+
+def test_new_transitions_mix_and_leak(root, cfg):
+    def errs(**kw):
+        return validate({"scenes": [{"id": "s1", "say": "x", "media": [{"src": "a.mp4"}], **kw}]}, cfg, root)
+    for t in ["push", "cube", "wipe", "flip", "clockWipe", "mix"]:
+        assert errs(transition=t) == [], t
+    for t in ["push", "cube", "wipe", "flip", "clockWipe", "mix"]:
+        assert any("mediaTransition" in e for e in errs(mediaTransition=t)), t
+    assert errs(mediaTransition="slide") == []
+    assert errs(leak=True) == []
+    assert any("leak" in e for e in errs(leak="yes"))

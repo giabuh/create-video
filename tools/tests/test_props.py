@@ -253,3 +253,35 @@ def test_media_aspect_and_frame_land_in_props():
     m = build_render_props(sb, SETTINGS, BRAND, {}, media_sizes={"a.mp4": (1080, 1920)})["scenes"][0]["media"]
     assert m[0]["aspect"] == 0.5625 and m[0]["frame"] == "full"
     assert "aspect" not in m[1] and "frame" not in m[1]
+
+
+def _mix_sb(n=7, **first):
+    return {"scenes": [{"id": f"s{i}", "duration": 1, "motion": [{"component": "Text"}], **(first if i == 0 else {})} for i in range(n)]}
+
+
+def test_mix_rotates_per_scene_and_scene_overrides():
+    st = {**SETTINGS, "transition": {"scene": "mix", "media": "cut", "duration": 0.4}}
+    p = build_render_props(_mix_sb(), st, BRAND, {})
+    assert [s["transition"] for s in p["scenes"]] == ["cut", "push", "cube", "wipe", "flip", "clockWipe", "push"]
+    sb = _mix_sb()
+    sb["scenes"][2]["transition"] = "fade"
+    assert build_render_props(sb, st, BRAND, {})["scenes"][2]["transition"] == "fade"
+    sb["scenes"][1]["transition"] = "mix"
+    sb["scenes"][2]["transition"] = "mix"
+    p = build_render_props(sb, SETTINGS, BRAND, {})
+    assert [s["transition"] for s in p["scenes"][:3]] == ["cut", "push", "cube"]
+
+
+def test_leak_passthrough_only_when_true():
+    sb = _mix_sb(2)
+    sb["scenes"][1]["leak"] = True
+    s0, s1 = build_render_props(sb, SETTINGS, BRAND, {})["scenes"]
+    assert s1["leak"] is True and "leak" not in s0
+
+
+def test_max_cards_own_their_exit_and_look_passes_through():
+    sb = {"scenes": [{"id": "a", "duration": 2, "motion": [{"component": "MaxSteps", "position": "bottom"}]}]}
+    assert build_render_props(sb, SETTINGS, BRAND, {})["scenes"][0]["motion"][0]["exit"]["type"] == "none"
+    look = {"grain": 0.2, "scanlines": 0, "logo": False, "vignette": 0.5, "grade": True, "progress": True}
+    assert build_render_props(sb, {**SETTINGS, "look": look}, BRAND, {})["look"] == look
+    assert build_render_props(sb, SETTINGS, BRAND, {})["look"] == {"grain": 0, "scanlines": 0, "logo": False}

@@ -5,7 +5,8 @@ from .align import estimate_words, find_word
 from .captions import chunk_caption
 
 # Cards that animate their own exit (registered with ownsExit: true in studio/src/motion/registry.ts): no default fade.
-OWNS_EXIT = {"Ribbon", "TwoTier", "Callout", "PinLabel", "GlossyPill", "GiantText", "OfferCard", "Stamp"}
+OWNS_EXIT = {"Ribbon", "TwoTier", "Callout", "PinLabel", "GlossyPill", "GiantText", "OfferCard", "Stamp",
+            "MaxKinetic", "MaxOffer", "MaxPhone", "MaxSteps"}
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp"}
 
 
@@ -199,6 +200,14 @@ def _sfx_events(storyboard: dict, scenes: list[dict], overlays: list[dict], cta_
     return out
 
 
+MIX = ["push", "cube", "wipe", "flip", "clockWipe"]
+
+
+def _scene_transition(t: str, i: int) -> str:
+    """`mix` rotates the new presentations by scene index; the first scene has nothing to blend from."""
+    return t if t != "mix" else "cut" if i == 0 else MIX[(i - 1) % len(MIX)]
+
+
 def build_render_props(storyboard: dict, settings: dict, brand: dict, audio: dict, words: dict | None = None,
                        sfx_files: list[str] | None = None, sfx_peaks: dict[str, float] | None = None, media_sizes: dict[str, tuple[int, int]] | None = None) -> dict:
     """`sfx_files`: audio file names in sfx/ (none -> no sound effects are emitted); `sfx_peaks`: {file: seconds to its loudest moment}. `media_sizes`: {library file: (width, height)}, gives media their `aspect` (framed media). `words`: {scene id: word timings} from align.py; spoken scenes without an entry use the estimate.
@@ -208,7 +217,7 @@ def build_render_props(storyboard: dict, settings: dict, brand: dict, audio: dic
     words = dict(words or {})
     problems: list[str] = []
     scenes, t = [], 0.0
-    for sc in storyboard["scenes"]:
+    for si, sc in enumerate(storyboard["scenes"]):
         a = audio.get(sc["id"])
         if a and sc["id"] not in words and sc.get("say"):
             words[sc["id"]] = estimate_words(sc["say"], a["duration"])
@@ -227,7 +236,8 @@ def build_render_props(storyboard: dict, settings: dict, brand: dict, audio: dic
             "media": _media(sc.get("media") or [], dur, media_sizes),
             "motion": _motion(sc.get("motion") or [], dur, bool(sc.get("media")), words.get(sc["id"]),
                               sc.get("caption") or "", sc["id"], problems),
-            "transition": sc.get("transition", tr["scene"]),
+            "transition": _scene_transition(sc.get("transition", tr["scene"]), si),
+            **({"leak": True} if sc.get("leak") is True else {}),
             "mediaTransition": sc.get("mediaTransition", tr["media"]),
         })
         t += dur

@@ -6,7 +6,8 @@ from pathlib import Path
 from .config import apply_template, pick, resolve_names, resolve_scene_voice
 
 EFFECTS = {"none", "zoom-in", "zoom-out", "pan-left", "pan-right", "glitch"}
-TRANSITIONS = {"cut", "fade", "slide"}
+MEDIA_TRANSITIONS = {"cut", "fade", "slide"}
+TRANSITIONS = MEDIA_TRANSITIONS | {"push", "cube", "wipe", "flip", "clockWipe"}
 POSITIONS = {"top", "center", "bottom"}
 MOTION_POSITIONS = {"full", "top", "center", "bottom", "free"}
 ANIMS = {"none", "fade", "slide-up", "slide-down", "slide-left", "slide-right", "pop", "zoom", "wipe", "blur"}
@@ -93,9 +94,11 @@ def validate(storyboard: dict, config: dict, root) -> list[str]:
                         errs.append(f"{sid}: motion[{i}].{k} needs a spoken scene ('say')")
         if "sfx" in sc and not _sfx_ok(sc["sfx"]):
             errs.append(f"{sid}: sfx must be a group name, a file name or null")
-        for k in ("transition", "mediaTransition"):
-            if sc.get(k, "cut") not in TRANSITIONS:
-                errs.append(f"{sid}: {k} '{sc.get(k)}' not in {sorted(TRANSITIONS)}")
+        for k, ok in (("transition", TRANSITIONS | {"mix"}), ("mediaTransition", MEDIA_TRANSITIONS)):
+            if sc.get(k, "cut") not in ok:
+                errs.append(f"{sid}: {k} '{sc.get(k)}' not in {sorted(ok)}")
+        if "leak" in sc and not isinstance(sc["leak"], bool):
+            errs.append(f"{sid}: leak must be true or false")
         if sc.get("bg", "dark") not in ("light", "dark"):
             errs.append(f"{sid}: bg '{sc.get('bg')}' not in ['dark', 'light']")
         if "layout" in sc:

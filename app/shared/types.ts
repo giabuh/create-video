@@ -3,7 +3,7 @@ export type {RenderProps};
 
 export type Json = Record<string, unknown>;
 export type Effect = 'none' | 'zoom-in' | 'zoom-out' | 'pan-left' | 'pan-right' | 'glitch';
-export type TransitionName = 'cut' | 'fade' | 'slide';
+export type TransitionName = 'cut' | 'fade' | 'slide' | 'push' | 'cube' | 'wipe' | 'flip' | 'clockWipe' | 'mix'; // mix is resolved per scene by props.py
 export type MediaSpec = {src: string; from?: number; duration?: number; effect?: Effect};
 export type MotionPosition = 'full' | 'top' | 'center' | 'bottom' | 'free';
 export type MotionBackdrop = 'auto' | 'scrim' | 'none';

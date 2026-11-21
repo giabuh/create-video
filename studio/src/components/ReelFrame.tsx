@@ -1,6 +1,7 @@
 // shared reel skeleton: scenes with transitions, media, motion, overlay, voice, CTA, video-wide track, sfx, music
 import React from 'react';
-import {AbsoluteFill, Img, Sequence, staticFile, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Img, Sequence, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {LightLeak} from '@remotion/light-leaks';
 import {Audio} from '@remotion/media';
 import {CtaCard} from '../components/CtaCard';
 import {CardBackdrop, MediaShot} from '../components/MediaShot';
@@ -8,9 +9,17 @@ import {MotionLayer} from '../components/MotionLayer';
 import {MusicTrack} from '../components/MusicTrack';
 import {Overlay} from '../components/Overlay';
 import {SceneTransition} from '../components/SceneTransition';
+import {ScenePresentation, isPresentation} from '../components/ScenePresentation';
 import {SfxTrack} from '../components/SfxTrack';
 import {isCard, collageSlots} from './storyLayout';
-import type {RenderProps, Scene} from '../types';
+import type {RenderProps, Scene, Transition} from '../types';
+
+// Drives one side of a ScenePresentation from the scene Sequence's own frame; `start` is the frame the transition begins.
+const Pres: React.FC<{type: Transition; direction: 'entering' | 'exiting'; start: number; tf: number; accent: string; children: React.ReactNode}> = ({type, direction, start, tf, accent, children}) => {
+  const frame = useCurrentFrame();
+  const progress = Math.min(1, Math.max(0, (frame - start) / Math.max(1, tf)));
+  return <ScenePresentation type={type} direction={direction} progress={progress} accent={accent} durationInFrames={tf}>{children}</ScenePresentation>;
+};
 
 export const ReelFrame: React.FC<{
   p: RenderProps;
@@ -18,8 +27,9 @@ export const ReelFrame: React.FC<{
   empty: (sc: Scene) => React.ReactNode;
   logo: boolean;
   ctaCenter?: boolean;
+  renderCta?: (a: {cta: NonNullable<RenderProps['cta']>; brand: RenderProps['brand']; bg: RenderProps['scenes'][number]['media'][number] | undefined; centerY?: number}) => React.ReactNode;
   children?: React.ReactNode;
-}> = ({p, captions, empty, logo, ctaCenter, children}) => {
+}> = ({p, captions, empty, logo, ctaCenter, renderCta = (a) => <CtaCard {...a} />, children}) => {
   const {fps} = useVideoConfig();
   const f = (s: number) => Math.max(1, Math.round(s * fps));
   const {colors} = p.brand;
@@ -33,10 +43,11 @@ export const ReelFrame: React.FC<{
         const next = p.scenes[si + 1];
         const tail = next && next.transition !== 'cut' ? tf : 0;
         const mt = sc.mediaTransition ?? 'cut';
-        return (
-          <Sequence key={sc.id} name={sc.id} from={Math.round(sc.start * fps)} durationInFrames={f(sc.duration) + tail}>
-            {/* the first scene has nothing to blend from: show it at once */}
-            <SceneTransition type={si === 0 ? 'cut' : sc.transition} seconds={ts}>
+        const enterPres = si > 0 && isPresentation(sc.transition);
+        const exitPres = !!next && isPresentation(next.transition);
+        const body = (
+            // the first scene has nothing to blend from: show it at once; presentation scenes are animated by <Pres> instead
+            <SceneTransition type={si === 0 || enterPres ? 'cut' : sc.transition} seconds={ts}>
               {sc.media.length === 0 && empty(sc)}
               {sc.layout === 'collage' && <>
                 <AbsoluteFill style={{backgroundColor: sc.bg === 'light' ? '#F3EFE6' : '#0B0B0F'}}><CardBackdrop light={sc.bg === 'light'} /></AbsoluteFill>
@@ -64,15 +75,29 @@ export const ReelFrame: React.FC<{
                 {sc.voice && <Audio src={staticFile(sc.voice.src)} />}
               </Sequence>
             </SceneTransition>
+        );
+        return (
+          <Sequence key={sc.id} name={sc.id} from={Math.round(sc.start * fps)} durationInFrames={f(sc.duration) + tail}>
+            {/* new presentations animate both scenes: entering over the first tf frames, exiting over the tail */}
+            {enterPres || exitPres ? (
+              exitPres ? <Pres type={next.transition} direction="exiting" start={f(sc.duration)} tf={tf} accent={colors.accent}>
+                {enterPres ? <Pres type={sc.transition} direction="entering" start={0} tf={tf} accent={colors.accent}>{body}</Pres> : body}
+              </Pres> : <Pres type={sc.transition} direction="entering" start={0} tf={tf} accent={colors.accent}>{body}</Pres>
+            ) : body}
           </Sequence>
         );
       })}
+      {p.scenes.map((sc, si) => sc.leak && (
+        <Sequence key={`leak-${sc.id}`} name={`leak ${sc.id}`} from={Math.round(sc.start * fps)} durationInFrames={34}>
+          <LightLeak seed={si} hueShift={0} />
+        </Sequence>
+      ))}
       {logo && p.brand.logo && (
         <AbsoluteFill><Img src={staticFile(p.brand.logo)} style={{position: 'absolute', top: 80, left: 60, width: 160}} /></AbsoluteFill>
       )}
       {p.cta && (
         <Sequence name="cta" from={Math.round(ctaStart * fps)} durationInFrames={f(p.cta.duration)}>
-          <CtaCard cta={p.cta} brand={p.brand} bg={p.scenes[p.scenes.length - 1]?.media[0]} centerY={ctaCenter ? 0.45 : undefined} />
+          {renderCta({cta: p.cta, brand: p.brand, bg: p.scenes[p.scenes.length - 1]?.media[0], centerY: ctaCenter ? 0.45 : undefined})}
         </Sequence>
       )}
       {(p.overlays ?? []).map((m, i) => (
