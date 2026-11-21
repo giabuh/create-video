@@ -22,7 +22,7 @@ export const ExplainerCaptions: React.FC<{chunks: CaptionChunk[]; highlight: str
     <AbsoluteFill style={{justifyContent: 'flex-end', alignItems: 'center', paddingBottom: height * (width > height ? 0.09 : 0.17)}}>
       <div style={{
         fontFamily, fontWeight: 800, fontSize: size, lineHeight: 1.3, textAlign: 'center', textWrap: 'balance', maxWidth: cardW, boxSizing: 'border-box',
-        color: colors.background === '#FFFFFF' ? colors.text : colors.primary, background: 'rgba(255,255,255,.94)', padding: `${pad * 0.6}px ${pad}px`, borderRadius: u * 0.035,
+        color: colors.primary, // the card is always white, so brand primary (dark) reads on it background: 'rgba(255,255,255,.94)', padding: `${pad * 0.6}px ${pad}px`, borderRadius: u * 0.035,
         boxShadow: '0 12px 40px rgba(11,21,48,.22)', opacity: Math.min(1, pop * 3), transform: `scale(${0.9 + 0.1 * pop})`,
       }}>
         {captionUnits(c.text, highlight).map((x, i) => (
