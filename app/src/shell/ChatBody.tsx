@@ -109,9 +109,13 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
   useEffect(() => { if (waiting && waiting.id === chatId && events.length > waiting.n && (last === 'done' || last === 'error')) setWaiting(null); }, [waiting, chatId, events.length, last]);
   const running = (busy !== null && busy === chatId) || waiting?.id === chatId;
   const newChat = (e: Engine) => create.mutate({slug, engine: e}, {onSuccess: (c) => setPicked(c.id)});
+  const [sending, setSending] = useState(false);
+  const sendingNow = useRef(false); // sync guard: two quick Enters must not upload and send twice
+  const locked = busy !== null || running || sending;
   const submit = async () => {
     const t = text.trim();
-    if ((!t && !files.length) || busy !== null || running || !acct) return;
+    if ((!t && !files.length) || busy !== null || running || sendingNow.current || !acct) return;
+    sendingNow.current = true; setSending(true);
     try {
       let id = chatId;
       if (id === null) { id = (await create.mutateAsync({slug})).id; setPicked(id); }
@@ -124,13 +128,13 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
       setFiles([]);
     } catch (e) {
       toast({title: 'Không gửi được', description: e instanceof Error ? e.message : String(e), tone: 'error'});
-    }
+    } finally { sendingNow.current = false; setSending(false); }
   };
 
   return (
     <div className={s.wrap}
       onDragOver={(e) => { if (e.dataTransfer.types.includes('Files')) e.preventDefault(); }}
-      onDrop={(e) => { e.preventDefault(); addFiles([...e.dataTransfer.files]); }}>
+      onDrop={(e) => { if (!e.dataTransfer.types.includes('Files')) return; e.preventDefault(); if (!locked) addFiles([...e.dataTransfer.files]); }}>
       <div className={s.head}>
         <div className={s.row}>
           <Select key={chatId === null ? 'none' : 'set'} aria-label="Phiên chat" value={chatId} placeholder="Chưa có phiên" onChange={setPicked}
@@ -196,7 +200,7 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
           </div>
         )}
         <Textarea
-          autosize rows={2} value={text} aria-label={`Tin nhắn cho ${engineName}`} disabled={busy !== null || running}
+          autosize rows={2} value={text} aria-label={`Tin nhắn cho ${engineName}`} disabled={locked}
           placeholder={`Nhắn ${engineName}…`}
           onChange={(e) => setText(e.target.value)}
           onPaste={(e) => {
@@ -208,7 +212,7 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
         <input ref={fileRef} type="file" accept={CHAT_IMAGE_ACCEPT} multiple hidden
           onChange={(e) => { addFiles([...(e.target.files ?? [])]); e.target.value = ''; }} />
         <div>
-          <IconButton label="Thêm ảnh" icon={<ImagePlus size={18} />} disabled={busy !== null || running || files.length >= MAX_CHAT_IMAGES} onClick={() => fileRef.current?.click()} />
+          <IconButton label="Thêm ảnh" icon={<ImagePlus size={18} />} disabled={locked || files.length >= MAX_CHAT_IMAGES} onClick={() => fileRef.current?.click()} />
         </div>
         {(busy !== null || running) && (
           <div className={s.note}>
