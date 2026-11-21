@@ -1,0 +1,14 @@
+{
+  "title": "Benchmark 3 phút (test render)",
+  "approved": null,
+  "renders": {
+    "reel-v1": {
+      "kind": "final",
+      "at": "2026-11-20T16:41:50.412Z"
+    },
+    "reel-v2": {
+      "kind": "final",
+      "at": "2026-11-20T16:57:24.905Z"
+    }
+  }
+}
