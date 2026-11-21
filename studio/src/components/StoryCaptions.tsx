@@ -31,10 +31,10 @@ export const StoryCaptions: React.FC<{
   const loaded = useFontsLoaded();
   const serif = style.font === 'serif';
   const family = serif ? serifFamily : fontFamily;
-  // the current framed picture is an obstacle like a full-width box layer
+  // the current framed picture is an obstacle like a full-width box layer, grown by its 1.06 push-in about y 0.40
   const m = media.find((x) => t >= x.start && t < x.start + x.duration);
   const r = m && mediaCardRect(m.aspect ?? 1, width, height);
-  const slot = cardSlot(r ? [...motion, {position: 'free', box: {x: 0, y: r.top * 100, w: 100, h: (r.bottom - r.top) * 100}, start: 0, duration: Infinity}] : motion, t);
+  const slot = cardSlot(r ? [...motion, {position: 'free', box: {x: 0, y: (0.4 - (0.4 - r.top) * 1.06) * 100, w: 100, h: (r.bottom - r.top) * 1.06 * 100}, start: 0, duration: Infinity}] : motion, t);
   const avail = width * 0.77, slotH = slot ? (slot.bottom - slot.top) * height : 0, maxH = Math.min(height * 0.48, slotH); // 77% = safe area x 8-85%
   const c = chunks.find((x) => t >= x.start && t < x.end);
   const toks = c ? c.text.split(' ').filter(Boolean) : [];
