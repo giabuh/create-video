@@ -19,3 +19,9 @@ def test_motion_on_footage_counts_as_motion():
 def test_overlay_is_clipped_to_the_scene():
     scenes = [{"duration": 4, "hasMedia": True, "motion": [(3, 5)]}]
     assert mix(scenes, 0) == {"real": 0.75, "motion": 0.25, "other": 0}
+
+
+def test_shots_count_media_and_text_cards():
+    from reel.mix import shots
+    assert shots([{"duration": 4, "media": [1, 2]}, {"duration": 2, "media": []}]) == {"count": 3, "avg": 2.0}
+    assert shots([]) == {"count": 0, "avg": 0}

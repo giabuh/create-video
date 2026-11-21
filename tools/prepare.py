@@ -39,6 +39,8 @@ def main(argv: list[str]) -> int:
     print(f"Total: {res['totalSeconds']:.1f}s" + (f" (target {t}s)" if t else ""))
     print(f"Mix: real {m['real']:.0%} / motion {m['motion']:.0%} / other {m['other']:.0%}"
           f"  (target {tg['real']:.0%}/{tg['motion']:.0%}/{tg['other']:.0%})")
+    if res.get("shots"):
+        print(f"Shots: {res['shots']['count']}, avg {res['shots']['avg']}s (story target <= 2.5s)")
     for sid, engine in (res.get("words") or {}).items():
         print(f"Word timings {sid}: {engine}")
     if res["stale"]:

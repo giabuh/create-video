@@ -6,7 +6,7 @@ from pathlib import Path
 from .align import estimate_words, scene_words
 from .cache import cache_key
 from .config import ROOT, apply_template, load_json, resolve_names, resolve_scene_voice, resolve_video
-from .mix import mix
+from .mix import mix, shots
 from .props import AnchorError, build_render_props, sfx_files_for
 from .tts import probe_duration, synth_to_file
 from .validate import validate
@@ -135,7 +135,7 @@ def prepare(proj: Path, get_model=None, synth: bool = True, on_progress=None) ->
     if synth:
         write_json(proj / "timings.json", {"scenes": timings, "totalSeconds": props["totalSeconds"], "mix": actual})
     return {"ok": True, "stage": None, "errors": [], "stale": stale, "totalSeconds": props["totalSeconds"],
-            "mix": actual, "target": target, "targetSeconds": sb.get("targetSeconds"),
+            "mix": actual, "target": target, "targetSeconds": sb.get("targetSeconds"), "shots": shots(props["scenes"]),
             "words": {k: v for k, v in engines.items() if k in needed}}
 
 
