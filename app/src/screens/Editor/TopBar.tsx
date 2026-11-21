@@ -1,14 +1,11 @@
 import {useEffect, useRef, useState} from 'react';
 import {Link, useNavigate} from 'react-router';
-import {ChartPie, Clapperboard, MessageSquare, Mic, MoreVertical, Upload} from 'lucide-react';
+import {Clapperboard, Mic, MoreVertical, Upload} from 'lucide-react';
 import type {Job} from '../../../shared/types.ts';
 import {useJobs, useWorkerStatus} from '../../api/events.ts';
 import {useStartRender, useStartVoice} from '../../api/hooks.ts';
-import {setChatOpen} from '../../api/chat.ts';
-import {Button, ConfirmDialog, DropdownMenu, IconButton, Popover, ProgressBar, Spinner, fmtPct, toast} from '../../ui/index.ts';
+import {Button, ConfirmDialog, DropdownMenu, IconButton, ProgressBar, fmtPct, toast} from '../../ui/index.ts';
 import {useEditor} from './EditorContext.tsx';
-import {mixOf} from './editorState.ts';
-import {MixMeter} from './MixMeter.tsx';
 import {DeleteProjectDialog} from '../Projects/DeleteProjectDialog.tsx';
 import s from './TopBar.module.css';
 
@@ -32,16 +29,8 @@ export function useVoiceAction(): {loading: boolean; label: string; start(): voi
   return {loading, label, start, disabled: busyRender};
 }
 
-function SavePill(): React.JSX.Element {
-  const {save} = useEditor();
-  if (save.state === 'error') return <Button size="sm" variant="danger" onClick={() => void save.retry()} title={save.error ?? undefined}>Lỗi lưu — Thử lại</Button>;
-  if (save.state === 'saving') return <span className={s.pill} role="status"><Spinner size={14} /> Đang lưu…</span>;
-  const at = save.savedAt ? new Date(save.savedAt).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : null;
-  return <span className={`${s.pill} ${s.ok}`} role="status">Đã lưu{at ? ` ${at}` : ''}</span>;
-}
-
 export function TopBar(): React.JSX.Element {
-  const {slug, detail, renderProps, stale, save} = useEditor();
+  const {slug, detail, stale, save} = useEditor();
   const nav = useNavigate();
   const jobs = useJobs();
   const voice = useVoiceAction();
@@ -68,7 +57,6 @@ export function TopBar(): React.JSX.Element {
   };
   const ask = () => (stale.length ? setConfirm(true) : doRender());
   const openVersions = () => void nav(`/p/${encodeURIComponent(slug)}/renders`);
-  const mix = renderProps ? mixOf(renderProps) : (detail.timings?.mix ?? null);
   const progress = rendering && (
     <div className={s.progress} role="status">
       <ProgressBar value={renderJob?.progress ?? null} tone="info" size="sm" label="Tiến độ render" />
@@ -80,13 +68,6 @@ export function TopBar(): React.JSX.Element {
     <header className={s.top}>
       <div className={s.identity}>
         <nav className={s.crumb} aria-label="Đường dẫn"><Link to="/">Dự án</Link><span aria-hidden>/</span><b title={slug}>{slug}</b></nav>
-        <SavePill />
-      </div>
-      <div className={s.mixWrap}><MixMeter actual={mix} target={detail.mixTarget} /></div>
-      <div className={s.mixMenu}>
-        <Popover align="end" trigger={<IconButton label="Tỉ lệ nội dung" icon={<ChartPie size={18} aria-hidden />} />}>
-          <MixMeter actual={mix} target={detail.mixTarget} />
-        </Popover>
       </div>
       <div className={s.compactActions}>
         <DropdownMenu align="end" trigger={<Button variant="primary" icon={<Upload size={16} aria-hidden />}>Xuất video</Button>} items={[
@@ -104,7 +85,6 @@ export function TopBar(): React.JSX.Element {
         <Button icon={<Clapperboard size={16} aria-hidden />} onClick={openVersions}>Bản render ({detail.versions.length})</Button>
         <Button icon={<Mic size={16} aria-hidden />} loading={voiceBusy} loadingText={voice.label} disabled={rendering || voice.disabled} onClick={voice.start}>Tạo giọng</Button>
         <Button variant="primary" disabled={voiceBusy || rendering} loading={startRender.isPending} onClick={ask}>Render</Button>
-        <Button icon={<MessageSquare size={16} aria-hidden />} onClick={() => setChatOpen(true)}>Chat</Button>
         <DropdownMenu align="end" trigger={<IconButton label="Thêm" icon={<MoreVertical size={18} aria-hidden />} />}
           items={[{label: 'Xoá dự án', danger: true, onSelect: () => setAskDelete(true)}]} />
       </div>

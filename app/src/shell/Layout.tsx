@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {Menu, MessageSquare} from 'lucide-react';
 import {Link, Outlet, useLocation, useMatch} from 'react-router';
 import {IconButton, Popover} from '../ui/index.ts';
@@ -34,17 +34,20 @@ function MobileNav({onChat}: {onChat(): void}): React.JSX.Element {
   );
 }
 
+const focusDockedChat = () => document.querySelector<HTMLTextAreaElement>('[data-chat-docked] textarea')?.focus();
+
 export function Layout(): React.JSX.Element {
   const chatOpen = useChatOpen();
-  const openChat = () => setChatOpen(true);
   const {pathname} = useLocation();
   const compact = pathname.startsWith('/p/'); // editor and renders own their padding
   const editor = useMatch('/p/:slug') !== null;
+  const openChat = editor ? focusDockedChat : () => setChatOpen(true);
+  useEffect(() => { if (editor) setChatOpen(false); }, [editor]); // the Editor docks its own chat
   return (
     <div className={s.app}>
       <ConnectionBanner />
       <MobileNav onChat={openChat} />
-      <ChatPanel open={chatOpen} onOpenChange={setChatOpen} />
+      {!editor && <ChatPanel open={chatOpen} onOpenChange={setChatOpen} />}
       <div className={s.body}>
         <div className={s.desktopNav}>{compact ? <Rail onChat={openChat} /> : <Sidebar onChat={openChat} />}</div>
         <main className={`${s.main} ${compact ? '' : s.padded} ${editor ? s.editor : ''}`}>
