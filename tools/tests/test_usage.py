@@ -26,3 +26,25 @@ def test_motion_combos_counts_variants_and_last_project(tmp_path):
     ranked, last = motion_combos(tmp_path)
     assert ranked == {"Checklist/steps": 1, "PriceTag/slam": 1, "Ribbon/default": 2}
     assert last == ("new", {"Ribbon/default", "PriceTag/slam"})
+
+
+def test_unused_components_and_transition_counts(tmp_path):
+    from usage import unused_components, transition_counts
+    reg = tmp_path / "studio/src/motion"
+    reg.mkdir(parents=True)
+    (reg / "registry.ts").write_text(
+        "import {defineMotion} from './schema';\n"
+        "export const registry = {\n"
+        "  Text: defineMotion({component: Text, schema: TextSchema, title: 'x'}),\n"
+        "  Ribbon: defineMotion({component: Ribbon, schema: RibbonSchema, title: 'y'}),\n"
+        "  MaxKinetic: defineMotion({component: MaxKinetic, schema: S, title: 'z'}),\n"
+        "};\n")
+    for slug, sb in {
+        "a": {"motion": [{"component": "Text"}], "scenes": [{"transition": "fade"}, {"transition": "mix"}, {}]},
+        "b": {"scenes": [{"transition": "fade"}, {"transition": "cut"}, {"motion": [{"component": "Ribbon"}]}]},
+    }.items():
+        d = tmp_path / "projects" / slug
+        d.mkdir(parents=True)
+        (d / "storyboard.json").write_text(json.dumps(sb))
+    assert unused_components(tmp_path) == ["MaxKinetic"]
+    assert list(transition_counts(tmp_path).items()) == [("mix", 1), ("fade", 2), ("cut", 3)]

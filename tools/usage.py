@@ -1,5 +1,6 @@
 """Print how many projects use each library media file, least-used first (prefer those for new reels)."""
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -30,6 +31,23 @@ def motion_combos(root: Path):
     return ranked, last
 
 
+def unused_components(root: Path) -> list[str]:
+    """Registry components (studio/src/motion/registry.ts) that no storyboard uses."""
+    names = re.findall(r"^\s+(\w+): defineMotion\(", (root / "studio/src/motion/registry.ts").read_text(), re.M)
+    used = {c.split("/")[0] for c in motion_combos(root)[0]}
+    return [n for n in names if n not in used]
+
+
+def transition_counts(root: Path) -> dict[str, int]:
+    """Scene transition counts across storyboards, least used first; a missing value counts as cut."""
+    n: dict[str, int] = {}
+    for sb in root.glob("projects/*/storyboard.json"):
+        for scene in json.loads(sb.read_text()).get("scenes", []):
+            t = scene.get("transition") or "cut"
+            n[t] = n.get(t, 0) + 1
+    return dict(sorted(n.items(), key=lambda kv: (kv[1], kv[0])))
+
+
 if __name__ == "__main__":
     root = Path(__file__).resolve().parent.parent
     if "--motion" in sys.argv:
@@ -38,6 +56,8 @@ if __name__ == "__main__":
             print(f"{n}\t{name}")
         if last:
             print(f"last project: {last[0]}: {', '.join(sorted(last[1]))}")
+        print("never used: " + (", ".join(unused_components(root)) or "-"))
+        print("transitions (least used first): " + ", ".join(f"{t} {k}" for t, k in transition_counts(root).items()))
     else:
         for name, n in counts(root).items():
             print(f"{n}\t{name}")

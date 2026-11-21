@@ -49,3 +49,10 @@ Rules:
 - Choreographed cards need a layer of at least about 2.5 s at `pace: normal`, or they exit before they finish; use `pace: fast` for short layers.
 - Variety: run `python3 tools/usage.py --motion` before choosing cards/variants. Pick by fit first; among equal fits take the least-used;
   never repeat the last project's combo. New components are allowed if they use the brand tokens in `studio/src/motion/style.ts`.
+
+## Khoảnh khắc đặc trưng và chuyển cảnh
+
+- Each video gets ONE signature moment: a `MaxKinetic` slam on the key promise, the 3D CTA (template `max`), or `leak: true` on the turning-point scene.
+- Vary scene `transition`: use `mix` or pick per scene (`cut, fade, slide, push, cube, wipe, flip, clockWipe`); never one kind throughout. `usage.py --motion` prints transition counts: take the least used.
+- Prefer the cards listed under "never used" by `usage.py --motion` when they fit.
+- Template `max` exists for reels that must not look templated. The template is the user's call per video, or a default in `config.json` per rule 2; never switch the default silently.
