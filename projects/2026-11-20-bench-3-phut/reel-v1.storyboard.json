@@ -1,0 +1,1162 @@
+{
+  "template": "fast-cut",
+  "brand": "demo",
+  "voice": "phuong",
+  "targetSeconds": 180,
+  "music": {
+    "file": "Raising Me Higher - Ahjay Stelino.mp3",
+    "volume": 0.5
+  },
+  "scenes": [
+    {
+      "id": "mo-dau",
+      "say": "Bạn muốn giỏi tin học để đi làm, nhưng chưa biết nên bắt đầu học từ đâu?",
+      "caption": "Bạn muốn giỏi tin học để đi làm, nhưng chưa biết nên bắt đầu học từ đâu?",
+      "highlight": [
+        "tin học"
+      ],
+      "media": [
+        {
+          "src": "video-doc-hoc-vien-nu-thuc-hanh-excel-tren-laptop.mp4",
+          "from": 0.5,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-ngang-hoc-vien-thuc-hanh-excel-va-word.mp4",
+          "from": 2,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-hoc-vien-nu-hoc-tren-laptop-ghi-chep.mp4",
+          "from": 0,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "KineticText",
+          "props": {
+            "lines": [
+              "BẠN MUỐN",
+              "GIỎI TIN HỌC?"
+            ],
+            "size": 120,
+            "fx": "words"
+          },
+          "position": "top",
+          "backdrop": "none",
+          "at": "Bạn",
+          "until": "đi làm"
+        }
+      ]
+    },
+    {
+      "id": "gioi-thieu",
+      "say": "Chào bạn, đây là Trung tâm Tin học Sao Việt, nơi bạn học thực hành ngay trên máy tính. Mỗi buổi học đều gắn với công việc thực tế của bạn.",
+      "caption": "Chào bạn, đây là Trung tâm Tin học Sao Việt, nơi bạn học thực hành ngay trên máy tính. Mỗi buổi học đều gắn với công việc thực tế của bạn.",
+      "highlight": [
+        "Tin học Sao Việt"
+      ],
+      "media": [
+        {
+          "src": "video-ngang-toan-canh-phong-dao-tao-tin-hoc.mp4",
+          "from": 2,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "09-trung-tam-tin-hoc-sao-viet.jpg",
+          "effect": "zoom-in",
+          "duration": 2.2
+        },
+        {
+          "src": "video-ngang-giao-vien-huong-dan-lop-tin-hoc-dong-hoc-vien.mp4",
+          "from": 3,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Ribbon",
+          "props": {
+            "title": "TIN HỌC SAO VIỆT",
+            "sub": "Học thực hành trên máy",
+            "fx": "typewriter"
+          },
+          "box": {
+            "x": 4,
+            "y": 10,
+            "w": 92,
+            "h": 16
+          },
+          "backdrop": "none",
+          "at": "Tin học"
+        }
+      ],
+      "pauseAfter": 0.3
+    },
+    {
+      "id": "giang-vien",
+      "say": "Lớp học có giảng viên đứng lớp, viết bảng và hướng dẫn từng bước cho cả lớp. Có chỗ nào chưa hiểu, bạn cứ hỏi, thầy cô giải thích lại ngay.",
+      "caption": "Lớp học có giảng viên đứng lớp, viết bảng và hướng dẫn từng bước cho cả lớp. Có chỗ nào chưa hiểu, bạn cứ hỏi, thầy cô giải thích lại ngay.",
+      "highlight": [
+        "từng bước"
+      ],
+      "media": [
+        {
+          "src": "video-doc-giao-vien-giang-bai-tren-bang-lop-tin-hoc.mp4",
+          "from": 1,
+          "effect": "none"
+        },
+        {
+          "src": "video-ngang-giang-vien-kem-hoc-vien-autocad.mp4",
+          "from": 0,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "sv-facebook-giang-vien-trinh-bay.jpg",
+          "effect": "pan-left",
+          "duration": 2.2
+        }
+      ],
+      "motion": [
+        {
+          "component": "LowerThird",
+          "props": {
+            "title": "Giảng viên hướng dẫn",
+            "subtitle": "Từng bước, dễ hiểu",
+            "bottom": 760,
+            "fx": "mask"
+          },
+          "backdrop": "none",
+          "at": "giảng viên",
+          "until": "từng bước"
+        }
+      ],
+      "pauseAfter": 0.3
+    },
+    {
+      "id": "vua-hoc-vua-lam",
+      "say": "Học viên ngồi máy, vừa nghe giảng vừa làm theo, nên nhớ bài rất nhanh.",
+      "caption": "Học viên ngồi máy, vừa nghe giảng vừa làm theo, nên nhớ bài rất nhanh.",
+      "highlight": [
+        "nhớ bài rất nhanh"
+      ],
+      "media": [
+        {
+          "src": "video-doc-hoc-vien-nam-thuc-hanh-excel.mp4",
+          "from": 0.5,
+          "effect": "none"
+        },
+        {
+          "src": "video-ngang-hoc-vien-thuc-hanh-bai-tap-word.mp4",
+          "from": 1,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-doc-hoc-vien-nu-thuc-hanh-tin-hoc-van-phong.mp4",
+          "from": 0.5,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "TwoTier",
+          "props": {
+            "top": "VỪA HỌC VỪA LÀM",
+            "bottom": "NHỚ BÀI NHANH",
+            "fx": "pop"
+          },
+          "position": "top",
+          "backdrop": "none",
+          "at": "vừa nghe",
+          "until": "rất nhanh"
+        }
+      ]
+    },
+    {
+      "id": "excel-hoc-gi",
+      "say": "Với Ếch xeo, bạn làm quen bảng tính, từ nhập số liệu, kẻ bảng, đến sắp xếp và lọc dữ liệu. Mỗi phần đều có bài tập nhỏ để bạn thực hành liền tay.",
+      "caption": "Với Excel, bạn làm quen bảng tính, từ nhập số liệu, kẻ bảng, đến sắp xếp và lọc dữ liệu. Mỗi phần đều có bài tập nhỏ để bạn thực hành liền tay.",
+      "highlight": [
+        "Excel"
+      ],
+      "media": [
+        {
+          "src": "video-ngang-hoc-vien-thuc-hanh-do-hoa-va-excel.mp4",
+          "from": 2,
+          "effect": "none"
+        },
+        {
+          "src": "video-ngang-hoc-vien-lam-trac-nghiem-va-excel.mp4",
+          "from": 0,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-doc-hoc-vien-nu-deo-khau-trang-thuc-hanh-word-excel.mp4",
+          "from": 1,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Checklist",
+          "props": {
+            "variant": "grid",
+            "title": "EXCEL",
+            "items": [
+              "Nhập số liệu",
+              "Kẻ bảng",
+              "Sắp xếp",
+              "Lọc dữ liệu"
+            ],
+            "itemsAt": [
+              "nhập",
+              "kẻ",
+              "sắp xếp",
+              "lọc"
+            ]
+          },
+          "box": {
+            "x": 4,
+            "y": 8,
+            "w": 92,
+            "h": 40
+          },
+          "backdrop": "none",
+          "at": "nhập",
+          "until": "dữ liệu"
+        }
+      ],
+      "pauseAfter": 0.3
+    },
+    {
+      "id": "excel-loi-ich",
+      "say": "Biết dùng Ếch xeo giúp bạn tính toán nhanh hơn, ít sai sót hơn, và đỡ mất thời gian mỗi ngày. Đây là kỹ năng mà nhiều công việc văn phòng đều cần đến.",
+      "caption": "Biết dùng Excel giúp bạn tính toán nhanh hơn, ít sai sót hơn, và đỡ mất thời gian mỗi ngày. Đây là kỹ năng mà nhiều công việc văn phòng đều cần đến.",
+      "highlight": [
+        "nhanh hơn"
+      ],
+      "media": [
+        {
+          "src": "video-ngang-hoc-vien-thuc-hanh-excel-va-word.mp4",
+          "from": 10,
+          "effect": "zoom-out"
+        },
+        {
+          "src": "video-doc-hoc-vien-nu-thuc-hanh-excel-tren-laptop.mp4",
+          "from": 5,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Annotate",
+          "props": {
+            "kind": "underline",
+            "text": "nhanh hơn",
+            "size": 90
+          },
+          "position": "center",
+          "backdrop": "none",
+          "at": "nhanh",
+          "until": "hơn"
+        },
+        {
+          "component": "Ribbon",
+          "props": {
+            "title": "TÍNH TOÁN NHANH HƠN",
+            "sub": "Ít sai sót",
+            "fx": "scramble"
+          },
+          "box": {
+            "x": 4,
+            "y": 12,
+            "w": 92,
+            "h": 16
+          },
+          "backdrop": "none",
+          "at": "ít",
+          "until": "mỗi ngày"
+        }
+      ],
+      "pauseAfter": 0.3
+    },
+    {
+      "id": "word-hoc-gi",
+      "say": "Còn Wợt, bạn học soạn thảo văn bản, chèn bảng biểu, hình ảnh và trình bày văn bản chuyên nghiệp. Học xong, bạn tự soạn được thư từ, báo cáo và nhiều loại văn bản khác.",
+      "caption": "Còn Word, bạn học soạn thảo văn bản, chèn bảng biểu, hình ảnh và trình bày văn bản chuyên nghiệp. Học xong, bạn tự soạn được thư từ, báo cáo và nhiều loại văn bản khác.",
+      "highlight": [
+        "Word"
+      ],
+      "media": [
+        {
+          "src": "video-ngang-hoc-vien-thuc-hanh-bai-tap-word.mp4",
+          "from": 3,
+          "effect": "none"
+        },
+        {
+          "src": "video-ngang-hoc-vien-deo-khau-trang-thuc-hanh-tin-hoc-van-phong.mp4",
+          "from": 2,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "07-khoa-hoc-tin-hoc-van-phong.jpg",
+          "effect": "pan-right",
+          "duration": 2.2
+        }
+      ],
+      "motion": [
+        {
+          "component": "Checklist",
+          "props": {
+            "variant": "steps",
+            "title": "WORD",
+            "items": [
+              "Soạn thảo văn bản",
+              "Chèn bảng biểu, hình ảnh",
+              "Trình bày chuyên nghiệp"
+            ],
+            "itemsAt": [
+              "soạn thảo",
+              "chèn",
+              "trình bày"
+            ]
+          },
+          "box": {
+            "x": 4,
+            "y": 9,
+            "w": 90,
+            "h": 34
+          },
+          "backdrop": "none",
+          "at": "soạn thảo",
+          "until": "chuyên nghiệp"
+        }
+      ],
+      "pauseAfter": 0.3
+    },
+    {
+      "id": "luyen-tap",
+      "say": "Làm bài tập thật nhiều ngay tại lớp, bạn sẽ gõ nhanh hơn và trình bày gọn gàng hơn.",
+      "caption": "Làm bài tập thật nhiều ngay tại lớp, bạn sẽ gõ nhanh hơn và trình bày gọn gàng hơn.",
+      "highlight": [
+        "bài tập"
+      ],
+      "media": [
+        {
+          "src": "video-doc-nhieu-hoc-vien-thuc-hanh-tin-hoc-van-phong.mp4",
+          "from": 2,
+          "effect": "none"
+        },
+        {
+          "src": "video-ngang-hoc-vien-nu-lam-bai-thi-tin-hoc.mp4",
+          "from": 1,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Stamp",
+          "props": {
+            "shape": "rect",
+            "main": "THỰC HÀNH NHIỀU",
+            "size": 420
+          },
+          "duration": 2.4,
+          "box": {
+            "x": 20,
+            "y": 10,
+            "w": 60,
+            "h": 14
+          },
+          "backdrop": "none",
+          "at": "bài tập"
+        }
+      ]
+    },
+    {
+      "id": "powerpoint",
+      "say": "Bạn cũng được học Pao-poi để làm những bài thuyết trình rõ ràng và đẹp mắt. Biết trình bày ý tưởng gọn gàng cũng là một điểm cộng khi đi làm.",
+      "caption": "Bạn cũng được học PowerPoint để làm những bài thuyết trình rõ ràng và đẹp mắt. Biết trình bày ý tưởng gọn gàng cũng là một điểm cộng khi đi làm.",
+      "highlight": [
+        "PowerPoint"
+      ],
+      "media": [
+        {
+          "src": "video-ngang-hoc-vien-thuc-hanh-word-excel-powerpoint.mp4",
+          "from": 4,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "03-hoc-vi-tinh-van-phong.jpg",
+          "effect": "pan-left",
+          "duration": 2.2
+        },
+        {
+          "src": "video-doc-hoc-vien-thuc-hanh-tai-phong-may-tuong-xanh.mp4",
+          "from": 3,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "GlossyPill",
+          "props": {
+            "title": "BÀI THUYẾT TRÌNH ĐẸP MẮT",
+            "sub": "Học PowerPoint",
+            "sticker": "📊",
+            "fx": "words"
+          },
+          "box": {
+            "x": 4,
+            "y": 10,
+            "w": 92,
+            "h": 20
+          },
+          "backdrop": "none",
+          "at": "thuyết trình"
+        }
+      ],
+      "pauseAfter": 0.3
+    },
+    {
+      "id": "khong-khi",
+      "say": "Đông học viên cùng ngồi một lớp, không khí học sôi nổi, hỏi đáp thoải mái.",
+      "caption": "Đông học viên cùng ngồi một lớp, không khí học sôi nổi, hỏi đáp thoải mái.",
+      "highlight": [
+        "sôi nổi"
+      ],
+      "media": [
+        {
+          "src": "video-doc-lop-hoc-dong-hoc-vien-tai-phong-may.mp4",
+          "from": 3,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-ngang-toan-canh-lop-hoc-tin-hoc-buoi-toi.mp4",
+          "from": 5,
+          "effect": "none"
+        },
+        {
+          "src": "11-lop-tin-hoc-van-phong-word-excel.jpg",
+          "effect": "zoom-out",
+          "duration": 2.2
+        }
+      ],
+      "motion": [
+        {
+          "component": "Text",
+          "props": {
+            "text": "HỌC SÔI NỔI, HỎI ĐÁP THOẢI MÁI",
+            "size": 84,
+            "background": "#1E3A8A",
+            "reveal": "wave",
+            "uppercase": true
+          },
+          "position": "top",
+          "backdrop": "none",
+          "at": "sôi nổi"
+        }
+      ]
+    },
+    {
+      "id": "di-quanh-lop",
+      "say": "Giảng viên đi giữa các dãy bàn, thấy bạn nào vướng là chỉ ngay tại chỗ.",
+      "caption": "Giảng viên đi giữa các dãy bàn, thấy bạn nào vướng là chỉ ngay tại chỗ.",
+      "highlight": [
+        "chỉ ngay tại chỗ"
+      ],
+      "media": [
+        {
+          "src": "video-ngang-giao-vien-huong-dan-lop-tin-hoc-dong-hoc-vien.mp4",
+          "from": 10,
+          "effect": "none"
+        },
+        {
+          "src": "video-ngang-toan-canh-lop-hoc-tin-hoc-buoi-toi.mp4",
+          "from": 12,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "LowerThird",
+          "props": {
+            "title": "Chỉ ngay tại chỗ",
+            "subtitle": "Không để bạn bị bỏ lại",
+            "side": "right",
+            "bottom": 760,
+            "fx": "typewriter"
+          },
+          "backdrop": "none",
+          "at": "thấy",
+          "until": "tại chỗ"
+        }
+      ]
+    },
+    {
+      "id": "mot-kem-mot",
+      "say": "Đó là cách học một kèm một mà Tin học Sao Việt luôn hướng tới. Bạn được quan tâm sát sao, thực hành ngay trên máy của mình.",
+      "caption": "Đó là cách học 1 kèm 1 mà Tin học Sao Việt luôn hướng tới. Bạn được quan tâm sát sao, thực hành ngay trên máy của mình.",
+      "highlight": [
+        "1 kèm 1"
+      ],
+      "media": [
+        {
+          "src": "sv-facebook-hoc-vien-thuc-hanh.jpg",
+          "effect": "zoom-in",
+          "duration": 2.5
+        },
+        {
+          "src": "video-ngang-giang-vien-kem-hoc-vien-autocad.mp4",
+          "from": 4,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-giao-vien-giang-bai-tren-bang-lop-tin-hoc.mp4",
+          "from": 6,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Stamp",
+          "props": {
+            "shape": "round",
+            "top": "HỌC",
+            "main": "1 KÈM 1",
+            "bottom": "THỰC HÀNH",
+            "size": 420
+          },
+          "duration": 2.4,
+          "box": {
+            "x": 25,
+            "y": 8,
+            "w": 50,
+            "h": 24
+          },
+          "backdrop": "none",
+          "at": "một kèm một"
+        }
+      ],
+      "mediaTransition": "fade",
+      "pauseAfter": 0.3
+    },
+    {
+      "id": "autocad-gioi-thieu",
+      "say": "Bạn thích vẽ kỹ thuật? Khóa Ô-tô-cát giúp bạn dựng bản vẽ ngay trên máy tính, từ những nét cơ bản. Đây là phần mềm quen thuộc với những ai làm xây dựng, thiết kế.",
+      "caption": "Bạn thích vẽ kỹ thuật? Khóa AutoCAD giúp bạn dựng bản vẽ ngay trên máy tính, từ những nét cơ bản. Đây là phần mềm quen thuộc với những ai làm xây dựng, thiết kế.",
+      "highlight": [
+        "AutoCAD"
+      ],
+      "media": [
+        {
+          "src": "video-ngang-hoc-vien-ve-ban-ve-ky-thuat-autocad.mp4",
+          "from": 1,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-ngang-hoc-vien-hoc-autocad-tren-laptop.mp4",
+          "from": 4,
+          "effect": "none"
+        },
+        {
+          "src": "15-hoc-ve-autocad-tai-tphcm.jpg",
+          "effect": "pan-right",
+          "duration": 2.2
+        }
+      ],
+      "motion": [
+        {
+          "component": "TwoTier",
+          "props": {
+            "top": "BẠN THÍCH VẼ KỸ THUẬT?",
+            "bottom": "HỌC AUTOCAD",
+            "fx": "mask"
+          },
+          "position": "top",
+          "backdrop": "none",
+          "at": "Bạn",
+          "until": "Ô-tô-cát"
+        }
+      ],
+      "pauseAfter": 0.3
+    },
+    {
+      "id": "autocad-buoc",
+      "say": "Học viên thao tác trên laptop, vẽ đường nét, ghi kích thước, rồi hoàn thiện bản vẽ kỹ thuật. Mỗi bước đều có giảng viên ngồi cạnh chỉ cho bạn cách làm.",
+      "caption": "Học viên thao tác trên laptop, vẽ đường nét, ghi kích thước, rồi hoàn thiện bản vẽ kỹ thuật. Mỗi bước đều có giảng viên ngồi cạnh chỉ cho bạn cách làm.",
+      "highlight": [
+        "bản vẽ kỹ thuật"
+      ],
+      "media": [
+        {
+          "src": "video-ngang-hoc-vien-ve-autocad-tren-macbook.mp4",
+          "from": 0,
+          "effect": "none"
+        },
+        {
+          "src": "video-ngang-hoc-vien-ve-autocad-tren-laptop-gaming.mp4",
+          "from": 1,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-doc-nhom-hoc-vien-hoc-autocad.mp4",
+          "from": 3,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Checklist",
+          "props": {
+            "variant": "steps",
+            "title": "VẼ AUTOCAD",
+            "items": [
+              "Vẽ đường nét",
+              "Ghi kích thước",
+              "Hoàn thiện bản vẽ"
+            ],
+            "itemsAt": [
+              "vẽ",
+              "ghi",
+              "hoàn thiện"
+            ],
+            "fx": "pop"
+          },
+          "box": {
+            "x": 4,
+            "y": 9,
+            "w": 90,
+            "h": 34
+          },
+          "backdrop": "none",
+          "at": "vẽ",
+          "until": "kỹ thuật"
+        }
+      ],
+      "pauseAfter": 0.3
+    },
+    {
+      "id": "buoi-toi",
+      "say": "Có cả lớp buổi tối, rất hợp với những bạn ban ngày bận đi làm.",
+      "caption": "Có cả lớp buổi tối, rất hợp với những bạn ban ngày bận đi làm.",
+      "highlight": [
+        "buổi tối"
+      ],
+      "media": [
+        {
+          "src": "video-ngang-hoc-vien-ve-autocad-lop-buoi-toi.mp4",
+          "from": 1,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-ngang-toan-canh-lop-hoc-tin-hoc-buoi-toi.mp4",
+          "from": 0,
+          "effect": "none"
+        },
+        {
+          "src": "18-hoc-cad-tai-tp-hcm.jpg",
+          "effect": "pan-left",
+          "duration": 2.2
+        }
+      ],
+      "motion": [
+        {
+          "component": "GiantText",
+          "props": {
+            "giant": "BUỔI TỐI",
+            "caption": "Hợp với người đi làm",
+            "fx": "words"
+          },
+          "duration": 3.5,
+          "backdrop": "scrim",
+          "at": "buổi tối"
+        }
+      ]
+    },
+    {
+      "id": "sketchup",
+      "say": "Ngoài ra còn có Sờ-kếch-ắp, để dựng mô hình ba chiều thật trực quan. Bạn sẽ thấy công trình của mình hiện ra rõ ràng trên màn hình.",
+      "caption": "Ngoài ra còn có SketchUp, để dựng mô hình 3D thật trực quan. Bạn sẽ thấy công trình của mình hiện ra rõ ràng trên màn hình.",
+      "highlight": [
+        "3D"
+      ],
+      "media": [
+        {
+          "src": "video-ngang-hoc-vien-thuc-hanh-sketchup-tren-laptop.mp4",
+          "from": 0,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-doc-hoc-vien-nu-hoc-tren-laptop-ghi-chep.mp4",
+          "from": 1,
+          "effect": "none"
+        },
+        {
+          "src": "08-lop-hoc-autocad-2d-3d.jpg",
+          "effect": "pan-right",
+          "duration": 2.2
+        }
+      ],
+      "motion": [
+        {
+          "component": "Annotate",
+          "props": {
+            "kind": "circle",
+            "text": "3D",
+            "size": 160
+          },
+          "duration": 2.2,
+          "position": "center",
+          "backdrop": "none",
+          "at": "ba chiều"
+        },
+        {
+          "component": "PinLabel",
+          "props": {
+            "text": "Mô hình 3D",
+            "fx": "pop"
+          },
+          "box": {
+            "x": 10,
+            "y": 10,
+            "w": 80,
+            "h": 16
+          },
+          "backdrop": "none",
+          "at": "Sờ-kếch-ắp"
+        }
+      ],
+      "pauseAfter": 0.3
+    },
+    {
+      "id": "tre-em",
+      "say": "Các bạn nhỏ cũng có chỗ học, làm quen lập trình với Xcờ-rát và Pai-thon.",
+      "caption": "Các bạn nhỏ cũng có chỗ học, làm quen lập trình với Scratch và Python.",
+      "highlight": [
+        "Scratch",
+        "Python"
+      ],
+      "media": [
+        {
+          "src": "video-doc-hoc-sinh-lap-trinh-scratch.mp4",
+          "from": 0.5,
+          "effect": "none"
+        },
+        {
+          "src": "video-ngang-hoc-sinh-hoc-scratch-va-python.mp4",
+          "from": 0,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-doc-hoc-sinh-hoc-lap-trinh-python.mp4",
+          "from": 1,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Ribbon",
+          "props": {
+            "title": "LẬP TRÌNH CHO BẠN NHỎ",
+            "sub": "Scratch và Python",
+            "fx": "wave"
+          },
+          "box": {
+            "x": 4,
+            "y": 10,
+            "w": 92,
+            "h": 16
+          },
+          "backdrop": "none",
+          "at": "các bạn"
+        }
+      ]
+    },
+    {
+      "id": "keo-tha",
+      "say": "Kéo thả từng khối lệnh, rồi gõ những dòng code đầu tiên, vừa học vừa chơi.",
+      "caption": "Kéo thả từng khối lệnh, rồi gõ những dòng code đầu tiên, vừa học vừa chơi.",
+      "highlight": [
+        "vừa học vừa chơi"
+      ],
+      "media": [
+        {
+          "src": "video-ngang-hoc-sinh-tieu-hoc-lap-trinh-python.mp4",
+          "from": 1,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-hoc-vien-tre-thuc-hanh-lap-trinh-va-van-phong.mp4",
+          "from": 4,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-ngang-hoc-sinh-hoc-scratch-va-python.mp4",
+          "from": 3,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Checklist",
+          "props": {
+            "variant": "grid",
+            "title": "LẬP TRÌNH",
+            "items": [
+              "Kéo thả khối lệnh",
+              "Gõ dòng code đầu tiên"
+            ],
+            "itemsAt": [
+              "kéo",
+              "gõ"
+            ],
+            "fx": "typewriter"
+          },
+          "box": {
+            "x": 4,
+            "y": 8,
+            "w": 92,
+            "h": 36
+          },
+          "backdrop": "none",
+          "at": "kéo",
+          "until": "code"
+        }
+      ]
+    },
+    {
+      "id": "thi-thu",
+      "say": "Học xong còn luyện làm bài trắc nghiệm và bài thi tin học để thêm tự tin. Bạn sẽ quen với cách làm bài, nên khi cần thi thì không còn bỡ ngỡ.",
+      "caption": "Học xong còn luyện làm bài trắc nghiệm và bài thi tin học để thêm tự tin. Bạn sẽ quen với cách làm bài, nên khi cần thi thì không còn bỡ ngỡ.",
+      "highlight": [
+        "tự tin"
+      ],
+      "media": [
+        {
+          "src": "video-ngang-hoc-vien-nu-lam-bai-thi-tin-hoc.mp4",
+          "from": 3,
+          "effect": "none"
+        },
+        {
+          "src": "video-ngang-hoc-vien-lam-trac-nghiem-va-excel.mp4",
+          "from": 2,
+          "effect": "none"
+        },
+        {
+          "src": "06-khoa-hoc-tin-hoc-excel-nang-cao.jpg",
+          "effect": "zoom-out",
+          "duration": 2.2
+        }
+      ],
+      "motion": [
+        {
+          "component": "GlossyPill",
+          "props": {
+            "title": "LUYỆN BÀI THI",
+            "sub": "Thêm tự tin",
+            "sticker": "✍️",
+            "fx": "pop"
+          },
+          "box": {
+            "x": 4,
+            "y": 10,
+            "w": 92,
+            "h": 20
+          },
+          "backdrop": "none",
+          "at": "trắc nghiệm",
+          "until": "tự tin"
+        }
+      ],
+      "pauseAfter": 0.3
+    },
+    {
+      "id": "phong-may",
+      "say": "Bạn học trong phòng máy rộng rãi, mỗi người một máy tính để thực hành thoải mái. Không gian thoáng, đủ chỗ ngồi, bạn học tập trung và thoải mái hơn.",
+      "caption": "Bạn học trong phòng máy rộng rãi, mỗi người một máy tính để thực hành thoải mái. Không gian thoáng, đủ chỗ ngồi, bạn học tập trung và thoải mái hơn.",
+      "highlight": [
+        "mỗi người một máy tính"
+      ],
+      "media": [
+        {
+          "src": "video-doc-hoc-vien-thuc-hanh-tai-phong-may-tuong-xanh.mp4",
+          "from": 8,
+          "effect": "none"
+        },
+        {
+          "src": "video-ngang-toan-canh-phong-dao-tao-tin-hoc.mp4",
+          "from": 10,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "35-trung-tam-tin-hoc-van-phong-q-7.jpg",
+          "effect": "pan-left",
+          "duration": 2.2
+        },
+        {
+          "src": "24-trung-tam-tin-hoc-tai-bac-tu-liem.jpg",
+          "effect": "zoom-in",
+          "duration": 2.2
+        }
+      ],
+      "motion": [
+        {
+          "component": "PinLabel",
+          "props": {
+            "text": "Phòng máy rộng rãi",
+            "fx": "words"
+          },
+          "box": {
+            "x": 6,
+            "y": 10,
+            "w": 88,
+            "h": 16
+          },
+          "backdrop": "none",
+          "at": "phòng máy"
+        }
+      ],
+      "pauseAfter": 0.3
+    },
+    {
+      "id": "bai-tap-moi-buoi",
+      "say": "Mỗi buổi đều có bài tập cụ thể, làm xong là biết ngay mình đã hiểu đến đâu. Nếu còn chỗ chưa vững, giảng viên sẽ cùng bạn ôn lại.",
+      "caption": "Mỗi buổi đều có bài tập cụ thể, làm xong là biết ngay mình đã hiểu đến đâu. Nếu còn chỗ chưa vững, giảng viên sẽ cùng bạn ôn lại.",
+      "highlight": [
+        "biết ngay"
+      ],
+      "media": [
+        {
+          "src": "video-ngang-hoc-vien-thuc-hanh-excel-va-word.mp4",
+          "from": 16,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-hoc-vien-nu-deo-khau-trang-thuc-hanh-word-excel.mp4",
+          "from": 6,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-ngang-hoc-vien-thuc-hanh-do-hoa-va-excel.mp4",
+          "from": 12,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Callout",
+          "props": {
+            "title": "Làm bài tập",
+            "sub1": "Mỗi buổi học",
+            "sub2": "Biết ngay mình hiểu đến đâu",
+            "targetX": 70,
+            "targetY": 55,
+            "labelX": 10,
+            "labelY": 10,
+            "fx": "typewriter"
+          },
+          "backdrop": "none",
+          "at": "bài tập",
+          "until": "đến đâu"
+        }
+      ],
+      "pauseAfter": 0.3
+    },
+    {
+      "id": "moi-bat-dau",
+      "say": "Dù bạn là người mới hay đã biết chút ít, lớp học đều có cách dạy phù hợp với bạn. Điều quan trọng là bạn chịu khó thực hành và đi học đều đặn.",
+      "caption": "Dù bạn là người mới hay đã biết chút ít, lớp học đều có cách dạy phù hợp với bạn. Điều quan trọng là bạn chịu khó thực hành và đi học đều đặn.",
+      "highlight": [
+        "người mới"
+      ],
+      "media": [
+        {
+          "src": "video-ngang-hoc-vien-hoc-autocad-tren-laptop.mp4",
+          "from": 12,
+          "effect": "none"
+        },
+        {
+          "src": "20-trung-tam-dao-tao-autocad-hcm.jpg",
+          "effect": "pan-right",
+          "duration": 2.2
+        },
+        {
+          "src": "video-doc-nhieu-hoc-vien-thuc-hanh-tin-hoc-van-phong.mp4",
+          "from": 12,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "TwoTier",
+          "props": {
+            "top": "NGƯỜI MỚI BẮT ĐẦU",
+            "bottom": "CŨNG HỌC ĐƯỢC",
+            "fx": "words",
+            "decor": "sparkle"
+          },
+          "position": "top",
+          "backdrop": "none",
+          "at": "người mới",
+          "until": "phù hợp"
+        }
+      ],
+      "pauseAfter": 0.3
+    },
+    {
+      "id": "uu-dai",
+      "say": "Và bây giờ có ưu đãi. Đăng ký ngay để được giảm ba mươi lăm phần trăm học phí. Ưu đãi này dành cho những bạn đăng ký học cùng Tin học Sao Việt.",
+      "caption": "Và bây giờ có ưu đãi. Đăng ký ngay để được giảm 35% học phí. Ưu đãi này dành cho những bạn đăng ký học cùng Tin học Sao Việt.",
+      "highlight": [
+        "35%"
+      ],
+      "media": [
+        {
+          "src": "video-doc-lop-hoc-dong-hoc-vien-tai-phong-may.mp4",
+          "from": 8,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-ngang-toan-canh-lop-hoc-tin-hoc-buoi-toi.mp4",
+          "from": 8,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "OfferCard",
+          "props": {
+            "variant": "card",
+            "label": "ƯU ĐÃI HỌC PHÍ",
+            "title": "Giảm ngay khi đăng ký",
+            "highlight": "khi đăng ký",
+            "stampTop": "GIẢM",
+            "stampMain": "35%",
+            "stampBottom": "ĐĂNG KÝ NGAY"
+          },
+          "duration": 3.2,
+          "box": {
+            "x": 4,
+            "y": 10,
+            "w": 92,
+            "h": 30
+          },
+          "backdrop": "none",
+          "at": "Đăng ký"
+        }
+      ],
+      "pauseAfter": 0.3
+    },
+    {
+      "id": "chot",
+      "say": "Hãy đăng ký ngay để giữ ưu đãi này, và bắt đầu học tin học thật vững vàng. Một kỹ năng vững vàng sẽ giúp bạn tự tin hơn trong công việc.",
+      "caption": "Hãy đăng ký ngay để giữ ưu đãi này, và bắt đầu học tin học thật vững vàng. Một kỹ năng vững vàng sẽ giúp bạn tự tin hơn trong công việc.",
+      "highlight": [
+        "đăng ký ngay"
+      ],
+      "media": [
+        {
+          "src": "video-doc-hoc-vien-tre-thuc-hanh-lap-trinh-va-van-phong.mp4",
+          "from": 15,
+          "effect": "none"
+        },
+        {
+          "src": "video-ngang-hoc-vien-deo-khau-trang-thuc-hanh-tin-hoc-van-phong.mp4",
+          "from": 10,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-doc-hoc-vien-thuc-hanh-tai-phong-may-tuong-xanh.mp4",
+          "from": 0,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "GlossyPill",
+          "props": {
+            "title": "ĐĂNG KÝ NGAY",
+            "sub": "Giữ ưu đãi giảm 35%",
+            "sticker": "📢",
+            "fx": "words"
+          },
+          "box": {
+            "x": 4,
+            "y": 10,
+            "w": 92,
+            "h": 20
+          },
+          "backdrop": "none",
+          "at": "đăng ký"
+        }
+      ],
+      "pauseAfter": 0.3
+    },
+    {
+      "id": "goi-ngay",
+      "say": "Gọi không tám bảy sáu, chín hai chín, một bốn năm để được tư vấn lịch học. Nhân viên sẽ hỗ trợ bạn chọn khóa học phù hợp với nhu cầu.",
+      "caption": "Gọi 0876 929 145 để được tư vấn lịch học. Nhân viên sẽ hỗ trợ bạn chọn khóa học phù hợp với nhu cầu.",
+      "highlight": [
+        "0876 929 145"
+      ],
+      "media": [
+        {
+          "src": "video-doc-nhieu-hoc-vien-thuc-hanh-tin-hoc-van-phong.mp4",
+          "from": 12,
+          "effect": "none"
+        },
+        {
+          "src": "video-ngang-giao-vien-huong-dan-lop-tin-hoc-dong-hoc-vien.mp4",
+          "from": 18,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Text",
+          "props": {
+            "text": "0876 929 145",
+            "size": 150,
+            "background": "#FFD400",
+            "color": "#0B1530",
+            "reveal": "pop"
+          },
+          "box": {
+            "x": 6,
+            "y": 12,
+            "w": 88,
+            "h": 12
+          },
+          "backdrop": "none",
+          "at": "không",
+          "until": "năm"
+        }
+      ],
+      "pauseAfter": 0.3
+    }
+  ],
+  "motion": [
+    {
+      "component": "ProgressBar",
+      "props": {
+        "thickness": 12,
+        "edge": "top"
+      },
+      "start": 0,
+      "end": "video",
+      "backdrop": "none"
+    }
+  ],
+  "cta": {
+    "title": "Gọi ngay để được tư vấn",
+    "duration": 4,
+    "logoSize": 420
+  },
+  "sfx": {
+    "volume": 0.5,
+    "scene": "none",
+    "cta": "none"
+  }
+}

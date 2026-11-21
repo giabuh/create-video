@@ -10,7 +10,7 @@
   "scenes": [
     {
       "id": "mo-dau",
-      "say": "Muốn tự chạy quảng cáo Phây Búc mà chưa biết bắt đầu từ đâu?",
+      "say": "Muốn tự chạy quảng cáo Phây Búc mà chưa biết bắt đầu từ đâu?  ",
       "caption": "Muốn tự chạy quảng cáo Facebook mà chưa biết bắt đầu từ đâu?",
       "highlight": [
         "Facebook"
@@ -70,10 +70,10 @@
     },
     {
       "id": "ban-se-hoc",
-      "say": "Bạn học tạo tài khoản quảng cáo, chọn đúng tệp khách hàng, viết nội dung thu hút, rồi đọc chỉ số để tối ưu ngân sách.",
-      "caption": "Bạn học tạo tài khoản quảng cáo, chọn đúng tệp khách hàng, viết nội dung thu hút, rồi đọc chỉ số để tối ưu ngân sách.",
+      "say": "Bạn học tạo tài khoản quảng cáo, chọn đúng tệp khách hàng, viết nội dung thu hút, rồi lên chiến dịch và tối ưu quảng cáo.  ",
+      "caption": "Bạn học tạo tài khoản quảng cáo, chọn đúng tệp khách hàng, viết nội dung thu hút, rồi lên chiến dịch và tối ưu quảng cáo.",
       "highlight": [
-        "tối ưu ngân sách"
+        "tối ưu quảng cáo"
       ],
       "media": [
         {
@@ -97,13 +97,13 @@
               "Tạo tài khoản quảng cáo",
               "Chọn đúng tệp khách hàng",
               "Viết nội dung thu hút",
-              "Đọc chỉ số, tối ưu ngân sách"
+              "Lên chiến dịch, tối ưu quảng cáo"
             ],
             "itemsAt": [
               "tạo tài khoản",
               "chọn đúng",
               "viết nội dung",
-              "đọc chỉ số"
+              "lên chiến dịch"
             ]
           },
           "box": {
@@ -115,7 +115,7 @@
           "at": "tạo tài khoản",
           "backdrop": "none",
           "until": {
-            "word": "ngân sách",
+            "word": "tối ưu",
             "offset": 0.4
           }
         },
@@ -154,7 +154,7 @@
             "h": 21
           },
           "at": "viết nội dung",
-          "until": "đọc chỉ số",
+          "until": "lên chiến dịch",
           "backdrop": "none",
           "enter": {
             "type": "pop",
@@ -174,9 +174,9 @@
             "w": 76,
             "h": 21
           },
-          "at": "đọc chỉ số",
+          "at": "lên chiến dịch",
           "until": {
-            "word": "ngân sách",
+            "word": "tối ưu",
             "offset": 0.4
           },
           "backdrop": "none",
