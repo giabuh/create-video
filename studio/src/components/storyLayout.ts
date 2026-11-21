@@ -41,9 +41,9 @@ export const mediaCardRect = (aspect: number, frameW: number, frameH: number): {
 
 export type CollageSlot = {x: number; y: number; w: number; rot: number};
 const COLLAGE: Record<number, CollageSlot[]> = {
-  2: [{x: 0.36, y: 0.33, w: 0.54, rot: -6}, {x: 0.64, y: 0.5, w: 0.54, rot: 5}],
-  3: [{x: 0.31, y: 0.3, w: 0.48, rot: -7}, {x: 0.69, y: 0.36, w: 0.48, rot: 6}, {x: 0.5, y: 0.53, w: 0.52, rot: -3}],
-  4: [{x: 0.3, y: 0.29, w: 0.46, rot: -6}, {x: 0.7, y: 0.31, w: 0.46, rot: 5}, {x: 0.32, y: 0.51, w: 0.46, rot: 4}, {x: 0.68, y: 0.53, w: 0.46, rot: -5}],
+  2: [{x: 0.36, y: 0.38, w: 0.54, rot: -6}, {x: 0.64, y: 0.55, w: 0.54, rot: 5}],
+  3: [{x: 0.31, y: 0.35, w: 0.48, rot: -7}, {x: 0.69, y: 0.41, w: 0.48, rot: 6}, {x: 0.5, y: 0.58, w: 0.52, rot: -3}],
+  4: [{x: 0.3, y: 0.34, w: 0.46, rot: -6}, {x: 0.7, y: 0.36, w: 0.46, rot: 5}, {x: 0.32, y: 0.56, w: 0.46, rot: 4}, {x: 0.68, y: 0.58, w: 0.46, rot: -5}],
 };
 /** Slots for n collage items (2-4; other n is clamped). */
 export const collageSlots = (n: number): CollageSlot[] => COLLAGE[Math.min(4, Math.max(2, n))];
@@ -51,7 +51,7 @@ export const collageSlots = (n: number): CollageSlot[] => COLLAGE[Math.min(4, Ma
 /** Unrotated card rect as frame fractions: width from the slot, height from the aspect, capped at 36% of the frame height (width shrinks with it). */
 export const collageRect = (s: CollageSlot, aspect: number, frameW: number, frameH: number): {cx: number; cy: number; w: number; h: number} => {
   const a = aspect > 0 ? aspect : 1;
-  const h = Math.min(0.36, (s.w * frameW) / a / frameH);
+  const h = Math.min(0.44, (s.w * frameW) / a / frameH);
   return {cx: s.x, cy: s.y, w: (h * frameH * a) / frameW, h};
 };
 

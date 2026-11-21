@@ -73,14 +73,14 @@ describe('collage', () => {
     expect(collageSlots(1)).toHaveLength(2);
     expect(collageSlots(9)).toHaveLength(4);
   });
-  it('rect height from aspect, capped at 36% of the frame', () => {
+  it('rect height from aspect, capped at 44% of the frame', () => {
     const s = collageSlots(2)[0];
     const wide = collageRect(s, 16 / 9, 1080, 1920);
     expect(wide.w).toBeCloseTo(0.54, 6);
     expect(wide.h).toBeCloseTo((0.54 * 1080) / (16 / 9) / 1920, 6);
     const tall = collageRect(s, 9 / 16, 1080, 1920);
-    expect(tall.h).toBeCloseTo(0.36, 6);
-    expect(tall.w * 1080).toBeCloseTo(0.36 * 1920 * (9 / 16), 6);
+    expect(tall.h).toBeCloseTo(0.44, 6);
+    expect(tall.w * 1080).toBeCloseTo(0.44 * 1920 * (9 / 16), 6);
   });
   it('span: nothing before the first card, grows as cards enter', () => {
     const items = [{start: 0, aspect: 1}, {start: 2, aspect: 1}];
