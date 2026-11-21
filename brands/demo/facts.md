@@ -10,6 +10,7 @@ Mọi dòng dưới đây: `status: chưa xác nhận` · `source: reference vid
 
 ## Cơ sở
 - Tên: "Trung Tâm Tin Học Sao Việt" — khẩu hiệu "Chuyên nghiệp – Tận tâm – Học thành nghề" (0:09, 2:30). Logo ghi "CHUYÊN NGHIỆP - TẬN TÂM - HỌC THÀNH NGHỀ".
+- Tên thương hiệu: "Tin Học Sao Việt" — `status: đã xác nhận` · `source: user, 2026-11-21`.
 - Tổng số cơ sở: 13 ("HỆ THỐNG 13 CƠ SỞ ĐÀO TẠO", 0:03; "13 cơ sở" 1:27).
 - 13 tên cơ sở theo biển (0:03): Bình Thạnh, Quận 7, Bình Tân, Quận 12, Thủ Đức, Tân Bình, Thủ Dầu Một, Thuận An, Dĩ An, Tân Uyên, Biên Hòa, Long Thành, Vũng Tàu.
 - Phân bổ theo tỉnh/thành (1:30): TP.HCM 6, Bình Dương 4, Đồng Nai 2. Cộng lại = 12, không phải 13: cơ sở thứ 13 (Vũng Tàu?) chỉ hiện là một đĩa không nhãn. Cần user cho biết tỉnh của từng cơ sở và cơ sở nào thuộc tỉnh nào.
