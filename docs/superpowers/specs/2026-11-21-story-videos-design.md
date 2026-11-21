@@ -72,9 +72,9 @@ Along the way, fix two delivery problems found by `ffmpeg-skill` on `reel-v4` (t
   the demo render).
 
 ### 2c. Music drop on words (`musicDrop`)
-- Storyboard top level: `"musicDrop": [{"at": "<word>", "until": "<word>", "to": 0}]`; `at`/`until` resolve like
-  motion `at`/`until` (a word of `say` or `caption`, optional scene id); `to` is the music volume during the drop
-  (default 0).
+- Storyboard top level: `"musicDrop": [{"start": {"scene": "s5", "at": "lý do"}, "end": {"scene": "s6", "at": "tin tưởng"}, "to": 0}]`;
+  `start`/`end` use the same time format as the video-wide motion track (seconds, `"video"`, or
+  `{scene, at?, offset?, edge?}`); `to` is the music volume during the drop (default 0).
 - Music ramps to `to` over 0.15 s at `at` and back to its normal (ducked) level over 0.15 s at `until`.
   Computed in `studio/src/components/duck.ts` (pure, unit-tested); resolved times passed in render props.
 - Errors: an unresolvable word raises `AnchorError` (same message style as motion anchors).
