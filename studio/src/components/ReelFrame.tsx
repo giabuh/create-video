@@ -28,8 +28,8 @@ const LeakStandIn: React.FC = () => {
   const o = Math.sin(Math.min(1, frame / 34) * Math.PI) * 0.75;
   return <AbsoluteFill style={{opacity: o, mixBlendMode: 'screen', background: 'radial-gradient(circle at 30% 35%, #ffb36b, #ff5e3a 35%, transparent 70%)'}} />;
 };
-const Leak: React.FC<{seed: number}> = ({seed}) =>
-  getRemotionEnvironment().isPlayer ? <LeakStandIn /> : <LightLeak seed={seed} hueShift={0} />;
+export const Leak: React.FC<{seed: number; hueShift?: number}> = ({seed, hueShift = 0}) =>
+  getRemotionEnvironment().isPlayer ? <LeakStandIn /> : <LightLeak seed={seed} hueShift={hueShift} />;
 
 export const ReelFrame: React.FC<{
   p: RenderProps;

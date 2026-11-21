@@ -1,11 +1,10 @@
 // style: "max" — mixed scene transitions, light leaks, graded footage, grain + vignette + progress bar, pop captions, 3D logo CTA
 import React from 'react';
 import {Sequence, useVideoConfig} from 'remotion';
-import {LightLeak} from '@remotion/light-leaks';
 import {CtaCard3D} from '../../components/CtaCard3D';
 import {Look} from '../../components/Look';
 import {PopCaptions} from '../../components/PopCaptions';
-import {ReelFrame} from '../../components/ReelFrame';
+import {Leak, ReelFrame} from '../../components/ReelFrame';
 import type {RenderProps} from '../../types';
 
 export const Max: React.FC<RenderProps> = (p) => {
@@ -19,7 +18,7 @@ export const Max: React.FC<RenderProps> = (p) => {
       renderCta={(a) => <CtaCard3D {...a} />}>
       {p.cta && (
         <Sequence name="light-leak cta" from={Math.max(0, Math.round(ctaStart * fps) - 10)} durationInFrames={34}>
-          <LightLeak seed={7} hueShift={40} />
+          <Leak seed={7} hueShift={40} />
         </Sequence>
       )}
       <Look grain={p.look?.grain ?? 0} scanlines={p.look?.scanlines ?? 0} vignette={p.look?.vignette} progress={p.look?.progress} accent={colors.accent} ctaStart={ctaStart} />
