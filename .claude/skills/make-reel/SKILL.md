@@ -19,7 +19,8 @@ Follow CLAUDE.md rules. Steps:
 4. **Prepare:** `VieNeu-TTS/.venv/bin/python tools/prepare.py projects/<slug>`. Fix any reported errors.
    Over `targetSeconds` -> shorten `say` and rerun (only changed scenes re-synthesize).
 5. **Self-check:** render a still at the middle frame of each scene and look at every one; fix problems before rendering.
-6. **Render:** render `reel-v<N>.mp4` at full quality (no `--scale`). Reply in Vietnamese with:
+6. **Render:** render `reel-v<N>.mp4` at full quality (no `--scale`). Then run the post-render check (CLAUDE.md rule 7:
+   `check.py --platform tiktok` + `look.py --safe tiktok`) and fix or report what it flags. Reply in Vietnamese with:
    - the absolute path;
    - a table (scene | lời đọc | hình | motion | giây);
    - total length and mix.

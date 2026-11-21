@@ -11,6 +11,7 @@ Start a reel with the `/make-reel` skill.
 - Prepare: `VieNeu-TTS/.venv/bin/python tools/prepare.py projects/<slug>`
 - Still: `cd studio && npx remotion still Reel ../projects/<slug>/preview/<id>.png --frame=<n> --props=../projects/<slug>/render-props.json`
 - Render: `cd studio && npx remotion render Reel ../projects/<slug>/reel-v<N>.mp4 --props=../projects/<slug>/render-props.json`
+  (skips the app's audio peak limiter: renders for the client go through the app, Editor -> Render.)
 - Preview UI for the user: `cd studio && npx remotion studio`
 - Voice audition: `VieNeu-TTS/.venv/bin/python tools/voice_try.py --voice phuong --text "..." --variants '[{"speed":1.05},{"temperature":0.6}]'`
 - Sync media with Google Drive: `tools/sync.sh push|pull` (rclone remote in config.json `sync.remote`).
@@ -36,6 +37,9 @@ Start a reel with the `/make-reel` skill.
    `defineMotion`. Draw content only (use `brand` colors, `layerSeconds` if it needs its length); placement, enter/exit,
    keyframes and colors come from the layer. Be creative per video: a new component is fine when the built-ins don't fit.
 7. Before every draft: render one still per scene and look at it (overflow, covered faces, wrong shot, mix).
+   After every render: `python3 .claude/skills/ffmpeg-skill/scripts/check.py <mp4> --platform tiktok` and
+   `python3 .claude/skills/ffmpeg-skill/scripts/look.py <mp4> --safe tiktok -o projects/<slug>/preview/safe.png`;
+   look at the sheet and report FAILs and text/CTA inside the shaded (platform UI) zones.
 8. Never overwrite a render: use the next `reel-v<N>`. Commit `storyboard.json` when the user accepts a version.
 9. `VieNeu-TTS/` is upstream code: never edit it.
 10. When the app is running, tell the user to check the result in the app (Editor / Bản render) instead of describing frames.
