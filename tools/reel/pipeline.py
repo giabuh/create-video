@@ -6,7 +6,7 @@ from pathlib import Path
 from .align import estimate_words, scene_words
 from .cache import cache_key
 from .config import ROOT, apply_template, load_json, resolve_names, resolve_scene_voice, resolve_video
-from .mix import mix, shots
+from .shots import shots
 from .props import AnchorError, build_render_props, sfx_files_for
 from .tts import probe_duration, synth_to_file
 from .validate import validate
@@ -65,11 +65,10 @@ def prepare(proj: Path, get_model=None, synth: bool = True, on_progress=None) ->
     slug = proj.name
     sb = load_json(proj / "storyboard.json")
     cfg = apply_template(load_json(ROOT / "config.json"), sb)
-    target = cfg.get("mix")
     errs = validate(sb, cfg, ROOT)
     if errs:
-        return {"ok": False, "stage": "validate", "errors": errs, "stale": [], "totalSeconds": None, "mix": None,
-                "target": target, "targetSeconds": sb.get("targetSeconds")}
+        return {"ok": False, "stage": "validate", "errors": errs, "stale": [], "totalSeconds": None,
+                "targetSeconds": sb.get("targetSeconds")}
     _, brand_id = resolve_names(cfg, sb)
     brand = load_json(ROOT / "brands" / brand_id / "brand.json")
     settings = resolve_video(cfg, brand, sb)
@@ -111,8 +110,8 @@ def prepare(proj: Path, get_model=None, synth: bool = True, on_progress=None) ->
                              "ref": v["ref"], "tts": v["tts"], "cacheKey": key}
         scenes.append(sc)
     if failed:
-        return {"ok": False, "stage": "tts", "errors": failed, "stale": stale, "totalSeconds": None, "mix": None,
-                "target": target, "targetSeconds": sb.get("targetSeconds")}
+        return {"ok": False, "stage": "tts", "errors": failed, "stale": stale, "totalSeconds": None,
+                "targetSeconds": sb.get("targetSeconds")}
 
     # word timings: whisper (when installed, only for scenes something is anchored to), else an estimate
     needed = _anchored_scenes(sb)
@@ -134,16 +133,13 @@ def prepare(proj: Path, get_model=None, synth: bool = True, on_progress=None) ->
                                    _sfx_peaks(sfx_files) if settings.get("sfx") else None, _media_sizes())
         _warn_sfx(sb, settings.get("sfx"), sfx_files)
     except AnchorError as e:
-        return {"ok": False, "stage": "anchor", "errors": e.problems, "stale": stale, "totalSeconds": None, "mix": None,
-                "target": target, "targetSeconds": sb.get("targetSeconds")}
-    cta_s = props["cta"]["duration"] if props["cta"] else 0
-    actual = mix([{"duration": s["duration"], "hasMedia": bool(s["media"]),
-                  "motion": [(m["start"], m["duration"]) for m in s["motion"]]} for s in props["scenes"]], cta_s)
+        return {"ok": False, "stage": "anchor", "errors": e.problems, "stale": stale, "totalSeconds": None,
+                "targetSeconds": sb.get("targetSeconds")}
     write_json(proj / "render-props.json", props)
     if synth:
-        write_json(proj / "timings.json", {"scenes": timings, "totalSeconds": props["totalSeconds"], "mix": actual})
+        write_json(proj / "timings.json", {"scenes": timings, "totalSeconds": props["totalSeconds"]})
     return {"ok": True, "stage": None, "errors": [], "stale": stale, "totalSeconds": props["totalSeconds"],
-            "mix": actual, "target": target, "targetSeconds": sb.get("targetSeconds"), "shots": shots(props["scenes"]),
+            "targetSeconds": sb.get("targetSeconds"), "shots": shots(props["scenes"]),
             "words": {k: v for k, v in engines.items() if k in needed}}
 
 

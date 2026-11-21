@@ -44,7 +44,7 @@ def fake_synth(calls):
 
 def test_preview_marks_unsynthesized_scenes_stale_and_keeps_timings(proj, monkeypatch):
     monkeypatch.setattr(pipeline, "synth_to_file", lambda *a: pytest.fail("preview must not synthesize"))
-    (proj / "timings.json").write_text(json.dumps({"scenes": {"s1": {"duration": 2.2}}, "totalSeconds": 0, "mix": {}}), encoding="utf-8")
+    (proj / "timings.json").write_text(json.dumps({"scenes": {"s1": {"duration": 2.2}}, "totalSeconds": 0}), encoding="utf-8")
     before = (proj / "timings.json").read_text(encoding="utf-8")
     res = pipeline.prepare(proj, get_model=lambda: pytest.fail("no model in preview"), synth=False)
     assert res["ok"] and res["stale"] == ["s1"]
@@ -68,6 +68,8 @@ def test_synth_writes_audio_timings_and_reports_progress(proj, monkeypatch):
     res = pipeline.prepare(proj, get_model=lambda: "model", synth=True, on_progress=lambda d, t, s: progress.append((d, t, s)))
     assert res["ok"] and res["stale"] == [] and calls == ["Xin chào các bạn"]
     assert progress == [(0, 1, "s1"), (1, 1, "s1")]
+    assert "mix" not in res and "target" not in res
+    assert "mix" not in json.loads((proj / "timings.json").read_text(encoding="utf-8"))
     t = json.loads((proj / "timings.json").read_text(encoding="utf-8"))
     assert t["scenes"]["s1"]["duration"] == 1.5 and t["scenes"]["s2"] == {"duration": 2.0}
     # second run is fully cached: preview now has no stale scenes
