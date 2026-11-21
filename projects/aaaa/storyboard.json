@@ -1,0 +1,257 @@
+{
+  "template": "story",
+  "brand": "demo",
+  "voice": "mc-thoi-su",
+  "targetSeconds": 30,
+  "notes": "Brief: chủ shop nhỏ (quán ăn, tiệm hoa, shop quần áo) muốn tự chạy quảng cáo Facebook. Nỗi đau: học lý thuyết chung chung, về không áp dụng được cho sản phẩm của mình. Lời hứa: mang sản phẩm thật đến lớp, làm quảng cáo cho chính nó. Bằng chứng: ảnh lớp quảng cáo Facebook thật. Hành động: gọi 0876 929 145. Cơ sở: Thuận An, Dĩ An (Bình Dương), Biên Hòa (Đồng Nai). Không dùng 35%, kèm 1-1, khai giảng hằng tuần (chưa xác nhận). Khoảnh khắc đặc trưng: MaxKinetic slam ở cảnh 2.",
+  "cta": {
+    "title": "Gọi để biết lịch học",
+    "phone": "0876 929 145",
+    "duration": 3
+  },
+  "scenes": [
+    {
+      "id": "mo-dau",
+      "say": "Bạn bán quán ăn, tiệm hoa hay shop quần áo?",
+      "caption": "Bạn bán quán ăn, tiệm hoa hay shop quần áo?",
+      "transition": "cut",
+      "media": [
+        {
+          "src": "video-doc-hoc-vien-nu-hoc-tren-laptop-ghi-chep.mp4",
+          "from": 0.2,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-doc-lop-hoc-dong-hoc-vien-tai-phong-may.mp4",
+          "from": 3,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Text",
+          "props": {
+            "text": "QUÁN ĂN",
+            "size": 64,
+            "color": "#0B1530",
+            "background": "#FFD400"
+          },
+          "box": {
+            "x": 6,
+            "y": 11,
+            "w": 40,
+            "h": 7
+          },
+          "at": "quán ăn",
+          "until": {
+            "word": "quần áo",
+            "offset": 0.6
+          },
+          "enter": "pop",
+          "backdrop": "none"
+        },
+        {
+          "component": "Text",
+          "props": {
+            "text": "TIỆM HOA",
+            "size": 64,
+            "color": "#0B1530",
+            "background": "#FFFFFF"
+          },
+          "box": {
+            "x": 50,
+            "y": 11,
+            "w": 44,
+            "h": 7
+          },
+          "at": "tiệm hoa",
+          "until": {
+            "word": "quần áo",
+            "offset": 0.6
+          },
+          "enter": "pop",
+          "backdrop": "none"
+        },
+        {
+          "component": "Text",
+          "props": {
+            "text": "SHOP QUẦN ÁO",
+            "size": 64,
+            "color": "#0B1530",
+            "background": "#FFD400"
+          },
+          "box": {
+            "x": 14,
+            "y": 19,
+            "w": 72,
+            "h": 7
+          },
+          "at": "shop",
+          "until": {
+            "word": "quần áo",
+            "offset": 0.6
+          },
+          "enter": "pop",
+          "backdrop": "none"
+        }
+      ]
+    },
+    {
+      "id": "mang-san-pham",
+      "say": "Đến lớp quảng cáo Phây Búc thực chiến của Tin học Sao Việt, bạn mang theo chính sản phẩm đó.",
+      "caption": "Đến lớp quảng cáo Facebook thực chiến của Tin học Sao Việt, bạn mang theo chính sản phẩm đó.",
+      "highlight": [
+        "Facebook",
+        "sản phẩm"
+      ],
+      "transition": "push",
+      "media": [
+        {
+          "src": "sv-facebook-giang-vien-trinh-bay.jpg",
+          "effect": "zoom-in"
+        },
+        {
+          "src": "sv-facebook-hoc-vien-thuc-hanh.jpg",
+          "effect": "zoom-out"
+        }
+      ],
+      "motion": [
+        {
+          "component": "MaxKinetic",
+          "props": {
+            "text": "SẢN PHẨM CỦA BẠN LÀ BÀI TẬP",
+            "variant": "slam",
+            "size": 170
+          },
+          "box": {
+            "x": 5,
+            "y": 10,
+            "w": 90,
+            "h": 26
+          },
+          "at": "mang theo",
+          "until": {
+            "word": "đó",
+            "offset": 0.5
+          },
+          "backdrop": "scrim"
+        }
+      ]
+    },
+    {
+      "id": "lam-that",
+      "say": "Bạn chọn khách hàng cho sản phẩm của mình, viết mẫu quảng cáo cho nó, rồi đọc báo cáo để chỉnh tiếp.",
+      "caption": "Bạn chọn khách hàng cho sản phẩm của mình, viết mẫu quảng cáo cho nó, rồi đọc báo cáo để chỉnh tiếp.",
+      "highlight": [
+        "khách hàng",
+        "mẫu quảng cáo",
+        "báo cáo"
+      ],
+      "transition": "slide",
+      "media": [
+        {
+          "src": "video-doc-hoc-vien-nu-thuc-hanh-excel-tren-laptop.mp4",
+          "from": 1,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-nhieu-hoc-vien-thuc-hanh-tin-hoc-van-phong.mp4",
+          "from": 6,
+          "effect": "zoom-in"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Checklist",
+          "props": {
+            "variant": "steps",
+            "title": "LÀM TRÊN SẢN PHẨM THẬT",
+            "items": [
+              "Chọn khách hàng",
+              "Viết mẫu quảng cáo",
+              "Đọc báo cáo, chỉnh tiếp"
+            ],
+            "itemsAt": [
+              "chọn khách hàng",
+              "viết mẫu",
+              "đọc báo cáo"
+            ],
+            "fx": "words"
+          },
+          "box": {
+            "x": 6,
+            "y": 9,
+            "w": 88,
+            "h": 30
+          },
+          "at": "chọn khách hàng",
+          "backdrop": "scrim"
+        }
+      ]
+    },
+    {
+      "id": "co-so",
+      "say": "Lớp mở tại Thuận An, Dĩ An và Biên Hòa. Gọi không tám bảy sáu, chín hai chín, một bốn năm để biết lịch học gần bạn.",
+      "caption": "Lớp mở tại Thuận An, Dĩ An và Biên Hòa. Gọi 0876 929 145 để biết lịch học gần bạn.",
+      "highlight": [
+        "0876 929 145"
+      ],
+      "transition": "wipe",
+      "media": [
+        {
+          "src": "video-doc-hoc-vien-thuc-hanh-tai-phong-may-tuong-xanh.mp4",
+          "from": 2,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-giao-vien-giang-bai-tren-bang-lop-tin-hoc.mp4",
+          "from": 3,
+          "effect": "zoom-in"
+        }
+      ],
+      "motion": [
+        {
+          "component": "PinLabel",
+          "props": {
+            "text": "Thuận An · Dĩ An · Biên Hòa",
+            "size": 84,
+            "fx": "scramble"
+          },
+          "box": {
+            "x": 6,
+            "y": 10,
+            "w": 88,
+            "h": 14
+          },
+          "at": "Thuận An",
+          "until": {
+            "word": "Gọi",
+            "offset": -0.1
+          },
+          "backdrop": "none"
+        },
+        {
+          "component": "Text",
+          "props": {
+            "text": "0876 929 145",
+            "size": 96,
+            "color": "#0B1530",
+            "background": "#FFD400"
+          },
+          "box": {
+            "x": 10,
+            "y": 11,
+            "w": 80,
+            "h": 10
+          },
+          "at": "Gọi",
+          "enter": "pop",
+          "backdrop": "none"
+        }
+      ]
+    }
+  ],
+  "music": {
+    "file": "Tears of Joy - Michael Ramir C.mp3"
+  }
+}

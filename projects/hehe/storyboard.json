@@ -1,0 +1,367 @@
+{
+  "template": "max",
+  "brand": "demo",
+  "voice": "phuong",
+  "targetSeconds": 35,
+  "notes": "Brief — Khán giả: chủ shop / người bán hàng online ở Bình Dương, Đồng Nai tự chạy quảng cáo Facebook. Nỗi đau: bài quảng cáo bị lướt qua, tốn tiền không ai nhắn. Lời hứa: học nhắm đúng người, viết đúng lời để khách tự nhắn. Bằng chứng (đã xác nhận): lớp ở Thuận An, Dĩ An, Biên Hòa; SĐT 0876 929 145. Hành động: gọi 0876 929 145. Không dùng ưu đãi/lịch/kèm 1-1/fanpage vì chưa xác nhận. Ý tưởng 1: điện thoại lướt bảng tin (FeedPhone, component mới) từ 'bị lướt qua' tới 'tin nhắn đổ về'; khoảnh khắc đặc trưng: MaxKinetic slam ĐÚNG NGƯỜI ĐÚNG LỜI. Bài đăng + tin nhắn trên điện thoại là minh họa (có nhãn).",
+  "scenes": [
+    {
+      "id": "luot-qua",
+      "say": "Tốn tiền chạy quảng cáo Phây Búc mà bài cứ bị lướt qua như thế này?",
+      "caption": "Tốn tiền chạy quảng cáo Facebook mà bài cứ bị lướt qua như thế này?",
+      "highlight": [
+        "lướt qua"
+      ],
+      "media": [
+        {
+          "src": "video-doc-hoc-vien-nu-hoc-tren-laptop-ghi-chep.mp4",
+          "from": 0,
+          "effect": "zoom-in"
+        }
+      ],
+      "motion": [
+        {
+          "component": "FeedPhone",
+          "props": {
+            "mode": "scroll",
+            "page": "Shop của bạn",
+            "postText": "Hàng mới về, nhắn tin để đặt ngay!",
+            "image": "sv-facebook-minh-hoa-mau-quang-cao.png"
+          },
+          "box": {
+            "x": 20,
+            "y": 6,
+            "w": 60,
+            "h": 56
+          },
+          "at": "Tốn tiền",
+          "backdrop": "none"
+        }
+      ]
+    },
+    {
+      "id": "tai-lop",
+      "say": "Ở lớp quảng cáo Phây Búc thực chiến của Tin học Sao Việt, bạn học trực tiếp cùng giảng viên ngay tại lớp.",
+      "caption": "Ở lớp quảng cáo Facebook thực chiến của Tin học Sao Việt, bạn học trực tiếp cùng giảng viên ngay tại lớp.",
+      "highlight": [
+        "Facebook thực chiến"
+      ],
+      "transition": "clockWipe",
+      "media": [
+        {
+          "src": "sv-facebook-hoc-vien-thuc-hanh.jpg",
+          "effect": "pan-left",
+          "duration": 2.6
+        },
+        {
+          "src": "sv-facebook-giang-vien-trinh-bay.jpg",
+          "effect": "none"
+        }
+      ],
+      "mediaTransition": "fade",
+      "motion": [
+        {
+          "component": "Callout",
+          "props": {
+            "title": "Giảng viên",
+            "sub1": "tại lớp",
+            "targetX": 10,
+            "targetY": 47,
+            "labelX": 28,
+            "labelY": 22,
+            "fx": "typewriter",
+            "pace": "fast"
+          },
+          "at": "giảng viên",
+          "duration": 2.6
+        }
+      ]
+    },
+    {
+      "id": "hoc-gi",
+      "say": "Bạn học chọn đúng nhóm khách, viết bài để người xem muốn dừng lại đọc, rồi đọc báo cáo để điều chỉnh ngân sách.",
+      "caption": "Bạn học chọn đúng nhóm khách, viết bài để người xem muốn dừng lại đọc, rồi đọc báo cáo để điều chỉnh ngân sách.",
+      "highlight": [
+        "đúng nhóm khách"
+      ],
+      "transition": "cube",
+      "media": [
+        {
+          "src": "video-doc-hoc-vien-nu-thuc-hanh-tin-hoc-van-phong.mp4",
+          "from": 0,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-hoc-vien-nam-thuc-hanh-excel.mp4",
+          "from": 0.5,
+          "effect": "zoom-in"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Picture",
+          "props": {
+            "src": "sv-facebook-minh-hoa-khach-hang.png",
+            "fit": "contain",
+            "shadow": false
+          },
+          "box": {
+            "x": 10,
+            "y": 10,
+            "w": 80,
+            "h": 28
+          },
+          "at": "chọn đúng",
+          "until": "viết bài",
+          "backdrop": "none",
+          "enter": {
+            "type": "pop",
+            "duration": 0.35
+          }
+        },
+        {
+          "component": "Picture",
+          "props": {
+            "src": "sv-facebook-minh-hoa-mau-quang-cao.png",
+            "fit": "contain",
+            "shadow": false
+          },
+          "box": {
+            "x": 10,
+            "y": 10,
+            "w": 80,
+            "h": 28
+          },
+          "at": "viết bài",
+          "until": "đọc báo cáo",
+          "backdrop": "none",
+          "enter": {
+            "type": "pop",
+            "duration": 0.35
+          }
+        },
+        {
+          "component": "Picture",
+          "props": {
+            "src": "sv-facebook-minh-hoa-bao-cao.png",
+            "fit": "contain",
+            "shadow": false
+          },
+          "box": {
+            "x": 10,
+            "y": 10,
+            "w": 80,
+            "h": 28
+          },
+          "at": "đọc báo cáo",
+          "until": {
+            "word": "ngân sách",
+            "offset": 0.4
+          },
+          "backdrop": "none",
+          "enter": {
+            "type": "pop",
+            "duration": 0.35
+          }
+        }
+      ]
+    },
+    {
+      "id": "dung-nguoi",
+      "say": "Nhắm đúng người, nói đúng điều họ cần, để tin nhắn hỏi mua tìm đến bạn.",
+      "caption": "Nhắm đúng người, nói đúng điều họ cần, để tin nhắn hỏi mua tìm đến bạn.",
+      "highlight": [
+        "tin nhắn hỏi mua"
+      ],
+      "transition": "flip",
+      "leak": true,
+      "media": [
+        {
+          "src": "video-doc-hoc-vien-thuc-hanh-tai-phong-may-tuong-xanh.mp4",
+          "from": 2,
+          "effect": "zoom-in"
+        }
+      ],
+      "motion": [
+        {
+          "component": "MaxKinetic",
+          "props": {
+            "text": "ĐÚNG NGƯỜI ĐÚNG LỜI",
+            "variant": "slam"
+          },
+          "box": {
+            "x": 4,
+            "y": 8,
+            "w": 92,
+            "h": 16
+          },
+          "at": "Nhắm đúng",
+          "until": "tin nhắn",
+          "backdrop": "none"
+        },
+        {
+          "component": "FeedPhone",
+          "props": {
+            "mode": "messages",
+            "page": "Shop của bạn",
+            "postText": "Hàng mới về, nhắn tin để đặt ngay!",
+            "image": "sv-facebook-minh-hoa-mau-quang-cao.png",
+            "messages": [
+              "Shop ơi, còn hàng không ạ?",
+              "Giá bao nhiêu vậy shop?",
+              "Ship về Dĩ An được không?"
+            ],
+            "itemsAt": [
+              "tin nhắn",
+              "tìm đến",
+              "bạn"
+            ]
+          },
+          "box": {
+            "x": 21,
+            "y": 8,
+            "w": 58,
+            "h": 55
+          },
+          "at": "tin nhắn",
+          "until": {
+            "word": "bạn",
+            "offset": 1.2
+          },
+          "backdrop": "none"
+        }
+      ]
+    },
+    {
+      "id": "noi-hoc",
+      "say": "Lớp học tại Thuận An, Dĩ An ở Bình Dương, và Biên Hòa, Đồng Nai.",
+      "caption": "Lớp học tại Thuận An, Dĩ An (Bình Dương) và Biên Hòa (Đồng Nai).",
+      "highlight": [
+        "Thuận An",
+        "Dĩ An",
+        "Biên Hòa"
+      ],
+      "transition": "push",
+      "media": [
+        {
+          "src": "video-doc-lop-hoc-dong-hoc-vien-tai-phong-may.mp4",
+          "from": 4,
+          "effect": "pan-right"
+        }
+      ],
+      "motion": [
+        {
+          "component": "PinLabel",
+          "props": {
+            "text": "Thuận An",
+            "fx": "pop",
+            "pace": "fast"
+          },
+          "box": {
+            "x": 6,
+            "y": 10,
+            "w": 88,
+            "h": 10
+          },
+          "at": "Thuận An",
+          "until": {
+            "word": "Đồng Nai",
+            "offset": 0.8
+          }
+        },
+        {
+          "component": "PinLabel",
+          "props": {
+            "text": "Dĩ An",
+            "fx": "wave",
+            "pace": "fast"
+          },
+          "box": {
+            "x": 6,
+            "y": 22,
+            "w": 88,
+            "h": 10
+          },
+          "at": "Dĩ An",
+          "until": {
+            "word": "Đồng Nai",
+            "offset": 0.8
+          }
+        },
+        {
+          "component": "PinLabel",
+          "props": {
+            "text": "Biên Hòa",
+            "fx": "mask",
+            "pace": "fast"
+          },
+          "box": {
+            "x": 6,
+            "y": 34,
+            "w": 88,
+            "h": 10
+          },
+          "at": "Biên Hòa",
+          "until": {
+            "word": "Đồng Nai",
+            "offset": 0.8
+          }
+        }
+      ]
+    },
+    {
+      "id": "goi-ngay",
+      "say": "Gọi không tám bảy sáu, chín hai chín, một bốn năm để được tư vấn.",
+      "caption": "Gọi 0876 929 145 để được tư vấn.",
+      "highlight": [
+        "0876 929 145"
+      ],
+      "transition": "fade",
+      "media": [
+        {
+          "src": "video-doc-nhieu-hoc-vien-thuc-hanh-tin-hoc-van-phong.mp4",
+          "from": 12,
+          "effect": "zoom-in"
+        }
+      ],
+      "motion": [
+        {
+          "component": "MaxPhone",
+          "props": {
+            "groups": [
+              "0876",
+              "929",
+              "145"
+            ],
+            "itemsAt": [
+              "không tám",
+              "chín hai",
+              "một bốn"
+            ]
+          },
+          "box": {
+            "x": 3,
+            "y": 12,
+            "w": 94,
+            "h": 18
+          },
+          "at": "Gọi",
+          "until": {
+            "word": "tư vấn",
+            "offset": 0.5
+          },
+          "backdrop": "none"
+        }
+      ]
+    }
+  ],
+  "cta": {
+    "title": "Gọi ngay để được tư vấn",
+    "phone": "0876 929 145",
+    "fanpage": "",
+    "duration": 3
+  },
+  "music": {
+    "file": "Close Up - Michael Ramir C.mp3"
+  }
+}
