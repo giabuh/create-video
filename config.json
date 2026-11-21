@@ -61,7 +61,9 @@
   "sync": {
     "remote": "video-syn:create-video"
   },
-  "templates": {},
+  "templates": {
+    "story": { "look": { "grain": 0.6, "scanlines": 0.5, "logo": false } }
+  },
   "align": {
     "enabled": true,
     "model": "large-v3-turbo",
