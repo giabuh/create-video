@@ -4,14 +4,10 @@ import {widthOf, useFontsLoaded} from '../fit';
 import {fontFamily} from '../fonts';
 import type {CaptionChunk, CaptionStyle, MotionItem} from '../types';
 import {captionUnits} from './Captions';
+import {cardCovered} from './storyLayout';
 
 const LH = 1.15;
 const FADE = 0.18;
-
-// a layer that sits in the middle of the frame takes the card's place
-const centered = (m: MotionItem) =>
-  m.position === 'center' || m.position === 'full' ||
-  (m.position === 'free' && !!m.box && m.box.y + m.box.h / 2 >= 100 / 3 && m.box.y + m.box.h / 2 <= 200 / 3);
 
 const lineCount = (text: string, size: number, avail: number): number => {
   let n = 1, line = '';
@@ -31,17 +27,17 @@ export const StoryCaptions: React.FC<{
   const t = frame / fps;
   const loaded = useFontsLoaded();
   const avail = width * 0.84, maxH = height * 0.48;
-  // one size for the whole scene: the longest chunk fits in 3 lines inside the safe area
-  const size = useMemo(() => {
-    const max = Math.round(style.size * 1.6);
-    if (!loaded) return max;
-    const longest = chunks.reduce((a, c) => (c.text.length > a.length ? c.text : a), '');
-    let s = max;
-    while (s > 24 && (lineCount(longest, s, avail) > 3 || lineCount(longest, s, avail) * s * LH > maxH)) s -= 2;
-    return s;
-  }, [chunks, style.size, loaded, avail, maxH]);
   const c = chunks.find((x) => t >= x.start && t < x.end);
-  if (!c || motion.some((m) => centered(m) && t >= m.start && t < m.start + m.duration)) return null;
+  // largest size at which this chunk fits 3 lines in the safe area, capped: 200 px on a text card, 130 px over footage
+  const fit = useMemo(() => {
+    const text = c?.text ?? '';
+    const cap = footage ? 130 : 200;
+    let s = loaded ? cap : Math.round(style.size * (footage ? 1.2 : 1.6));
+    while (loaded && s > 24 && (lineCount(text, s, avail) > 3 || lineCount(text, s, avail) * s * LH > maxH)) s -= 2;
+    return {size: s, h: loaded ? lineCount(text, s, avail) * s * LH : maxH};
+  }, [c?.text, footage, style.size, loaded, avail, maxH]);
+  const size = fit.size;
+  if (!c || cardCovered(motion, t, fit.h, height)) return null;
   const units = captionUnits(c.text, highlight);
   const nTok = c.text.split(' ').filter(Boolean).length;
   let tok = 0;
