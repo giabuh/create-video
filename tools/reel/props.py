@@ -220,6 +220,7 @@ def build_render_props(storyboard: dict, settings: dict, brand: dict, audio: dic
             "voice": {"src": a["src"], "duration": a["duration"]} if a else None,
             "captions": chunk_caption(sc.get("caption") or "", cap["maxWords"], a["duration"] if a else dur, words.get(sc["id"])),
             "highlight": sc.get("highlight", []),
+            **({"punch": sc["punch"]} if sc.get("punch") else {}),
             **({"bg": sc["bg"]} if "bg" in sc else {}),
             "overlay": sc.get("overlay"),
             "media": _media(sc.get("media") or [], dur, media_sizes),

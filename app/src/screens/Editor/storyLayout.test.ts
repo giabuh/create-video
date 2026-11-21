@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {cardSlot, isCard, mediaCardRect} from '../../../../studio/src/components/storyLayout.ts';
+import {cardSlot, findPunch, isCard, mediaCardRect} from '../../../../studio/src/components/storyLayout.ts';
 
 const L = (position: 'top' | 'center' | 'bottom' | 'free' | 'full', extra = {}) =>
   ({position, box: null, start: 0, duration: 2, ...extra}) as Parameters<typeof cardSlot>[0][number];
@@ -50,4 +50,17 @@ describe('media card rect', () => {
     expect(isCard({frame: 'full'}, {mediaFrame: 'card'})).toBe(false);
     expect(isCard({}, undefined)).toBe(false);
   });
+});
+
+describe('findPunch', () => {
+  it('matches words case-insensitively, ignoring edge punctuation', () => {
+    expect(findPunch('Họ thấy bạn.', ['THẤY BẠN'])).toEqual({from: 1, len: 2});
+    expect(findPunch('chỉ 87% học viên', ['87%'])).toEqual({from: 1, len: 1});
+  });
+  it('no match, or a partial word: null', () => {
+    expect(findPunch('của bạn bè', ['bạn'])).toEqual({from: 1, len: 1});
+    expect(findPunch('bạnbè', ['bạn'])).toBeNull();
+    expect(findPunch('a b', [])).toBeNull();
+  });
+  it('earliest phrase wins', () => expect(findPunch('x a b c', ['c', 'a'])).toEqual({from: 1, len: 1}));
 });

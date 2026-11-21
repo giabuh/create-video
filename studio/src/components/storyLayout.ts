@@ -38,3 +38,19 @@ export const mediaCardRect = (aspect: number, frameW: number, frameH: number): {
   const h = Math.min(0.6, Math.max(0.28, (0.88 * frameW) / a / frameH));
   return {top: 0.4 - h / 2, bottom: 0.4 + h / 2, width: Math.min(0.88, (h * frameH * a) / frameW)};
 };
+
+const wordKey = (w: string) => w.normalize('NFC').toLowerCase().replace(/^[^\p{L}\p{N}%]+|[^\p{L}\p{N}%]+$/gu, '');
+
+/** First scene `punch` phrase found in a chunk as consecutive words (case/edge-punctuation ignored): token index `from`, word count `len`. */
+export const findPunch = (text: string, punch: string[]): {from: number; len: number} | null => {
+  const toks = text.split(' ').filter(Boolean).map(wordKey);
+  let best: {from: number; len: number} | null = null;
+  for (const ph of punch) {
+    const want = ph.split(' ').filter(Boolean).map(wordKey);
+    if (!want.length) continue;
+    for (let i = 0; i + want.length <= toks.length; i++) {
+      if (want.every((w, j) => toks[i + j] === w)) { if (!best || i < best.from) best = {from: i, len: want.length}; break; }
+    }
+  }
+  return best;
+};

@@ -25,7 +25,7 @@ export type Overlay = {text: string; position: 'top' | 'center' | 'bottom'};
 export type Scene = {
   id: string; start: number; duration: number;
   voice: {src: string; duration: number} | null;
-  captions: CaptionChunk[]; highlight: string[]; overlay: Overlay | null;
+  captions: CaptionChunk[]; highlight: string[]; punch?: string[]; overlay: Overlay | null;
   media: MediaItem[]; motion: MotionItem[]; transition: Transition;
   mediaTransition?: Transition; // between clips inside the scene
   bg?: 'light' | 'dark'; // story template: flat text-card background (default dark)

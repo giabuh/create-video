@@ -136,3 +136,12 @@ def test_media_frame_must_be_full_or_card(root, cfg):
     assert not any("frame" in e for e in validate(ok, cfg, root))
     bad = {"scenes": [{"id": "s1", "say": "x", "media": [{"src": "a.mp4", "frame": "round"}]}]}
     assert any("frame 'round'" in e for e in validate(bad, cfg, root))
+
+
+def test_punch(root, cfg):
+    def run(punch):
+        return validate({"scenes": [{"id": "s1", "say": "x", "caption": "Chỉ 87% học viên.", "punch": punch,
+                                     "media": [{"src": "a.mp4"}]}]}, cfg, root)
+    assert run(["87%", "học VIÊN"]) == []
+    assert any("punch '8' is not in the caption" in e for e in run(["8"]))
+    assert any("non-empty strings" in e for e in run(["", "x"])) and any("non-empty strings" in e for e in run("87%"))

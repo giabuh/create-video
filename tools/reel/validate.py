@@ -1,4 +1,5 @@
 """Storyboard validation. Reports every problem at once, keyed by scene id, before any model loads."""
+import re
 from pathlib import Path
 
 from .config import apply_template, pick, resolve_names, resolve_scene_voice
@@ -48,6 +49,16 @@ def validate(storyboard: dict, config: dict, root) -> list[str]:
             errs.append(f"{sid}: silent scene needs 'duration' > 0")
         if not sc.get("media") and not sc.get("motion") and template != "story":  # story: no media = text card
             errs.append(f"{sid}: needs 'media' or 'motion'")
+        punch = sc.get("punch")
+        if punch is not None:
+            if not isinstance(punch, list) or not all(isinstance(x, str) and x.strip() for x in punch):
+                errs.append(f"{sid}: 'punch' must be a list of non-empty strings")
+            else:
+                toks = [_word_key(w) for w in (sc.get("caption") or "").split()]
+                for ph in punch:
+                    want = [_word_key(w) for w in ph.split()]
+                    if not any(toks[i:i + len(want)] == want for i in range(len(toks) - len(want) + 1)):
+                        errs.append(f"{sid}: punch '{ph}' is not in the caption")
         if say is not None:
             name = pick(sc.get("voice"), storyboard.get("voice"), config["defaults"]["voice"])
             if name not in config["voices"]:
@@ -107,6 +118,10 @@ def validate(storyboard: dict, config: dict, root) -> list[str]:
             if v.get("edge", "start") not in {"start", "end"}:
                 errs.append(f"{where}.{k}.edge must be 'start' or 'end'")
     return errs
+
+
+def _word_key(w: str) -> str:
+    return re.sub(r"^[^\w%]+|[^\w%]+$", "", w).lower()
 
 
 def _sfx_ok(v) -> bool:

@@ -11,7 +11,7 @@ SETTINGS = {
 BRAND = {"name": "Demo", "logo": "logo.png",
          "colors": {"primary": "#1", "accent": "#2", "text": "#3", "background": "#4"}, "cta": {"phone": "0900"}}
 SB = {"scenes": [
-    {"id": "s1", "say": "x", "caption": "Một hai ba", "highlight": ["hai"], "transition": "fade",
+    {"id": "s1", "say": "x", "caption": "Một hai ba", "highlight": ["hai"], "punch": ["ba"], "transition": "fade",
      "media": [{"src": "a.mp4", "from": 1.5, "effect": "zoom-in"}, {"src": "b.jpg", "duration": 1.0}]},
     {"id": "s2", "duration": 2, "motion": [{"component": "CountUp", "props": {"to": 7.5}, "start": 0.5}]},
 ], "cta": {"title": "Đăng ký"}}
@@ -28,6 +28,7 @@ def test_build_render_props():
         {"src": "library/b.jpg", "type": "image", "from": 0.0, "start": 2.5, "duration": 1.0, "effect": "none"},
     ]
     assert s1["captions"][-1]["end"] == 3.0  # captions follow speech, not the pause
+    assert s1["punch"] == ["ba"] and "punch" not in s2
     assert s1["highlight"] == ["hai"] and s1["overlay"] is None
     assert (s1["transition"], s2["transition"]) == ("fade", "cut")
     tr = build_render_props(SB, {**SETTINGS, "transition": {"scene": "slide", "media": "fade", "duration": 0.5}}, BRAND, AUDIO)
