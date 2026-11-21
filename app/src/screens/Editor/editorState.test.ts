@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest';
 import type {RenderProps, SceneSpec, Storyboard} from '../../../shared/types.ts';
-import {addScene, duplicateScene, errorsByScene, mixOf, newSceneId, removeScene, sceneKind, sceneStart, shouldAdopt, updateScene} from './editorState.ts';
+import {addScene, duplicateScene, errorsByScene, newSceneId, removeScene, sceneKind, sceneStart, shouldAdopt, updateScene} from './editorState.ts';
 
 const sb: Storyboard = {scenes: [
   {id: 's1', say: 'a', caption: 'A', media: [{src: 'x.mp4'}], highlight: ['A']},
@@ -43,15 +43,11 @@ describe('editorState', () => {
     expect(sceneKind({id: 'x', media: [{src: 'a'}], motion: [{component: 'K'}]} as SceneSpec)).toBe('real');
   });
   const props = {scenes: [{id: 's1', start: 0, duration: 4, media: [1]}, {id: 's2', start: 4, duration: 2, media: []}], cta: {duration: 2}} as unknown as RenderProps;
-  it('sceneStart / mixOf', () => {
+  it('sceneStart', () => {
     expect(sceneStart(props, 's2')).toBe(4);
     expect(sceneStart(props, 'cta')).toBe(6);
     expect(sceneStart(props, 'nope')).toBeNull();
     expect(sceneStart(null, 's1')).toBeNull();
-    expect(mixOf(props)).toEqual({real: 0.5, motion: 0.25, other: 0.25});
-    // overlays on footage count as motion (union of spans: 0-1 and 0.5-1.5 cover 1.5 s of the 4 s scene)
-    const over = {...props, scenes: props.scenes.map((sc, i) => (i === 0 ? {...sc, motion: [{start: 0, duration: 1}, {start: 0.5, duration: 1}]} : sc))} as unknown as RenderProps;
-    expect(mixOf(over)).toEqual({real: 0.3125, motion: 0.4375, other: 0.25});
   });
   it('an older server copy is ignored', () => {
     const ok = {baseMtime: 200, dirty: false, saving: false};

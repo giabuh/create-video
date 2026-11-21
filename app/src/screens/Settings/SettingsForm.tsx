@@ -4,16 +4,12 @@ import type {Config} from '../../../shared/types.ts';
 import {qk, useBrands, useConfig, useSaveConfig, useTemplates, useVoices} from '../../api/hooks.ts';
 import {Button, ColorField, ErrorState, fmtNum, Segmented, Select, Skeleton, Slider, Tooltip, toast, useTheme} from '../../ui/index.ts';
 import type {TextSize, ThemeChoice} from '../../ui/index.ts';
-import {rescaleMix, type MixPct} from './mix.ts';
 import s from './Settings.module.css';
 
-const MIX_LABELS = ['Cảnh thật', 'Motion', 'Khác (CTA…)'] as const;
-const MIX_COLORS = ['var(--mix-real)', 'var(--mix-motion)', 'var(--mix-other)'] as const;
 const pct = (f: number) => Math.round(f * 100);
 export type SettingsGroup = 'brand' | 'defaults' | 'av' | 'appearance';
 type Draft = {
   defaults?: Partial<Config['defaults']>;
-  mix?: Config['mix'];
   captions?: Partial<Config['captions']>;
   music?: Partial<Config['music']>;
 };
@@ -54,25 +50,19 @@ export function SettingsForm({group}: {group: SettingsGroup}): React.JSX.Element
   const cfg = {
     ...server,
     defaults: {...server.defaults, ...draft.defaults},
-    mix: draft.mix ?? server.mix,
     captions: {...server.captions, ...draft.captions},
     music: {...server.music, ...draft.music},
   };
-  const keys = group === 'defaults' ? ['defaults', 'mix'] as const : ['captions', 'music'] as const;
+  const keys = group === 'defaults' ? ['defaults'] as const : ['captions', 'music'] as const;
   const dirty = keys.some((key) => JSON.stringify(cfg[key]) !== JSON.stringify(server[key]));
   const clear = (saved?: Draft) => setDraft((cur) => {
     const next = {...cur};
     for (const key of keys) if (!saved || cur[key] === saved[key]) delete next[key];
     return next;
   });
-  const mix: MixPct = [pct(cfg.mix.real), pct(cfg.mix.motion), pct(cfg.mix.other)];
-  const setMix = (i: 0 | 1 | 2, v: number) => {
-    const m = rescaleMix(mix, i, v);
-    setDraft((d) => ({...d, mix: {real: m[0] / 100, motion: m[1] / 100, other: m[2] / 100}}));
-  };
   const opt = (list: string[] | undefined, cur: string) => Array.from(new Set([...(list ?? []), cur])).filter(Boolean).map((v) => ({value: v, label: v}));
   const onSave = () => {
-    const config = group === 'defaults' ? {...server, defaults: cfg.defaults, mix: cfg.mix} : {...server, captions: cfg.captions, music: cfg.music};
+    const config = group === 'defaults' ? {...server, defaults: cfg.defaults} : {...server, captions: cfg.captions, music: cfg.music};
     save.mutate({config, baseMtime: q.data.mtime}, {
       onSuccess: () => { clear(draft); toast({title: 'Đã lưu cài đặt', tone: 'success'}); },
       onError: (e) => {
@@ -102,11 +92,6 @@ export function SettingsForm({group}: {group: SettingsGroup}): React.JSX.Element
               <Tooltip content="Chọn nhạc trong từng video"><span tabIndex={0} style={{display: 'block'}}><Select aria-label="Nhạc nền mặc định" disabled value="video" onChange={() => {}} options={[{value: 'video', label: 'Chọn theo video'}]} /></span></Tooltip>
             </div>
           </div>
-          <h3>Tỉ lệ nội dung mục tiêu</h3>
-          <div className={s.bar} role="img" aria-label={MIX_LABELS.map((l, i) => `${l} ${mix[i]}%`).join(', ')}>
-            {mix.map((v, i) => <i key={i} style={{width: `${v}%`, background: MIX_COLORS[i]}} />)}
-          </div>
-          {MIX_LABELS.map((l, i) => <Prm key={l} label={l} n={mix[i]} min={0} max={100} step={1} value={`${mix[i]}%`} onChange={(v) => setMix(i as 0 | 1 | 2, v)} />)}
         </section> : <section className={s.card} aria-label="Phụ đề, nhạc và video">
           <h2>Phụ đề</h2>
           <Prm label="Cỡ chữ" n={cap.size} min={40} max={96} step={1} value={String(cap.size)} onChange={(v) => setCap({size: v})} />

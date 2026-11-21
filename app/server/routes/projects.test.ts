@@ -37,7 +37,7 @@ describe('projects routes', () => {
     expect((await req('/api/projects', {method: 'POST', body: '{bad', headers: {'content-type': 'application/json'}})).status).toBe(400);
   });
 
-  it('storyboard PUT with baseMtime, stale, mixTarget, traversal', async () => {
+  it('storyboard PUT with baseMtime, stale, legacy mix ignored, traversal', async () => {
     const root = await makeTestRoot();
     const {req} = setup();
     const d = await (await req('/api/projects/p1')).json();
@@ -50,9 +50,11 @@ describe('projects routes', () => {
     expect(bad.status).toBe(409);
     expect(await bad.json()).toMatchObject({error: 'conflict', details: {data: sb, mtime}});
     await writeFile(path.join(root, 'projects/p1/render-props.json'), JSON.stringify({scenes: [{id: 's1', voice: null}], totalSeconds: 2}));
+    await writeFile(path.join(root, 'projects/p1/timings.json'), JSON.stringify({scenes: {}, totalSeconds: 2, mix: {real: 0.6, motion: 0.3, other: 0.1}}));
     const d2 = await (await req('/api/projects/p1')).json();
     expect(d2.stale).toEqual(['s1']);
-    expect(d2.mixTarget).toEqual({real: 0.6, motion: 0.3, other: 0.1});
+    const listed = await (await req('/api/projects')).json();
+    expect(listed[0]).not.toHaveProperty('mix');
     expect([400, 404]).toContain((await req('/api/projects/..%2Fetc')).status);
     expect((await req('/api/projects/nope')).status).toBe(404);
   });

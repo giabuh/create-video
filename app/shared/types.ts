@@ -37,10 +37,9 @@ export type Storyboard = {
   sfx?: {volume?: number} | null;   // null = all SFX off
 };
 export type Versioned<T> = {data: T; mtime: number};           // mtime = Math.floor(stat.mtimeMs)
-export type Mix = {real: number; motion: number; other: number};
 export type Timings = {
   scenes: Record<string, {duration: number; pauseAfter?: number; voice?: string; ref?: string; tts?: Json; cacheKey?: string}>;
-  totalSeconds: number; mix: Mix;
+  totalSeconds: number;
 };
 export type ProjectStatus = 'rendering' | 'approved' | 'draft' | 'new' | 'deleting';
 export type VersionInfo = {
@@ -56,13 +55,13 @@ export type ProjectMeta = {approved: string | null; renders: Record<string, {kin
   published?: Record<string, PublishInfo>; deleting?: {uploads: string[]; state: 'uploading' | 'failed'; error?: string}};
 export type ProjectSummary = {
   slug: string; status: ProjectStatus; approved: string | null; latest: VersionInfo | null;
-  sceneCount: number; totalSeconds: number | null; mix: Mix | null; mtime: number;
+  sceneCount: number; totalSeconds: number | null; mtime: number;
   firstCaption: string; voice: string | null; deleting: ProjectMeta['deleting'] | null;
 };
 export type ProjectDetail = {
   slug: string; storyboard: Versioned<Storyboard>; timings: Timings | null;
   renderProps: RenderProps | null; stale: string[]; versions: VersionInfo[];
-  meta: ProjectMeta; status: ProjectStatus; mixTarget: Mix;
+  meta: ProjectMeta; status: ProjectStatus;
 };
 export type PreviewResult = {ok: boolean; errors: string[]; stale: string[]; renderProps: RenderProps | null};
 export type LibraryEntry = {
@@ -82,7 +81,7 @@ export type BrandSummary = {id: string; brand: BrandFile; isDefault: boolean; mt
 export type Config = Json & {
   defaults: {voice: string; template: string; brand: string};
   tts: Json & {speed: number; pauseAfter: number}; voices: Record<string, Json & {ref: string}>;
-  mix: Mix; video: {fps: number; width: number; height: number};
+  video: {fps: number; width: number; height: number};
   music: {volume: number; duckTo: number; fadeOut: number};
   captions: {font: string; size: number; color: string; highlightColor: string; maxWords: number};
   sync: {remote: string};

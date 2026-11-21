@@ -1,7 +1,4 @@
 .tools { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; margin-bottom: var(--sp-5); }
-.legend { margin-left: auto; display: flex; gap: var(--sp-4); flex-wrap: wrap; font-size: var(--fs-sm); color: var(--muted); }
-.legend span { display: inline-flex; align-items: center; gap: 6px; }
-.sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
 .search { width: 240px; max-width: 100%; flex: 1; min-width: 8rem; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: var(--sp-5); }
 .card { display: flex; flex-direction: column; overflow: hidden; background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-lg); color: inherit; text-decoration: none; transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease); }
@@ -13,8 +10,6 @@
 .row { display: flex; justify-content: space-between; align-items: center; gap: var(--sp-2); }
 .name { font-size: var(--fs-md); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 .sub { font-size: var(--fs-sm); color: var(--muted); }
-.mix { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; display: flex; }
-.mix i { display: block; height: 100%; }
 .new { min-height: 18rem; border: 1.5px dashed var(--line-strong); background: transparent; border-radius: var(--r-lg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-2); padding: var(--sp-4); color: var(--muted); font: inherit; cursor: pointer; text-align: center; transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease); }
 .new:hover { border-color: var(--accent); color: var(--text); }
 .new:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -25,7 +20,6 @@
   /* scroll instead of squeezing labels onto two lines */
   .statusFilter { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
   .statusFilter > button { flex-shrink: 0; padding-inline: var(--sp-3); font-size: var(--fs-sm); }
-  .legend { margin-left: 0; }
   .new { min-height: 7rem; }
 }
 .check { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-sm); }

@@ -1,4 +1,4 @@
-import type {Mix, RenderProps, SceneSpec, Storyboard} from '../../../shared/types.ts';
+import type {RenderProps, SceneSpec, Storyboard} from '../../../shared/types.ts';
 
 /** "s<N>" with N = max numeric suffix over existing ids + 1. */
 export function newSceneId(scenes: SceneSpec[]): string {
@@ -47,30 +47,6 @@ export function sceneRange(props: RenderProps | null, id: string): [number, numb
   return s ? [s.start, s.start + s.duration] : null;
 }
 export const sceneStart = (props: RenderProps | null, id: string): number | null => sceneRange(props, id)?.[0] ?? null;
-
-/** Length of the union of [start, start + duration) spans, clipped to [0, length]. */
-function covered(spans: {start: number; duration: number}[], length: number): number {
-  const iv = spans.map((m) => [Math.max(0, m.start), Math.min(length, m.start + m.duration)] as const).filter(([a, b]) => b > a).sort((x, y) => x[0] - y[0]);
-  let total = 0, a = -1, b = -1;
-  for (const [x, y] of iv) {
-    if (x > b) { if (b > a) total += b - a; a = x; b = y; } else b = Math.max(b, y);
-  }
-  return total + (b > a ? b - a : 0);
-}
-
-/** Share of screen time, as tools/reel/mix.py: motion-only scenes = motion; in scenes with media the time motion
- *  layers cover the footage = motion, the rest = real; CTA = other. The video-wide track is not counted. */
-export function mixOf(props: RenderProps): Mix {
-  let real = 0, motion = 0;
-  for (const s of props.scenes) {
-    if (!s.media.length) { motion += s.duration; continue; }
-    const c = covered(s.motion ?? [], s.duration);
-    motion += c; real += s.duration - c;
-  }
-  const other = props.cta?.duration ?? 0;
-  const t = real + motion + other;
-  return t > 0 ? {real: real / t, motion: motion / t, other: other / t} : {real: 0, motion: 0, other: 0};
-}
 
 /** Adopt a refetched server storyboard only if it is newer than our base and nothing local is pending. */
 export const shouldAdopt = (o: {serverMtime: number; baseMtime: number; dirty: boolean; saving: boolean}): boolean =>

@@ -23,8 +23,6 @@
 .dirty { color: var(--accent-text); font-size: var(--fs-sm); font-weight: 600; }
 .muted { color: var(--muted); font-size: var(--fs-sm); }
 .cards { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--sp-5); align-items: start; }
-.bar { display: flex; height: 12px; border-radius: var(--r-pill); overflow: hidden; background: var(--bg-sunken); }
-.bar i { display: block; transition: width var(--dur) var(--ease); }
 .prm { display: grid; grid-template-columns: minmax(7rem, 10rem) minmax(0, 1fr) 4rem; gap: var(--sp-3); align-items: center; font-size: var(--fs-sm); }
 .prm b { text-align: right; font-variant-numeric: tabular-nums; }
 .skel { display: flex; flex-direction: column; gap: var(--sp-3); }

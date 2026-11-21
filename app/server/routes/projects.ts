@@ -10,7 +10,7 @@ import {deleteRender, PUBLISHED_MSG, runDriveDelete, UPLOADING_MSG, uploadVersio
 import {withSlugLock} from '../slugLock.ts';
 import {readJson, readJsonOr, writeJsonAtomic} from '../store.ts';
 import {listVersions, projectStatus, readMeta, writeMeta} from '../versions.ts';
-import type {Config, DriveStatus, Mix, ProjectDetail, ProjectSummary, RenderProps, Storyboard, Timings} from '../../shared/types.ts';
+import type {Config, DriveStatus, ProjectDetail, ProjectSummary, RenderProps, Storyboard, Timings} from '../../shared/types.ts';
 import {bodyOf, HttpError, isObj, mtimeField, needEditable, needProject, readConfig, slugParam} from './util.ts';
 import type {Deps, WorkerLike} from './util.ts';
 
@@ -25,7 +25,7 @@ async function summarize(jobs: JobQueue, slug: string, config: Config): Promise<
   const first = sb.data.scenes[0];
   return {
     slug, status: meta.deleting ? 'deleting' : projectStatus(versions, meta, isRendering(jobs, slug)), approved: meta.approved, latest: versions[0] ?? null,
-    sceneCount: sb.data.scenes.length, totalSeconds: timings?.totalSeconds ?? props?.totalSeconds ?? null, mix: timings?.mix ?? null,
+    sceneCount: sb.data.scenes.length, totalSeconds: timings?.totalSeconds ?? props?.totalSeconds ?? null,
     mtime: sb.mtime, firstCaption: first?.caption ?? first?.say ?? '', voice: sb.data.voice ?? config.defaults.voice, deleting: meta.deleting ?? null,
   };
 }
@@ -86,7 +86,7 @@ export function projectRoutes({jobs, worker}: Deps): Hono {
       : [];
     const detail: ProjectDetail = {
       slug, storyboard, timings, renderProps, stale, versions, meta,
-      status: projectStatus(versions, meta, isRendering(jobs, slug)), mixTarget: config.mix as Mix,
+      status: projectStatus(versions, meta, isRendering(jobs, slug)),
     };
     return c.json(detail);
   });

@@ -31,7 +31,6 @@ const cap = (v: string) => v.charAt(0).toUpperCase() + v.slice(1);
 
 function Card({p}: {p: ProjectSummary}): React.JSX.Element {
   const meta = [`${p.sceneCount} cảnh`, p.totalSeconds != null ? fmtSec(p.totalSeconds) : 'chưa tạo giọng', p.voice && cap(p.voice)].filter(Boolean).join(' · ');
-  const m = p.mix;
   const [askDelete, setAskDelete] = useState(false);
   const retry = useDeleteProject(p.slug), cancel = useCancelDelete(p.slug);
   const deleting = p.status === 'deleting';
@@ -43,9 +42,6 @@ function Card({p}: {p: ProjectSummary}): React.JSX.Element {
       <div className={s.meta}>
         <div className={s.row}><span className={s.name} title={p.slug}>{p.slug}</span>{statusChip(p)}</div>
         <div className={s.sub}>{meta}</div>
-        <div className={s.mix} title="Tỉ lệ cảnh thật / motion / khác">
-          {m && <><i style={{width: `${m.real * 100}%`, background: 'var(--mix-real)'}} /><i style={{width: `${m.motion * 100}%`, background: 'var(--mix-motion)'}} /><i style={{width: `${m.other * 100}%`, background: 'var(--mix-other)'}} /></>}
-        </div>
         <div className={s.sub}>Sửa {fmtRelTime(p.mtime)}</div>
       </div>
     </>
@@ -144,11 +140,6 @@ export function ProjectsScreen(): React.JSX.Element {
         <Segmented<Filter> className={s.statusFilter} aria-label="Lọc dự án" value={filter} onChange={setFilter} options={[
           {value: 'all', label: `Tất cả · ${count('all')}`}, {value: 'doing', label: `Đang làm · ${count('doing')}`},
           {value: 'approved', label: `Đã duyệt · ${count('approved')}`}, {value: 'new', label: `Chưa render · ${count('new')}`}]} />
-        <div className={s.legend}>
-          <span><i className={s.sw} style={{background: 'var(--mix-real)'}} />Cảnh thật</span>
-          <span><i className={s.sw} style={{background: 'var(--mix-motion)'}} />Motion</span>
-          <span><i className={s.sw} style={{background: 'var(--mix-other)'}} />Khác (CTA)</span>
-        </div>
       </div>
       <div className={s.grid}>
         {shown.map((p) => <Card key={p.slug} p={p} />)}
