@@ -89,7 +89,7 @@ export function PreviewPane(): React.JSX.Element {
             onChange={(event) => playerRef.current?.seekTo(Number(event.target.value))} />
           <IconButton className={s.control} label="Xem toàn màn hình" icon={<Expand size={18} aria-hidden />}
             onClick={() => playerRef.current?.requestFullscreen()} />
-          <Button size="sm" icon={<MessageSquarePlus size={16} aria-hidden />} disabled={!renderProps} onClick={() => {
+          <Button className={s.ask} size="sm" icon={<MessageSquarePlus size={16} aria-hidden />} disabled={!renderProps} onClick={() => {
             const p = playerRef.current;
             if (!p || !renderProps) return;
             p.pause();

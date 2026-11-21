@@ -11,7 +11,8 @@
 .bar { display: flex; align-items: center; gap: var(--sp-2); }
 .hint { font-size: var(--fs-xs); color: #dbe3f0; }
 .banner { display: flex; align-items: center; gap: var(--sp-1) var(--sp-2); flex-wrap: wrap; justify-content: space-between; max-width: 100%; padding: var(--sp-1) var(--sp-2); border-radius: var(--r-md); background: var(--warning-soft); color: var(--warning-text); font-size: var(--fs-sm); }
-.transport { display: flex; gap: var(--sp-1); align-items: center; width: min(100%, 25rem); color: #e7edf9; }
+.transport { display: flex; flex-wrap: wrap; gap: var(--sp-1); align-items: center; width: min(100%, 34rem); color: #e7edf9; }
+@media (max-width: 850px) { .ask { flex: 1 0 100%; } } /* own row: the seek bar keeps its width on a phone */
 .control { color: inherit; }
 .control:hover { background: #344258; }
 .time { white-space: nowrap; font-size: var(--fs-xs); font-variant-numeric: tabular-nums; }
