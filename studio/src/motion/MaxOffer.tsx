@@ -49,7 +49,7 @@ export const MaxOffer: React.FC<MotionProps<typeof MaxOfferSchema>> = ({part, la
   const burst = spring({frame, fps, config: {damping: 12, stiffness: 90}});
   const val = Math.round(interpolate(t, [0.1, 1.0], [0, number], {...clamp, easing: Easing.out(Easing.cubic)}));
   const landed = spring({frame: frame - Math.round(1.0 * fps), fps, config: {damping: 6, stiffness: 200}});
-  const numSize = Math.min(R * 1.25, (R * 1.4) / (0.57 * `${number}${suffix}`.length)); // keep the number inside the star
+  const numSize = Math.min(R * 1.25, (R * 1.0) / (0.57 * `${number}${suffix}`.length)); // keep the number inside the star
   return (
     <AbsoluteFill style={{opacity: out, alignItems: 'center', justifyContent: 'center'}}>
       {[...Array(18)].map((_, i) => {
