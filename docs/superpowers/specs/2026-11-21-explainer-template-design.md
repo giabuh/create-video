@@ -35,6 +35,7 @@ for bespoke motion design.
   visual concept.
 - Copying the reference video's look 1:1. It sets the quality bar (consistency, one visual idea per point,
   continuous motion), not the exact design.
+- A video that is mostly motion pages with little real footage. It looks polished but loses the realism ads need.
 - Any invented fact (CLAUDE.md rule 1 still applies). Numbers on screen come from the facts file or the user.
 
 ## Approaches considered (format support)
@@ -95,15 +96,20 @@ for bespoke motion design.
   --motion`). **Builder decides the mechanism** (e.g. webpack `require.context` over `videos/*/index.ts`, or a
   generated index), as long as adding a video needs no edit to shared registry code beyond what is automatic. They
   use the same zod-schema + `defineMotion` contract, so the app's field editor still works for them.
-- Footage is welcome where it helps (a real class, a real campus). It is no longer required.
+- **Real footage stays the backbone (user, after approval):** viewers of an ad need to see the real thing. There is no
+  numeric target, but most screen time shows real footage (classes, students, campuses, certificates), and motion
+  explains on top of or around it: annotations on footage, footage inside cards, a chart beside a real shot, a map
+  that lands on a real campus photo. Pure-motion pages are for ideas that no footage can show (a number, a curve,
+  a map), and they stay short.
 
 ### 4. Creative process (make-reel skill, `explainer` branch)
 Claude runs this alone, with no per-scene questions to the user:
 1. Read the brand facts file and `docs/style/explainer.md`. Confirm the brief (topic, format, length, CTA) and any
    missing facts with the user once, at the start (rule 1).
 2. Write the script as a list of ideas, one scene per spoken idea.
-3. For each idea, choose a **visual concept**: what makes it understood instantly (chart, map, timeline, UI mockup,
-   kinetic type, annotated footage, object metaphor…). Write the concepts into the storyboard notes before coding.
+3. For each idea, choose a **visual concept**: what makes it understood instantly. Start from the real footage that
+   shows it (`usage.py`, the media index), then decide what motion explains on top of it (annotation, card frame,
+   chart beside it, map, timeline, UI mockup, kinetic type…). Write the concepts into the storyboard notes before coding.
    Avoid repeating a concept used in this brand's previous explainer (check the last project).
 4. Write the components in `studio/src/videos/<slug>/`.
 5. Render a still per scene (2–3 for scenes with heavy motion). Critique them against the reference bar (consistency,
@@ -112,7 +118,8 @@ Claude runs this alone, with no per-scene questions to the user:
 
 The skill keeps its existing steps (voice, prepare, render naming, commit on accept). Only the creative part changes.
 CLAUDE.md rule 6 becomes: for `explainer`, write new components each video under `studio/src/videos/<slug>/`; other
-templates keep reusing `motion/*` first.
+templates keep reusing `motion/*` first. The mix sentence in rule 5 is replaced by the principle "real footage is
+the backbone; motion explains on top of it" (no numbers), for every template.
 
 ### 5. Style reference
 - The video file goes to `reference/explainer/sao-viet-brand-film.mp4` (`reference/` is git-ignored; it syncs via
