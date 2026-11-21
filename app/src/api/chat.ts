@@ -24,9 +24,16 @@ export function useCreateChat() {
 export function useSendChat() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({id, ...body}: {id: string; text: string; account: string; model?: string; effort?: string; screen: string; slug: string | null}) => api<void>(`/chats/${id}/messages`, {body}),
+    mutationFn: ({id, ...body}: {id: string; text: string; account: string; model?: string; effort?: string; screen: string; slug: string | null; images?: string[]}) => api<void>(`/chats/${id}/messages`, {body}),
     onSuccess: (_r, {id}) => { void qc.invalidateQueries({queryKey: chatKeys.one(id)}); void qc.invalidateQueries({queryKey: chatKeys.list}); },
   });
+}
+export const chatImageUrl = (chatId: string, name: string): string => `/api/chats/${chatId}/images/${name}`;
+export async function uploadChatImage(chatId: string, file: File, name: string): Promise<string> {
+  const res = await fetch(`/api/chats/${chatId}/images/${encodeURIComponent(name)}`, {method: 'PUT', body: file});
+  const j = (await res.json().catch(() => null)) as {name?: string; error?: string} | null;
+  if (!res.ok || !j?.name) throw new Error(j?.error ?? `Tải ảnh lỗi (${res.status})`);
+  return j.name;
 }
 export const useStopChat = () => useMutation({mutationFn: (id: string) => api<void>(`/chats/${id}/stop`, {method: 'POST'})});
 

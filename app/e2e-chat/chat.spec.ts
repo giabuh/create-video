@@ -55,3 +55,31 @@ test('codex chat with the fake codex CLI', async ({page}) => {
   await box.fill('lần hai'); await box.press('Enter');
   await expect(dialog.getByText(`engine=codex mode=resume thread=${thread} dev=yes prompt=lần hai`)).toBeVisible();
 });
+
+test('image attachment and copy', async ({page, context}) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.goto('/');
+  await page.getByRole('button', {name: 'Chat với Claude'}).first().click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole('button', {name: 'Phiên mới'}).click(); // earlier tests leave a codex chat as the newest
+  await page.getByRole('menuitem', {name: 'Phiên Claude'}).click();
+  const box = page.getByLabel('Tin nhắn cho Claude');
+
+  const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
+  await page.locator('input[type=file]').setInputFiles({name: 'shot.png', mimeType: 'image/png', buffer: PNG});
+  await expect(dialog.getByRole('button', {name: 'Bỏ ảnh'})).toBeVisible();
+  await box.fill('xem ảnh này');
+  await box.press('Enter');
+  // the fake echoes the prompt as markdown, so the text and the attachment list are separate elements
+  await expect(dialog.getByText(/prompt=xem ảnh này/)).toBeVisible();
+  await expect(dialog.getByText('Attached images (open each file to look at it):')).toBeVisible();
+  await expect(dialog.getByText(/images\/[0-9a-f-]{36}\/[0-9a-f-]{36}\.png/)).toBeVisible();
+
+  const thumb = dialog.getByRole('img', {name: 'Ảnh đính kèm'});
+  await expect(thumb).toBeVisible();
+  expect(await thumb.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(0);
+
+  await dialog.getByRole('button', {name: 'Sao chép'}).first().click();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('xem ảnh này');
+});

@@ -1,9 +1,11 @@
-import {useEffect, useRef, useState} from 'react';
-import {MessageSquare} from 'lucide-react';
+import {useEffect, useMemo, useRef, useState} from 'react';
+import {Copy, ImagePlus, MessageSquare, X} from 'lucide-react';
 import {matchPath, useLocation} from 'react-router';
 import type {Engine} from '../../shared/types.ts';
-import {Button, DropdownMenu, EmptyState, Select, Spinner, Textarea, toast} from '../ui/index.ts';
-import {takeChatInsert, useChat, useChatAccounts, useChatBusy, useChatDraft, useChatInsert, useChatModels, useChats, useCreateChat, useSendChat, useStopChat} from '../api/chat.ts';
+import {Button, DropdownMenu, EmptyState, IconButton, Select, Spinner, Textarea, toast} from '../ui/index.ts';
+import {chatImageUrl, takeChatInsert, useChat, useChatAccounts, useChatBusy, useChatDraft, useChatInsert, useChatModels, useChats, useCreateChat, useSendChat, useStopChat, uploadChatImage} from '../api/chat.ts';
+import {acceptImages, CHAT_IMAGE_ACCEPT, MAX_CHAT_IMAGES, uploadName} from './chatImages.ts';
+import {copyText} from './clipboard.ts';
 import {isInterrupted, limitText} from './chatView.ts';
 import {mdToHtml} from './markdown.ts';
 import s from './ChatPanel.module.css';
@@ -32,6 +34,20 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
   const [model, setModel] = useState('default'); // 'default' = the CLI's own model/effort (Radix Select forbids '')
   const [effort, setEffort] = useState('default');
   const [text, setText] = useState('');
+  const [files, setFiles] = useState<File[]>([]);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const previews = useMemo(() => files.map((f) => URL.createObjectURL(f)), [files]);
+  useEffect(() => () => previews.forEach((u) => URL.revokeObjectURL(u)), [previews]);
+  const addFiles = (list: File[]) => {
+    const {ok, error} = acceptImages(files.length, list);
+    if (ok.length) setFiles((cur) => [...cur, ...ok]);
+    if (error) toast({title: error, tone: 'error'});
+  };
+  const copyMsg = async (el: HTMLElement) => {
+    const body = el.closest<HTMLElement>('[data-msg]')?.querySelector<HTMLElement>('[data-body]');
+    try { await copyText(body?.innerText ?? ''); toast({title: 'Đã sao chép'}); } catch { toast({title: 'Không sao chép được', tone: 'error'}); }
+  };
+  const copyBtn = <IconButton label="Sao chép" size="sm" className={s.copy} icon={<Copy size={14} />} onClick={(e) => void copyMsg(e.currentTarget)} />;
   const pending = useChatInsert();
   useEffect(() => {
     if (!pending) return;
@@ -95,21 +111,26 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
   const newChat = (e: Engine) => create.mutate({slug, engine: e}, {onSuccess: (c) => setPicked(c.id)});
   const submit = async () => {
     const t = text.trim();
-    if (!t || busy !== null || running || !acct) return;
+    if ((!t && !files.length) || busy !== null || running || !acct) return;
     try {
       let id = chatId;
       if (id === null) { id = (await create.mutateAsync({slug})).id; setPicked(id); }
       const n = id === chatId ? events.length : 0;
-      await send.mutateAsync({id, text: t, account: acct, model: mdl === 'default' ? undefined : mdl, effort: eff === 'default' ? undefined : eff, screen: pathname, slug});
+      const images: string[] = [];
+      for (const f of files) images.push(await uploadChatImage(id, f, uploadName(f)));
+      await send.mutateAsync({id, text: t, images: images.length ? images : undefined, account: acct, model: mdl === 'default' ? undefined : mdl, effort: eff === 'default' ? undefined : eff, screen: pathname, slug});
       setWaiting({id, n});
       setText('');
+      setFiles([]);
     } catch (e) {
       toast({title: 'Không gửi được', description: e instanceof Error ? e.message : String(e), tone: 'error'});
     }
   };
 
   return (
-    <div className={s.wrap}>
+    <div className={s.wrap}
+      onDragOver={(e) => { if (e.dataTransfer.types.includes('Files')) e.preventDefault(); }}
+      onDrop={(e) => { e.preventDefault(); addFiles([...e.dataTransfer.files]); }}>
       <div className={s.head}>
         <div className={s.row}>
           <Select key={chatId === null ? 'none' : 'set'} aria-label="Phiên chat" value={chatId} placeholder="Chưa có phiên" onChange={setPicked}
@@ -132,8 +153,24 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
         {events.length === 0 && !running && <div className={s.empty}><EmptyState icon={<MessageSquare size={28} />} title={`Hỏi ${engineName} bất cứ điều gì về video`} /></div>}
         {events.map((e, i) => {
           switch (e.kind) {
-            case 'user': return <div key={i} style={{display: 'contents'}}><span className={s.cap}>{e.account}</span><div className={s.me}>{e.text}</div></div>;
-            case 'text': return <div key={i} className={`${s.bot} ${s.md}`} dangerouslySetInnerHTML={{__html: mdToHtml(e.text)}} />;
+            case 'user': return (
+              <div key={i} className={`${s.msg} ${s.mine}`} data-msg>
+                <span className={s.cap}>{e.account}</span>
+                <div className={s.me} data-body>
+                  {e.images?.length ? <div className={s.imgs}>{e.images.map((n) => chatId && (
+                    <a key={n} href={chatImageUrl(chatId, n)} target="_blank" rel="noreferrer"><img src={chatImageUrl(chatId, n)} alt="Ảnh đính kèm" loading="lazy" /></a>
+                  ))}</div> : null}
+                  {e.text}
+                </div>
+                {copyBtn}
+              </div>
+            );
+            case 'text': return (
+              <div key={i} className={s.msg} data-msg>
+                <div className={`${s.bot} ${s.md}`} data-body dangerouslySetInnerHTML={{__html: mdToHtml(e.text)}} />
+                {copyBtn}
+              </div>
+            );
             case 'tool': return <div key={i} className={s.tool} title={`${e.name}: ${e.summary}`}>{e.name}: {e.summary}</div>;
             case 'error': return (
               <div key={i} className={s.err} role="alert">
@@ -148,12 +185,31 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
         <div ref={endRef} />
       </div>
       <div className={s.foot} ref={inputRef}>
+        {files.length > 0 && (
+          <div className={s.atts}>
+            {previews.map((u, i) => (
+              <div key={u} className={s.att}>
+                <img src={u} alt="Ảnh đính kèm" />
+                <IconButton label="Bỏ ảnh" size="sm" variant="secondary" icon={<X size={12} />} onClick={() => setFiles((cur) => cur.filter((_, j) => j !== i))} />
+              </div>
+            ))}
+          </div>
+        )}
         <Textarea
           autosize rows={2} value={text} aria-label={`Tin nhắn cho ${engineName}`} disabled={busy !== null || running}
-          placeholder={`Nhắn ${engineName}… (Enter để gửi, Shift+Enter xuống dòng)`}
+          placeholder={`Nhắn ${engineName}…`}
           onChange={(e) => setText(e.target.value)}
+          onPaste={(e) => {
+            const imgs = [...e.clipboardData.files].filter((f) => f.type.startsWith('image/'));
+            if (imgs.length) { e.preventDefault(); addFiles(imgs); }
+          }}
           onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); void submit(); } }}
         />
+        <input ref={fileRef} type="file" accept={CHAT_IMAGE_ACCEPT} multiple hidden
+          onChange={(e) => { addFiles([...(e.target.files ?? [])]); e.target.value = ''; }} />
+        <div>
+          <IconButton label="Thêm ảnh" icon={<ImagePlus size={18} />} disabled={busy !== null || running || files.length >= MAX_CHAT_IMAGES} onClick={() => fileRef.current?.click()} />
+        </div>
         {(busy !== null || running) && (
           <div className={s.note}>
             {running ? <><span>{engineName} đang trả lời…</span><Button size="sm" onClick={() => stop.mutate(chatId!)}>Dừng</Button></> : <span>Đang chạy ở phiên khác</span>}
