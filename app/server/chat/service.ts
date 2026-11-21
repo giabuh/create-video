@@ -11,7 +11,9 @@ export const NEW_TITLE = 'Phiên mới';
 const titleOf = (t: string) => { const s = t.replace(/\s+/g, ' ').trim(); return s.length > 60 ? s.slice(0, 59) + '…' : s; };
 const systemAppend = (screen: string, slug: string | null) =>
   `The user is chatting with you from the reel app's chat panel; the app is running (project rule 10 in CLAUDE.md/AGENTS.md: point them to the app instead of describing frames). ` +
-  `They are on app screen "${screen}"${slug ? `, working on projects/${slug}` : ''}.`;
+  `They are on app screen "${screen}"${slug ? `, working on projects/${slug}` : ''}.` +
+  ` The people using this app never edit by hand: make every change yourself (storyboard.json or code), and regenerate the voice after you change a scene's \`say\`.` +
+  ` A tag like "[cảnh <id> · m:ss.s · khung N]" or "[CTA · m:ss.s · khung N]" points at that scene and frame of the current preview; you can render a still at frame N (CLAUDE.md "Still" command) to look at it.`;
 
 export class ChatService {
   #bus: EventBus;

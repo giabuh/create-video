@@ -1,8 +1,8 @@
-.wrap { min-width: 0; overflow-x: clip; min-height: 100%; display: flex; flex-direction: column; gap: var(--sp-3); }
-.head { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--sp-2); position: sticky; top: calc(-1 * var(--sp-2)); z-index: 1; background: var(--panel); padding: var(--sp-2) 0; }
+.wrap { min-width: 0; height: 100%; min-height: 0; overflow-x: clip; display: flex; flex-direction: column; gap: var(--sp-3); }
+.head { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--sp-2); flex: none; padding: var(--sp-2) 0; }
 .row { display: flex; gap: var(--sp-2); align-items: center; }
 .row > :first-child { flex: 1; min-width: 0; }
-.log { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: var(--sp-2); }
+.log { min-width: 0; min-height: 0; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: var(--sp-2); }
 .me, .bot { max-width: 92%; min-width: 0; padding: var(--sp-2) var(--sp-3); border-radius: var(--r-md); white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--fs-md); line-height: 1.55; }
 .me { align-self: flex-end; background: var(--accent-soft); color: var(--text); }
 .bot { align-self: flex-start; background: var(--panel-2); color: var(--text); display: flex; gap: var(--sp-2); align-items: flex-start; }
@@ -26,7 +26,7 @@
 .md a { color: var(--accent-text); }
 .err { color: var(--danger-text); background: var(--danger-soft); border-radius: var(--r-sm); padding: var(--sp-2) var(--sp-3); font-size: var(--fs-sm); }
 .err small { display: block; color: var(--text-2); margin-top: var(--sp-1); }
-.foot { display: grid; gap: var(--sp-2); width: 100%; }
+.foot { display: grid; gap: var(--sp-2); width: 100%; flex: none; padding-top: var(--sp-3); border-top: 1px solid var(--line); }
 .foot .note { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); }
 .dot { position: absolute; top: 4px; right: 4px; width: 9px; height: 9px; border-radius: 50%; background: var(--info); pointer-events: none; }
 .pair { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-2); }
