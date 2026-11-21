@@ -104,6 +104,11 @@ export async function renderVersion(slug: string, ctx: JobCtx, worker: VoiceWork
         ctx.progress(0.25 + 0.75 * progress, stitchStage === 'muxing' ? 'Ghép âm thanh' : `Khung ${renderedFrames}/${composition.durationInFrames}`),
     });
     ctx.signal.throwIfAborted();
+    ctx.progress(0.99, 'Giới hạn đỉnh âm thanh');
+    const limited = safeJoin('projects', slug, `${name}.lim.mp4`);
+    try { await execFileP('ffmpeg', limiterArgs(tmp, limited)); }
+    catch (e) { await rm(limited, {force: true}); throw e; }
+    await rename(limited, tmp);
     await rename(tmp, safeJoin('projects', slug, `${name}.mp4`));
     tmp = null; snapshot = null; // mp4 is final; keep its snapshot even if the meta write fails
     await recordRender(slug, name);
@@ -113,6 +118,14 @@ export async function renderVersion(slug: string, ctx: JobCtx, worker: VoiceWork
     throw e;
   }
 }
+
+const PEAK_DBFS = -1.5; // platform spec is <= -1 dBTP; alimiter works on sample peaks, so keep 0.5 dB margin
+/** ffmpeg args: video stream copied, audio through a peak limiter (integrated loudness unchanged). */
+export const limiterArgs = (src: string, dst: string): string[] => [
+  '-v', 'error', '-y', '-i', src, '-map', '0', '-c:v', 'copy',
+  '-af', `alimiter=limit=${(10 ** (PEAK_DBFS / 20)).toFixed(3)}:level=disabled:attack=1:release=50`,
+  '-c:a', 'aac', '-b:a', '320k', '-movflags', '+faststart', dst,
+];
 
 type Chunkable = Omit<RenderMediaOptions, 'outputLocation'>;
 
