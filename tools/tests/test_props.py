@@ -42,7 +42,7 @@ def test_build_render_props():
     assert p["cta"] == {"duration": 3.0, "phone": "0900", "title": "Đăng ký"}
     assert p["totalSeconds"] == 8.5
     assert p["brand"] == {"name": "Demo", "logo": "brands/demo/logo.png", "colors": BRAND["colors"]}
-    assert p["music"] == {"src": "music/m.mp3", "volume": 0.25, "duckTo": 0.08, "fadeOut": 1.5}
+    assert p["music"] == {"src": "music/m.mp3", "volume": 0.25, "duckTo": 0.08, "fadeOut": 1.5, "drops": []}
     assert (p["template"], p["fps"], p["width"], p["height"]) == ("fast-cut", 30, 1080, 1920)
     assert p["captions"] == {"font": "Be Vietnam Pro", "size": 64, "color": "#FFFFFF", "highlightColor": "#FFD400", "box": False}
 
@@ -189,3 +189,14 @@ def test_self_animating_cards_have_no_default_exit_fade():
     rib, txt = build_render_props(sb, SETTINGS, BRAND, {})["scenes"][0]["motion"]
     assert rib["exit"] == {"type": "none", "duration": 0.0}
     assert txt["exit"] == {"type": "fade", "duration": 0.25}
+
+
+def test_music_drop_resolves_word_anchors():
+    sb = {**SPOKEN, "musicDrop": [{"start": {"scene": "a", "at": "khóa"}, "end": {"scene": "b", "edge": "end"}}]}
+    p = build_render_props(sb, SETTINGS, BRAND, VOICE, {"a": WORDS})
+    (a, b, to), = p["music"]["drops"]
+    assert to == 0 and a < b
+    bad = {**SPOKEN, "musicDrop": [{"start": {"scene": "zz"}, "end": "video"}]}
+    with pytest.raises(AnchorError) as e:
+        build_render_props(bad, SETTINGS, BRAND, VOICE, {"a": WORDS})
+    assert any("musicDrop[0]" in x and "unknown scene 'zz'" in x for x in e.value.problems)

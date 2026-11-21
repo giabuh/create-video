@@ -2,6 +2,7 @@
 import type {Music, Scene} from '../types';
 
 const RAMP = 0.25; // seconds
+const DROP_RAMP = 0.15; // seconds
 // Gaps between two lines shorter than this stay ducked: a short swell between every scene
 // made the narration sound chopped into separate takes.
 export const DUCK_HOLD = 1.0;
@@ -24,6 +25,10 @@ export const musicVolumeAt = (t: number, music: Music, spans: Array<[number, num
   for (const [a, b] of spans) {
     const d = t < a ? a - t : t > b ? t - b : 0;
     if (d < RAMP) v = Math.min(v, music.volume + (music.duckTo - music.volume) * (1 - d / RAMP));
+  }
+  for (const [a, b, to] of music.drops ?? []) {
+    const d = t < a ? a - t : t > b ? t - b : 0;
+    if (d < DROP_RAMP) v = Math.min(v, to + (v - to) * (d / DROP_RAMP));
   }
   const fadeStart = total - music.fadeOut;
   return t > fadeStart ? v * Math.max(0, (total - t) / music.fadeOut) : v;

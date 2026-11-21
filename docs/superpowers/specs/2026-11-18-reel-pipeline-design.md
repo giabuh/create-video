@@ -74,7 +74,7 @@ How Remotion reads files outside `studio/`: `studio/public/` contains symlinks `
 
 ## Layered config
 
-Resolution order (later wins): `config.json` → `config.voices.<voice>` → brand `brand.json` (visual fields only) → storyboard top level → scene.
+Resolution order (later wins): `config.json` → `config.templates.<template>` → `config.voices.<voice>` → brand `brand.json` (visual fields only) → storyboard top level → scene.
 
 ```jsonc
 // config.json

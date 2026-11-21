@@ -21,7 +21,7 @@ Start a reel with the `/make-reel` skill.
 
 ## Rules
 1. Never invent ad facts (price, phone, dates, address, scores, results). Ask the user.
-2. "từ giờ / mặc định / lần sau cũng…" -> edit `config.json`. About the current video -> edit only its `storyboard.json`.
+2. "từ giờ / mặc định / lần sau cũng…" -> edit `config.json` ("từ giờ video <template>…" -> `config.json` `templates.<template>`). About the current video -> edit only its `storyboard.json`.
    Ambiguous -> ask "Chỉ video này hay lưu làm mặc định?".
 3. "Lưu thiết lập này làm mặc định" -> copy the resolved values from `projects/<slug>/timings.json` into `config.json`.
 4. `say` = spoken text: spell numbers, prices, phone numbers and English words the way they must be read.

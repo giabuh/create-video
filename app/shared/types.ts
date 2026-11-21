@@ -33,6 +33,7 @@ export type Storyboard = {
   music?: {file: string; volume?: number} | null; targetSeconds?: number;
   captions?: Json; video?: Json; scenes: SceneSpec[]; cta?: CtaSpec | null;
   motion?: MotionSpec[];   // video-wide motion track
+  musicDrop?: {start: Json; end: Json; to?: number}[];   // music level drops, anchored like the motion track
   sfx?: {volume?: number} | null;   // null = all SFX off
 };
 export type Versioned<T> = {data: T; mtime: number};           // mtime = Math.floor(stat.mtimeMs)
@@ -84,6 +85,7 @@ export type Config = Json & {
   music: {volume: number; duckTo: number; fadeOut: number};
   captions: {font: string; size: number; color: string; highlightColor: string; maxWords: number};
   sync: {remote: string};
+  templates?: Record<string, Json>;
   transition?: {scene: TransitionName; media: TransitionName; duration: number};
   sfx?: {volume: number; minGap: number; scene: string | null; cta: string | null; motion: Record<string, string | null>};
 };

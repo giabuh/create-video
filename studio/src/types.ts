@@ -31,7 +31,7 @@ export type Brand = {name: string; logo: string | null; colors: {primary: string
 export type FullBrand = Omit<Brand, 'colors'> & {colors: Required<Brand['colors']>};
 export const BRAND_COLOR_DEFAULTS = {accent2: '#E11D2E', surface: '#FFFFFF'};
 export type CaptionStyle = {font: string; size: number; color: string; highlightColor: string; box?: boolean};
-export type Music = {src: string; volume: number; duckTo: number; fadeOut: number};
+export type Music = {src: string; volume: number; duckTo: number; fadeOut: number; drops?: [number, number, number][]};
 export type Cta = {title: string; logoSize?: number; phone?: string; fanpage?: string; address?: string; duration: number};
 export type RenderProps = {
   template: string; fps: number; width: number; height: number;

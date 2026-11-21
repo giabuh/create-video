@@ -5,7 +5,7 @@ from pathlib import Path
 
 from .align import estimate_words, scene_words
 from .cache import cache_key
-from .config import ROOT, load_json, resolve_names, resolve_scene_voice, resolve_video
+from .config import ROOT, apply_template, load_json, resolve_names, resolve_scene_voice, resolve_video
 from .mix import mix
 from .props import AnchorError, build_render_props, sfx_files_for
 from .tts import probe_duration, synth_to_file
@@ -56,7 +56,7 @@ def prepare(proj: Path, get_model=None, synth: bool = True, on_progress=None) ->
     proj = Path(proj)
     slug = proj.name
     sb = load_json(proj / "storyboard.json")
-    cfg = load_json(ROOT / "config.json")
+    cfg = apply_template(load_json(ROOT / "config.json"), sb)
     target = cfg.get("mix")
     errs = validate(sb, cfg, ROOT)
     if errs:

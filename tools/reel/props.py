@@ -215,6 +215,13 @@ def build_render_props(storyboard: dict, settings: dict, brand: dict, audio: dic
     total = round(t + (cta["duration"] if cta else 0), 3)
     captions = {sc["id"]: sc.get("caption") or "" for sc in storyboard["scenes"]}
     overlays = _track(storyboard.get("motion") or [], scenes, words, captions, t, total, problems)
+    by_id = {s["id"]: s for s in scenes}
+    drops = []
+    for i, d in enumerate(storyboard.get("musicDrop") or []):
+        a = _track_time(d.get("start", 0), by_id, words, captions, total, f"musicDrop[{i}] start", problems, end=False)
+        b = _track_time(d.get("end", "video"), by_id, words, captions, total, f"musicDrop[{i}] end", problems, end=True)
+        if a is not None and b is not None and b > a:
+            drops.append([round(a, 3), round(b, 3), float(d.get("to", 0))])
     if problems:
         raise AnchorError(problems)
     music = settings["music"]
@@ -227,7 +234,7 @@ def build_render_props(storyboard: dict, settings: dict, brand: dict, audio: dic
                   "colors": brand["colors"]},
         "captions": {**{k: cap[k] for k in ("font", "size", "color", "highlightColor")}, "box": bool(cap.get("box"))},
         "music": None if music is None else {"src": f"music/{music['file']}", "volume": music["volume"],
-                                             "duckTo": music["duckTo"], "fadeOut": music["fadeOut"]},
+                                             "duckTo": music["duckTo"], "fadeOut": music["fadeOut"], "drops": sorted(drops)},
         "scenes": scenes,
         "cta": cta,
         "totalSeconds": total,

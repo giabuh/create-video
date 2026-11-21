@@ -1,4 +1,4 @@
-from reel.config import deep_merge, resolve_names, resolve_scene_voice, resolve_video
+from reel.config import apply_template, deep_merge, resolve_names, resolve_scene_voice, resolve_video
 
 
 def test_deep_merge_nested_and_override():
@@ -56,3 +56,12 @@ def test_resolve_video_sfx(cfg):
     assert s == {"volume": 0.2, "scene": "whoosh", "motion": {"default": "pop", "Text": "none"}}
     assert resolve_video(cfg, {}, {"sfx": None})["sfx"] is None
     assert resolve_video(cfg, {}, {})["sfx"]["volume"] == 0.5
+
+
+def test_apply_template_layer():
+    cfg = {"defaults": {"template": "fast-cut", "brand": "b", "voice": "v"},
+           "sfx": {"volume": 0.5, "cut": "none"}, "templates": {"story": {"sfx": {"cut": "whoosh"}}}}
+    assert apply_template(cfg, {})["sfx"]["cut"] == "none"
+    out = apply_template(cfg, {"template": "story"})
+    assert out["sfx"] == {"volume": 0.5, "cut": "whoosh"}
+    assert apply_template({k: v for k, v in cfg.items() if k != "templates"}, {"template": "story"})["sfx"]["cut"] == "none"

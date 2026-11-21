@@ -1,4 +1,4 @@
-"""Layered config: config.json -> config.voices.<voice> -> brand (visual) -> storyboard -> scene."""
+"""Layered config: config.json -> config.templates.<template> -> config.voices.<voice> -> brand (visual) -> storyboard -> scene."""
 import json
 from pathlib import Path
 
@@ -25,6 +25,12 @@ def pick(*values, default=None):
 def resolve_names(config: dict, storyboard: dict) -> tuple[str, str]:
     d = config["defaults"]
     return pick(storyboard.get("template"), d["template"]), pick(storyboard.get("brand"), d["brand"])
+
+
+def apply_template(config: dict, storyboard: dict) -> dict:
+    """Layer config.templates.<template> over the root config (see spec "Layered config")."""
+    template, _ = resolve_names(config, storyboard)
+    return deep_merge(config, (config.get("templates") or {}).get(template))
 
 
 def resolve_scene_voice(config: dict, storyboard: dict, scene: dict) -> dict:

@@ -1,7 +1,7 @@
 """Storyboard validation. Reports every problem at once, keyed by scene id, before any model loads."""
 from pathlib import Path
 
-from .config import pick, resolve_names, resolve_scene_voice
+from .config import apply_template, pick, resolve_names, resolve_scene_voice
 
 EFFECTS = {"none", "zoom-in", "zoom-out", "pan-left", "pan-right"}
 TRANSITIONS = {"cut", "fade", "slide"}
@@ -15,6 +15,7 @@ BACKDROPS = {"auto", "scrim", "none"}
 
 def validate(storyboard: dict, config: dict, root) -> list[str]:
     root = Path(root)
+    config = apply_template(config, storyboard)
     errs = []
     template, brand = resolve_names(config, storyboard)
     if not (root / "studio/src/templates" / template).is_dir():

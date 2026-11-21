@@ -15,6 +15,13 @@ describe('music ducking', () => {
     expect(spans).toEqual([[0, 2], [4.3, 6.3]]);
     expect(musicVolumeAt(3.1, music, spans, 20)).toBeCloseTo(0.25);
   });
+  it('drops to the drop level between start and end, ramping 0.15 s', () => {
+    const m = {...music, drops: [[5, 7, 0]] as [number, number, number][]};
+    expect(musicVolumeAt(6, m, [], 20)).toBe(0);
+    expect(musicVolumeAt(4, m, [], 20)).toBe(music.volume);
+    expect(musicVolumeAt(5 - 0.075, m, [], 20)).toBeCloseTo(music.volume / 2, 5);
+    expect(musicVolumeAt(8, m, [], 20)).toBe(music.volume);
+  });
   it('fades out at the end', () => {
     expect(musicVolumeAt(19.25, music, [], 20)).toBeCloseTo(0.125);
   });
