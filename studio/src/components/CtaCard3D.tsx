@@ -1,7 +1,7 @@
 // CTA: a 3D logo card (three.js through @remotion/three) over a brand field with drifting light bokeh, then button, phone, fanpage.
 // Without brand.logo it is the normal CtaCard.
 import React from 'react';
-import {AbsoluteFill, Easing, cancelRender, continueRender, delayRender, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Easing, cancelRender, getRemotionEnvironment, continueRender, delayRender, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {ThreeCanvas} from '@remotion/three';
 import {noise2D} from '@remotion/noise';
 import {Star} from '@remotion/shapes';
@@ -98,5 +98,17 @@ const Cta3D: React.FC<{cta: Cta; brand: Brand; logo: string}> = ({cta, brand, lo
   );
 };
 
-export const CtaCard3D: React.FC<{cta: Cta; brand: Brand; bg?: MediaItem; centerY?: number}> = (a) =>
-  a.brand.logo ? <Cta3D cta={a.cta} brand={a.brand} logo={a.brand.logo} /> : <CtaCard {...a} />;
+// three.js cancels the whole Player when the viewer's browser has no WebGL; the app preview then shows the 2D card.
+// Renders never fall back, so a missing 3D card fails loudly instead of shipping silently.
+const previewHasWebGL = (): boolean => {
+  try {
+    const gl = document.createElement('canvas').getContext('webgl');
+    gl?.getExtension('WEBGL_lose_context')?.loseContext(); // probe only: give the context straight back
+    return !!gl;
+  } catch { return false; }
+};
+
+export const CtaCard3D: React.FC<{cta: Cta; brand: Brand; bg?: MediaItem; centerY?: number}> = (a) => {
+  const [webgl] = React.useState(() => !getRemotionEnvironment().isPlayer || previewHasWebGL());
+  return a.brand.logo && webgl ? <Cta3D cta={a.cta} brand={a.brand} logo={a.brand.logo} /> : <CtaCard {...a} />;
+};
