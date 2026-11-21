@@ -3,6 +3,7 @@
 import React from 'react';
 import {AbsoluteFill, Easing, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
 import {MOTION} from '../motion/registry';
+import {VIDEO_MOTION} from '../videos';
 import {BANDS} from './bands';
 import {parseMotionProps} from '../motion/schema';
 import {BRAND_COLOR_DEFAULTS, type Anim, type Brand, type FullBrand, type Keyframe, type MotionItem} from '../types';
@@ -84,7 +85,7 @@ export const withDefaults = (item: MotionItem): MotionItem => {
   return {
     ...item, position, box: item.box ?? null, backdrop: item.backdrop ?? 'none', scale: item.scale ?? 1, rotate: item.rotate ?? 0,
     opacity: item.opacity ?? 1, enter: item.enter ?? NONE,
-    exit: item.exit ?? (position === 'full' || MOTION[item.component]?.ownsExit ? NONE : {type: 'fade', duration: 0.25}), keyframes: item.keyframes ?? [], colors: item.colors ?? null,
+    exit: item.exit ?? (position === 'full' || (MOTION[item.component] ?? VIDEO_MOTION[item.component])?.ownsExit ? NONE : {type: 'fade', duration: 0.25}), keyframes: item.keyframes ?? [], colors: item.colors ?? null,
   };
 };
 
@@ -92,8 +93,8 @@ export const MotionLayer: React.FC<{item: MotionItem; brand: Brand}> = ({item: r
   const frame = useCurrentFrame();
   const {fps, width, height} = useVideoConfig();
   const it = withDefaults(raw);
-  const def = MOTION[it.component];
-  if (!def) throw new Error(`Unknown motion component "${it.component}" — add it to studio/src/motion/registry.ts`);
+  const def = MOTION[it.component] ?? VIDEO_MOTION[it.component];
+  if (!def) throw new Error(`Unknown motion component "${it.component}" — add it to studio/src/motion/registry.ts or studio/src/videos/<slug>/index.ts`);
   const props = parseMotionProps(it.component, def.schema, it.props);
   const C = def.component;
 

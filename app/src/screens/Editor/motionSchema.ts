@@ -1,7 +1,8 @@
 // Forms for motion components come from their zod schemas in studio/src/motion (no per-component code here):
 // a component Claude writes for one video gets a real form as soon as it is in the registry.
 import {z} from 'zod';
-import {MOTION} from '@studio/motion/registry';
+import {MOTION as SHARED} from '@studio/motion/registry';
+import {VIDEO_MOTION} from '@studio/videos';
 
 z.config(z.locales.vi()); // Vietnamese validation messages (also used by the Player's own errors)
 
@@ -18,7 +19,10 @@ type JS = {
 };
 const COLOR = '__remotion-color';
 
-export const motionNames = (): string[] => Object.keys(MOTION);
+const MOTION = {...SHARED, ...VIDEO_MOTION}; // video keys are "<slug>/<Name>", so they never shadow shared names
+/** Picker entries: shared components plus the ones that belong to this video's slug. */
+export const motionNames = (slug?: string): string[] =>
+  [...Object.keys(SHARED), ...Object.keys(VIDEO_MOTION).filter((k) => slug !== undefined && k.startsWith(`${slug}/`))];
 export const motionTitle = (name: string): string => MOTION[name]?.title ?? name;
 export const motionDescription = (name: string): string | undefined => MOTION[name]?.description;
 

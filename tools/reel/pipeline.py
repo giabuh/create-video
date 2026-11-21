@@ -10,6 +10,7 @@ from .shots import shots
 from .props import AnchorError, build_render_props, sfx_files_for
 from .tts import probe_duration, synth_to_file
 from .validate import validate
+from .videos_index import write_videos_index
 
 # shortcut: rough Vietnamese speaking rate for scenes not synthesized yet (preview only); real audio replaces it.
 CHARS_PER_SECOND = 14
@@ -65,6 +66,7 @@ def prepare(proj: Path, get_model=None, synth: bool = True, on_progress=None) ->
     slug = proj.name
     sb = load_json(proj / "storyboard.json")
     cfg = apply_template(load_json(ROOT / "config.json"), sb)
+    write_videos_index(ROOT)
     errs = validate(sb, cfg, ROOT)
     if errs:
         return {"ok": False, "stage": "validate", "errors": errs, "stale": [], "totalSeconds": None,

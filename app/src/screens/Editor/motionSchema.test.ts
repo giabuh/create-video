@@ -2,7 +2,9 @@ import {readFileSync} from 'node:fs';
 import {MOTION} from '@studio/motion/registry';
 import {parseBars} from '@studio/motion/BarChart';
 import {parseSeries} from '@studio/motion/LineChart';
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it, vi} from 'vitest';
+
+vi.mock('@studio/videos', () => ({VIDEO_MOTION: {'a/Map': {title: 'Map A'}, 'b/Map': {title: 'Map B'}}}));
 import {motionErrors, motionFields, motionNames, motionTitle} from './motionSchema.ts';
 
 describe('motion forms from zod schemas', () => {
@@ -53,5 +55,15 @@ describe('motion forms from zod schemas', () => {
     expect(Object.keys(motionErrors('PriceTag', {}))).toEqual(['price']);
     expect(Object.keys(motionErrors('CountUp', {from: '0', to: 5}))).toEqual(['from']);
     expect(motionErrors('Whatever', {})).toEqual({});
+  });
+});
+
+describe('per-video motion in the picker', () => {
+  it('lists only this video\'s components next to the shared ones', () => {
+    expect(motionNames('a')).toContain('a/Map');
+    expect(motionNames('a')).not.toContain('b/Map');
+    expect(motionNames('a')).toContain('Text');
+    expect(motionNames()).not.toContain('a/Map');
+    expect(motionTitle('b/Map')).toBe('Map B');
   });
 });

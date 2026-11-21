@@ -4,6 +4,7 @@ import unicodedata
 from pathlib import Path
 
 from .config import apply_template, pick, resolve_names, resolve_scene_voice
+from .videos_index import video_motion_keys
 
 EFFECTS = {"none", "zoom-in", "zoom-out", "pan-left", "pan-right", "glitch"}
 MEDIA_TRANSITIONS = {"cut", "fade", "slide"}
@@ -156,7 +157,11 @@ def _word_ref_errors(v, where: str) -> list[str]:
 def _layer_errors(mo: dict, where: str, root: Path) -> list[str]:
     errs = []
     comp = mo.get("component", "")
-    if not (root / "studio/src/motion" / f"{comp}.tsx").is_file():
+    if "/" in comp:
+        slug, _, name = comp.partition("/")
+        if name not in video_motion_keys(root).get(slug, []):
+            errs.append(f"{where}: motion component '{comp}' not found in studio/src/videos/{slug}/index.ts")
+    elif not (root / "studio/src/motion" / f"{comp}.tsx").is_file():
         errs.append(f"{where}: motion component '{comp}' not found in studio/src/motion/")
     # shortcut: per-component check, upgrade to schema-driven validation if more components need required props
     if comp in ("BarChart", "LineChart", "Headline") and not str((mo.get("props") or {}).get("source") or "").strip():
