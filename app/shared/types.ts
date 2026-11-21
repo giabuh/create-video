@@ -112,7 +112,7 @@ export type SyncStatus = {
 export type WorkerStatus = {state: 'starting' | 'idle' | 'loading' | 'ready' | 'error'; device: 'cuda' | 'cpu' | null; error: string | null};
 export type LimitInfo = {status: string; resetsAt: number | null; utilization: number | null; type: string | null}; // resetsAt = epoch seconds
 export type ChatEvent =
-  | {kind: 'user'; text: string; account: string; at: number}
+  | {kind: 'user'; text: string; account: string; at: number; images?: string[]} // images: stored names (chat images route)
   | {kind: 'delta'; text: string}
   | {kind: 'text'; text: string}
   | {kind: 'tool'; name: string; summary: string}
