@@ -15,6 +15,10 @@ import {LowerThird, LowerThirdSchema} from './LowerThird';
 import {Picture, PictureSchema} from './Picture';
 import {PinLabel, PinLabelSchema} from './PinLabel';
 import {PriceTag, PriceTagSchema} from './PriceTag';
+import {MaxKinetic, MaxKineticSchema} from './MaxKinetic';
+import {MaxOffer, MaxOfferSchema} from './MaxOffer';
+import {MaxPhone, MaxPhoneSchema} from './MaxPhone';
+import {MaxSteps, MaxStepsSchema} from './MaxSteps';
 import {OfferCard, OfferCardSchema} from './OfferCard';
 import {ProgressBar, ProgressBarSchema} from './ProgressBar';
 import {Ribbon, RibbonSchema} from './Ribbon';
@@ -45,4 +49,8 @@ export const MOTION: Record<string, MotionDef> = {
   BarChart: defineMotion({component: BarChart, schema: BarChartSchema, title: 'Biểu đồ cột', description: 'Cột ngang có nhãn, số chạy lên, ghi nguồn'}),
   LineChart: defineMotion({component: LineChart, schema: LineChartSchema, title: 'Biểu đồ đường', description: 'Đường vẽ dần theo thời gian, ghi nguồn'}),
   Headline: defineMotion({component: Headline, schema: HeadlineSchema, title: 'Tiêu đề báo (tự thiết kế)', description: 'Tiêu đề chữ có chân, cụm từ được tô nổi như bút dạ, ghi nguồn'}),
+  MaxKinetic: defineMotion({component: MaxKinetic, schema: MaxKineticSchema, title: 'Chữ đập mạnh', description: 'Khác Chữ động nhiều dòng: từng từ đóng xuống cỡ lớn hoặc trượt vào thẻ kính, có mờ chuyển động', ownsExit: true}),
+  MaxOffer: defineMotion({component: MaxOffer, schema: MaxOfferSchema, title: 'Ưu đãi nổi bật', description: 'Khác Thẻ ưu đãi: nhãn + tiêu đề, hoặc số đếm trong ngôi sao tia sáng xoay', ownsExit: true}),
+  MaxPhone: defineMotion({component: MaxPhone, schema: MaxPhoneSchema, title: 'Số điện thoại lớn', description: 'Số điện thoại trên tấm kính, từng nhóm số rơi xuống theo lời đọc, điện thoại rung', ownsExit: true}),
+  MaxSteps: defineMotion({component: MaxSteps, schema: MaxStepsSchema, title: 'Các bước', description: 'Khác Danh sách tích: hàng kính trượt vào theo lời đọc, bước đang đọc phát sáng, dấu tích vẽ nét', ownsExit: true}),
 };
