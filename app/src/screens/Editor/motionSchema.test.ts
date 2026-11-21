@@ -34,7 +34,7 @@ describe('motion forms from zod schemas', () => {
     expect(f.size).toMatchObject({kind: 'number', required: false, min: 20, max: 300, step: 2, default: 80});
     expect(f.color).toMatchObject({kind: 'color', required: false});
     expect(f.reveal.options).toContainEqual({value: 'typewriter', label: 'Gõ phím'});
-    expect(f.reveal.options).toHaveLength(7);
+    expect(f.reveal.options).toHaveLength(9);
     expect(f.uppercase).toMatchObject({kind: 'bool'});
     expect(Object.fromEntries((motionFields('KineticText') ?? []).map((x) => [x.key, x.kind])).lines).toBe('lines');
     expect(Object.fromEntries((motionFields('Picture') ?? []).map((x) => [x.key, x.kind])).src).toBe('media');
