@@ -12,7 +12,11 @@ Follow CLAUDE.md rules. Steps:
 1. **Media:** if `inbox/` has files, run `python3 tools/ingest.py` and describe the new entries in `library/media-index.json`.
 2. **Brief** (write it into the storyboard notes): audience, their pain, one promise, proof (confirmed facts), one concrete
    action at the end; plus course, offer, template, format (`explainer` only: dọc 1080x1920 or ngang 1920x1080), target
-   length, voice (default from config), brand, music yes/no. Ask for any missing fact once, at the start; never invent them.
+   length, voice (default from config), brand. Ask for any missing fact once, at the start; never invent them.
+   **Music:** always set storyboard `music: {"file": ...}` yourself (no default track exists; user's call 2026-11-21).
+   Pick a `music/` track that fits the mood; among equal fits take the least used:
+   `python3 -c "import json,glob,collections as c;print(c.Counter((json.load(open(f)).get('music') or {}).get('file') for f in glob.glob('projects/*/storyboard.json')))"`.
+   No music only when the user asks for it.
 3. **Project:** create `projects/<YYYY-MM-DD>-<slug>/storyboard.json` (format: spec "Storyboard format"; landscape adds
    `"video": {"width":1920,"height":1080}`).
    - Mode A (default): write the script yourself, one scene per spoken idea; the first 3 s hit the pain or a curious number
