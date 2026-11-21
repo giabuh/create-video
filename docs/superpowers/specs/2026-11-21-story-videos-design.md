@@ -202,6 +202,24 @@ pictures and type hierarchy, not effects. The user asked Claude to design and bu
 - `prepare.py` prints `Shots: N, avg X s` (media items + media-less scenes); story target avg ≤ 2.5 s.
   Print only, like the mix.
 
+### 3b.7 Collage (several pictures at once)
+User feedback on `reel-v2`: one clip per frame is still thin; show 2–3 clips or photos moving together.
+- Scene field `layout: "collage"` (story template only; validate rejects it elsewhere and requires 2–4 media items).
+  Media timing is unchanged: item i enters at its `start` and then **stays until the scene ends**, so cards pile up
+  (1 → 2 → 3). The newest card is on top.
+- Slots (card centre x, y as frame fractions, card width fraction, rotation), height from the media aspect, each card's
+  height capped at 36% of the frame:
+  - 2 items: (0.36, 0.33, 0.54, −6°), (0.64, 0.50, 0.54, +5°)
+  - 3 items: (0.31, 0.30, 0.48, −7°), (0.69, 0.36, 0.48, +6°), (0.50, 0.53, 0.52, −3°)
+  - 4 items: (0.30, 0.29, 0.46, −6°), (0.70, 0.31, 0.46, +5°), (0.32, 0.51, 0.46, +4°), (0.68, 0.53, 0.46, −5°)
+- Card look as 3b.1 (border, radius, shadow, backdrop with streaks; effects such as zoom-in/glitch still apply inside).
+- Enter: from 140 px off its slot towards the nearer side edge, extra rotation +8° in its tilt direction, scale
+  0.85 → 1, blur 10 → 0, spring-like over 0.35 s. Then drift: ±12 px sine translate and ±1.5° rotation, period 4–6 s,
+  phase per index; push-in 1.00 → 1.04 over the scene.
+- All videos play at once (muted, like other media).
+- Story captions: the obstacle is the bounding box of the visible cards (with drift margin); the existing fallback
+  (over the lower part of the media when there is no free gap) applies.
+
 ### 3b.5 Deferred
 Particles/confetti, app-UI chart reskin, face tracking, money rain.
 
