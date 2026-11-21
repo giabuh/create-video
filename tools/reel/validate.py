@@ -1,5 +1,6 @@
 """Storyboard validation. Reports every problem at once, keyed by scene id, before any model loads."""
 import re
+import unicodedata
 from pathlib import Path
 
 from .config import apply_template, pick, resolve_names, resolve_scene_voice
@@ -54,7 +55,7 @@ def validate(storyboard: dict, config: dict, root) -> list[str]:
             if not isinstance(punch, list) or not all(isinstance(x, str) and x.strip() for x in punch):
                 errs.append(f"{sid}: 'punch' must be a list of non-empty strings")
             else:
-                toks = [_word_key(w) for w in (sc.get("caption") or "").split()]
+                toks = [_word_key(w) for w in (sc.get("caption") or sc.get("say") or "").split()]
                 for ph in punch:
                     want = [_word_key(w) for w in ph.split()]
                     if not any(toks[i:i + len(want)] == want for i in range(len(toks) - len(want) + 1)):
@@ -128,6 +129,7 @@ def validate(storyboard: dict, config: dict, root) -> list[str]:
 
 
 def _word_key(w: str) -> str:
+    w = unicodedata.normalize("NFC", w)  # same as wordKey in studio storyLayout.ts
     return re.sub(r"^[^\w%]+|[^\w%]+$", "", w).lower()
 
 
