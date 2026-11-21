@@ -4,9 +4,10 @@ import type {RenderProps} from '../types';
 import {FastCut} from './fast-cut/FastCut';
 import {Slideshow} from './slideshow/Slideshow';
 import {SplitCompare} from './split-compare/SplitCompare';
+import {Max} from './max/Max';
 import {Story} from './story/Story';
 import {Testimonial} from './testimonial/Testimonial';
 
 export const TEMPLATES: Record<string, React.FC<RenderProps>> = {
-  'fast-cut': FastCut, testimonial: Testimonial, 'split-compare': SplitCompare, slideshow: Slideshow, story: Story,
+  'fast-cut': FastCut, testimonial: Testimonial, 'split-compare': SplitCompare, slideshow: Slideshow, story: Story, max: Max,
 };

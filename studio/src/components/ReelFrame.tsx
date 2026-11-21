@@ -53,14 +53,14 @@ export const ReelFrame: React.FC<{
                 <AbsoluteFill style={{backgroundColor: sc.bg === 'light' ? '#F3EFE6' : '#0B0B0F'}}><CardBackdrop light={sc.bg === 'light'} /></AbsoluteFill>
                 {sc.media.map((m, i) => (
                   <Sequence key={`media-${i}`} from={Math.round(m.start * fps)} durationInFrames={f(sc.duration - m.start) + tail}>
-                    <MediaShot item={m} light={sc.bg === 'light'} collage={{slot: collageSlots(sc.media.length)[i], index: i, sceneSec: sc.duration}} />
+                    <MediaShot item={m} grade={p.look?.grade} light={sc.bg === 'light'} collage={{slot: collageSlots(sc.media.length)[i], index: i, sceneSec: sc.duration}} />
                   </Sequence>
                 ))}
               </>}
               {sc.layout !== 'collage' && sc.media.map((m, i) => (
                 <Sequence key={`media-${i}`} from={Math.round(m.start * fps)}
                   durationInFrames={f(m.duration) + (i === sc.media.length - 1 ? tail : mt !== 'cut' ? tf : 0)}>
-                  <SceneTransition type={i === 0 ? 'cut' : mt} seconds={ts}><MediaShot item={m} card={isCard(m, p.look)} light={sc.bg === 'light'} /></SceneTransition>
+                  <SceneTransition type={i === 0 ? 'cut' : mt} seconds={ts}><MediaShot item={m} grade={p.look?.grade} card={isCard(m, p.look)} light={sc.bg === 'light'} /></SceneTransition>
                 </Sequence>
               ))}
               {/* captions, motion and voice end with the scene; only the picture carries into the transition */}

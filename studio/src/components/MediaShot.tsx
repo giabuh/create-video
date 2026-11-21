@@ -26,7 +26,7 @@ export const CardBackdrop: React.FC<{light: boolean}> = ({light}) => {
 };
 
 // collage: item i is a tilted card at slot i of n; `sceneSec` = scene length, for the push-in. Backdrop comes from the scene (ReelFrame).
-export const MediaShot: React.FC<{item: MediaItem; card?: boolean; light?: boolean; collage?: {slot: CollageSlot; index: number; sceneSec: number}}> = ({item, card = false, light = false, collage}) => {
+export const MediaShot: React.FC<{item: MediaItem; card?: boolean; light?: boolean; collage?: {slot: CollageSlot; index: number; sceneSec: number}; grade?: boolean}> = ({item, card = false, light = false, collage, grade = false}) => {
   const frame = useCurrentFrame();
   const {fps, width, height} = useVideoConfig();
   const env = useRemotionEnvironment();
@@ -54,10 +54,11 @@ export const MediaShot: React.FC<{item: MediaItem; card?: boolean; light?: boole
   const bg = item.type !== 'video' ? layer('cover', {})
     : env.isRendering ? <canvas ref={bgRef} width={Math.round(width / 8)} height={Math.round(height / 8)} style={full} />
     : <img src={staticFile(thumbOf(item.src))} style={{...full, objectFit: 'cover'}} onError={(e) => { e.currentTarget.style.display = 'none'; }} />;
+  const gradeCss = grade ? 'contrast(1.07) saturate(1.15) brightness(1.02)' : '';
   const picture = (
     <>
       <AbsoluteFill style={g.split > 0 ? {filter: `url(#${fid})`, transform: `translate(${g.dx}px, ${g.dy}px)`} : undefined}>
-        {layer('contain', {transform: effectTransform(item.effect, p)}, env.isRendering && !card ? drawBg : undefined)}
+        {layer('contain', {transform: effectTransform(item.effect, p), filter: gradeCss || undefined}, env.isRendering && !card ? drawBg : undefined)}
       </AbsoluteFill>
       {g.split > 0 && (
         // R shifted +split, G+B shifted -split, summed: split 0 would equal the original picture

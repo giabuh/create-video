@@ -67,6 +67,12 @@
       "look": { "grain": 0.6, "scanlines": 0.5, "logo": false, "mediaFrame": "card" },
       "sfx": { "cut": "whoosh", "media": "click", "minGap": 0.4, "cta": "impact", "hold": ["tick"],
                "motion": { "CountUp": "tick", "BarChart": "whoosh", "LineChart": "whoosh" } }
+    },
+    "max": {
+      "transition": { "scene": "mix", "media": "cut", "duration": 0.5 },
+      "look": { "grain": 0.5, "scanlines": 0, "logo": true, "vignette": 1, "grade": true, "progress": true },
+      "sfx": { "cut": "whoosh", "media": "click", "minGap": 0.4, "cta": "impact", "hold": ["tick"],
+               "motion": { "CountUp": "tick", "BarChart": "whoosh", "LineChart": "whoosh" } }
     }
   },
   "align": {
