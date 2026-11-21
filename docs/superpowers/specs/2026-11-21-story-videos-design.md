@@ -187,7 +187,7 @@ pictures and type hierarchy, not effects. The user asked Claude to design and bu
   other components keep Be Vietnam Pro. Must render "Được nghĩa ưở ỹ Ự" correctly (still checked).
 - Lead text (the chunk) is small: cap 96 px on a text-card scene, 72 px when the scene has media.
 - Scene field `punch: ["phrase", …]` (words of the caption, like `highlight`): when the phrase is spoken it replaces
-  the chunk as one giant line (fit to 84% width, cap 420 px, highlight colour off, serif italic), with the lead text of
+  the chunk as one giant line (fit to the x 8–85% safe area, i.e. 77% width, cap 420 px, highlight colour off, serif italic), with the lead text of
   the same chunk kept small above it. Enter: scale 1.15 → 1 and blur 12 → 0 over 0.2 s.
 - Caption safe area x 8–85% (TikTok right-hand buttons), y 22–70% unchanged.
 
