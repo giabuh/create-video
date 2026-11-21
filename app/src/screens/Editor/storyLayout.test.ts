@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {cardSlot, findPunch, isCard, mediaCardRect} from '../../../../studio/src/components/storyLayout.ts';
+import {cardSlot, collageRect, collageSlots, collageSpan, findPunch, isCard, mediaCardRect} from '../../../../studio/src/components/storyLayout.ts';
 
 const L = (position: 'top' | 'center' | 'bottom' | 'free' | 'full', extra = {}) =>
   ({position, box: null, start: 0, duration: 2, ...extra}) as Parameters<typeof cardSlot>[0][number];
@@ -63,4 +63,31 @@ describe('findPunch', () => {
     expect(findPunch('a b', [])).toBeNull();
   });
   it('earliest phrase wins', () => expect(findPunch('x a b c', ['c', 'a'])).toEqual({from: 1, len: 1}));
+});
+
+describe('collage', () => {
+  it('slot counts, clamped to 2-4', () => {
+    expect(collageSlots(2)).toHaveLength(2);
+    expect(collageSlots(3)).toHaveLength(3);
+    expect(collageSlots(4)).toHaveLength(4);
+    expect(collageSlots(1)).toHaveLength(2);
+    expect(collageSlots(9)).toHaveLength(4);
+  });
+  it('rect height from aspect, capped at 36% of the frame', () => {
+    const s = collageSlots(2)[0];
+    const wide = collageRect(s, 16 / 9, 1080, 1920);
+    expect(wide.w).toBeCloseTo(0.54, 6);
+    expect(wide.h).toBeCloseTo((0.54 * 1080) / (16 / 9) / 1920, 6);
+    const tall = collageRect(s, 9 / 16, 1080, 1920);
+    expect(tall.h).toBeCloseTo(0.36, 6);
+    expect(tall.w * 1080).toBeCloseTo(0.36 * 1920 * (9 / 16), 6);
+  });
+  it('span: nothing before the first card, grows as cards enter', () => {
+    const items = [{start: 0, aspect: 1}, {start: 2, aspect: 1}];
+    expect(collageSpan(items, -0.1, 1080, 1920)).toBeNull();
+    const one = collageSpan(items, 1, 1080, 1920)!, two = collageSpan(items, 3, 1080, 1920)!;
+    expect(one.top).toBeLessThan(0.33);
+    expect(two.top).toBeCloseTo(one.top, 6);
+    expect(two.bottom).toBeGreaterThan(one.bottom);
+  });
 });

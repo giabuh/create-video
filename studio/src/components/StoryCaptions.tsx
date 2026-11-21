@@ -4,7 +4,7 @@ import {widthOf, useFontsLoaded} from '../fit';
 import {fontFamily, serifFamily} from '../fonts';
 import type {CaptionChunk, CaptionStyle, MediaItem, MotionItem} from '../types';
 import {captionUnits} from './Captions';
-import {cardSlot, findPunch, mediaCardRect} from './storyLayout';
+import {cardSlot, collageSpan, findPunch, mediaCardRect} from './storyLayout';
 
 const LH = 1.15;
 const FADE = 0.18;
@@ -23,8 +23,8 @@ const lineCount = (words: string[], size: number, avail: number, family: string)
 
 export const StoryCaptions: React.FC<{
   chunks: CaptionChunk[]; highlight: string[]; punch?: string[]; style: CaptionStyle; dark: boolean;
-  footage?: boolean; motion?: MotionItem[]; media?: MediaItem[]; // media = the scene's framed (card) items
-}> = ({chunks, highlight, punch = [], style, dark, footage = false, motion = [], media = []}) => {
+  footage?: boolean; motion?: MotionItem[]; media?: MediaItem[]; collage?: boolean; // media = the scene's framed (card) items
+}> = ({chunks, highlight, punch = [], style, dark, footage = false, motion = [], media = [], collage = false}) => {
   const frame = useCurrentFrame();
   const {fps, width, height} = useVideoConfig();
   const t = frame / fps;
@@ -32,9 +32,10 @@ export const StoryCaptions: React.FC<{
   const serif = style.font === 'serif';
   const family = serif ? serifFamily : fontFamily;
   // the current framed picture is an obstacle like a full-width box layer, grown by its 1.06 push-in about y 0.40
-  const m = media.find((x) => t >= x.start && t < x.start + x.duration);
-  const r = m && mediaCardRect(m.aspect ?? 1, width, height);
-  const free = cardSlot(r ? [...motion, {position: 'free', box: {x: 0, y: (0.4 - (0.4 - r.top) * 1.06) * 100, w: 100, h: (r.bottom - r.top) * 1.06 * 100}, start: 0, duration: Infinity}] : motion, t);
+  // collage: all items from their start to the scene end; obstacle = bounding box of the visible cards
+  const m = collage ? undefined : media.find((x) => t >= x.start && t < x.start + x.duration);
+  const r = collage ? collageSpan(media, t, width, height) : m && mediaCardRect(m.aspect ?? 1, width, height);
+  const free = cardSlot(r ? [...motion, {position: 'free', box: {x: 0, y: (collage ? r.top : 0.4 - (0.4 - r.top) * 1.06) * 100, w: 100, h: (r.bottom - r.top) * (collage ? 1 : 1.06) * 100}, start: 0, duration: Infinity}] : motion, t);
   // no room beside a tall card (portrait clips): sit over the card's lower part, like the reference, shadowed as over footage
   const over = r && (!free || free.bottom - free.top < 0.12) ? cardSlot(motion, t, [Math.max(0.22, r.bottom - 0.22), Math.min(0.7, r.bottom - 0.02)]) : null;
   const slot = over ?? free;

@@ -39,6 +39,37 @@ export const mediaCardRect = (aspect: number, frameW: number, frameH: number): {
   return {top: 0.4 - h / 2, bottom: 0.4 + h / 2, width: Math.min(0.88, (h * frameH * a) / frameW)};
 };
 
+export type CollageSlot = {x: number; y: number; w: number; rot: number};
+const COLLAGE: Record<number, CollageSlot[]> = {
+  2: [{x: 0.36, y: 0.33, w: 0.54, rot: -6}, {x: 0.64, y: 0.5, w: 0.54, rot: 5}],
+  3: [{x: 0.31, y: 0.3, w: 0.48, rot: -7}, {x: 0.69, y: 0.36, w: 0.48, rot: 6}, {x: 0.5, y: 0.53, w: 0.52, rot: -3}],
+  4: [{x: 0.3, y: 0.29, w: 0.46, rot: -6}, {x: 0.7, y: 0.31, w: 0.46, rot: 5}, {x: 0.32, y: 0.51, w: 0.46, rot: 4}, {x: 0.68, y: 0.53, w: 0.46, rot: -5}],
+};
+/** Slots for n collage items (2-4; other n is clamped). */
+export const collageSlots = (n: number): CollageSlot[] => COLLAGE[Math.min(4, Math.max(2, n))];
+
+/** Unrotated card rect as frame fractions: width from the slot, height from the aspect, capped at 36% of the frame height (width shrinks with it). */
+export const collageRect = (s: CollageSlot, aspect: number, frameW: number, frameH: number): {cx: number; cy: number; w: number; h: number} => {
+  const a = aspect > 0 ? aspect : 1;
+  const h = Math.min(0.36, (s.w * frameW) / a / frameH);
+  return {cx: s.x, cy: s.y, w: (h * frameH * a) / frameW, h};
+};
+
+/** Vertical extent (frame fractions) of the collage cards visible at scene time t: rotated box, 1.04 push-in and drift margin (12 px, 1.5 deg). Null before the first card. */
+export const collageSpan = (items: {start: number; aspect?: number}[], t: number, frameW: number, frameH: number): {top: number; bottom: number} | null => {
+  const slots = collageSlots(items.length);
+  let top = Infinity, bottom = -Infinity;
+  items.forEach((m, i) => {
+    if (t < m.start) return;
+    const r = collageRect(slots[i], m.aspect ?? 1, frameW, frameH);
+    const rad = (Math.abs(slots[i].rot) + 1.5) * Math.PI / 180;
+    const half = ((r.h * Math.cos(rad)) + (r.w * frameW / frameH * Math.sin(rad))) / 2 * 1.04 + 12 / frameH;
+    top = Math.min(top, r.cy - half);
+    bottom = Math.max(bottom, r.cy + half);
+  });
+  return top === Infinity ? null : {top, bottom};
+};
+
 const wordKey = (w: string) => w.normalize('NFC').toLowerCase().replace(/^[^\p{L}\p{N}%]+|[^\p{L}\p{N}%]+$/gu, '');
 
 /** First scene `punch` phrase found in a chunk as consecutive words (case/edge-punctuation ignored): token index `from`, word count `len`. */

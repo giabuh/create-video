@@ -28,6 +28,7 @@ export type Scene = {
   captions: CaptionChunk[]; highlight: string[]; punch?: string[]; overlay: Overlay | null;
   media: MediaItem[]; motion: MotionItem[]; transition: Transition;
   mediaTransition?: Transition; // between clips inside the scene
+  layout?: 'collage'; // story template: all media items shown at once as tilted cards
   bg?: 'light' | 'dark'; // story template: flat text-card background (default dark)
 };
 export type Brand = {name: string; logo: string | null; colors: {primary: string; accent: string; text: string; background: string; accent2?: string; surface?: string}};

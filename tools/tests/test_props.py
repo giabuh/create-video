@@ -242,6 +242,8 @@ def test_scene_bg_and_look_land_in_props():
                      {"id": "b", "duration": 1, "motion": [{"component": "CountUp", "props": {}}]}]}
     p = build_render_props(sb, {**SETTINGS, "look": {"grain": 0.5, "scanlines": 1, "logo": True}}, BRAND, {})
     assert [s.get("bg") for s in p["scenes"]] == ["light", None]
+    sb["scenes"][0]["layout"] = "collage"
+    assert [s.get("layout") for s in build_render_props(sb, SETTINGS, BRAND, {})["scenes"]] == ["collage", None]
     assert p["look"] == {"grain": 0.5, "scanlines": 1, "logo": True}
     assert build_render_props(sb, SETTINGS, BRAND, {})["look"] == {"grain": 0, "scanlines": 0, "logo": False}
 

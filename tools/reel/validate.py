@@ -97,6 +97,13 @@ def validate(storyboard: dict, config: dict, root) -> list[str]:
                 errs.append(f"{sid}: {k} '{sc.get(k)}' not in {sorted(TRANSITIONS)}")
         if sc.get("bg", "dark") not in ("light", "dark"):
             errs.append(f"{sid}: bg '{sc.get('bg')}' not in ['dark', 'light']")
+        if "layout" in sc:
+            if sc["layout"] != "collage":
+                errs.append(f"{sid}: layout '{sc['layout']}' not in ['collage']")
+            elif template != "story":
+                errs.append(f"{sid}: layout 'collage' is only for the story template")
+            elif not 2 <= len(sc.get("media") or []) <= 4:
+                errs.append(f"{sid}: layout 'collage' needs 2-4 media items")
         overlay = sc.get("overlay")
         if overlay and overlay.get("position", "top") not in POSITIONS:
             errs.append(f"{sid}: overlay position '{overlay.get('position')}' not in {sorted(POSITIONS)}")

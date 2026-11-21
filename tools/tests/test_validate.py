@@ -145,3 +145,18 @@ def test_punch(root, cfg):
     assert run(["87%", "học VIÊN"]) == []
     assert any("punch '8' is not in the caption" in e for e in run(["8"]))
     assert any("non-empty strings" in e for e in run(["", "x"])) and any("non-empty strings" in e for e in run("87%"))
+
+
+def test_collage_layout(root, cfg):
+    (root / "studio/src/templates/story").mkdir()
+    m = [{"src": "a.mp4"}, {"src": "a.mp4"}]
+    sb = {"template": "story", "music": {"file": "m.mp3"}, "scenes": [{"id": "s1", "say": "x", "layout": "collage", "media": m}]}
+    assert validate(sb, cfg, root) == []
+    sb["scenes"][0]["media"] = m[:1]
+    assert any("needs 2-4 media" in e for e in validate(sb, cfg, root))
+    sb["scenes"][0]["media"] = m * 3
+    assert any("needs 2-4 media" in e for e in validate(sb, cfg, root))
+    sb["scenes"][0].update(media=m, layout="grid")
+    assert any("layout 'grid'" in e for e in validate(sb, cfg, root))
+    sb["scenes"][0]["layout"] = "collage"
+    assert any("only for the story template" in e for e in validate({**sb, "template": "fast-cut"}, cfg, root))

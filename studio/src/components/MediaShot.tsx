@@ -1,16 +1,32 @@
 // contain-fit media over a blurred cover copy (never crops students)
 import React, {useCallback, useId, useRef} from 'react';
-import {AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame, useRemotionEnvironment, useVideoConfig, type OnVideoFrame} from 'remotion';
+import {AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame, spring, useRemotionEnvironment, useVideoConfig, type OnVideoFrame} from 'remotion';
 import {effectTransform, glitchAt} from '../effects';
 import type {MediaItem} from '../types';
 import {ReelVideo} from './ReelVideo';
-import {mediaCardRect} from './storyLayout';
+import {collageRect, mediaCardRect, type CollageSlot} from './storyLayout';
 
 // library/<name>.<ext> -> library/thumbs/<name>.jpg (written by tools/ingest.py)
 const thumbOf = (src: string) => src.replace(/^library\/(.+)\.[^./]+$/, 'library/thumbs/$1.jpg');
 
 // card: story template's floating picture on a lit backdrop (light = light text-card scenes)
-export const MediaShot: React.FC<{item: MediaItem; card?: boolean; light?: boolean}> = ({item, card = false, light = false}) => {
+export const CardBackdrop: React.FC<{light: boolean}> = ({light}) => {
+  const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const streak = (top: number, speed: number, a: number): React.CSSProperties => ({
+    position: 'absolute', filter: 'blur(36px)', top: `${top}%`, left: '-30%', width: '160%', height: '14%', transform: `rotate(-22deg) translateX(${(frame / fps) * speed}px)`,
+    background: `linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,${a}), rgba(255,255,255,0))`,
+  });
+  return (
+    <AbsoluteFill style={{overflow: 'hidden'}}>
+      <div style={streak(22, 14, light ? 0.25 : 0.1)} />
+      <div style={streak(64, -10, light ? 0.18 : 0.06)} />
+    </AbsoluteFill>
+  );
+};
+
+// collage: item i is a tilted card at slot i of n; `sceneSec` = scene length, for the push-in. Backdrop comes from the scene (ReelFrame).
+export const MediaShot: React.FC<{item: MediaItem; card?: boolean; light?: boolean; collage?: {slot: CollageSlot; index: number; sceneSec: number}}> = ({item, card = false, light = false, collage}) => {
   const frame = useCurrentFrame();
   const {fps, width, height} = useVideoConfig();
   const env = useRemotionEnvironment();
@@ -57,19 +73,33 @@ export const MediaShot: React.FC<{item: MediaItem; card?: boolean; light?: boole
       )}
     </>
   );
+  if (collage) {
+    const {slot, index, sceneSec} = collage;
+    const r = collageRect(slot, item.aspect ?? 1, width, height);
+    const t = frame / fps + item.start;
+    const e = spring({frame, fps, durationInFrames: Math.round(0.35 * fps), config: {damping: 12}});
+    const dir = slot.x < 0.5 ? -1 : 1, tilt = slot.rot < 0 ? -1 : 1, ph = index * 1.7, per = 4 + (index % 3);
+    const w = (2 * Math.PI * t) / per + ph;
+    const dx = 12 * Math.sin(w) + dir * 140 * (1 - e), dy = 12 * Math.sin(w * 0.87 + 1);
+    const rot = slot.rot + tilt * 8 * (1 - e) + 1.5 * Math.sin(w * 1.13 + 2);
+    return (
+      <AbsoluteFill>
+        <div style={{
+          position: 'absolute', left: `${(r.cx - r.w / 2) * 100}%`, top: `${(r.cy - r.h / 2) * 100}%`, width: `${r.w * 100}%`, height: `${r.h * 100}%`,
+          borderRadius: 28, border: `4px solid ${light ? '#111114' : '#FFFFFF'}`, overflow: 'hidden', boxSizing: 'border-box', backgroundColor: light ? '#E7E2D6' : '#15151B',
+          boxShadow: light ? '0 30px 80px rgba(0,0,0,.25)' : '0 30px 80px rgba(0,0,0,.6)',
+          transform: `translate(${dx}px, ${dy}px) rotate(${rot}deg) scale(${(0.85 + 0.15 * Math.min(1, e)) * (1 + 0.04 * Math.min(1, t / sceneSec))})`,
+          filter: e < 1 ? `blur(${10 * (1 - e)}px)` : undefined,
+        }}>{picture}</div>
+      </AbsoluteFill>
+    );
+  }
   if (card) {
     const r = mediaCardRect(item.aspect ?? 1, width, height);
     const enter = interpolate(frame / fps, [0, 0.25], [0, 1], {extrapolateRight: 'clamp', easing: Easing.out(Easing.cubic)});
-    const streak = (top: number, speed: number, a: number): React.CSSProperties => ({
-      position: 'absolute', filter: 'blur(36px)', top: `${top}%`, left: '-30%', width: '160%', height: '14%', transform: `rotate(-22deg) translateX(${(frame / fps) * speed}px)`,
-      background: `linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,${a}), rgba(255,255,255,0))`,
-    });
     return (
       <AbsoluteFill style={{backgroundColor: light ? '#F3EFE6' : '#0B0B0F'}}>
-        <AbsoluteFill style={{overflow: 'hidden'}}>
-          <div style={streak(22, 14, light ? 0.25 : 0.1)} />
-          <div style={streak(64, -10, light ? 0.18 : 0.06)} />
-        </AbsoluteFill>
+        <CardBackdrop light={light} />
         <div style={{
           position: 'absolute', left: `${((1 - r.width) / 2) * 100}%`, width: `${r.width * 100}%`, top: `${r.top * 100}%`, height: `${(r.bottom - r.top) * 100}%`,
           borderRadius: 28, border: `4px solid ${light ? '#111114' : '#FFFFFF'}`, overflow: 'hidden', boxSizing: 'border-box', backgroundColor: light ? '#E7E2D6' : '#15151B',

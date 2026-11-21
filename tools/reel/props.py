@@ -222,6 +222,7 @@ def build_render_props(storyboard: dict, settings: dict, brand: dict, audio: dic
             "highlight": sc.get("highlight", []),
             **({"punch": sc["punch"]} if sc.get("punch") else {}),
             **({"bg": sc["bg"]} if "bg" in sc else {}),
+            **({"layout": sc["layout"]} if "layout" in sc else {}),
             "overlay": sc.get("overlay"),
             "media": _media(sc.get("media") or [], dur, media_sizes),
             "motion": _motion(sc.get("motion") or [], dur, bool(sc.get("media")), words.get(sc["id"]),
