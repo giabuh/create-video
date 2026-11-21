@@ -59,7 +59,7 @@ export function TryPanel({voices}: {voices: VoiceInfo[]}): React.JSX.Element {
     <section className={`${s.card} ${s.try}`} aria-label="Nghe thử">
       <h2 className={s.h2}>Nghe thử</h2>
       <div className={s.row}>
-        <div style={{flex: '3 1 320px'}}><Field label="Câu thử (viết theo cách đọc)"><Input value={text} maxLength={1000} onChange={(e) => setText(e.target.value)} /></Field></div>
+        <div style={{flex: '3 1 320px'}}><Field label="Câu thử (viết theo cách đọc)"><Input value={text} maxLength={5000} onChange={(e) => setText(e.target.value)} /></Field></div>
         <div style={{flex: '1 1 160px'}}>
           <Field label="Giọng"><Select value={cur?.name ?? null} options={voices.map((v) => ({value: v.name, label: v.name}))}
             onChange={(v) => { setVoice(v); setRows(null); }} /></Field>

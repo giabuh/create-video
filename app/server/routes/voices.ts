@@ -29,7 +29,7 @@ export function voiceRoutes({jobs, worker}: Deps): Hono {
     const b = await bodyOf(c);
     const {data: config} = await readConfigV();
     if (typeof b.voice !== 'string' || !Object.hasOwn(config.voices, b.voice)) throw new HttpError(400, 'unknown voice');
-    if (typeof b.text !== 'string' || !b.text.trim() || b.text.length > 1000) throw new HttpError(400, 'bad text');
+    if (typeof b.text !== 'string' || !b.text.trim() || b.text.length > 5000) throw new HttpError(400, 'bad text');
     if (!Array.isArray(b.variants) || b.variants.length > 8 || !b.variants.every(isObj)) throw new HttpError(400, 'variants must be an array of up to 8 objects');
     const payload = {voice: b.voice, text: b.text, variants: b.variants};
     return c.json(jobs.enqueue({
