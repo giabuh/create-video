@@ -172,7 +172,7 @@ pictures and type hierarchy, not effects. The user asked Claude to design and bu
 ### 3b.1 Framed media (`look.mediaFrame`)
 - Render prop `look.mediaFrame: "full" | "card"` (default `"full"`, so fast-cut is unchanged); `templates.story.look.mediaFrame = "card"`.
   A media item may override it with `frame: "full" | "card"`.
-- Card: the picture (contain-fit, never cropped) floats on a backdrop: width 88% of the frame, height from the media
+- Card: the picture (contain-fit, never cropped) floats on a backdrop: width up to 88% of the frame (narrower when the height cap bites, so portrait pictures get no side bars), height from the media
   aspect clamped to 28–60% of the frame height, centre at y = 0.40; radius 28 px, 4 px border (white on dark bg,
   ink on light bg), soft shadow. Slow push-in scale 1.00 → 1.06 over the shot. Each new card enters with scale
   0.92 → 1 and blur 10 px → 0 over 0.25 s.
