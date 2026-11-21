@@ -47,4 +47,6 @@ def test_unused_components_and_transition_counts(tmp_path):
         d.mkdir(parents=True)
         (d / "storyboard.json").write_text(json.dumps(sb))
     assert unused_components(tmp_path) == ["MaxKinetic"]
-    assert list(transition_counts(tmp_path).items()) == [("mix", 1), ("fade", 2), ("cut", 3)]
+    # every known kind is listed, unused ones at 0, so new transitions get picked
+    assert list(transition_counts(tmp_path).items()) == [
+        ("clockWipe", 0), ("cube", 0), ("flip", 0), ("push", 0), ("slide", 0), ("wipe", 0), ("mix", 1), ("fade", 2), ("cut", 3)]

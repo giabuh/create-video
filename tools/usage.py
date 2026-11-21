@@ -39,8 +39,9 @@ def unused_components(root: Path) -> list[str]:
 
 
 def transition_counts(root: Path) -> dict[str, int]:
-    """Scene transition counts across storyboards, least used first; a missing value counts as cut."""
-    n: dict[str, int] = {}
+    """Scene transition counts across storyboards, least used first; a missing value counts as cut; unused kinds show 0."""
+    from reel.validate import TRANSITIONS
+    n: dict[str, int] = dict.fromkeys(TRANSITIONS, 0)
     for sb in root.glob("projects/*/storyboard.json"):
         for scene in json.loads(sb.read_text()).get("scenes", []):
             t = scene.get("transition") or "cut"
