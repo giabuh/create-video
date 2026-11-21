@@ -229,6 +229,11 @@ def test_sfx_hold_group_lasts_the_layer():
     count = p["scenes"][2]["motion"][0]
     assert tick["until"] == round(p["scenes"][2]["start"] + count["start"] + count["duration"], 3)
     assert all("until" not in x for x in p["sfx"] if x is not tick)
+    sb = _sb()
+    sb["scenes"][2]["motion"][0].setdefault("props", {})["seconds"] = 0.5
+    _, p = _sfx(sb, sfx, files)
+    tick = next(x for x in p["sfx"] if x["src"] == "sfx/tick-a.mp3")
+    assert tick["until"] == round(p["scenes"][2]["start"] + p["scenes"][2]["motion"][0]["start"] + 0.5, 3)
 
 
 def test_scene_bg_and_look_land_in_props():

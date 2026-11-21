@@ -51,7 +51,7 @@ export const BarChart: React.FC<MotionProps<typeof BarChartSchema>> = ({title, b
                   <div style={{width: `${w}%`, height: '100%', borderRadius: 16, background: r === top ? brand.colors.accent : brand.colors.primary}} />
                 </div>
                 <div style={{width: 170, fontWeight: 800, fontSize: 44, color: brand.colors.text, textAlign: 'right'}}>
-                  {+(r.value * p).toFixed(1)}{unit ? ` ${unit}` : ''}
+                  {(r.value * p).toLocaleString('vi-VN', {maximumFractionDigits: 1})}{unit ? ` ${unit}` : ''}
                 </div>
               </div>
             );

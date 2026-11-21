@@ -154,6 +154,12 @@ def sfx_files_for(value, files: list[str]) -> list[str]:
     return sorted(f for f in files if f.split("-", 1)[0] == value)
 
 
+def _held(duration: float, raw_layer: dict) -> float:
+    """A held sound lasts the layer, or only its animation when the layer sets props.seconds (CountUp, charts)."""
+    secs = (raw_layer.get("props") or {}).get("seconds")  # shortcut: schema default (1.2 s) not known here; set seconds explicitly
+    return min(duration, secs) if isinstance(secs, (int, float)) and secs > 0 else duration
+
+
 def _sfx_events(storyboard: dict, scenes: list[dict], overlays: list[dict], cta_start: float, cta, sfx: dict,
                 files: list[str], peaks: dict[str, float]) -> list[dict]:
     """Automatic + explicit sound effects (see spec "Sound effects"); explicit ones (own `sfx` key) always play."""
@@ -170,10 +176,10 @@ def _sfx_events(storyboard: dict, scenes: list[dict], overlays: list[dict], cta_
                 ev.append((sc["start"] + m["start"], sfx.get("media"), False, 0.0, None))
         for m, rm in zip(sc["motion"], raw.get("motion") or []):
             ev.append((sc["start"] + m["start"], rm.get("sfx", motion.get(m["component"], motion.get("default"))), "sfx" in rm, 0.0,
-                       sc["start"] + m["start"] + m["duration"]))
+                       sc["start"] + m["start"] + _held(m["duration"], rm)))
     for m, rm in zip(overlays, storyboard.get("motion") or []):
         ev.append((m["start"], rm.get("sfx", motion.get(m["component"], motion.get("default"))), "sfx" in rm, 0.0,
-                   m["start"] + m["duration"]))
+                   m["start"] + _held(m["duration"], rm)))
     if cta:
         ev.append((cta_start, sfx.get("cta"), False, 0.0, None))
     out, counter, last = [], {}, None
