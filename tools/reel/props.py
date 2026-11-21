@@ -162,6 +162,11 @@ def _sfx_events(storyboard: dict, scenes: list[dict], overlays: list[dict], cta_
     for i, (sc, raw) in enumerate(zip(scenes, storyboard["scenes"])):
         if i and sc["transition"] != "cut":
             ev.append((sc["start"], raw.get("sfx", sfx.get("scene")), "sfx" in raw, 0.15))
+        if i and sc["transition"] == "cut":
+            ev.append((sc["start"], sfx.get("cut"), False, 0.0))
+        for k, m in enumerate(sc["media"]):
+            if k:
+                ev.append((sc["start"] + m["start"], sfx.get("media"), False, 0.0))
         for m, rm in zip(sc["motion"], raw.get("motion") or []):
             ev.append((sc["start"] + m["start"], rm.get("sfx", motion.get(m["component"], motion.get("default"))), "sfx" in rm, 0.0))
     for m, rm in zip(overlays, storyboard.get("motion") or []):

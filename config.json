@@ -41,7 +41,7 @@
     "duckTo": 0.2,
     "fadeOut": 1.5
   },
-  "sfx": { "volume": 0.5, "minGap": 0.8, "scene": "none", "cta": "none",
+  "sfx": { "volume": 0.5, "minGap": 0.8, "scene": "none", "cta": "none", "cut": "none", "media": "none",
            "motion": { "default": "pop", "Text": "ting", "KineticText": "ting", "PriceTag": "ting", "CountUp": "ting",
                        "DateBadge": "pop", "Picture": "pop", "Annotate": "pop", "LowerThird": "click", "Checklist": "click", "ProgressBar": "click",
                        "Ribbon": "whoosh", "TwoTier": "whoosh", "Callout": "click", "PinLabel": "pop", "GlossyPill": "ting", "GiantText": "whoosh" } },

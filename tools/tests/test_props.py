@@ -200,3 +200,18 @@ def test_music_drop_resolves_word_anchors():
     with pytest.raises(AnchorError) as e:
         build_render_props(bad, SETTINGS, BRAND, VOICE, {"a": WORDS})
     assert any("musicDrop[0]" in x and "unknown scene 'zz'" in x for x in e.value.problems)
+
+
+def test_sfx_hard_cut_and_media_change_events():
+    sfx = {**SFX, "scene": "none", "cut": "whoosh", "media": "pop", "minGap": 0.0, "motion": {}}
+    sb = _sb()
+    sb["scenes"][0]["media"] = [{"src": "a.mp4", "duration": 1.0}, {"src": "b.mp4"}]  # clip change at 1.0
+    ev, _ = _sfx(sb, sfx)
+    assert ev == [(1.0, "sfx/pop-a.mp3"), (3.0, "sfx/whoosh-a.mp3"), (6.0, "sfx/whoosh-b.mp3")]
+
+
+def test_sfx_cut_and_media_default_off():
+    sb = _sb()
+    sb["scenes"][0]["media"] = [{"src": "a.mp4", "duration": 1.0}, {"src": "b.mp4"}]
+    ev, _ = _sfx(sb, {**SFX, "motion": {}})   # SFX has no cut/media keys
+    assert ev == []
