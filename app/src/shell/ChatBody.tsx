@@ -199,21 +199,21 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
             ))}
           </div>
         )}
-        <Textarea
-          autosize rows={2} value={text} aria-label={`Tin nhắn cho ${engineName}`} disabled={locked}
-          placeholder={`Nhắn ${engineName}…`}
-          onChange={(e) => setText(e.target.value)}
-          onPaste={(e) => {
-            const imgs = [...e.clipboardData.files].filter((f) => f.type.startsWith('image/'));
-            if (imgs.length) { e.preventDefault(); addFiles(imgs); }
-          }}
-          onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); void submit(); } }}
-        />
+        <div className={s.inputRow}>
+          <IconButton label="Thêm ảnh" icon={<ImagePlus size={18} />} disabled={locked || files.length >= MAX_CHAT_IMAGES} onClick={() => fileRef.current?.click()} />
+          <Textarea
+            autosize rows={2} value={text} aria-label={`Tin nhắn cho ${engineName}`} disabled={locked}
+            placeholder={`Nhắn ${engineName}…`}
+            onChange={(e) => setText(e.target.value)}
+            onPaste={(e) => {
+              const imgs = [...e.clipboardData.files].filter((f) => f.type.startsWith('image/'));
+              if (imgs.length) { e.preventDefault(); addFiles(imgs); }
+            }}
+            onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); void submit(); } }}
+          />
+        </div>
         <input ref={fileRef} type="file" accept={CHAT_IMAGE_ACCEPT} multiple hidden
           onChange={(e) => { addFiles([...(e.target.files ?? [])]); e.target.value = ''; }} />
-        <div>
-          <IconButton label="Thêm ảnh" icon={<ImagePlus size={18} />} disabled={locked || files.length >= MAX_CHAT_IMAGES} onClick={() => fileRef.current?.click()} />
-        </div>
         {(busy !== null || running) && (
           <div className={s.note}>
             {running ? <><span>{engineName} đang trả lời…</span><Button size="sm" onClick={() => stop.mutate(chatId!)}>Dừng</Button></> : <span>Đang chạy ở phiên khác</span>}

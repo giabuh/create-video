@@ -9,6 +9,6 @@
 .chat > * { flex: 1; min-width: 0; }
 @media (max-width: 850px) {
   .work { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
-  .center > :first-child { flex: none; height: 45vh; max-height: 45vh; }
+  .center > :first-child { flex: none; height: 40vh; max-height: 40vh; }
   .chat { padding: var(--sp-2) var(--sp-3); border-left: 0; border-top: 1px solid var(--line); }
 }
