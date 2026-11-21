@@ -1,6 +1,6 @@
 // shared reel skeleton: scenes with transitions, media, motion, overlay, voice, CTA, video-wide track, sfx, music
 import React from 'react';
-import {AbsoluteFill, Img, Sequence, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Img, Sequence, getRemotionEnvironment, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {LightLeak} from '@remotion/light-leaks';
 import {Audio} from '@remotion/media';
 import {CtaCard} from '../components/CtaCard';
@@ -20,6 +20,12 @@ const Pres: React.FC<{type: Transition; direction: 'entering' | 'exiting'; start
   const progress = Math.min(1, Math.max(0, (frame - start) / Math.max(1, tf)));
   return <ScenePresentation type={type} direction={direction} progress={progress} accent={accent} durationInFrames={tf}>{children}</ScenePresentation>;
 };
+
+// LightLeak needs WebGL; a viewer's browser may have none (GPU off/blocklisted). Skip it only in the app preview,
+// renders keep failing loudly so a missing effect is never shipped silently.
+let webgl: boolean | undefined;
+const leakOk = () => !getRemotionEnvironment().isPlayer
+  || (webgl ??= (() => { try { return !!document.createElement('canvas').getContext('webgl'); } catch { return false; } })());
 
 export const ReelFrame: React.FC<{
   p: RenderProps;
@@ -87,7 +93,7 @@ export const ReelFrame: React.FC<{
           </Sequence>
         );
       })}
-      {p.scenes.map((sc, si) => sc.leak && (
+      {p.scenes.map((sc, si) => sc.leak && leakOk() && (
         <Sequence key={`leak-${sc.id}`} name={`leak ${sc.id}`} from={Math.round(sc.start * fps)} durationInFrames={34}>
           <LightLeak seed={si} hueShift={0} />
         </Sequence>
