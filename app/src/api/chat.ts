@@ -59,3 +59,9 @@ export function setChatOpen(o: boolean): void { panelOpen = o; emit(); }
 export const useChatOpen = (): boolean => useSyncExternalStore(subscribe, () => panelOpen);
 export const useChatBusy = (): string | null => useSyncExternalStore(subscribe, () => busy);
 export const useChatDraft = (id: string | null): string => useSyncExternalStore(subscribe, () => (id ? drafts.get(id) ?? '' : ''));
+
+// Text queued for the chat input (the Editor's "Sửa chỗ này"); the chat body takes it into its input.
+let insert = '';
+export function insertChatText(text: string): void { insert += text; emit(); }
+export const useChatInsert = (): string => useSyncExternalStore(subscribe, () => insert);
+export function takeChatInsert(): string { const t = insert; insert = ''; if (t) emit(); return t; }
