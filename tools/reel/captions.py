@@ -109,6 +109,27 @@ def split_caption(text: str, max_words: int) -> list[str]:
     return [" ".join(c) for c in chunks]
 
 
+def _word_times(chunk: str, start: float, end: float, tt: list[float] | None, k: int) -> list[float]:
+    """Start of every space-separated word of `chunk`, clamped non-decreasing into [start, end). `tt` = caption token
+    times from the voice (k = this chunk's first token), None = even spread."""
+    ws, n = chunk.split(), len(chunk.split())
+    if tt is None:
+        raw = [start + i * (end - start) / n for i in range(n)]
+    else:
+        raw = []
+        for w in ws:
+            m = len(tokens(w))
+            raw.append(tt[k] if m and k < len(tt) else (raw[-1] if raw else start))  # a bare dash/symbol rides the previous word
+            k += m
+    top = max(start, end - 0.001)
+    out, prev = [], start
+    for t in raw:
+        prev = min(max(t, prev), top)
+        out.append(round(prev, 3))
+    out[0] = round(start, 3)
+    return out
+
+
 def chunk_caption(text: str, max_words: int, duration: float, words: list[dict] | None = None) -> list[dict]:
     """Chunks with start/end in seconds within [0, duration]. With word timings (align.py) each chunk starts when its
     first word is spoken; without, time is shared by character count."""
@@ -117,14 +138,19 @@ def chunk_caption(text: str, max_words: int, duration: float, words: list[dict] 
         return []
     if words:
         times = caption_token_times(text, words)  # one start per word token of the caption
-        starts, k = [], 0
+        starts, ks, k = [], [], 0
         for c in chunks:
             n = len(tokens(c))
             starts.append(times[k] if n and k < len(times) else (starts[-1] if starts else 0.0))
+            ks.append(k)
             k += n
         starts[0] = 0.0
         ends = starts[1:] + [duration]
-        return [{"text": c, "start": round(a, 3), "end": round(max(a, b), 3)} for c, a, b in zip(chunks, starts, ends)]
+        out = []
+        for c, a, b, k0 in zip(chunks, starts, ends, ks):
+            a, b = round(a, 3), round(max(a, b), 3)
+            out.append({"text": c, "start": a, "end": b, "times": _word_times(c, a, b, times, k0)})
+        return out
     total = sum(len(c) for c in chunks)
     out, t = [], 0.0
     for c in chunks:
@@ -132,4 +158,6 @@ def chunk_caption(text: str, max_words: int, duration: float, words: list[dict] 
         out.append({"text": c, "start": round(t, 3), "end": round(t + d, 3)})
         t += d
     out[-1]["end"] = round(duration, 3)
+    for o in out:
+        o["times"] = _word_times(o["text"], o["start"], o["end"], None, 0)
     return out

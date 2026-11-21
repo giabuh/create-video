@@ -1,7 +1,7 @@
 // mirrors tools/reel/props.py build_render_props()
 export type Effect = 'none' | 'zoom-in' | 'zoom-out' | 'pan-left' | 'pan-right';
 export type Transition = 'cut' | 'fade' | 'slide';
-export type CaptionChunk = {text: string; start: number; end: number};
+export type CaptionChunk = {text: string; start: number; end: number; times?: number[]};
 export type MediaItem = {src: string; type: 'video' | 'image'; from: number; start: number; duration: number; effect: Effect};
 // Placement: 'full' = the component lays itself out on the whole frame; top/center/bottom = preset bands;
 // 'free' = `box` (percent of the frame: x/y = top-left corner, w/h = size).
