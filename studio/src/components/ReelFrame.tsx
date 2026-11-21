@@ -21,11 +21,15 @@ const Pres: React.FC<{type: Transition; direction: 'entering' | 'exiting'; start
   return <ScenePresentation type={type} direction={direction} progress={progress} accent={accent} durationInFrames={tf}>{children}</ScenePresentation>;
 };
 
-// LightLeak needs WebGL; a viewer's browser may have none (GPU off/blocklisted). Skip it only in the app preview,
-// renders keep failing loudly so a missing effect is never shipped silently.
-let webgl: boolean | undefined;
-const leakOk = () => !getRemotionEnvironment().isPlayer
-  || (webgl ??= (() => { try { return !!document.createElement('canvas').getContext('webgl'); } catch { return false; } })());
+// LightLeak needs a WebGL context and cancels the whole Player when it can't get one (no GPU, or Chrome's cap on
+// live contexts). The app preview shows a CSS stand-in instead; renders keep the real effect.
+const LeakStandIn: React.FC = () => {
+  const frame = useCurrentFrame();
+  const o = Math.sin(Math.min(1, frame / 34) * Math.PI) * 0.75;
+  return <AbsoluteFill style={{opacity: o, mixBlendMode: 'screen', background: 'radial-gradient(circle at 30% 35%, #ffb36b, #ff5e3a 35%, transparent 70%)'}} />;
+};
+const Leak: React.FC<{seed: number}> = ({seed}) =>
+  getRemotionEnvironment().isPlayer ? <LeakStandIn /> : <LightLeak seed={seed} hueShift={0} />;
 
 export const ReelFrame: React.FC<{
   p: RenderProps;
@@ -93,9 +97,9 @@ export const ReelFrame: React.FC<{
           </Sequence>
         );
       })}
-      {p.scenes.map((sc, si) => sc.leak && leakOk() && (
+      {p.scenes.map((sc, si) => sc.leak && (
         <Sequence key={`leak-${sc.id}`} name={`leak ${sc.id}`} from={Math.round(sc.start * fps)} durationInFrames={34}>
-          <LightLeak seed={si} hueShift={0} />
+          <Leak seed={si} />
         </Sequence>
       ))}
       {logo && p.brand.logo && (
