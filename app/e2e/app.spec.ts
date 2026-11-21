@@ -4,11 +4,10 @@ import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {expect, test} from '@playwright/test';
 
-const API = 'http://127.0.0.1:5316/api';
+const API = `${process.env.REEL_API_URL ?? 'http://127.0.0.1:5316'}/api`;
 const ROOT = process.env.REEL_ROOT ?? path.resolve(import.meta.dirname, '../..'); // must match the API's data root
 const slug = `e2e-${Date.now()}`;
 const jpgStem = `e2e-pic-${Date.now()}`;
-const CAPTION = 'Xin chào từ E2E';
 
 type Job = {kind: string; project?: string; state: string; error?: string};
 const jobs = async (): Promise<Job[]> => (await fetch(`${API}/jobs`)).json();
@@ -28,7 +27,7 @@ test.describe.configure({mode: 'serial'});
 test.beforeAll(async () => {
   const r = await fetch(`${API}/projects`, {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify({name: slug})});
   expect(r.status).toBe(201);
-  const storyboard = JSON.parse(readFileSync(path.join(ROOT, 'projects/_smoke/storyboard.json'), 'utf8'));
+  const storyboard = JSON.parse(readFileSync(path.join(ROOT, 'projects/2026-11-20-demo-card-moi/storyboard.json'), 'utf8'));
   const cur = await (await fetch(`${API}/projects/${slug}`)).json();
   const put = await fetch(`${API}/projects/${slug}/storyboard`, {method: 'PUT', headers: {'content-type': 'application/json'}, body: JSON.stringify({storyboard, baseMtime: cur.storyboard.mtime})});
   expect(put.ok).toBe(true);
@@ -45,17 +44,22 @@ test('projects list shows the scratch project', async ({page}) => {
   await expect(page.getByRole('link', {name: new RegExp(slug)})).toBeVisible();
 });
 
-test('edit caption: autosave pill and player', async ({page}) => {
+test('watch screen: player, scene strip, docked chat and the Sửa chỗ này tag', async ({page}) => {
   await page.goto(`/p/${slug}`);
-  await page.getByRole('button', {name: /s1/}).first().click();
-  const caption = page.getByLabel('Caption (hiển thị trên màn hình)');
-  await caption.fill(CAPTION);
-  await expect(page.getByRole('status').filter({hasText: 'Đã lưu'})).toBeVisible();
-  // the pill also reads "Đã lưu" when idle, so confirm the caption really reached storyboard.json
-  await expect.poll(async () => (await (await fetch(`${API}/projects/${slug}`)).json()).storyboard.data.scenes[0].caption, {timeout: 10_000}).toBe(CAPTION);
   const player = page.getByRole('region', {name: 'Xem trước'});
-  await expect(player.getByText(CAPTION).first()).toBeVisible({timeout: 30_000});
-  await player.screenshot({path: 'test-results/player-caption.png'});
+  const ask = page.getByRole('button', {name: 'Sửa chỗ này'});
+  await expect(ask).toBeEnabled({timeout: 30_000}); // enabled only once renderProps exist
+  const chat = page.getByLabel('Chat', {exact: true}); // exact: the nav's "Chat với Claude" button also matches
+  await expect(chat).toBeVisible();
+  await expect(page.getByLabel(/Caption/)).toHaveCount(0); // no manual-editing fields left
+  const second = page.getByRole('button', {name: /^Tới cảnh /}).nth(1);
+  await second.click();
+  await expect(second).toHaveAttribute('aria-current', 'true', {timeout: 10_000});
+  await ask.click();
+  const input = chat.getByRole('textbox');
+  await expect(input).toHaveValue(/^\[cảnh \S+ · \d+:\d{2}\.\d · khung \d+\] $/);
+  if (await input.isEnabled()) await expect(input).toBeFocused(); // disabled while another chat session is busy
+  await player.screenshot({path: 'test-results/watch-player.png'});
 });
 
 test('voice job then render', async ({page}) => {
