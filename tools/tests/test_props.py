@@ -215,3 +215,13 @@ def test_sfx_cut_and_media_default_off():
     sb["scenes"][0]["media"] = [{"src": "a.mp4", "duration": 1.0}, {"src": "b.mp4"}]
     ev, _ = _sfx(sb, {**SFX, "motion": {}})   # SFX has no cut/media keys
     assert ev == []
+
+
+def test_sfx_hold_group_lasts_the_layer():
+    files = FILES + ["tick-a.mp3"]
+    sfx = {**SFX, "motion": {"CountUp": "tick"}, "hold": ["tick"], "minGap": 0.0}
+    _, p = _sfx(_sb(), sfx, files)
+    tick = next(x for x in p["sfx"] if x["src"] == "sfx/tick-a.mp3")
+    count = p["scenes"][2]["motion"][0]
+    assert tick["until"] == round(p["scenes"][2]["start"] + count["start"] + count["duration"], 3)
+    assert all("until" not in x for x in p["sfx"] if x is not tick)

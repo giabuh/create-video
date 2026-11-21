@@ -38,6 +38,6 @@ export type RenderProps = {
   brand: Brand; captions: CaptionStyle; music: Music | null;
   scenes: Scene[]; cta: Cta | null; totalSeconds: number;
   transitionSeconds?: number; // crossfade/slide length for scene and clip transitions
-  sfx?: {src: string; start: number; volume: number}[]; // sound effects; start is absolute seconds
+  sfx?: {src: string; start: number; volume: number; until?: number}[]; // sound effects; start is absolute seconds
   overlays?: MotionItem[]; // video-wide motion track; start is absolute (seconds from the beginning)
 };

@@ -87,7 +87,7 @@ export type Config = Json & {
   sync: {remote: string};
   templates?: Record<string, Json>;
   transition?: {scene: TransitionName; media: TransitionName; duration: number};
-  sfx?: {volume: number; minGap: number; scene: string | null; cta: string | null; cut: string | null; media: string | null; motion: Record<string, string | null>};
+  sfx?: {volume: number; minGap: number; scene: string | null; cta: string | null; cut: string | null; media: string | null; motion: Record<string, string | null>; hold?: string[]};
 };
 export type JobKind = 'voice' | 'render' | 'ingest' | 'try' | 'approve' | 'voice-add' | 'publish' | 'delete-project' | 'drive-delete' | 'sync';
 export type JobState = 'queued' | 'running' | 'done' | 'failed' | 'cancelled';

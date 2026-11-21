@@ -9,6 +9,7 @@ import {MotionLayer} from '../../components/MotionLayer';
 import {MusicTrack} from '../../components/MusicTrack';
 import {Overlay} from '../../components/Overlay';
 import {SceneTransition} from '../../components/SceneTransition';
+import {SfxTrack} from '../../components/SfxTrack';
 import type {RenderProps} from '../../types';
 
 export const FastCut: React.FC<RenderProps> = (p) => {
@@ -66,11 +67,7 @@ export const FastCut: React.FC<RenderProps> = (p) => {
           <MotionLayer item={m} brand={p.brand} />
         </Sequence>
       ))}
-      {(p.sfx ?? []).map((x, i) => (
-        <Sequence key={`sfx-${i}`} from={Math.round(x.start * fps)} name={`sfx:${x.src}`}>
-          <Audio src={staticFile(x.src)} volume={x.volume} />
-        </Sequence>
-      ))}
+      <SfxTrack sfx={p.sfx ?? []} />
       {p.music && <MusicTrack music={p.music} scenes={p.scenes} total={p.totalSeconds} />}
     </AbsoluteFill>
   );

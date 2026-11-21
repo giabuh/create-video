@@ -158,30 +158,35 @@ def _sfx_events(storyboard: dict, scenes: list[dict], overlays: list[dict], cta_
                 files: list[str], peaks: dict[str, float]) -> list[dict]:
     """Automatic + explicit sound effects (see spec "Sound effects"); explicit ones (own `sfx` key) always play."""
     motion = sfx.get("motion") or {}
-    ev = []  # (hit time, value, explicit, lead when the file's peak is unknown)
+    hold = sfx.get("hold") or []
+    ev = []  # (hit time, value, explicit, lead when the file's peak is unknown, layer end for motion else None)
     for i, (sc, raw) in enumerate(zip(scenes, storyboard["scenes"])):
         if i and sc["transition"] != "cut":
-            ev.append((sc["start"], raw.get("sfx", sfx.get("scene")), "sfx" in raw, 0.15))
+            ev.append((sc["start"], raw.get("sfx", sfx.get("scene")), "sfx" in raw, 0.15, None))
         if i and sc["transition"] == "cut":
-            ev.append((sc["start"], sfx.get("cut"), False, 0.0))
+            ev.append((sc["start"], sfx.get("cut"), False, 0.0, None))
         for k, m in enumerate(sc["media"]):
             if k:
-                ev.append((sc["start"] + m["start"], sfx.get("media"), False, 0.0))
+                ev.append((sc["start"] + m["start"], sfx.get("media"), False, 0.0, None))
         for m, rm in zip(sc["motion"], raw.get("motion") or []):
-            ev.append((sc["start"] + m["start"], rm.get("sfx", motion.get(m["component"], motion.get("default"))), "sfx" in rm, 0.0))
+            ev.append((sc["start"] + m["start"], rm.get("sfx", motion.get(m["component"], motion.get("default"))), "sfx" in rm, 0.0,
+                       sc["start"] + m["start"] + m["duration"]))
     for m, rm in zip(overlays, storyboard.get("motion") or []):
-        ev.append((m["start"], rm.get("sfx", motion.get(m["component"], motion.get("default"))), "sfx" in rm, 0.0))
+        ev.append((m["start"], rm.get("sfx", motion.get(m["component"], motion.get("default"))), "sfx" in rm, 0.0,
+                   m["start"] + m["duration"]))
     if cta:
-        ev.append((cta_start, sfx.get("cta"), False, 0.0))
+        ev.append((cta_start, sfx.get("cta"), False, 0.0, None))
     out, counter, last = [], {}, None
-    for start, value, explicit, lead in sorted(ev, key=lambda e: e[0]):
+    for start, value, explicit, lead, end in sorted(ev, key=lambda e: e[0]):
         picks = sfx_files_for(value, files)
         if not picks or (not explicit and last is not None and start - last < sfx.get("minGap", 0)):
             continue
         n = counter[value] = counter.get(value, -1) + 1
         file = picks[n % len(picks)]
         # start early by the file's loudest moment so the hit lands on the change, not after it
-        out.append({"src": f"sfx/{file}", "start": round(max(0.0, start - peaks.get(file, lead)), 3), "volume": sfx.get("volume", 0.5)})
+        held = end is not None and value in hold  # a held sound starts with its layer and stops when it ends
+        out.append({"src": f"sfx/{file}", "start": round(max(0.0, start - (0.0 if held else peaks.get(file, lead))), 3), "volume": sfx.get("volume", 0.5),
+                    **({"until": round(end, 3)} if held else {})})
         last = start
     return out
 
