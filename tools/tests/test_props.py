@@ -200,6 +200,10 @@ def test_music_drop_resolves_word_anchors():
     with pytest.raises(AnchorError) as e:
         build_render_props(bad, SETTINGS, BRAND, VOICE, {"a": WORDS})
     assert any("musicDrop[0]" in x and "unknown scene 'zz'" in x for x in e.value.problems)
+    backwards = {**SPOKEN, "musicDrop": [{"start": {"scene": "b", "edge": "end"}, "end": {"scene": "a"}}]}
+    with pytest.raises(AnchorError) as e:
+        build_render_props(backwards, SETTINGS, BRAND, VOICE, {"a": WORDS})
+    assert any("musicDrop[0]: end" in x for x in e.value.problems)
 
 
 def test_sfx_hard_cut_and_media_change_events():

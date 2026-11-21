@@ -230,8 +230,11 @@ def build_render_props(storyboard: dict, settings: dict, brand: dict, audio: dic
     for i, d in enumerate(storyboard.get("musicDrop") or []):
         a = _track_time(d.get("start", 0), by_id, words, captions, total, f"musicDrop[{i}] start", problems, end=False)
         b = _track_time(d.get("end", "video"), by_id, words, captions, total, f"musicDrop[{i}] end", problems, end=True)
-        if a is not None and b is not None and b > a:
-            drops.append([round(a, 3), round(b, 3), float(d.get("to", 0))])
+        if a is not None and b is not None:
+            if b > a:
+                drops.append([round(a, 3), round(b, 3), float(d.get("to", 0))])
+            else:
+                problems.append(f"musicDrop[{i}]: end ({b:.2f}s) is not after start ({a:.2f}s)")
     if problems:
         raise AnchorError(problems)
     music = settings["music"]

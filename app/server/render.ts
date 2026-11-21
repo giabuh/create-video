@@ -106,7 +106,7 @@ export async function renderVersion(slug: string, ctx: JobCtx, worker: VoiceWork
     ctx.signal.throwIfAborted();
     ctx.progress(0.99, 'Giới hạn đỉnh âm thanh');
     const limited = safeJoin('projects', slug, `${name}.lim.mp4`);
-    try { await execFileP('ffmpeg', limiterArgs(tmp, limited)); }
+    try { await execFileP('ffmpeg', limiterArgs(tmp, limited), {signal: ctx.signal}); }
     catch (e) { await rm(limited, {force: true}); throw e; }
     await rename(limited, tmp);
     await rename(tmp, safeJoin('projects', slug, `${name}.mp4`));
