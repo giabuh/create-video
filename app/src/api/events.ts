@@ -49,6 +49,26 @@ export function keysForPath(path: string): (readonly unknown[])[] {
   }
 }
 
+// Production build (`npm start`): `vite build --watch` rebuilds after studio/src edits. Wait for the new bundle, then offer a
+// reload; never reload by itself, an unsaved storyboard edit would be lost.
+const bundleSrc = (html: string) => /<script[^>]+src="([^"]*\/assets\/index-[^"]+\.js)"/.exec(html)?.[1];
+let awaitingBuild = false;
+async function offerReloadOnNewBuild(): Promise<void> {
+  if (awaitingBuild) return;
+  awaitingBuild = true;
+  const mine = bundleSrc(document.documentElement.outerHTML);
+  try {
+    for (let i = 0; i < 60; i++) { // a failed build never changes the bundle: give up after a minute
+      await new Promise((r) => setTimeout(r, 1000));
+      const next = bundleSrc(await fetch('/', {cache: 'no-store'}).then((r) => r.text()).catch(() => ''));
+      if (next && next !== mine) {
+        toast({title: 'Giao diện vừa được cập nhật', description: 'Tải lại để xem motion mới.', duration: 60_000, action: {label: 'Tải lại', onClick: () => location.reload()}});
+        return;
+      }
+    }
+  } finally { awaitingBuild = false; }
+}
+
 const TERMINAL = new Set(['done', 'failed', 'cancelled']);
 
 /** Server snapshot wins. Local live jobs it no longer lists are dropped; local finished ones stay. `finished` = jobs that ended while we were away. */
@@ -101,6 +121,7 @@ export function useServerEvents(): void {
     const pending = new Map<string, readonly unknown[]>();
     let flushTimer: ReturnType<typeof setTimeout> | undefined;
     const onChanged = (path: string) => { // coalesce bursts of file events into one invalidation
+      if (import.meta.env.PROD && path.startsWith('studio/src/')) void offerReloadOnNewBuild();
       keysForPath(path).forEach((k) => pending.set(JSON.stringify(k), k));
       flushTimer ??= setTimeout(() => {
         flushTimer = undefined;

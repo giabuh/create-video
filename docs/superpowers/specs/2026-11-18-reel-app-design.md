@@ -34,7 +34,7 @@ browser (React SPA via Vite :5317) ──/api proxy, HTTP/JSON + SSE──► ap
                                                 JSON lines over stdin/stdout; model loaded once, kept warm
 ```
 
-- The repo root is an npm workspace (`studio`, `app`) so React and Remotion are installed once. `npm start` in `app/` runs the API (5316) and Vite (5317, proxying `/api` and media roots); there is no dist build, so edits to `studio/src` hot-reload into the preview. `npm run dev` is the same with API auto-restart.
+- The repo root is an npm workspace (`studio`, `app`) so React and Remotion are installed once. `npm start` in `app/` runs the API (5316) and serves a production build on 5317 (`vite build --watch` + `vite preview`, proxying `/api` and media roots): dev-mode React made the Player drop ~1 in 6 frames (2026-11-22 measurement). Edits to `studio/src` rebuild and the app offers a reload. `npm run dev` is Vite dev (HMR) with API auto-restart, for working on the app itself.
 - The Player and the renderer use the **same** components from `studio/src` (imported via a Vite alias `@studio` → `../studio/src`, with `resolve.dedupe` for `react`, `react-dom`, `remotion`, `@remotion/*`). `app/package.json` pins the same Remotion version as `studio/` (4.0.544), plus `@remotion/player`, `@remotion/renderer`, `@remotion/bundler` at 4.0.544.
   - Risk: cross-package import of studio source. Plan Task 1 is a spike that proves Player renders `fixtures/smoke-props.json` in the app before anything else is built.
 - Static asset paths: studio components call `staticFile("library/x.mp4")` → `/library/x.mp4`. The server serves those roots, so Player preview needs no copying.

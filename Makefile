@@ -1,7 +1,11 @@
-.PHONY: app stop restart test push pull sync
+.PHONY: app dev stop restart test push pull sync
 
-# App (http://127.0.0.1:5317). Dev mode: the API restarts itself when server code changes.
+# App (http://127.0.0.1:5317), production build: smooth preview; studio/src edits rebuild (~2 s) and offer a reload.
 app:
+	cd app && npm start
+
+# Dev mode for working on the app itself: HMR, and the API restarts itself when server code changes.
+dev:
 	cd app && npm run dev
 
 # Stop the app wherever it runs (another terminal too): frees the API (5316) and UI (5317) ports.

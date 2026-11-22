@@ -6,7 +6,7 @@ from .captions import chunk_caption
 
 # Cards that animate their own exit (registered with ownsExit: true in studio/src/motion/registry.ts): no default fade.
 OWNS_EXIT = {"Ribbon", "TwoTier", "Callout", "PinLabel", "GlossyPill", "GiantText", "OfferCard", "Stamp",
-            "MaxKinetic", "MaxOffer", "MaxPhone", "MaxSteps"}
+            "MaxKinetic", "MaxOffer", "MaxPhone", "MaxSteps", "FeedPhone"}
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp"}
 
 

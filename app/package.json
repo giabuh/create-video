@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently -k -n api,web \"REEL_DEV=1 node --watch server/index.ts\" \"vite\"",
-    "start": "concurrently -k -n api,web \"node server/index.ts\" \"vite\"",
+    "start": "vite build && concurrently -k -n api,build,web \"node server/index.ts\" \"vite build --watch\" \"vite preview\"",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "e2e": "playwright test",

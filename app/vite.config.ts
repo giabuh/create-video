@@ -17,4 +17,6 @@ export default defineConfig({
     // '/library' and '/voices' are also SPA routes: proxy only paths with a file part below the root (prefix keys would swallow the pages)
     proxy: {'/api': {target: api}, '^/(library|music|sfx|brands|projects|voices)/': {target: api}},
   },
+  // `npm start` serves the production build (dev React makes the Player drop frames); proxy is inherited from server.
+  preview: {port: Number(process.env.REEL_UI_PORT ?? 5317), strictPort: true, host: '127.0.0.1'},
 });

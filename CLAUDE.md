@@ -17,8 +17,9 @@ Start a reel with the `/make-reel` skill.
 - Voice audition: `VieNeu-TTS/.venv/bin/python tools/voice_try.py --voice phuong --text "..." --variants '[{"speed":1.05},{"temperature":0.6}]'`
 - Sync media with Google Drive: `tools/sync.sh push|pull` (rclone remote in config.json `sync.remote`).
 - Word timings for motion `at` (optional, once per machine): `node tools/whisper/setup.mjs` (builds whisper.cpp into `.whisper/`).
-- App (visual UI for the user): `cd app && npm start`  → http://127.0.0.1:5317 (dev with API auto-restart: `npm run dev`)
-  Or from repo root: `make app` / `make restart` (kills whatever holds ports 5316/5317, then starts dev) / `make stop` / `make test` / `make push|pull|sync` (Drive, `ARGS=--dry-run` to preview).
+- App (visual UI for the user): `cd app && npm start`  → http://127.0.0.1:5317 (production build; `studio/src` edits rebuild
+  and the app offers "Tải lại"). Working on the app's own code: `npm run dev` (HMR, API auto-restart).
+  Or from repo root: `make app` / `make restart` (kills whatever holds ports 5316/5317, then starts the app) / `make dev` / `make stop` / `make test` / `make push|pull|sync` (Drive, `ARGS=--dry-run` to preview).
 - Tests: `uv run --with pytest python -m pytest tools/tests -q`, `cd studio && npx tsc --noEmit`, `cd app && npm test && npx tsc --noEmit` (E2E: `cd app && npm run e2e`, `cd app && npm run e2e:chat`).
 
 ## Rules

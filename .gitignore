@@ -26,3 +26,4 @@ app/.data/
 projects/*/hyperframes/assets/
 projects/*/compare/
 .claude/worktrees/
+app/dist/
