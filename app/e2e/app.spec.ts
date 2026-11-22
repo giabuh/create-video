@@ -3,6 +3,7 @@ import {mkdtempSync, readFileSync, rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {expect, test} from '@playwright/test';
+import type {PreviewResult, ProjectDetail} from '../shared/types.ts';
 
 const API = `${process.env.REEL_API_URL ?? 'http://127.0.0.1:5316'}/api`;
 const ROOT = process.env.REEL_ROOT ?? path.resolve(import.meta.dirname, '../..'); // must match the API's data root
@@ -51,8 +52,26 @@ test('watch screen: player, scene strip, docked chat and the Sửa chỗ này ta
   await expect(ask).toBeEnabled({timeout: 30_000}); // enabled only once renderProps exist
   const chat = page.getByLabel('Chat', {exact: true}); // exact: the nav's "Chat với Claude" button also matches
   await expect(chat).toBeVisible();
+  const previewBox = (await player.boundingBox())!;
+  const chatBox = (await chat.boundingBox())!;
+  expect(chatBox.x).toBeGreaterThanOrEqual(previewBox.x + previewBox.width);
+  expect(chatBox.width).toBeGreaterThan(previewBox.width);
+  const divider = page.getByRole('separator', {name: 'Đổi độ rộng chat'});
+  await divider.press('Home');
+  const narrowChat = (await chat.boundingBox())!.width;
+  const handle = (await divider.boundingBox())!;
+  const x = handle.x + handle.width / 2, y = handle.y + handle.height / 2;
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x - 120, y, {steps: 4});
+  await page.mouse.up();
+  expect((await chat.boundingBox())!.width).toBeGreaterThan(narrowChat + 100);
+  await divider.press('ArrowRight');
+  expect((await chat.boundingBox())!.width).toBeLessThan(narrowChat + 110);
   await expect(page.getByLabel(/Caption/)).toHaveCount(0); // no manual-editing fields left
-  const second = page.getByRole('button', {name: /^Tới cảnh /}).nth(1);
+  const scenes = page.getByRole('button', {name: /^Tới cảnh /});
+  await expect(scenes.first().getByText('00:00,0')).toBeVisible();
+  const second = scenes.nth(1);
   await second.click();
   await expect(second).toHaveAttribute('aria-current', 'true', {timeout: 10_000});
   await ask.click();
@@ -60,6 +79,36 @@ test('watch screen: player, scene strip, docked chat and the Sửa chỗ này ta
   await expect(input).toHaveValue(/^\[cảnh \S+ · \d+:\d{2}\.\d · khung \d+\] $/);
   if (await input.isEnabled()) await expect(input).toBeFocused(); // disabled while another chat session is busy
   await player.screenshot({path: 'test-results/watch-player.png'});
+});
+
+test('landscape preview fits while widening chat', async ({page}) => {
+  const size = {width: 1920, height: 1080};
+  await page.route(`**/api/projects/${slug}`, async (route) => {
+    const response = await route.fetch();
+    const detail: ProjectDetail = await response.json();
+    await route.fulfill({response, json: {
+      ...detail, size, renderProps: detail.renderProps && {...detail.renderProps, ...size},
+    }});
+  });
+  await page.route(`**/api/projects/${slug}/preview`, async (route) => {
+    const response = await route.fetch();
+    const preview: PreviewResult = await response.json();
+    await route.fulfill({response, json: {...preview, renderProps: preview.renderProps && {...preview.renderProps, ...size}}});
+  });
+  await page.goto(`/p/${slug}`);
+  const player = page.getByRole('region', {name: 'Xem trước'});
+  const frame = page.getByTestId('preview-frame');
+  const chat = page.getByLabel('Chat', {exact: true});
+  await expect(frame).toBeVisible();
+  expect((await player.boundingBox())!.width).toBeGreaterThan((await chat.boundingBox())!.width);
+  const before = (await frame.boundingBox())!;
+  await page.getByRole('separator', {name: 'Đổi độ rộng chat'}).press('End');
+  const after = (await frame.boundingBox())!;
+  expect(after.width).toBeLessThan(before.width);
+  expect(after.width / after.height).toBeCloseTo(16 / 9, 2);
+  const preview = (await player.boundingBox())!;
+  expect(after.x).toBeGreaterThan(preview.x);
+  expect(after.x + after.width).toBeLessThan(preview.x + preview.width);
 });
 
 test('voice job then render', async ({page}) => {

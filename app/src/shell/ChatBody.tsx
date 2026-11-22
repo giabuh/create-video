@@ -56,7 +56,6 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
     setText((cur) => (cur === '' || cur.endsWith(' ') || cur.endsWith('\n') ? cur + t : `${cur} ${t}`));
     inputRef.current?.querySelector('textarea')?.focus();
   }, [pending]);
-  const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLDivElement>(null);
   const logRef = useRef<HTMLDivElement>(null);
 
@@ -91,7 +90,10 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
   }, [active, detail.isSuccess]);
   useEffect(() => {
     if (!active || !follow.current) return;
-    const go = () => endRef.current?.scrollIntoView?.({block: 'end'});
+    const go = () => {
+      const log = logRef.current;
+      if (log) log.scrollTop = log.scrollHeight;
+    };
     const f = requestAnimationFrame(go);
     const t1 = setTimeout(go, 150), t2 = setTimeout(go, 450); // after the slide-in animation and late layout
     return () => { cancelAnimationFrame(f); clearTimeout(t1); clearTimeout(t2); };
@@ -186,7 +188,6 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
         })}
         {running && <div className={s.bot}>{draft}<Spinner size={16} label={`${engineName} đang trả lời`} /></div>}
         {isInterrupted(events, running) && <div className={s.note}>Lượt này bị ngắt (server dừng giữa chừng).</div>}
-        <div ref={endRef} />
       </div>
       <div className={s.foot} ref={inputRef}>
         {files.length > 0 && (

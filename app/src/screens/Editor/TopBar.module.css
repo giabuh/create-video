@@ -1,4 +1,4 @@
-.top { display: flex; align-items: center; gap: var(--sp-3) var(--sp-4); flex-wrap: wrap; padding: var(--sp-3) var(--sp-5); border-bottom: 1px solid var(--line); background: var(--panel); }
+.top { display: flex; align-items: center; gap: var(--sp-2) var(--sp-4); flex-wrap: wrap; padding: var(--sp-2) var(--sp-5); border-bottom: 1px solid var(--edge); background: var(--dock); }
 .identity { display: flex; align-items: center; gap: var(--sp-2); min-width: 0; }
 .crumb { min-width: 0; display: flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-md); color: var(--dim); }
 .crumb a { color: var(--muted); text-decoration: none; border-radius: var(--r-sm); white-space: nowrap; }
@@ -7,19 +7,25 @@
 .actions { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; margin-left: auto; }
 .progress { display: flex; align-items: center; gap: var(--sp-2); width: 10rem; font-size: var(--fs-sm); font-variant-numeric: tabular-nums; color: var(--text-2); }
 .progress > :first-child { flex: 1; }
+.top [role="combobox"] > span { display: block; }
 
 .compactActions { display: none; }
-@media (min-width: 851px) and (max-width: 1210px) {
-  .top { gap: var(--sp-2); }
-  .actions > button { padding-inline: var(--sp-2); font-size: var(--fs-sm); }
+@media (max-width: 1170px) {
+  .actions { display: none; }
+  .compactActions { display: flex; gap: var(--sp-1); align-items: center; margin-left: auto; }
 }
 @media (max-width: 850px) {
   .top { gap: var(--sp-1) var(--sp-2); padding: var(--sp-1) var(--sp-2); }
   .identity { flex: 1; flex-direction: column; align-items: start; gap: 0; }
   .crumb { font-size: var(--fs-sm); max-width: 100%; }
-  .actions { display: none; }
-  .compactActions { display: flex; gap: var(--sp-1); align-items: center; }
   .progress { flex-basis: 100%; }
+}
+@media (max-width: 580px) {
+  .top { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .compactActions { display: contents; }
+  .compactActions .voice { grid-row: 2; width: auto; min-width: 0; }
+  .compactActions > button { grid-area: 1 / 2; justify-self: end; }
+  .progress, .banner { grid-column: 1 / -1; }
 }
 .banner { flex-basis: 100%; padding: var(--sp-2) var(--sp-3); border-radius: var(--r-md); background: var(--bg-sunken); border: 1px solid var(--line-strong); font-size: var(--fs-sm); font-weight: 600; }
 .voice { width: 12rem; flex: none; }

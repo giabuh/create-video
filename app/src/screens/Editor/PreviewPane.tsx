@@ -40,7 +40,7 @@ export function PreviewPane(): React.JSX.Element {
   }, [ready, playerRef]);
 
   const fps = renderProps?.fps ?? 30;
-  const frameVars = renderProps ? {'--ar': `${renderProps.width} / ${renderProps.height}`, '--fw': renderProps.width > renderProps.height ? '56rem' : undefined} as React.CSSProperties : undefined;
+  const frameVars = renderProps ? {'--ar': `${renderProps.width} / ${renderProps.height}`} as React.CSSProperties : undefined;
   const total = renderProps ? Math.max(1, Math.ceil(renderProps.totalSeconds * fps)) : 1;
 
   let body: React.ReactNode;
@@ -57,7 +57,7 @@ export function PreviewPane(): React.JSX.Element {
     body = <div className={s.frame} style={frameVars}><Skeleton height="100%" radius={18} /><span className={s.wait}>Đang dựng bản xem trước…</span></div>;
   } else {
     body = (
-      <div className={s.frame} style={frameVars}>
+      <div className={s.frame} style={frameVars} data-testid="preview-frame">
         <Player ref={playerRef} component={Reel} inputProps={renderProps} durationInFrames={total} fps={fps}
           compositionWidth={renderProps.width} compositionHeight={renderProps.height} controls={playback.fullscreen} loop={false}
           spaceKeyToPlayOrPause={false}
@@ -73,10 +73,10 @@ export function PreviewPane(): React.JSX.Element {
       <div className={s.canvas}>{body}</div>
       {ready && (
         <div className={s.transport} aria-label="Điều khiển xem trước" role="group">
-          <IconButton className={s.control} label={playback.playing ? 'Tạm dừng' : 'Phát xem trước'}
+          <IconButton size="sm" className={s.control} label={playback.playing ? 'Tạm dừng' : 'Phát xem trước'}
             icon={playback.playing ? <Pause size={18} aria-hidden /> : <Play size={18} aria-hidden />}
             onClick={() => playerRef.current?.toggle()} />
-          <Popover align="center" side="top" trigger={<IconButton className={s.control} label="Âm lượng xem trước"
+          <Popover align="center" side="top" trigger={<IconButton size="sm" className={s.control} label="Âm lượng xem trước"
             icon={playback.muted ? <VolumeX size={18} aria-hidden /> : <Volume2 size={18} aria-hidden />} />}>
             <div className={s.volume}>
               <Button size="sm" onClick={() => playback.muted ? playerRef.current?.unmute() : playerRef.current?.mute()}>{playback.muted ? 'Bật tiếng' : 'Tắt tiếng'}</Button>
@@ -88,7 +88,7 @@ export function PreviewPane(): React.JSX.Element {
           <input className={s.seek} type="range" min={0} max={total - 1} value={Math.min(playback.frame, total - 1)}
             aria-label="Tua xem trước" aria-valuetext={timestamp(playback.frame, fps)}
             onChange={(event) => playerRef.current?.seekTo(Number(event.target.value))} />
-          <IconButton className={s.control} label="Xem toàn màn hình" icon={<Expand size={18} aria-hidden />}
+          <IconButton size="sm" className={s.control} label="Xem toàn màn hình" icon={<Expand size={18} aria-hidden />}
             onClick={() => playerRef.current?.requestFullscreen()} />
           <Button className={s.ask} size="sm" icon={<MessageSquarePlus size={16} aria-hidden />} disabled={!renderProps} onClick={() => {
             const p = playerRef.current;
@@ -100,9 +100,7 @@ export function PreviewPane(): React.JSX.Element {
           }}>Sửa chỗ này</Button>
         </div>
       )}
-      <div className={s.bar}>
-        {previewing && <span className={s.hint} role="status">Đang cập nhật…</span>}
-      </div>
+      {previewing && <span className={s.hint} role="status">Đang cập nhật…</span>}
       {stale.length > 0 && (
         <div className={s.banner}>
           <span title={stale.join(', ')}>{stale.length} cảnh chưa tạo giọng</span>

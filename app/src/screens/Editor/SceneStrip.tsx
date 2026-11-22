@@ -1,5 +1,6 @@
 import {useEffect, useRef, useState} from 'react';
-import {fmtSec} from '../../ui/index.ts';
+import {Megaphone} from 'lucide-react';
+import {fmtClock, fmtSec} from '../../ui/index.ts';
 import {useEditor} from './EditorContext.tsx';
 import {sceneRange} from './editorState.ts';
 import {sceneAtFrame} from './moment.ts';
@@ -27,19 +28,22 @@ export function SceneStrip(): React.JSX.Element | null {
   const bg = renderProps.brand.colors.background;
   const chip = (id: string, label: string, aria: string, thumb: React.ReactNode) => {
     const range = sceneRange(renderProps, id);
+    const duration = range ? range[1] - range[0] : null;
     return (
       <button key={id} type="button" className={s.chip} ref={now === id ? current : undefined} aria-label={aria}
+        style={duration === null ? undefined : {'--duration': duration} as React.CSSProperties}
         aria-current={now === id ? 'true' : undefined} onClick={() => seekToScene(id)}>
-        {thumb}
-        <span className={s.info}><b>{label}</b><span className={s.dur}>{range ? fmtSec(range[1] - range[0]) : '—'}</span></span>
+        <span className={s.start}>{range ? fmtClock(range[0]) : '—'}</span>
+        <span className={s.thumbnail}>{thumb}</span>
+        <span className={s.info}><b title={label}>{label}</b><span className={s.dur}>{duration === null ? '—' : fmtSec(duration)}</span></span>
       </button>
     );
   };
 
   return (
-    <div className={s.strip} aria-label="Các cảnh">
+    <div className={s.strip} role="group" aria-label="Các cảnh">
       {storyboard.scenes.map((sc) => chip(sc.id, sc.id, `Tới cảnh ${sc.id}`, <Thumb scene={sc} bg={bg} />))}
-      {renderProps.cta && chip('cta', 'CTA', 'Tới CTA', null)}
+      {renderProps.cta && chip('cta', 'CTA', 'Tới CTA', <Megaphone size={20} aria-hidden />)}
     </div>
   );
 }

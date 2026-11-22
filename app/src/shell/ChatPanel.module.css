@@ -20,7 +20,10 @@
 .md pre { overflow-x: auto; background: var(--panel-3); padding: var(--sp-2); border-radius: var(--r-sm); }
 .md pre code { background: none; padding: 0; }
 .md table { display: block; overflow-x: auto; border-collapse: collapse; margin: 0 0 var(--sp-2); font-size: var(--fs-sm); }
-.md th, .md td { border: 1px solid var(--line-strong); padding: 4px 8px; text-align: left; vertical-align: top; }
+.md th, .md td {
+  min-width: 7rem; max-width: 20rem; overflow-wrap: anywhere;
+  border: 1px solid var(--line-strong); padding: 4px 8px; text-align: left; vertical-align: top;
+}
 .md th { background: var(--panel-3); }
 .md td:first-child { white-space: nowrap; }
 .md a { color: var(--accent-text); }
@@ -45,3 +48,23 @@
 .inputRow { display: flex; gap: var(--sp-2); align-items: flex-end; }
 .inputRow > :last-child { flex: 1; min-width: 0; }
 @media (max-width: 850px) { .att { width: 44px; height: 44px; } }
+
+:global([data-chat-docked]) .wrap { gap: 0; }
+:global([data-chat-docked]) .head {
+  padding: var(--sp-3); border-bottom: 1px solid var(--edge);
+}
+:global([data-chat-docked]) :is(.row, .pair) button { font-size: var(--fs-xs); }
+:global([data-chat-docked]) .head [role="combobox"] > span { display: block; }
+:global([data-chat-docked]) .pair button { padding-inline: var(--sp-2); gap: var(--sp-1); }
+:global([data-chat-docked]) .pair button svg { width: 13px; }
+:global([data-chat-docked]) .log { padding: var(--sp-3); }
+:global([data-chat-docked]) .msg:has(table) { width: 100%; max-width: 100%; }
+:global([data-chat-docked]) .msg:has(table) > .md { width: 100%; }
+:global([data-chat-docked]) .foot {
+  padding: var(--sp-3); border-color: var(--edge); background: var(--desk);
+}
+:global([data-chat-docked]) .inputRow {
+  padding: var(--sp-1); border: 1px solid var(--edge); border-radius: var(--r-md); background: var(--dock);
+}
+:global([data-chat-docked]) .inputRow textarea { border-color: transparent; background: transparent; }
+:global([data-chat-docked]) .inputRow textarea:focus-visible { border-color: var(--accent); }

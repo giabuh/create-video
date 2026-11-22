@@ -1,6 +1,26 @@
-.strip { display: flex; gap: var(--sp-2); overflow-x: auto; overscroll-behavior: contain; padding: var(--sp-2) var(--sp-3); }
-.chip { all: unset; box-sizing: border-box; flex: none; display: flex; align-items: center; gap: var(--sp-2); padding: var(--sp-1) var(--sp-2); border-radius: var(--r-lg); background: var(--panel); border: 1px solid var(--line); color: var(--text); font-size: var(--fs-sm); cursor: pointer; }
-.chip:focus-visible { box-shadow: var(--focus); }
-.chip[aria-current='true'] { border-color: var(--accent); background: var(--panel-2); }
-.info { display: flex; flex-direction: column; gap: 2px; }
-.dur { color: var(--dim); font-size: var(--fs-xs); font-variant-numeric: tabular-nums; }
+.strip {
+  display: flex; flex: none; gap: 5px; overflow-x: auto; overscroll-behavior-x: contain;
+  padding: var(--sp-2); border: 1px solid var(--edge); border-radius: var(--r-lg);
+  background: var(--dock);
+}
+.chip {
+  all: unset; box-sizing: border-box; display: flex; flex-direction: column; gap: 3px;
+  flex: 1 0 clamp(112px, calc(22px * var(--duration, 4)), 216px); max-width: 240px;
+  padding: 1px 3px 3px; border-radius: var(--r-sm); color: var(--text-2); cursor: pointer;
+}
+.chip:focus-visible { box-shadow: inset var(--focus); }
+.chip:hover { background: var(--panel-2); }
+.chip[aria-current='true'] { background: var(--accent-soft); color: var(--text); }
+.start {
+  align-self: start; border-left: 1px solid var(--dim); padding-inline: 5px;
+  color: var(--muted); font: var(--fs-xs)/1.4 ui-monospace, monospace;
+}
+.thumbnail {
+  display: grid; place-items: center; height: clamp(42px, 6.5vh, 64px); min-width: 0;
+  overflow: hidden; border: 1px solid var(--edge); border-radius: 5px; background: var(--stage);
+}
+.chip[aria-current='true'] .thumbnail, .chip[aria-current='true'] .start { border-color: var(--accent); }
+.chip[aria-current='true'] .start { color: var(--accent-text); }
+.info { display: flex; justify-content: space-between; align-items: baseline; gap: var(--sp-1); padding-inline: 2px; font-size: var(--fs-xs); }
+.info b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.dur { flex: none; color: var(--dim); font-variant-numeric: tabular-nums; }
