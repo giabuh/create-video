@@ -6,7 +6,6 @@ import {ErrorState, Skeleton} from '../../ui/index.ts';
 import {EditorProvider, useEditor} from './EditorContext.tsx';
 import {ChatBody} from '../../shell/ChatBody.tsx';
 import {PreviewPane} from './PreviewPane.tsx';
-import {SceneStrip} from './SceneStrip.tsx';
 import {TopBar} from './TopBar.tsx';
 import s from './Editor.module.css';
 
@@ -57,7 +56,7 @@ function EditorBody(): React.JSX.Element {
     <div className={s.root}>
       <TopBar />
       <div ref={workRef} className={s.work} style={{'--chat-width': `${chatWidth}px`} as React.CSSProperties}>
-        <div className={s.center}><PreviewPane /><SceneStrip /></div>
+        <div className={s.center}><PreviewPane /></div>
         <aside id="editor-chat" className={s.chat} data-chat-docked aria-labelledby="editor-chat-heading">
           <div className={s.splitter} role="separator" tabIndex={0} aria-label="Đổi độ rộng chat"
             aria-controls="editor-chat" aria-orientation="vertical"

@@ -1,36 +1,14 @@
 .root {
-  --stage: #1a1715;
-  --stage-glow: #31261c;
-  --desk: #121111;
-  --dock: #191818;
-  --edge: #38322e;
-  --bg-sunken: #161514;
-  --panel-2: #242120;
-  --panel-3: #2d2927;
-  --line: #36312e;
-  --line-strong: #473f39;
   display: flex; flex-direction: column; flex: 1 0 auto; height: 100%; min-height: 600px;
   background: var(--desk);
-}
-:global([data-theme="light"]) .root {
-  --stage: #eae4dd;
-  --stage-glow: #f5efe7;
-  --desk: #f2efeb;
-  --dock: #fbf9f6;
-  --edge: #d8d0c6;
-  --bg-sunken: #f7f4f0;
-  --panel-2: #eee9e3;
-  --panel-3: #e7e0d8;
-  --line: #dfd8d0;
-  --line-strong: #cdc3b7;
 }
 .top { padding: var(--sp-3) var(--sp-5); border-bottom: 1px solid var(--line); }
 .state { padding: var(--sp-6); }
 .work { display: grid; grid-template-columns: minmax(0, 1fr) var(--chat-width, clamp(318px, 27vw, 432px)); flex: 1; min-width: 0; min-height: 0; }
 .center {
-  display: flex; flex-direction: column; gap: var(--sp-3); min-height: 0; min-width: 0;
+  display: flex; flex-direction: column; min-height: 0; min-width: 0;
   padding: clamp(12px, 1.4vw, 24px);
-  background: radial-gradient(ellipse at 50% 0%, var(--stage) 0%, var(--desk) 70%);
+  background: var(--desk);
 }
 .center > :first-child { flex: 1 1 0; min-height: 0; }
 .chat {
@@ -58,8 +36,8 @@
 @media (max-width: 850px) {
   .root { height: auto; min-height: 100%; }
   .work { grid-template-columns: minmax(0, 1fr); }
-  .center { padding: var(--sp-2); gap: var(--sp-2); }
-  .center > :first-child { flex: none; height: max(340px, 46dvh); }
+  .center { padding: var(--sp-2); }
+  .center > :first-child { flex: none; height: max(454px, 59dvh); }
   .chat { height: max(360px, 48dvh); border-left: 0; border-top: 1px solid var(--edge); }
   .splitter { display: none; }
 }

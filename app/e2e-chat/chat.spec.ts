@@ -8,7 +8,10 @@ test('chat with the fake claude CLI', async ({page}) => {
   const box = page.getByLabel('Tin nhắn cho Claude');
   const send = async (t: string) => { await box.fill(t); await box.press('Enter'); };
 
-  await send('Xin chào');
+  const sendButton = dialog.getByRole('button', {name: 'Gửi tin nhắn'});
+  await expect(sendButton).toBeDisabled();
+  await box.fill('Xin chào');
+  await sendButton.click();
   await expect(dialog.getByText('acc=default mode=new sys=yes prompt=Xin chào')).toBeVisible();
   await expect(dialog.getByText('Bash: ls projects')).toBeVisible();
 

@@ -29,7 +29,7 @@ export const useJob = (id: string | null): Job | undefined => useJobs().find((j)
 export const useWorkerStatus = (): WorkerStatus => useSyncExternalStore(subscribe, () => worker);
 export const useConnection = (): Connection => useSyncExternalStore(subscribe, () => connection);
 
-// Toast "Xem" actions navigate through the router, which App registers (events.ts cannot import it).
+// Toast actions navigate through the router, which App registers (events.ts cannot import it).
 let navigate: (to: string) => void = (to) => location.assign(to);
 export const setNavigate = (fn: (to: string) => void): void => { navigate = fn; };
 
@@ -65,13 +65,14 @@ export function mergeJobs(local: Map<string, Job>, snapshot: Job[]): {next: Map<
 function toastFinished(job: Job, prev: Job | undefined) {
   if (!TERMINAL.has(job.state) || (prev && TERMINAL.has(prev.state))) return;
   const d = driveToast(job);
-  if (d) return toast({title: d.title, description: d.description, tone: d.tone, action: {label: 'Xem', onClick: () => navigate(d.to)}});
+  if (d) return toast({title: d.title, description: d.description, tone: d.tone,
+    action: {label: d.to.endsWith('/renders') ? 'Xem bản' : 'Xem', onClick: () => navigate(d.to)}});
   if (job.state === 'failed') return toast({title: `${job.label} — thất bại`, description: [job.error, ...job.log.slice(-20)].filter(Boolean).join('\n'), tone: 'error'});
   if (job.state !== 'done') return;
   const r = job.result ?? {};
   if (job.kind === 'render') {
     const version = typeof r.version === 'string' ? r.version : null;
-    toast({title: version ? `Đã render ${version}` : 'Đã render xong', tone: 'success', action: job.project ? {label: 'Xem', onClick: () => navigate(`/p/${encodeURIComponent(job.project!)}/renders`)} : undefined});
+    toast({title: version ? `Đã render ${version}` : 'Đã render xong', tone: 'success', action: job.project ? {label: 'Xem bản', onClick: () => navigate(`/p/${encodeURIComponent(job.project!)}/renders`)} : undefined});
   } else if (job.kind === 'voice') toast({title: 'Đã tạo giọng', tone: 'success'});
   else if (job.kind === 'ingest') toast({title: `Đã nhập ${Array.isArray(r.added) ? r.added.length : 0} file`, tone: 'success'});
 }

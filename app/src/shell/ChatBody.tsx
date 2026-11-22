@@ -1,5 +1,5 @@
 import {useEffect, useMemo, useRef, useState} from 'react';
-import {Copy, ImagePlus, MessageSquare, X} from 'lucide-react';
+import {ArrowUp, Copy, ImagePlus, MessageSquare, X} from 'lucide-react';
 import {matchPath, useLocation} from 'react-router';
 import type {Engine} from '../../shared/types.ts';
 import {Button, DropdownMenu, EmptyState, IconButton, Select, Spinner, Textarea, toast} from '../ui/index.ts';
@@ -112,11 +112,12 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
   const running = (busy !== null && busy === chatId) || waiting?.id === chatId;
   const newChat = (e: Engine) => create.mutate({slug, engine: e}, {onSuccess: (c) => setPicked(c.id)});
   const [sending, setSending] = useState(false);
-  const sendingNow = useRef(false); // sync guard: two quick Enters must not upload and send twice
+  const sendingNow = useRef(false); // guard against duplicate submits before React updates
   const locked = busy !== null || running || sending;
+  const canSend = !locked && !!acct && (!!text.trim() || files.length > 0);
   const submit = async () => {
+    if (!canSend || sendingNow.current) return;
     const t = text.trim();
-    if ((!t && !files.length) || busy !== null || running || sendingNow.current || !acct) return;
     sendingNow.current = true; setSending(true);
     try {
       let id = chatId;
@@ -203,7 +204,7 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
         <div className={s.inputRow}>
           <IconButton label="Thêm ảnh" icon={<ImagePlus size={18} />} disabled={locked || files.length >= MAX_CHAT_IMAGES} onClick={() => fileRef.current?.click()} />
           <Textarea
-            autosize rows={2} value={text} aria-label={`Tin nhắn cho ${engineName}`} disabled={locked}
+            autosize rows={1} value={text} aria-label={`Tin nhắn cho ${engineName}`} disabled={locked}
             placeholder={`Nhắn ${engineName}…`}
             onChange={(e) => setText(e.target.value)}
             onPaste={(e) => {
@@ -212,6 +213,8 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
             }}
             onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); void submit(); } }}
           />
+          <IconButton className={s.send} label="Gửi tin nhắn" variant="secondary" icon={<ArrowUp size={19} aria-hidden />}
+            disabled={!canSend} onClick={() => void submit()} />
         </div>
         <input ref={fileRef} type="file" accept={CHAT_IMAGE_ACCEPT} multiple hidden
           onChange={(e) => { addFiles([...(e.target.files ?? [])]); e.target.value = ''; }} />

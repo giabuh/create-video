@@ -1,6 +1,6 @@
 import {useMemo, useState} from 'react';
 import {Link, useNavigate} from 'react-router';
-import {FolderPlus, MoreVertical, Plus} from 'lucide-react';
+import {Film, FolderPlus, MoreVertical, Plus} from 'lucide-react';
 import type {ProjectStatus, ProjectSummary} from '../../../shared/types.ts';
 import {useJobs} from '../../api/events.ts';
 import {useBrands, useCancelDelete, useCreateProject, useDeleteProject, useProjects, useTemplates, useVoices} from '../../api/hooks.ts';
@@ -21,10 +21,10 @@ function statusChip(p: ProjectSummary): React.JSX.Element {
   const v = p.latest ? ` v${p.latest.n}` : '';
   const [tone, text]: [Tone, string] =
     p.status === 'deleting' ? (p.deleting?.state === 'failed' ? ['danger', 'Xoá dở: lỗi Drive'] : ['info', 'Đang xoá']) :
-    p.status === 'rendering' ? ['info', 'Đang render'] :
+    p.status === 'rendering' ? ['accent', 'Đang render'] :
     p.status === 'approved' ? ['success', `Đã duyệt${p.approved ? ` ${p.approved.replace(/^reel-/, '')}` : v}`] :
     p.status === 'draft' ? ['warning', `Chưa duyệt${v}`] : ['neutral', 'Chưa render'];
-  return <Chip tone={tone}>{text}</Chip>;
+  return <Chip tone={tone} icon={p.status === 'rendering' ? <Film size={14} aria-hidden /> : undefined}>{text}</Chip>;
 }
 
 const cap = (v: string) => v.charAt(0).toUpperCase() + v.slice(1);

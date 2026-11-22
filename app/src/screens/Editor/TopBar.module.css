@@ -5,8 +5,12 @@
 .crumb a:hover { color: var(--text); }
 .crumb b { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .actions { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; margin-left: auto; }
-.progress { display: flex; align-items: center; gap: var(--sp-2); width: 10rem; font-size: var(--fs-sm); font-variant-numeric: tabular-nums; color: var(--text-2); }
-.progress > :first-child { flex: 1; }
+.progress {
+  display: flex; flex-basis: 100%; align-items: center; gap: var(--sp-2); min-width: 0;
+  padding: var(--sp-2) var(--sp-3); border: 1px solid var(--line); border-radius: var(--r-md);
+  background: var(--bg-sunken); color: var(--text-2); font-size: var(--fs-sm); font-variant-numeric: tabular-nums;
+}
+.progress > [role="progressbar"] { flex: 1; min-width: 2rem; max-width: 18rem; }
 .top [role="combobox"] > span { display: block; }
 
 .compactActions { display: none; }
@@ -18,7 +22,6 @@
   .top { gap: var(--sp-1) var(--sp-2); padding: var(--sp-1) var(--sp-2); }
   .identity { flex: 1; flex-direction: column; align-items: start; gap: 0; }
   .crumb { font-size: var(--fs-sm); max-width: 100%; }
-  .progress { flex-basis: 100%; }
 }
 @media (max-width: 580px) {
   .top { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }

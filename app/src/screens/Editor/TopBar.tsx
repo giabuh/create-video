@@ -1,6 +1,6 @@
 import {useEffect, useRef, useState} from 'react';
 import {Link, useNavigate} from 'react-router';
-import {Clapperboard, Mic, MoreVertical, Upload} from 'lucide-react';
+import {Clapperboard, Film, Mic, MoreVertical, Upload} from 'lucide-react';
 import type {Job} from '../../../shared/types.ts';
 import {useJobs, useWorkerStatus} from '../../api/events.ts';
 import {useMusic, useStartRender, useStartVoice, useVoices} from '../../api/hooks.ts';
@@ -78,10 +78,11 @@ export function TopBar(): React.JSX.Element {
   };
   const ask = () => (stale.length ? setConfirm(true) : doRender());
   const openVersions = () => void nav(`/p/${encodeURIComponent(slug)}/renders`);
-  const progress = rendering && (
+  const progress = (startRender.isPending || renderJob) && (
     <div className={s.progress} role="status">
-      <ProgressBar value={renderJob?.progress ?? null} tone="info" size="sm" label="Tiến độ render" />
-      <span>{renderJob?.progress != null ? fmtPct(renderJob.progress) : 'Đang chờ…'}</span>
+      <span>{renderJob ? (renderJob.state === 'queued' ? 'Đang chờ render' : 'Đang render') : 'Đang gửi yêu cầu render…'}</span>
+      <ProgressBar value={renderJob?.progress ?? null} size="sm" label="Tiến độ render" />
+      {renderJob?.progress != null && <strong>{fmtPct(renderJob.progress)}</strong>}
     </div>
   );
 
@@ -94,28 +95,28 @@ export function TopBar(): React.JSX.Element {
         {voicePick}
         {musicPick}
         <DropdownMenu align="end" trigger={<Button variant="primary" icon={<Upload size={16} aria-hidden />}>Xuất video</Button>} items={[
-          {label: 'Render', disabled: voiceBusy || rendering, onSelect: ask},
-          {label: `Bản render (${detail.versions.length})`, onSelect: openVersions},
+          {label: 'Render', icon: <Film size={16} aria-hidden />, disabled: voiceBusy || rendering, onSelect: ask},
+          {label: `Bản render (${detail.versions.length})`, icon: <Clapperboard size={16} aria-hidden />, onSelect: openVersions},
           'separator',
           {label: voiceBusy ? voice.label : 'Tạo giọng', disabled: voiceBusy || rendering || voice.disabled, onSelect: voice.start},
           'separator',
           {label: 'Xoá dự án', danger: true, onSelect: () => setAskDelete(true)},
         ]} />
       </div>
-      {progress}
-      {deleting && <div className={s.banner} role="alert">Dự án đang được xoá</div>}
       <div className={s.actions}>
         <Button icon={<Mic size={16} aria-hidden />} loading={voiceBusy} loadingText={voice.label} disabled={rendering || voice.disabled} onClick={voice.start}>Tạo giọng</Button>
         {voicePick}
         {musicPick}
         <Button icon={<Clapperboard size={16} aria-hidden />} onClick={openVersions}>Bản render ({detail.versions.length})</Button>
-        <Button variant="primary" disabled={voiceBusy || rendering} loading={startRender.isPending} onClick={ask}>Render</Button>
+        <Button variant="primary" icon={<Film size={16} aria-hidden />} disabled={voiceBusy || rendering} loading={startRender.isPending} onClick={ask}>Render</Button>
         <DropdownMenu align="end" trigger={<IconButton label="Thêm" icon={<MoreVertical size={18} aria-hidden />} />}
           items={[{label: 'Xoá dự án', danger: true, onSelect: () => setAskDelete(true)}]} />
       </div>
+      {progress}
+      {deleting && <div className={s.banner} role="alert">Dự án đang được xoá</div>}
       {askDelete && <DeleteProjectDialog slug={slug} open={askDelete} onOpenChange={setAskDelete} />}
       <ConfirmDialog open={confirm} onOpenChange={(o) => { if (!o) setConfirm(false); }}
-        title="Cần tạo giọng trước" description={`Cần tạo giọng cho ${stale.join(', ')} trước. Render sẽ tự tạo giọng rồi mới render.`}
+        title="Tạo giọng trước khi render?" description={`Hệ thống sẽ tạo giọng cho ${stale.length} cảnh rồi xuất một bản video mới. Mở Bản render để xem video sau khi hoàn tất.`}
         confirmLabel="Tạo giọng và render" onConfirm={doRender} />
     </header>
   );

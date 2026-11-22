@@ -12,6 +12,10 @@ describe('sceneAtFrame', () => {
   it('first frame is the first scene', () => expect(sceneAtFrame(props, 0)).toBe('a'));
   it('a scene start belongs to that scene', () => expect(sceneAtFrame(props, 120)).toBe('b'));
   it('last frame before the boundary stays in the previous scene', () => expect(sceneAtFrame(props, 119)).toBe('a'));
+  it('rounds scene starts to the same frame as the player', () => {
+    const fractional = {...props, scenes: [props.scenes[0], {...props.scenes[1], start: 4.01}]};
+    expect(sceneAtFrame(fractional, 120)).toBe('b');
+  });
   it('after the last scene is the CTA', () => expect(sceneAtFrame(props, 300)).toBe('cta'));
   it('past the end is the CTA', () => expect(sceneAtFrame(props, 9999)).toBe('cta'));
   it('without a CTA, past the end is the last scene', () => expect(sceneAtFrame({...props, cta: null}, 9999)).toBe('b'));

@@ -70,14 +70,39 @@ test('watch screen: player, scene strip, docked chat and the Sửa chỗ này ta
   expect((await chat.boundingBox())!.width).toBeLessThan(narrowChat + 110);
   await expect(page.getByLabel(/Caption/)).toHaveCount(0); // no manual-editing fields left
   const scenes = page.getByRole('button', {name: /^Tới cảnh /});
+  const strip = page.getByRole('group', {name: 'Các cảnh'});
+  await expect(strip.locator('video')).toHaveCount(0);
+  await expect(scenes.first().locator('img')).toHaveAttribute('src', /^\/library\/thumbs\/.+\.jpg$/);
   await expect(scenes.first().getByText('00:00,0')).toBeVisible();
+  await expect(scenes.first().getByTestId('timeline-playhead')).toBeVisible();
   const second = scenes.nth(1);
   await second.click();
   await expect(second).toHaveAttribute('aria-current', 'true', {timeout: 10_000});
+  const playhead = second.getByTestId('timeline-playhead');
+  const start = (await playhead.boundingBox())!.x;
+  const seek = page.getByRole('slider', {name: 'Tua xem trước'});
+  for (let i = 0; i < 12; i++) await seek.press('ArrowRight');
+  await expect.poll(async () => (await playhead.boundingBox())!.x).toBeGreaterThan(start + 1);
   await ask.click();
   const input = chat.getByRole('textbox');
   await expect(input).toHaveValue(/^\[cảnh \S+ · \d+:\d{2}\.\d · khung \d+\] $/);
   if (await input.isEnabled()) await expect(input).toBeFocused(); // disabled while another chat session is busy
+  await divider.press('End');
+  const middle = scenes.nth(2);
+  await middle.click();
+  await expect(middle).toHaveAttribute('aria-current', 'true');
+  await expect.poll(async () => {
+    const clip = (await middle.boundingBox())!, track = (await strip.boundingBox())!;
+    return Math.abs(clip.x + clip.width / 2 - track.x - track.width / 2);
+  }).toBeLessThan(2);
+  const scroll = () => strip.evaluate((el) => ({left: el.scrollLeft, max: el.scrollWidth - el.clientWidth}));
+  await seek.press('Home');
+  await expect.poll(async () => (await scroll()).left).toBe(0);
+  await seek.press('End');
+  await expect.poll(async () => {
+    const {left, max} = await scroll();
+    return Math.abs(max - left);
+  }).toBeLessThan(2);
   await player.screenshot({path: 'test-results/watch-player.png'});
 });
 
@@ -142,4 +167,6 @@ test('light theme toggle', async ({page}) => {
   await page.goto('/settings');
   await page.getByRole('radio', {name: 'Sáng'}).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  await page.goto(`/p/${slug}`);
+  await expect(page.getByRole('region', {name: 'Xem trước'})).toHaveCSS('color-scheme', 'light');
 });

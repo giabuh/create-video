@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import {Check, ChevronDown, TriangleAlert, X} from 'lucide-react';
+import {Check, ChevronDown, Film, TriangleAlert, X} from 'lucide-react';
 import type {Job} from '../../shared/types.ts';
 import {useCancelJob} from '../api/hooks.ts';
 import {useJobs} from '../api/events.ts';
@@ -27,17 +27,19 @@ function useNow(active: boolean): number {
 function Running({job}: {job: Job}): React.JSX.Element {
   const cancel = useCancelJob();
   const queued = job.state === 'queued';
+  const render = job.kind === 'render';
   const now = useNow(!queued);
   const elapsed = !queued && job.startedAt ? fmtClock(Math.max(0, (now - job.startedAt) / 1000)) : null;
-  const meta = [job.project, queued ? 'Đang chờ' : job.step, elapsed, queued ? null : eta(job.etaSeconds)].filter(Boolean).join(' · ');
+  const meta = [render ? null : job.project, queued ? (render ? 'Đang chờ render' : 'Đang chờ') : job.step, elapsed, queued ? null : eta(job.etaSeconds)].filter(Boolean).join(' · ');
   return (
     <li className={s.job}>
       <div className={s.row}>
+        {render && <Film className={s.renderIcon} size={16} aria-hidden />}
         <span className={s.title}>{job.label}</span>
         {job.progress != null && !queued && <span className={s.pct}>{fmtPct(job.progress)}</span>}
         {job.cancellable && <IconButton label={`Huỷ ${job.label}`} size="sm" icon={<X size={16} />} disabled={cancel.isPending} onClick={() => cancel.mutate(job.id)} />}
       </div>
-      <ProgressBar value={queued ? 0 : job.progress} tone="info" size="sm" label={job.label} />
+      <ProgressBar value={queued ? 0 : job.progress} tone={render ? 'accent' : 'info'} size="sm" label={job.label} />
       <div className={s.meta}>{meta}</div>
     </li>
   );
@@ -46,11 +48,12 @@ function Running({job}: {job: Job}): React.JSX.Element {
 function Finished({job}: {job: Job}): React.JSX.Element {
   const ok = job.state === 'done';
   const failed = job.state === 'failed';
+  const version = job.kind === 'render' && typeof job.result?.version === 'string' ? job.result.version : null;
   return (
     <li className={`${s.fin} ${ok ? s.ok : failed ? s.bad : ''}`}>
       {ok ? <Check size={16} aria-hidden /> : failed ? <TriangleAlert size={16} aria-hidden /> : <X size={16} aria-hidden />}
       <span className={s.finText}>
-        {job.label} · {ok ? 'xong' : failed ? job.error ?? 'lỗi' : 'đã huỷ'}
+        {job.label} · {ok ? (version ? `đã tạo ${version}` : 'xong') : failed ? job.error ?? 'lỗi' : 'đã huỷ'}
         {failed && job.log.length > 0 && <details className={s.log}><summary>Xem log</summary><pre>{job.log.slice(-20).join('\n')}</pre></details>}
       </span>
     </li>

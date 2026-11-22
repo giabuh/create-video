@@ -50,7 +50,7 @@ export function Layout(): React.JSX.Element {
       {!editor && <ChatPanel open={chatOpen} onOpenChange={setChatOpen} />}
       <div className={s.body}>
         <div className={s.desktopNav}>{compact ? <Rail onChat={openChat} /> : <Sidebar onChat={openChat} />}</div>
-        <main className={`${s.main} ${compact ? '' : s.padded} ${editor ? s.editor : ''}`}>
+        <main className={`${s.main} ${compact ? s.workspace : s.padded} ${editor ? s.editor : ''}`} data-video-workspace={compact || undefined}>
           <div key={pathname} className={s.page}><Outlet /></div>
         </main>
       </div>

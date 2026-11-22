@@ -1,26 +1,34 @@
 .strip {
-  display: flex; flex: none; gap: 5px; overflow-x: auto; overscroll-behavior-x: contain;
-  padding: var(--sp-2); border: 1px solid var(--edge); border-radius: var(--r-lg);
-  background: var(--dock);
+  display: flex; gap: 3px; overflow-x: auto; overscroll-behavior-x: contain;
+  padding: var(--sp-2) var(--sp-2) 6px;
 }
 .chip {
-  all: unset; box-sizing: border-box; display: flex; flex-direction: column; gap: 3px;
+  all: unset; position: relative; box-sizing: border-box; display: flex; flex-direction: column; gap: 3px;
   flex: 1 0 clamp(112px, calc(22px * var(--duration, 4)), 216px); max-width: 240px;
-  padding: 1px 3px 3px; border-radius: var(--r-sm); color: var(--text-2); cursor: pointer;
+  border-radius: 5px; color: var(--text-2); cursor: pointer;
 }
-.chip:focus-visible { box-shadow: inset var(--focus); }
-.chip:hover { background: var(--panel-2); }
-.chip[aria-current='true'] { background: var(--accent-soft); color: var(--text); }
+.chip:focus-visible { outline: 2px solid var(--timeline-mark); outline-offset: -2px; }
+.chip:hover .thumbnail { border-color: var(--dim); }
 .start {
-  align-self: start; border-left: 1px solid var(--dim); padding-inline: 5px;
+  align-self: stretch; border-left: 1px solid var(--dim); padding-inline: 12px 4px;
   color: var(--muted); font: var(--fs-xs)/1.4 ui-monospace, monospace;
 }
 .thumbnail {
-  display: grid; place-items: center; height: clamp(42px, 6.5vh, 64px); min-width: 0;
-  overflow: hidden; border: 1px solid var(--edge); border-radius: 5px; background: var(--stage);
+  display: grid; place-items: center; height: clamp(48px, 7.5vh, 76px); min-width: 0;
+  overflow: hidden; border: 1px solid var(--edge); border-radius: 4px; background: var(--panel-2);
 }
-.chip[aria-current='true'] .thumbnail, .chip[aria-current='true'] .start { border-color: var(--accent); }
-.chip[aria-current='true'] .start { color: var(--accent-text); }
-.info { display: flex; justify-content: space-between; align-items: baseline; gap: var(--sp-1); padding-inline: 2px; font-size: var(--fs-xs); }
+.chip[aria-current='true'] .thumbnail, .chip[aria-current='true'] .start { border-color: var(--timeline-mark); }
+.chip[aria-current='true'] :is(.start, .info b) { color: var(--accent-text); }
+.info { display: flex; justify-content: space-between; align-items: baseline; gap: var(--sp-1); padding: 1px 4px; font-size: var(--fs-xs); }
 .info b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
 .dur { flex: none; color: var(--dim); font-variant-numeric: tabular-nums; }
+.playhead {
+  position: absolute; top: 0; bottom: calc(1.5 * var(--fs-xs) + 5px);
+  left: calc(4px + (100% - 8px) * var(--position)); width: 2px;
+  background: var(--timeline-mark); box-shadow: 0 0 0 1px var(--dock); pointer-events: none;
+}
+.playhead::before {
+  content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 8px; height: 10px; background: inherit;
+  clip-path: polygon(0 0, 100% 0, 100% 55%, 50% 100%, 0 55%);
+}

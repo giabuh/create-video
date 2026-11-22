@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {Link, useNavigate, useParams} from 'react-router';
-import {Film} from 'lucide-react';
+import {ArrowLeft, Check, Clapperboard, CloudUpload, Film, Play, RefreshCw, Trash2} from 'lucide-react';
 import type {VersionInfo} from '../../../shared/types.ts';
 import {useJobs} from '../../api/events.ts';
 import {useCancelJob, useApprove, useDeleteRender, useDriveDelete, useDriveStatus, useOpenFolder, usePublish, useProject, useStartRender} from '../../api/hooks.ts';
@@ -25,12 +25,12 @@ export function RendersScreen(): React.JSX.Element {
   const open = useOpenFolder();
   const start = useStartRender(slug);
   const cancel = useCancelJob();
-  const job = useJobs().find((j) => j.kind === 'render' && j.project === slug && (j.state === 'running' || j.state === 'queued'));
+  const allJobs = useJobs();
+  const job = allJobs.find((j) => j.kind === 'render' && j.project === slug && (j.state === 'running' || j.state === 'queued'));
   const videos = useRef(new Map<string, HTMLVideoElement>());
   const register = useCallback((name: string, el: HTMLVideoElement | null) => { if (el) videos.current.set(name, el); else videos.current.delete(name); }, []);
   const publish = usePublish(slug);
   const del = useDeleteRender(slug);
-  const allJobs = useJobs();
   const driveJobs = allJobs.filter((j) => (j.kind === 'publish' || j.kind === 'drive-delete') && j.project === slug); // newest first
   const drive = useDriveStatus(slug);
   const driveDel = useDriveDelete(slug);
@@ -74,12 +74,12 @@ export function RendersScreen(): React.JSX.Element {
     });
   };
 
-  const crumb = <span className={s.crumb}><Link to="/">Dự án</Link> / <Link to={`/p/${encodeURIComponent(slug)}`}>{slug}</Link> / Bản render</span>;
+  const crumb = <span className={s.crumb}><Link to="/">Dự án</Link> / <Link to={`/p/${encodeURIComponent(slug)}`}>{slug}</Link></span>;
   const header = (
-    <PageHeader title="Bản render" subtitle={<>{crumb} · Mỗi lần render tạo bản mới, không bao giờ ghi đè.</>}
+    <PageHeader title="Bản render" subtitle={crumb}
       actions={<>
-        <Button onClick={() => nav(`/p/${encodeURIComponent(slug)}`)}>← Về trình sửa</Button>
-        <Button disabled={versions.length < 2} onClick={playAll}>Phát đồng thời</Button>
+        <Button icon={<ArrowLeft size={18} />} onClick={() => nav(`/p/${encodeURIComponent(slug)}`)}>Về trình sửa</Button>
+        {versions.length > 1 && <Button icon={<Play size={18} />} onClick={playAll}>Phát đồng thời</Button>}
       </>} />
   );
 
@@ -89,17 +89,20 @@ export function RendersScreen(): React.JSX.Element {
   } else if (project.isError) {
     body = <ErrorState error={project.error} onRetry={() => void project.refetch()} />;
   } else if (versions.length === 0) {
-    body = <EmptyState icon={<Film size={28} />} title="Chưa có bản render" description="Render một bản nháp để xem thử video."
-      action={<Button variant="primary" loading={start.isPending || !!job} loadingText="Đang render…" onClick={render}>Render nháp</Button>} />;
+    body = <EmptyState icon={<Clapperboard size={28} />} title="Chưa có bản render" description="Xuất video để xem và duyệt bản đầu tiên."
+      action={<Button variant="primary" icon={<Film size={16} />} loading={start.isPending || !!job} loadingText="Đang render…" onClick={render}>Render</Button>} />;
   } else {
-    body = <div className={s.grid}>{versions.map((v) => <VersionCard key={v.name} v={v} size={project.data.size} register={register} row={driveRow(v.name, v.published, driveJobs.find((j) => j.ref === v.name), drive.isPending ? undefined : drive.data)} onCancel={(j) => cancel.mutate(j.id)} onApprove={() => askName(v, false)} onRetry={() => { const j = driveJobs.find((x) => x.ref === v.name); if (j?.kind === 'drive-delete' && j.state === 'failed') rmOnDrive(v.name); else askName(v, true); }} onDelete={() => { setScope('local'); setToDelete(v); }} onOpenFolder={() => open.mutate(`projects/${slug}`, {onError: (e) => toast({title: 'Không mở được thư mục', description: e.message, tone: 'error'})})} />)}</div>;
+    body = <div className={versions.length === 1 ? `${s.grid} ${s.single}` : s.grid}>{versions.map((v) => <VersionCard key={v.name} v={v} size={project.data.size} register={register} row={driveRow(v.name, v.published, driveJobs.find((j) => j.ref === v.name), drive.isPending ? undefined : drive.data)} onCancel={(j) => cancel.mutate(j.id)} onApprove={() => askName(v, false)} onRetry={() => { const j = driveJobs.find((x) => x.ref === v.name); if (j?.kind === 'drive-delete' && j.state === 'failed') rmOnDrive(v.name); else askName(v, true); }} onDelete={() => { setScope('local'); setToDelete(v); }} onOpenFolder={() => open.mutate(`projects/${slug}`, {onError: (e) => toast({title: 'Không mở được thư mục', description: e.message, tone: 'error'})})} />)}</div>;
   }
 
   const orphans = drive.data?.orphans ?? [];
   const driveBar = (
-    <div className={s.driveBar}>
-      <span>{drive.isFetching ? 'Đang kiểm tra Drive…' : drive.data ? `Kiểm tra Drive lúc ${new Date(drive.data.checkedAt).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'})}` : 'Chưa kiểm tra Drive'}</span>
-      <Button size="sm" variant="ghost" loading={drive.isFetching} onClick={() => void drive.refetch()}>Kiểm tra lại</Button>
+    <div className={s.toolbar}>
+      <span className={s.count}><Clapperboard size={18} aria-hidden />{versions.length} bản render</span>
+      <div className={s.driveBar}>
+        <span role="status">{drive.isFetching ? 'Đang kiểm tra Drive…' : drive.data ? `Kiểm tra Drive lúc ${new Date(drive.data.checkedAt).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'})}` : 'Chưa kiểm tra Drive'}</span>
+        <Button variant="ghost" icon={<RefreshCw size={16} />} loading={drive.isFetching} onClick={() => void drive.refetch()}>Kiểm tra lại</Button>
+      </div>
       {(drive.data?.error || drive.isError) && <span className={s.driveErr}>Không kiểm tra được Drive: {drive.data?.error ?? drive.error?.message}</span>}
     </div>
   );
@@ -114,43 +117,37 @@ export function RendersScreen(): React.JSX.Element {
               <span title={o.name}>{o.name}</span>
               <span className={s.hint}>{o.version} · {new Date(o.at).toLocaleDateString('vi-VN')}{o.onDrive ? '' : ' · Không còn trên Drive'}</span>
             </div>
-            <Button size="sm" variant="secondary" loading={running} loadingText="Đang xoá…" onClick={() => rmOnDrive(o.version)}>{o.onDrive ? 'Xoá trên Drive' : 'Xoá bản ghi'}</Button>
+            <Button variant="danger" icon={<Trash2 size={16} />} loading={running} loadingText="Đang xoá…" onClick={() => rmOnDrive(o.version)}>{o.onDrive ? 'Xoá trên Drive' : 'Xoá bản ghi'}</Button>
           </div>
         );
       })}
     </section>
   );
-  const elapsed = job?.startedAt ? (now - job.startedAt) / 1000 : 0;
+  const elapsed = job?.startedAt ? Math.max(0, (now - job.startedAt) / 1000) : 0;
   return (
     <div className={s.page}>
       {header}
-      {versions.length > 0 && driveBar}
-      <div className={s.layout}>
-        <div className={s.main}>{body}{orphanList}</div>
-        <aside className={s.side}>
-          {job ? (
-            <section className={s.card}>
-              <div className={s.row}><b>{job.label}</b><Chip tone="info">{job.state === 'queued' ? 'Đang chờ' : 'Đang render'}</Chip>{job.progress != null && <span className={s.pct}>{fmtPct(job.progress)}</span>}</div>
-              <ProgressBar value={job.progress} tone="info" label="Tiến độ render" />
-              <div className={s.hint}>{[job.step, job.startedAt && `đã ${mmss(elapsed)}`, job.etaSeconds != null && `còn ~${mmss(job.etaSeconds)}`].filter(Boolean).join(' · ')}</div>
-              {job.cancellable && <Button size="sm" onClick={() => cancel.mutate(job.id)} loading={cancel.isPending}>Huỷ</Button>}
-            </section>
-          ) : (
-            <section className={s.card}>
-              <b>“Duyệt bản này” làm gì?</b>
-              <p className={s.muted}>Duyệt = chốt bản này, lưu storyboard vào git và đẩy file lên Drive (thư mục xuat-ban/). Các bản khác chỉ nằm trên máy này; xoá khi không cần.</p>
-            </section>
-          )}
-        </aside>
-      </div>
+      {job && (
+        <section className={`${s.card} ${s.job}`} aria-label="Tiến độ render">
+          <div className={s.row}><Film size={18} aria-hidden /><b>Tiến độ render</b><Chip tone="accent">{job.state === 'queued' ? 'Đang chờ render' : 'Đang render'}</Chip>{job.progress != null && <span className={s.pct}>{fmtPct(job.progress)}</span>}</div>
+          <ProgressBar value={job.progress} label="Tiến độ render" />
+          <div className={s.row}>
+            <span className={s.hint}>{[job.step, job.startedAt && `đã ${mmss(elapsed)}`, job.etaSeconds != null && `còn ~${mmss(job.etaSeconds)}`].filter(Boolean).join(' · ')}</span>
+            {job.cancellable && <Button variant="ghost" onClick={() => cancel.mutate(job.id)} loading={cancel.isPending}>Huỷ</Button>}
+          </div>
+        </section>
+      )}
+      {(versions.length > 0 || orphans.length > 0) && driveBar}
+      {body}
+      {orphanList}
       <Dialog open={!!confirm} onOpenChange={(o) => { if (!o && !approve.isPending && !publish.isPending) setConfirm(null); }} size="sm"
-        title={confirm?.retry ? `Thử lại đẩy ${confirm.v.name}` : `Duyệt ${confirm?.v.name ?? ''}?`}
+        title={confirm?.retry ? `Đẩy ${confirm.v.name} lên Drive` : `Duyệt ${confirm?.v.name ?? ''}?`}
         description={confirm?.retry ? undefined : confirm?.v.hasSnapshot === false
-          ? 'Bản này không có snapshot storyboard, nên chỉ ghi nhận việc duyệt, không lưu storyboard vào git.'
-          : 'Đánh dấu bản này là bản đã chốt, lưu snapshot storyboard vào git và đẩy file lên Drive.'}
+          ? 'Bản này thiếu bản lưu storyboard. Video vẫn sẽ được chốt và tải lên Drive.'
+          : 'Chốt bản này, lưu storyboard vào Git và tải video lên Drive.'}
         footer={<>
           <Button variant="ghost" onClick={() => setConfirm(null)} disabled={approve.isPending || publish.isPending}>Huỷ</Button>
-          <Button variant="primary" loading={approve.isPending || publish.isPending} disabled={!name.trim()} onClick={doApprove}>{confirm?.retry ? 'Thử lại' : 'Duyệt bản này'}</Button>
+          <Button variant="primary" icon={confirm?.retry ? <CloudUpload size={18} /> : <Check size={18} />} loading={approve.isPending || publish.isPending} disabled={!name.trim()} onClick={doApprove}>{confirm?.retry ? 'Đẩy lên Drive' : 'Duyệt bản này'}</Button>
         </>}>
         <label className={s.field}>Tên file trên Drive
           <Input value={name} onChange={(e) => setName(e.target.value)} />
@@ -161,7 +158,7 @@ export function RendersScreen(): React.JSX.Element {
         description={`${SCOPE[toDelete?.published?.state === 'done' ? scope : 'local'].desc} Storyboard của dự án vẫn giữ.`}
         footer={<>
           <Button variant="ghost" disabled={del.isPending || driveDel.isPending} onClick={() => setToDelete(null)}>Huỷ</Button>
-          <Button variant="danger" loading={del.isPending || driveDel.isPending} onClick={doDelete}>{SCOPE[toDelete?.published?.state === 'done' ? scope : 'local'].btn}</Button>
+          <Button variant="danger" icon={<Trash2 size={18} />} loading={del.isPending || driveDel.isPending} onClick={doDelete}>{SCOPE[toDelete?.published?.state === 'done' ? scope : 'local'].btn}</Button>
         </>}>
         {toDelete?.published?.state === 'done' && (
           <div className={s.radios} role="radiogroup" aria-label="Phạm vi xoá">

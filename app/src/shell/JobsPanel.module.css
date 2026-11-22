@@ -3,6 +3,7 @@
 .list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
 .job { display: flex; flex-direction: column; gap: 6px; animation: in var(--dur) var(--ease); }
 .row { display: flex; align-items: center; gap: 8px; min-height: 28px; }
+.renderIcon { flex: none; color: var(--accent-text); }
 .title { flex: 1; min-width: 0; font-size: var(--fs-sm); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pct { font-size: var(--fs-sm); font-weight: 600; font-variant-numeric: tabular-nums; }
 .meta { font-size: var(--fs-xs); color: var(--muted); }

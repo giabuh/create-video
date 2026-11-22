@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import {Player} from '@remotion/player';
 import {Expand, Film, MessageSquarePlus, Pause, Play, Volume2, VolumeX} from 'lucide-react';
 import {Reel} from '@studio/Reel';
@@ -6,6 +6,7 @@ import {Button, EmptyState, IconButton, Popover, Skeleton} from '../../ui/index.
 import {useEditor} from './EditorContext.tsx';
 import {insertChatText} from '../../api/chat.ts';
 import {momentTag, sceneAtFrame} from './moment.ts';
+import {SceneStrip} from './SceneStrip.tsx';
 import {useVoiceAction} from './TopBar.tsx';
 import s from './PreviewPane.module.css';
 
@@ -42,6 +43,14 @@ export function PreviewPane(): React.JSX.Element {
   const fps = renderProps?.fps ?? 30;
   const frameVars = renderProps ? {'--ar': `${renderProps.width} / ${renderProps.height}`} as React.CSSProperties : undefined;
   const total = renderProps ? Math.max(1, Math.ceil(renderProps.totalSeconds * fps)) : 1;
+  // Playback time updates the transport, independently of the composition.
+  const player = useMemo(() => renderProps && (
+    <Player ref={playerRef} component={Reel} inputProps={renderProps} durationInFrames={total} fps={fps}
+      compositionWidth={renderProps.width} compositionHeight={renderProps.height} controls={playback.fullscreen} loop={false}
+      spaceKeyToPlayOrPause={false}
+      defaultPremountInSeconds={1} // load the next clip before its cut
+      acknowledgeRemotionLicense errorFallback={mediaError} style={{width: '100%'}} />
+  ), [renderProps, playerRef, total, fps, playback.fullscreen]);
 
   let body: React.ReactNode;
   if (storyboard.scenes.length === 0) {
@@ -58,11 +67,7 @@ export function PreviewPane(): React.JSX.Element {
   } else {
     body = (
       <div className={s.frame} style={frameVars} data-testid="preview-frame">
-        <Player ref={playerRef} component={Reel} inputProps={renderProps} durationInFrames={total} fps={fps}
-          compositionWidth={renderProps.width} compositionHeight={renderProps.height} controls={playback.fullscreen} loop={false}
-          spaceKeyToPlayOrPause={false}
-          defaultPremountInSeconds={1} // load each clip 1 s before it appears; 0 stutters at every cut, 2 mounts too many videos
-          acknowledgeRemotionLicense errorFallback={mediaError} style={{width: '100%'}} />
+        {player}
         {previewing && <div className={s.shimmer} aria-hidden />}
       </div>
     );
@@ -71,8 +76,9 @@ export function PreviewPane(): React.JSX.Element {
   return (
     <section className={s.col} aria-label="Xem trước">
       <div className={s.canvas}>{body}</div>
-      {ready && (
-        <div className={s.transport} aria-label="Điều khiển xem trước" role="group">
+      {renderProps && <div className={s.timeline}>
+        <SceneStrip frame={ready ? playback.frame : null} />
+        {ready && <div className={s.transport} aria-label="Điều khiển xem trước" role="group">
           <IconButton size="sm" className={s.control} label={playback.playing ? 'Tạm dừng' : 'Phát xem trước'}
             icon={playback.playing ? <Pause size={18} aria-hidden /> : <Play size={18} aria-hidden />}
             onClick={() => playerRef.current?.toggle()} />
@@ -86,6 +92,7 @@ export function PreviewPane(): React.JSX.Element {
           </Popover>
           <span className={s.time}>{timestamp(playback.frame, fps)} / {timestamp(total, fps)}</span>
           <input className={s.seek} type="range" min={0} max={total - 1} value={Math.min(playback.frame, total - 1)}
+            style={{'--played': `${Math.min(1, playback.frame / Math.max(1, total - 1)) * 100}%`} as React.CSSProperties}
             aria-label="Tua xem trước" aria-valuetext={timestamp(playback.frame, fps)}
             onChange={(event) => playerRef.current?.seekTo(Number(event.target.value))} />
           <IconButton size="sm" className={s.control} label="Xem toàn màn hình" icon={<Expand size={18} aria-hidden />}
@@ -98,8 +105,8 @@ export function PreviewPane(): React.JSX.Element {
             const scene = sceneAtFrame(renderProps, f);
             if (scene) insertChatText(momentTag(scene, f, renderProps.fps));
           }}>Sửa chỗ này</Button>
-        </div>
-      )}
+        </div>}
+      </div>}
       {previewing && <span className={s.hint} role="status">Đang cập nhật…</span>}
       {stale.length > 0 && (
         <div className={s.banner}>

@@ -3,11 +3,10 @@ import type {RenderProps} from '@studio/types';
 /** Scene id (or 'cta') shown at `frame`: the last scene starting at or before it; after the scenes, the CTA. */
 export function sceneAtFrame(props: RenderProps | null, frame: number): string | null {
   if (!props || props.scenes.length === 0) return null;
-  const t = frame / props.fps;
   const last = props.scenes[props.scenes.length - 1];
-  if (props.cta && t >= last.start + last.duration) return 'cta';
+  if (props.cta && frame >= Math.round((last.start + last.duration) * props.fps)) return 'cta';
   let id = props.scenes[0].id;
-  for (const sc of props.scenes) if (sc.start <= t) id = sc.id;
+  for (const sc of props.scenes) if (Math.round(sc.start * props.fps) <= frame) id = sc.id;
   return id;
 }
 
