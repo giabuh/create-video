@@ -1,23 +1,21 @@
 // white rounded caption card; sized from the shorter side so it fits 9:16 and 16:9
 import React from 'react';
-import {AbsoluteFill, spring, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, useVideoConfig} from 'remotion';
 import {captionUnits} from '../../components/Captions';
+import {useActiveChunk} from '../../components/useActiveChunk';
 import {fitFontSize, useFontsLoaded} from '../../fit';
 import {fontFamily} from '../../fonts';
 import type {Brand, CaptionChunk, CaptionStyle} from '../../types';
 
 export const ExplainerCaptions: React.FC<{chunks: CaptionChunk[]; highlight: string[]; style: CaptionStyle; colors: Brand['colors']}> = ({chunks, highlight, style, colors}) => {
-  const frame = useCurrentFrame();
-  const {fps, width, height} = useVideoConfig();
+  const {width, height} = useVideoConfig();
   const loaded = useFontsLoaded();
-  const t = frame / fps;
-  const c = chunks.find((x) => t >= x.start && t < x.end);
+  const {c, pop} = useActiveChunk(chunks);
   if (!c) return null;
   const u = Math.min(width, height);
   const cardW = Math.min(width * 0.88, u * 1.5), pad = u * 0.03;
   const max = u * 0.06;
   const size = loaded ? fitFontSize({text: c.text, maxSize: max, width: cardW - pad * 2, height: max * 1.3 * 2 + 1, weight: 800, lineHeight: 1.3}) : max * 0.8;
-  const pop = spring({frame: Math.round((t - c.start) * fps), fps, config: {damping: 14}});
   return (
     <AbsoluteFill style={{justifyContent: 'flex-end', alignItems: 'center', paddingBottom: height * (width > height ? 0.09 : 0.17)}}>
       <div style={{

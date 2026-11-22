@@ -1,16 +1,14 @@
 // shared reel skeleton: scenes with transitions, media, motion, overlay, voice, CTA, video-wide track, sfx, music
 import React from 'react';
-import {AbsoluteFill, Img, Sequence, getRemotionEnvironment, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Sequence, getRemotionEnvironment, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {LightLeak} from '@remotion/light-leaks';
 import {Audio} from '@remotion/media';
-import {CtaCard} from '../components/CtaCard';
 import {CardBackdrop, MediaShot} from '../components/MediaShot';
 import {MotionLayer} from '../components/MotionLayer';
-import {MusicTrack} from '../components/MusicTrack';
 import {Overlay} from '../components/Overlay';
 import {SceneTransition} from '../components/SceneTransition';
 import {ScenePresentation, isPresentation} from '../components/ScenePresentation';
-import {SfxTrack} from '../components/SfxTrack';
+import {ReelTail, type RenderCta} from '../components/ReelTail';
 import {isCard, collageSlots} from './storyLayout';
 import type {RenderProps, Scene, Transition} from '../types';
 
@@ -37,15 +35,14 @@ export const ReelFrame: React.FC<{
   empty: (sc: Scene) => React.ReactNode;
   logo: boolean;
   ctaCenter?: boolean;
-  renderCta?: (a: {cta: NonNullable<RenderProps['cta']>; brand: RenderProps['brand']; bg: RenderProps['scenes'][number]['media'][number] | undefined; centerY?: number}) => React.ReactNode;
+  renderCta?: RenderCta;
   children?: React.ReactNode;
-}> = ({p, captions, empty, logo, ctaCenter, renderCta = (a) => <CtaCard {...a} />, children}) => {
+}> = ({p, captions, empty, logo, ctaCenter, renderCta, children}) => {
   const {fps} = useVideoConfig();
   const f = (s: number) => Math.max(1, Math.round(s * fps));
   const {colors} = p.brand;
   const ts = p.transitionSeconds ?? 0.3;
   const tf = Math.round(ts * fps);
-  const ctaStart =p.scenes.reduce((s, sc) => s + sc.duration, 0);
   return (
     <AbsoluteFill style={{backgroundColor: colors.background}}>
       {p.scenes.map((sc, si) => {
@@ -102,21 +99,7 @@ export const ReelFrame: React.FC<{
           <Leak seed={si} />
         </Sequence>
       ))}
-      {logo && p.brand.logo && (
-        <AbsoluteFill><Img src={staticFile(p.brand.logo)} style={{position: 'absolute', top: 80, left: 60, width: 160}} /></AbsoluteFill>
-      )}
-      {p.cta && (
-        <Sequence name="cta" from={Math.round(ctaStart * fps)} durationInFrames={f(p.cta.duration)}>
-          {renderCta({cta: p.cta, brand: p.brand, bg: p.scenes[p.scenes.length - 1]?.media[0], centerY: ctaCenter ? 0.45 : undefined})}
-        </Sequence>
-      )}
-      {(p.overlays ?? []).map((m, i) => (
-        <Sequence key={`overlay-${i}`} name={`track:${m.component}`} from={Math.round(m.start * fps)} durationInFrames={f(m.duration)}>
-          <MotionLayer item={m} brand={p.brand} />
-        </Sequence>
-      ))}
-      <SfxTrack sfx={p.sfx ?? []} />
-      {p.music && <MusicTrack music={p.music} scenes={p.scenes} total={p.totalSeconds} />}
+      <ReelTail p={p} logo={logo} ctaCenter={ctaCenter} renderCta={renderCta} holdSfx />
       {children}
     </AbsoluteFill>
   );

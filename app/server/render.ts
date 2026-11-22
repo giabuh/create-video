@@ -35,8 +35,7 @@ async function bundleKey(): Promise<string> {
   const studio = path.join(repoRoot(), 'studio');
   const files = (await readdir(path.join(studio, 'src'), {recursive: true, withFileTypes: true})).filter(d => d.isFile()).map(d => path.join(d.parentPath, d.name));
   files.push(path.join(studio, 'remotion.config.ts'));
-  let max = 0;
-  for (const f of files) max = Math.max(max, (await stat(f).catch(() => null))?.mtimeMs ?? 0);
+  const max = Math.max(0, ...await Promise.all(files.map(async f => (await stat(f).catch(() => null))?.mtimeMs ?? 0)));
   return `${files.length}:${max}`;
 }
 

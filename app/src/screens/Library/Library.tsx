@@ -7,7 +7,7 @@ import {useUploads} from '../../api/upload.ts';
 import {Button, Drawer, DropZone, EmptyState, ErrorState, Input, PageHeader, Segmented, Skeleton, Tabs, fmtSec} from '../../ui/index.ts';
 import {Detail} from './Detail.tsx';
 import {DriveButton, DriveDrawer} from './DriveSync.tsx';
-import {MEDIA_EXTS} from './exts.ts';
+import {MEDIA_EXTS} from '../../../shared/exts.ts';
 import {MusicTab} from './Music.tsx';
 import {SfxTab} from './Sfx.tsx';
 import {UploadRows} from './Uploads.tsx';

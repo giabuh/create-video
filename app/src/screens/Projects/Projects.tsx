@@ -2,6 +2,7 @@ import {useMemo, useState} from 'react';
 import {Link, useNavigate} from 'react-router';
 import {Film, FolderPlus, MoreVertical, Plus} from 'lucide-react';
 import type {ProjectStatus, ProjectSummary} from '../../../shared/types.ts';
+import {slugify} from '../../../shared/slugify.ts';
 import {useJobs} from '../../api/events.ts';
 import {useBrands, useCancelDelete, useCreateProject, useDeleteProject, useProjects, useTemplates, useVoices} from '../../api/hooks.ts';
 import {Button, Chip, Dialog, DropdownMenu, EmptyState, ErrorState, Field, IconButton, Input, PageHeader, ProgressBar, Segmented, Select, Skeleton, VideoThumb, fmtRelTime, fmtSec, toast} from '../../ui/index.ts';
@@ -10,10 +11,6 @@ import {DeleteProjectDialog} from './DeleteProjectDialog.tsx';
 import s from './Projects.module.css';
 
 type Filter = 'all' | 'doing' | 'approved' | 'new';
-
-// Mirrors server slugify (app/server/paths.ts) for the preview only; the server result is authoritative.
-const slugify = (x: string): string =>
-  x.replace(/đ/g, 'd').replace(/Đ/g, 'D').normalize('NFKD').replace(/[^\x00-\x7f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'media';
 
 const matches = (st: ProjectStatus, f: Filter) => f === 'all' || (f === 'doing' ? st === 'rendering' || st === 'draft' : f === 'approved' ? st === 'approved' : st === 'new');
 

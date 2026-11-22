@@ -1,18 +1,17 @@
 // TikTok-style captions: the whole chunk stays on screen, the spoken word pops and turns into an accent block.
 // Word times: real token times (chunk.times) when present, else spread over the chunk by letter count.
 import React from 'react';
-import {AbsoluteFill, spring, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, spring, useVideoConfig} from 'remotion';
 import {fitFontSize, useFontsLoaded} from '../fit';
 import {fontFamily} from '../fonts';
 import type {CaptionChunk} from '../types';
 import {captionUnits} from './Captions';
+import {useActiveChunk} from './useActiveChunk';
 
 export const PopCaptions: React.FC<{chunks: CaptionChunk[]; highlight: string[]; accent: string; ink: string; text: string}> = ({chunks, highlight, accent, ink, text}) => {
-  const frame = useCurrentFrame();
   const {fps, width, height} = useVideoConfig();
   const loaded = useFontsLoaded();
-  const t = frame / fps;
-  const c = chunks.find((x) => t >= x.start && t < x.end);
+  const {c, t, pop: chunkIn} = useActiveChunk(chunks);
   if (!c) return null;
   const units = captionUnits(c.text, highlight);
   const weights = units.map((u) => u.text.length + 1);
@@ -27,7 +26,6 @@ export const PopCaptions: React.FC<{chunks: CaptionChunk[]; highlight: string[];
   });
   const active = starts.reduce((a, s, i) => (t >= s ? i : a), 0);
   const size = loaded ? fitFontSize({text: c.text, maxSize: 82, width: width * 0.84, height: 82 * 1.3 * 2 + 1, weight: 800, lineHeight: 1.3}) : 72;
-  const chunkIn = spring({frame: Math.round((t - c.start) * fps), fps, config: {damping: 14}});
   return (
     <AbsoluteFill style={{justifyContent: 'flex-end', alignItems: 'center', paddingBottom: height * 0.27}}>
       <div style={{fontFamily, fontWeight: 800, fontSize: size, lineHeight: 1.3, textAlign: 'center', maxWidth: '88%', textWrap: 'balance', opacity: Math.min(1, chunkIn * 3), transform: `translateY(${(1 - chunkIn) * 30}px)`}}>

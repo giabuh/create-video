@@ -9,12 +9,17 @@ import s from './SceneStrip.module.css';
 
 export type SceneStripHandle = {showFrame(frame: number | null): void};
 
+type Metrics = {left: number; width: number; track: number};
+
 /** Keep the playhead mid-strip: the film scrolls with playback instead of jumping at each cut (edges clamp it). */
-function follow(chip: HTMLButtonElement, progress: number): void {
+function follow(chip: HTMLButtonElement, progress: number, cache: {current: Map<HTMLButtonElement, Metrics>}): void {
   const strip = chip.parentElement;
   if (!strip) return;
-  const clip = chip.getBoundingClientRect(), track = strip.getBoundingClientRect();
-  strip.scrollLeft += clip.left - track.left + 4 + (clip.width - 8) * progress - track.width / 2; // .playhead: left 4px, inset 8px
+  // Layout is read once per chip until the cache is cleared (resize / new render props), never per frame.
+  let m = cache.current.get(chip);
+  if (!m) cache.current.set(chip, m = {left: chip.offsetLeft - strip.offsetLeft, width: chip.offsetWidth, track: strip.clientWidth});
+  const target = m.left + 4 + (m.width - 8) * progress - m.track / 2; // .playhead: left 4px, inset 8px
+  if (Math.abs(target - strip.scrollLeft) >= 1) strip.scrollLeft = target;
 }
 
 export const SceneStrip = memo(function SceneStrip({ref}: {ref: React.Ref<SceneStripHandle>}): React.JSX.Element | null {
@@ -24,6 +29,7 @@ export const SceneStrip = memo(function SceneStrip({ref}: {ref: React.Ref<SceneS
   const current = useRef<HTMLButtonElement | null>(null);
   const currentRange = useRef<[number, number] | null>(null);
   const position = useRef(0);
+  const metrics = useRef(new Map<HTMLButtonElement, Metrics>());
 
   // Playback updates only the selected button. The filmstrip itself renders when the storyboard changes.
   useImperativeHandle(ref, () => ({
@@ -39,16 +45,17 @@ export const SceneStrip = memo(function SceneStrip({ref}: {ref: React.Ref<SceneS
       if (!chip || !renderProps || frame === null) return;
       const [start, end] = currentRange.current ?? [0, 0];
       const progress = end > start ? Math.max(0, Math.min(1, (frame - Math.round(start * renderProps.fps)) / ((end - start) * renderProps.fps))) : 0;
-      chip.style.setProperty('--position', String(progress));
       position.current = progress;
-      follow(chip, progress);
+      follow(chip, progress, metrics); // before the --position write, so scrollLeft is read from clean layout
+      chip.style.setProperty('--position', String(progress));
     },
   }), [renderProps]);
 
   useEffect(() => {
     // The same scene can have new bounds after a storyboard edit.
     currentRange.current = sceneRange(renderProps, current.current?.dataset.scene ?? '');
-    if (current.current) follow(current.current, position.current);
+    metrics.current.clear();
+    if (current.current) follow(current.current, position.current, metrics);
   }, [renderProps]);
 
   useEffect(() => {
@@ -58,7 +65,8 @@ export const SceneStrip = memo(function SceneStrip({ref}: {ref: React.Ref<SceneS
     const observer = new ResizeObserver(() => {
       if (strip.clientWidth === width) return;
       width = strip.clientWidth;
-      if (current.current) follow(current.current, position.current);
+      metrics.current.clear();
+      if (current.current) follow(current.current, position.current, metrics);
     });
     observer.observe(strip);
     return () => observer.disconnect();

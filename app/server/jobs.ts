@@ -36,6 +36,8 @@ export class JobQueue {
 
   list(): Job[] { return this.#entries.map(e => this.#snap(e.job)).reverse(); }
   get(id: string): Job | undefined { const e = this.#find(id); return e && this.#snap(e.job); }
+  /** True when a queued/running job matches; no snapshots. */
+  hasLive(pred: (j: Job) => boolean): boolean { return this.#entries.some(e => (e.job.state === 'queued' || e.job.state === 'running') && pred(e.job)); }
   running(kind?: JobKind): Job[] { return this.#entries.filter(e => e.job.state === 'running' && (!kind || e.job.kind === kind)).map(e => this.#snap(e.job)); }
 
   cancel(id: string): Job {

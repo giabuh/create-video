@@ -4,14 +4,15 @@ import {useQueryClient} from '@tanstack/react-query';
 import {Plus, Trash2} from 'lucide-react';
 import {CtaCard} from '@studio/components/CtaCard';
 import type {BrandFile, BrandSummary} from '../../../shared/types.ts';
+import {IMAGE_EXTS} from '../../../shared/exts.ts';
 import {DEFAULT_ACCENT2, DEFAULT_SURFACE} from '../../../shared/brandDefaults.ts';
 import {qk, useCreateBrand, useDeleteBrand, useLogoCutout, useSaveBrand, useSaveConfig, useConfig} from '../../api/hooks.ts';
+import {toastSaveError} from '../../api/saveError.ts';
 import {useUploads} from '../../api/upload.ts';
 import type {HttpError} from '../../api/client.ts';
 import {Button, Chip, ConfirmDialog, Dialog, Slider, DropZone, EmptyState, Field, Input, ColorField, Skeleton, toast} from '../../ui/index.ts';
 import s from './Settings.module.css';
 
-const IMAGE_EXTS = ['.png', '.jpg', '.jpeg', '.webp', '.svg'] as const; // mirrors app/server/paths.ts (the server cannot be imported in the browser)
 const PLACEHOLDER_ADDRESS = '[ĐỊA CHỈ] — để trống nếu không hiện';
 const COLORS = [['primary', 'Chính'], ['accent', 'Nhấn (từ nổi bật)'], ['text', 'Chữ'], ['background', 'Nền cảnh motion'], ['accent2', 'Nhấn 2 (băng đỏ, ruy băng)'], ['surface', 'Nền sáng (ô trắng)']] as const;
 const DEFAULT_COLORS = {accent2: DEFAULT_ACCENT2, surface: DEFAULT_SURFACE} as const;
@@ -101,8 +102,8 @@ function BrandEditor({summary, draft, setDraft}: {summary: BrandSummary; draft: 
     save.mutate({id, brand: next, baseMtime: summary.mtime}, {
       onSuccess: () => { setDraft(null); toast({title: 'Đã lưu brand', tone: 'success'}); },
       onError: (e) => {
-        if (e.status === 409) { setDraft(null); void qc.invalidateQueries({queryKey: qk.brands}); toast({title: 'File vừa được sửa bên ngoài — đã tải lại', tone: 'info'}); }
-        else toast({title: 'Không lưu được brand', description: e.message, tone: 'error'});
+        if (e.status === 409) { setDraft(null); void qc.invalidateQueries({queryKey: qk.brands}); }
+        toastSaveError(e, 'Không lưu được brand');
       },
     });
   };
@@ -112,7 +113,7 @@ function BrandEditor({summary, draft, setDraft}: {summary: BrandSummary; draft: 
       onSuccess: () => { void qc.invalidateQueries({queryKey: qk.brands}); toast({title: 'Đã đặt làm brand mặc định', tone: 'success'}); },
       onError: (e) => {
         if (e.status === 409) void qc.invalidateQueries({queryKey: qk.config});
-        toast(e.status === 409 ? {title: 'config.json vừa được sửa bên ngoài — đã tải lại, thử lại nhé', tone: 'info'} : {title: 'Không lưu được cài đặt', description: e.message, tone: 'error'});
+        toastSaveError(e, 'Không lưu được cài đặt', {conflict: 'config.json vừa được sửa bên ngoài — đã tải lại, thử lại nhé'});
       },
     });
   };

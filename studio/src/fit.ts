@@ -54,8 +54,23 @@ const lineCount = (o: Required<Omit<Fit, 'maxSize' | 'minSize' | 'height'>>, siz
   return n;
 };
 
+// Results per input set: callers run every frame with inputs that change only per chunk. Not filled before the fonts
+// are ready (loadedOnce), since fallback-font widths would be stale afterwards.
+const fitCache = new Map<string, number>();
 /** Largest font size <= maxSize (whole px) at which `text` fits width x height. */
 export const fitFontSize = (f: Fit): number => {
+  if (!loadedOnce) return computeFit(f);
+  const key = JSON.stringify(f);
+  let r = fitCache.get(key);
+  if (r === undefined) {
+    if (fitCache.size > 500) fitCache.clear();
+    r = computeFit(f);
+    fitCache.set(key, r);
+  }
+  return r;
+};
+
+const computeFit = (f: Fit): number => {
   const o = {text: f.text, width: f.width, weight: f.weight ?? 800, lineHeight: f.lineHeight ?? 1.12, wrap: f.wrap ?? true,
     gap: f.gap ?? 0, padX: f.padX ?? 0, padY: f.padY ?? 0, family: f.family ?? fontFamily};
   const fits = (s: number) => {

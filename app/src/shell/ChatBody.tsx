@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useRef, useState} from 'react';
+import {memo, useEffect, useMemo, useRef, useState} from 'react';
 import {ArrowUp, Copy, ImagePlus, MessageSquare, X} from 'lucide-react';
 import {matchPath, useLocation} from 'react-router';
 import type {Engine} from '../../shared/types.ts';
@@ -26,7 +26,6 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
   const engine: Engine = detail.data?.chat.engine ?? 'claude';
   const engineName = engine === 'codex' ? 'Codex' : 'Claude';
   const busy = useChatBusy();
-  const draft = useChatDraft(chatId);
   const create = useCreateChat();
   const send = useSendChat();
   const stop = useStopChat();
@@ -58,6 +57,7 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
   }, [pending]);
   const inputRef = useRef<HTMLDivElement>(null);
   const logRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
 
   const chatAccount = detail.data?.chat.account;
   useEffect(() => { if (chatAccount) setAccount(chatAccount); }, [chatAccount]);
@@ -90,14 +90,17 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
   }, [active, detail.isSuccess]);
   useEffect(() => {
     if (!active || !follow.current) return;
-    const go = () => {
-      const log = logRef.current;
-      if (log) log.scrollTop = log.scrollHeight;
-    };
-    const f = requestAnimationFrame(go);
-    const t1 = setTimeout(go, 150), t2 = setTimeout(go, 450); // after the slide-in animation and late layout
-    return () => { cancelAnimationFrame(f); clearTimeout(t1); clearTimeout(t2); };
-  }, [events.length, draft, active, chatId, detail.isSuccess, busy]);
+    const f = requestAnimationFrame(() => { const log = logRef.current; if (log) log.scrollTop = log.scrollHeight; });
+    return () => cancelAnimationFrame(f);
+  }, [events.length, active, chatId, detail.isSuccess, busy]);
+  // Late layout (drawer slide-in, markdown, streamed draft growth): re-stick to the bottom while following.
+  useEffect(() => {
+    const log = logRef.current, inner = innerRef.current;
+    if (!active || !log || !inner) return;
+    const ro = new ResizeObserver(() => { if (follow.current) log.scrollTop = log.scrollHeight; });
+    ro.observe(log); ro.observe(inner);
+    return () => ro.disconnect();
+  }, [active]);
 
   // Docked chat (autoFocus off) refocuses only after a turn ends, and not on a phone: focus there opens the keyboard over the player.
   const wasBusy = useRef(false);
@@ -157,6 +160,7 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
         </div>
       </div>
       <div className={s.log} ref={logRef} role="log" aria-live="polite">
+        <div ref={innerRef} style={{display: 'flex', flexDirection: 'column', gap: 'var(--sp-2)', flexShrink: 0}}>
         {events.length === 0 && !running && <div className={s.empty}><EmptyState icon={<MessageSquare size={28} />} title={`Hỏi ${engineName} bất cứ điều gì về video`} /></div>}
         {events.map((e, i) => {
           switch (e.kind) {
@@ -174,7 +178,7 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
             );
             case 'text': return (
               <div key={i} className={s.msg} data-msg>
-                <div className={`${s.bot} ${s.md}`} data-body dangerouslySetInnerHTML={{__html: mdToHtml(e.text)}} />
+                <Md text={e.text} />
                 {copyBtn}
               </div>
             );
@@ -187,8 +191,9 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
             default: return null;
           }
         })}
-        {running && <div className={s.bot}>{draft}<Spinner size={16} label={`${engineName} đang trả lời`} /></div>}
+        {running && <Draft chatId={chatId} label={`${engineName} đang trả lời`} />}
         {isInterrupted(events, running) && <div className={s.note}>Lượt này bị ngắt (server dừng giữa chừng).</div>}
+        </div>
       </div>
       <div className={s.foot} ref={inputRef}>
         {files.length > 0 && (
@@ -226,4 +231,16 @@ export function ChatBody({active, autoFocus = true}: {active: boolean; autoFocus
       </div>
     </div>
   );
+}
+
+/** One finished assistant message; memo + useMemo so streamed deltas never re-parse or re-mount it. */
+const Md = memo(function Md({text}: {text: string}): React.JSX.Element {
+  const html = useMemo(() => mdToHtml(text), [text]);
+  return <div className={`${s.bot} ${s.md}`} data-body dangerouslySetInnerHTML={{__html: html}} />;
+});
+
+/** The in-progress reply; the only part that re-renders on each streamed delta. */
+function Draft({chatId, label}: {chatId: string | null; label: string}): React.JSX.Element {
+  const draft = useChatDraft(chatId);
+  return <div className={s.bot}>{draft}<Spinner size={16} label={label} /></div>;
 }

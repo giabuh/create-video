@@ -1,13 +1,12 @@
 // style: calm editorial slideshow — media in the top 70% with a slow Ken Burns and long crossfades,
 // a brand-surface panel below with thin elegant captions, an accent line and a "02 / 05" scene counter
 import React from 'react';
-import {AbsoluteFill, Img, Sequence, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Sequence, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {Audio} from '@remotion/media';
-import {CtaCard} from '../../components/CtaCard';
 import {captionUnits} from '../../components/Captions';
 import {MediaShot} from '../../components/MediaShot';
 import {MotionLayer} from '../../components/MotionLayer';
-import {MusicTrack} from '../../components/MusicTrack';
+import {ReelTail} from '../../components/ReelTail';
 import {Overlay} from '../../components/Overlay';
 import {SceneTransition} from '../../components/SceneTransition';
 import {fitFontSize, useFontsLoaded} from '../../fit';
@@ -64,7 +63,6 @@ export const Slideshow: React.FC<RenderProps> = (p) => {
   const hi = colors.surface ? colors.accent2 ?? colors.primary : colors.accent;
   const ts = p.transitionSeconds ?? 1; // long crossfades
   const tf = Math.round(ts * fps);
-  const ctaStart = p.scenes.reduce((s, sc) => s + sc.duration, 0);
   const mediaH = Math.round(height * MEDIA_H);
   const pad = (n: number) => String(n).padStart(2, '0');
   return (
@@ -111,25 +109,7 @@ export const Slideshow: React.FC<RenderProps> = (p) => {
           </AbsoluteFill>
         </Sequence>
       ))}
-      {p.brand.logo && (
-        <AbsoluteFill><Img src={staticFile(p.brand.logo)} style={{position: 'absolute', top: 80, left: 60, width: 160}} /></AbsoluteFill>
-      )}
-      {p.cta && (
-        <Sequence name="cta" from={Math.round(ctaStart * fps)} durationInFrames={f(p.cta.duration)}>
-          <CtaCard cta={p.cta} brand={p.brand} bg={p.scenes[p.scenes.length - 1]?.media[0]} />
-        </Sequence>
-      )}
-      {(p.overlays ?? []).map((m, i) => (
-        <Sequence key={`overlay-${i}`} name={`track:${m.component}`} from={Math.round(m.start * fps)} durationInFrames={f(m.duration)}>
-          <MotionLayer item={m} brand={p.brand} />
-        </Sequence>
-      ))}
-      {(p.sfx ?? []).map((x, i) => (
-        <Sequence key={`sfx-${i}`} from={Math.round(x.start * fps)} name={`sfx:${x.src}`}>
-          <Audio src={staticFile(x.src)} volume={x.volume} />
-        </Sequence>
-      ))}
-      {p.music && <MusicTrack music={p.music} scenes={p.scenes} total={p.totalSeconds} />}
+      <ReelTail p={p} />
     </AbsoluteFill>
   );
 };

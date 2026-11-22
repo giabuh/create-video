@@ -1,11 +1,10 @@
 """Engine steps shared by the CLIs (prepare.py, voice_try.py) and the app's TTS worker (worker.py)."""
 import json
-import os
 from pathlib import Path
 
 from .align import estimate_words, scene_words
 from .cache import cache_key
-from .config import ROOT, apply_template, load_json, resolve_names, resolve_scene_voice, resolve_video
+from .config import ROOT, apply_template, load_json, resolve_names, resolve_scene_voice, resolve_video, write_json
 from .shots import shots
 from .props import AnchorError, build_render_props, sfx_files_for
 from .tts import probe_duration, synth_to_file
@@ -14,12 +13,6 @@ from .videos_index import write_videos_index
 
 # shortcut: rough Vietnamese speaking rate for scenes not synthesized yet (preview only); real audio replaces it.
 CHARS_PER_SECOND = 14
-
-
-def write_json(path: Path, data) -> None:
-    tmp = path.with_name(f"{path.name}.{os.getpid()}.tmp")  # pid: the app may run preview and worker prepare concurrently
-    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    tmp.replace(path)
 
 
 SFX_EXTS = {".mp3", ".wav", ".m4a", ".ogg", ".aac"}
@@ -34,17 +27,30 @@ def _media_sizes() -> dict[str, tuple[int, int]]:
 
 
 def _sfx_peaks(files: list[str]) -> dict[str, float]:
-    """Seconds from each sfx file's start to its loudest moment (a whoosh swells, a ting hits at once)."""
+    """Seconds from each sfx file's start to its loudest moment (a whoosh swells, a ting hits at once).
+    Cached in .cache/sfx-peaks.json by name:mtime_ns:size (kept out of sfx/, which the app watches and Drive syncs)."""
+    cache_path = ROOT / ".cache" / "sfx-peaks.json"
     try:
-        import librosa  # in the VieNeu venv prepare.py runs with
-        import numpy as np
-    except ImportError:
-        return {}
-    out = {}
+        cache = load_json(cache_path)
+    except (OSError, ValueError):
+        cache = {}
+    loaded, fresh, out = dict(cache), {}, {}
     for f in files:
-        y, sr = librosa.load(ROOT / "sfx" / f, sr=22050, mono=True)
-        rms = librosa.feature.rms(y=y, frame_length=1024, hop_length=256)[0]
-        out[f] = min(1.0, float(np.argmax(rms)) * 256 / sr) if len(rms) else 0.0
+        st = (ROOT / "sfx" / f).stat()
+        key = f"{f}:{st.st_mtime_ns}:{st.st_size}"
+        if key not in cache:
+            try:
+                import librosa  # in the VieNeu venv prepare.py runs with
+                import numpy as np
+            except ImportError:
+                return {}
+            y, sr = librosa.load(ROOT / "sfx" / f, sr=22050, mono=True)
+            rms = librosa.feature.rms(y=y, frame_length=1024, hop_length=256)[0]
+            cache[key] = min(1.0, float(np.argmax(rms)) * 256 / sr) if len(rms) else 0.0
+        fresh[key] = out[f] = cache[key]
+    if fresh != loaded:  # new or dropped entries
+        cache_path.parent.mkdir(exist_ok=True)
+        write_json(cache_path, fresh)
     return out
 
 
@@ -78,6 +84,7 @@ def prepare(proj: Path, get_model=None, synth: bool = True, on_progress=None) ->
 
     spoken = [sc["id"] for sc in sb["scenes"] if sc.get("say") is not None]
     model, audio, timings, failed, stale, scenes = None, {}, {}, [], [], []
+    refs: dict[Path, bytes] = {}
     for sc in sb["scenes"]:
         if sc.get("say") is None:
             timings[sc["id"]] = {"duration": float(sc["duration"])}
@@ -85,7 +92,9 @@ def prepare(proj: Path, get_model=None, synth: bool = True, on_progress=None) ->
             continue
         v = resolve_scene_voice(cfg, sb, sc)
         ref = ROOT / v["ref"]
-        key = cache_key(ref.read_bytes(), sc["say"], v["tts"])
+        if ref not in refs:
+            refs[ref] = ref.read_bytes()
+        key = cache_key(refs[ref], sc["say"], v["tts"])
         out = proj / "audio" / f"{sc['id']}-{key}.wav"
         if not synth and not out.exists():
             est = old.get(sc["id"], {}).get("duration") or len(sc["say"]) / CHARS_PER_SECOND
@@ -97,7 +106,8 @@ def prepare(proj: Path, get_model=None, synth: bool = True, on_progress=None) ->
             on_progress(done, len(spoken), sc["id"])
         try:
             if out.exists():
-                dur = probe_duration(out)
+                o = old.get(sc["id"], {})
+                dur = o["duration"] if o.get("cacheKey") == key and o.get("duration") else probe_duration(out)
             else:
                 if model is None:
                     model = get_model()

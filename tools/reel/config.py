@@ -1,5 +1,6 @@
 """Layered config: config.json -> config.templates.<template> -> config.voices.<voice> -> brand (visual) -> storyboard -> scene."""
 import json
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -9,6 +10,12 @@ TTS_KEYS = ("temperature", "top_k", "top_p", "repetition_penalty", "max_chars", 
 
 def load_json(path) -> dict:
     return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def write_json(path: Path, data) -> None:
+    tmp = path.with_name(f"{path.name}.{os.getpid()}.tmp")  # pid: the app may run preview and worker prepare concurrently
+    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    tmp.replace(path)
 
 
 def deep_merge(base: dict, over: dict | None) -> dict:

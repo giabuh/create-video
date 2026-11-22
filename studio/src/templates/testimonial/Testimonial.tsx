@@ -1,11 +1,10 @@
 // style: calm "student testimonial": footage in a framed card on a brand background, the spoken text as a big quote above, name bar below
 import React from 'react';
-import {AbsoluteFill, Img, Sequence, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Sequence, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {Audio} from '@remotion/media';
-import {CtaCard} from '../../components/CtaCard';
 import {MediaShot} from '../../components/MediaShot';
 import {MotionLayer} from '../../components/MotionLayer';
-import {MusicTrack} from '../../components/MusicTrack';
+import {ReelTail} from '../../components/ReelTail';
 import {SceneTransition} from '../../components/SceneTransition';
 import {captionUnits} from '../../components/Captions';
 import {fitFontSize, useFontsLoaded} from '../../fit';
@@ -60,7 +59,6 @@ export const Testimonial: React.FC<RenderProps> = (p) => {
   const {colors} = p.brand;
   const ts = p.transitionSeconds ?? 0.6; // calmer than fast-cut
   const tf = Math.round(ts * fps);
-  const ctaStart = p.scenes.reduce((s, sc) => s + sc.duration, 0);
   return (
     <AbsoluteFill style={{background: `linear-gradient(170deg, ${colors.primary}, ${colors.background})`}}>
       {p.scenes.map((sc, si) => {
@@ -96,25 +94,7 @@ export const Testimonial: React.FC<RenderProps> = (p) => {
           </Sequence>
         );
       })}
-      {p.brand.logo && (
-        <AbsoluteFill><Img src={staticFile(p.brand.logo)} style={{position: 'absolute', top: 80, left: 60, width: 160}} /></AbsoluteFill>
-      )}
-      {p.cta && (
-        <Sequence name="cta" from={Math.round(ctaStart * fps)} durationInFrames={f(p.cta.duration)}>
-          <CtaCard cta={p.cta} brand={p.brand} bg={p.scenes[p.scenes.length - 1]?.media[0]} />
-        </Sequence>
-      )}
-      {(p.overlays ?? []).map((m, i) => (
-        <Sequence key={`overlay-${i}`} name={`track:${m.component}`} from={Math.round(m.start * fps)} durationInFrames={f(m.duration)}>
-          <MotionLayer item={m} brand={p.brand} />
-        </Sequence>
-      ))}
-      {(p.sfx ?? []).map((x, i) => (
-        <Sequence key={`sfx-${i}`} from={Math.round(x.start * fps)} name={`sfx:${x.src}`}>
-          <Audio src={staticFile(x.src)} volume={x.volume} />
-        </Sequence>
-      ))}
-      {p.music && <MusicTrack music={p.music} scenes={p.scenes} total={p.totalSeconds} />}
+      <ReelTail p={p} />
     </AbsoluteFill>
   );
 };

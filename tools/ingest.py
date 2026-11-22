@@ -13,6 +13,8 @@ import sys
 import unicodedata
 from pathlib import Path
 
+from reel.config import write_json
+
 ROOT = Path(__file__).resolve().parents[1]
 VIDEO = {".mp4", ".mov", ".m4v", ".mkv", ".webm", ".avi", ".3gp"}
 IMAGE = {".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif"}
@@ -105,7 +107,7 @@ def ingest(inbox: Path, library: Path) -> list[str]:
             index.pop(dst.name, None)
             print(f"FAILED {src.name}: {e}")
             continue
-        index_path.write_text(json.dumps(index, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        write_json(index_path, index)
         done.mkdir(exist_ok=True)
         shutil.move(str(src), unique(done, src.stem, src.suffix))
         added.append(dst.name)

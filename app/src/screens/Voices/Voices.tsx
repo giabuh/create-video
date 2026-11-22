@@ -1,7 +1,9 @@
 import {useEffect, useRef, useState} from 'react';
 import {Mic, MoreHorizontal, Plus} from 'lucide-react';
 import type {VoiceInfo} from '../../../shared/types.ts';
-import {useJobs} from '../../api/events.ts';
+import {AUDIO_REF_EXTS} from '../../../shared/exts.ts';
+import {slugify} from '../../../shared/slugify.ts';
+import {isLive, useJobs} from '../../api/events.ts';
 import {useUploads} from '../../api/upload.ts';
 import {useVoices} from '../../api/hooks.ts';
 import {AudioPlayer, Button, Chip, Dialog, DropdownMenu, DropZone, EmptyState, ErrorState, Field, fmtNum, IconButton, Input, PageHeader, ProgressBar, Select, Skeleton, toast} from '../../ui/index.ts';
@@ -10,9 +12,6 @@ import {TryPanel} from './Try.tsx';
 import {useConfigEdit} from './useConfigEdit.ts';
 import s from './Voices.module.css';
 
-const AUDIO_REF_EXTS = ['.wav', '.mp3', '.m4a', '.ogg', '.flac'];
-// Same rule as server/paths.ts slugify (server code cannot be imported here).
-const slugify = (x: string) => x.replace(/đ/g, 'd').replace(/Đ/g, 'D').normalize('NFKD').replace(/[^\x00-\x7f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'media';
 const base = (r: string) => r.split('/').pop() ?? r;
 const refLabel = (name: string, r: string) => base(r).replace(new RegExp(`^${name}-`), '').replace(/\.\w+$/, '');
 
@@ -52,7 +51,7 @@ function AddVoice({open, onClose}: {open: boolean; onClose(): void}): React.JSX.
   const [sentAt, setSentAt] = useState(0);
   const item = [...items].reverse().find((i) => i.target === 'voice' && i.file === file);
   const job = jobs.find((j) => j.kind === 'voice-add' && j.label === `Thêm giọng ${slug}` && sentAt > 0 && (j.startedAt ?? Infinity) >= sentAt - 2000);
-  const busy = item?.state === 'uploading' || job?.state === 'queued' || job?.state === 'running';
+  const busy = item?.state === 'uploading' || !!job && isLive(job);
   const err = item?.state === 'error' ? item.error : job?.state === 'failed' ? job.error ?? 'Thêm giọng thất bại' : null;
   const close = () => { onClose(); setName(''); setFile(null); setSentAt(0); };
   const handled = useRef('');
@@ -72,7 +71,7 @@ function AddVoice({open, onClose}: {open: boolean; onClose(): void}): React.JSX.
         </Field>
         <DropZone accept={AUDIO_REF_EXTS} multiple={false} compact title={file ? file.name : 'Kéo thả file ghi âm vào đây'} description=".wav, .mp3, .m4a, .ogg, .flac" buttonLabel={file ? 'Chọn file khác' : 'Chọn file'} onFiles={(f) => setFile(f[0])} />
         {item?.state === 'uploading' && <ProgressBar value={item.progress} label="Đang tải lên" />}
-        {job && (job.state === 'queued' || job.state === 'running') && <ProgressBar value={job.progress} label={job.step || 'Đang xử lý'} />}
+        {job && isLive(job) && <ProgressBar value={job.progress} label={job.step || 'Đang xử lý'} />}
         {busy && <p className={s.note}>{job ? job.step || 'Đang chuyển định dạng…' : 'Đang tải lên…'}</p>}
       </div>
     </Dialog>

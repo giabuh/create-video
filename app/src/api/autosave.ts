@@ -1,7 +1,7 @@
-import {useEffect, useState, useSyncExternalStore} from 'react';
+import {useEffect, useMemo, useState, useSyncExternalStore} from 'react';
 import type {Versioned} from '../../shared/types.ts';
-import {toast} from '../ui/Toast.tsx';
 import {HttpError} from './client.ts';
+import {toastConflict} from './saveError.ts';
 
 export type SaveState = {state: 'idle' | 'saving' | 'saved' | 'error' | 'conflict'; savedAt: number | null; error: string | null};
 type Snapshot = SaveState & {dirty: boolean};
@@ -91,7 +91,7 @@ export class AutosaveController<T> {
           this.pending = this.saved; // drop the conflicting edit; the owner reloads the file
           this.set({state: 'conflict', error: null});
           if (this.opts.onConflict) this.opts.onConflict(e.body?.details as Versioned<T>);
-          else toast({title: 'File vừa được sửa bên ngoài — đã tải lại', tone: 'info'}); // never lose an edit silently
+          else toastConflict(); // never lose an edit silently
         } else {
           this.set({state: 'error', error: e instanceof Error ? e.message : String(e)});
         }
@@ -109,5 +109,5 @@ export function useAutosave<T>(o: {value: T; baseMtime: number} & Opts<T>): Save
   }, [ctl, o.value, o.baseMtime]);
   useEffect(() => () => { void ctl.flush(); }, [ctl]);
   const snap = useSyncExternalStore(ctl.subscribe, ctl.getSnapshot);
-  return {...snap, flush: () => ctl.flush(), retry: () => ctl.retry()};
+  return useMemo(() => ({...snap, flush: () => ctl.flush(), retry: () => ctl.retry()}), [snap, ctl]);
 }

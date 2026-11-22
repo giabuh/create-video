@@ -2,9 +2,9 @@ import {readdir, rm, stat} from 'node:fs/promises';
 import path from 'node:path';
 import {Hono} from 'hono';
 import {MEDIA_EXTS, MUSIC_EXTS, PathError, safeJoin} from '../paths.ts';
-import {Conflict, readJson, readJsonOr, writeJsonAtomic} from '../store.ts';
-import type {LibraryIndex, LibraryResponse, MusicFile, Storyboard} from '../../shared/types.ts';
-import {bodyOf, HttpError, ingestBusy, isObj, mtimeField, plainName} from './util.ts';
+import {Conflict, readJsonOr, writeJsonAtomic} from '../store.ts';
+import type {LibraryIndex, LibraryResponse, MusicFile} from '../../shared/types.ts';
+import {bodyOf, HttpError, ingestBusy, isObj, mtimeField, plainName, readStoryboardOrNull} from './util.ts';
 import type {Deps} from './util.ts';
 
 const libName = (raw: string): string => {
@@ -17,11 +17,11 @@ const indexFile = () => safeJoin('library', 'media-index.json');
 /** media name -> ["<slug> · <sceneId>"] over every project storyboard */
 async function usageMap(): Promise<Record<string, string[]>> {
   const usage: Record<string, string[]> = Object.create(null);
-  for (const d of await readdir(safeJoin('projects'), {withFileTypes: true}).catch(() => [])) {
-    if (!d.isDirectory()) continue;
-    const sb = await readJson<Storyboard>(safeJoin('projects', d.name, 'storyboard.json')).catch(() => null);
-    for (const scene of sb?.data.scenes ?? []) for (const m of scene.media ?? []) (usage[m.src] ??= []).push(`${d.name} · ${scene.id}`);
-  }
+  const dirs = (await readdir(safeJoin('projects'), {withFileTypes: true}).catch(() => [])).filter(d => d.isDirectory());
+  const sbs = await Promise.all(dirs.map(d => readStoryboardOrNull(d.name)));
+  dirs.forEach((d, i) => {
+    for (const scene of sbs[i]?.data.scenes ?? []) for (const m of scene.media ?? []) (usage[m.src] ??= []).push(`${d.name} · ${scene.id}`);
+  });
   return {...usage};
 }
 
@@ -40,10 +40,9 @@ export function libraryRoutes({jobs}: Deps): Hono {
   app.delete('/music/:name', async c => {
     const name = plainName(c.req.param('name'));
     if (!MUSIC_EXTS.includes(path.extname(name).toLowerCase())) throw new HttpError(400, 'not a music file');
-    for (const d of await readdir(safeJoin('projects'), {withFileTypes: true}).catch(() => [])) {
-      const sb = await readJson<Storyboard>(safeJoin('projects', d.name, 'storyboard.json')).catch(() => null);
-      if (sb?.data.music?.file === name) throw new HttpError(409, `Dự án "${d.name}" đang dùng bài nhạc này`);
-    }
+    const dirs = await readdir(safeJoin('projects'), {withFileTypes: true}).catch(() => []);
+    const sbs = await Promise.all(dirs.map(d => readStoryboardOrNull(d.name)));
+    dirs.forEach((d, i) => { if (sbs[i]?.data.music?.file === name) throw new HttpError(409, `Dự án "${d.name}" đang dùng bài nhạc này`); });
     await stat(safeJoin('music', name)).catch(() => { throw new HttpError(404, 'unknown music'); });
     await rm(safeJoin('music', name));
     return c.body(null, 204);

@@ -10,7 +10,6 @@ export const TEXT_FX_LABELS: Record<TextFx, string> = {
   'blur-in': 'Mờ → rõ', glitch: 'Nhiễu màu',
 };
 export const PACE = {fast: 0.7, normal: 1, slow: 1.4} as const;
-export type Pace = keyof typeof PACE;
 
 // seconds at pace 1, from the approved mockup: gap = delay between consecutive units, dur = one unit's animation
 const SPEC: Record<TextFx, {unit: 'char' | 'word'; gap: number; dur: number}> = {

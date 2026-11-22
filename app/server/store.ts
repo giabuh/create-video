@@ -14,7 +14,7 @@ function withLock<T>(file: string, fn: () => Promise<T>): Promise<T> {
   next.finally(() => { if (locks.get(file) === next) locks.delete(file); }).catch(() => {});
   return next;
 }
-export const mtimeOf = async (file: string) => Math.floor((await stat(file)).mtimeMs);
+const mtimeOf = async (file: string) => Math.floor((await stat(file)).mtimeMs);
 export async function readJson<T>(file: string): Promise<Versioned<T>> {
   // one handle: content and mtime describe the same inode even if a rename lands mid-read
   const h = await open(file, 'r');

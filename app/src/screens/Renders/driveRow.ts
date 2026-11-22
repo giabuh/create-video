@@ -1,4 +1,5 @@
 import type {DriveStatus, Job, PublishInfo} from '../../../shared/types.ts';
+import {isLive} from '../../api/events.ts';
 
 export type DriveRow =
   | {kind: 'local'}
@@ -9,11 +10,9 @@ export type DriveRow =
   | {kind: 'bad'; name: string}
   | {kind: 'failed'; error: string; retry: 'publish' | 'delete'};
 
-const live = (j: Job) => j.state === 'running' || j.state === 'queued';
-
 /** `job` = newest publish / drive-delete job of this version (matched by `job.ref`). */
 export function driveRow(version: string, p: PublishInfo | null, job: Job | undefined, drive: DriveStatus | undefined): DriveRow {
-  if (job && live(job)) return job.kind === 'drive-delete' ? {kind: 'deleting', job} : {kind: 'uploading', job};
+  if (job && isLive(job)) return job.kind === 'drive-delete' ? {kind: 'deleting', job} : {kind: 'uploading', job};
   if (job?.kind === 'drive-delete' && job.state === 'failed') return {kind: 'failed', error: job.error ?? 'Lỗi không rõ', retry: 'delete'};
   if (!p) return {kind: 'local'};
   if (p.state === 'uploading') return {kind: 'uploading'};

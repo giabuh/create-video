@@ -1,8 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {Link, useNavigate} from 'react-router';
 import {Clapperboard, Film, Mic, MoreVertical, Upload} from 'lucide-react';
-import type {Job} from '../../../shared/types.ts';
-import {useJobs, useWorkerStatus} from '../../api/events.ts';
+import {isLive, useJobs, useWorkerStatus} from '../../api/events.ts';
 import {useMusic, useStartRender, useStartVoice, useVoices} from '../../api/hooks.ts';
 import {Button, ConfirmDialog, DropdownMenu, IconButton, ProgressBar, Select, fmtPct, toast} from '../../ui/index.ts';
 import {useEditor} from './EditorContext.tsx';
@@ -10,7 +9,6 @@ import {DeleteProjectDialog} from '../Projects/DeleteProjectDialog.tsx';
 import s from './TopBar.module.css';
 
 const NO_MUSIC = 'none'; // track files always have an extension, so no clash
-const ACTIVE = (j: Job) => j.state === 'queued' || j.state === 'running';
 
 /** "Tạo giọng" state shared by the top bar and the stale banner. */
 export function useVoiceAction(): {loading: boolean; label: string; start(): void; disabled: boolean} {
@@ -18,8 +16,8 @@ export function useVoiceAction(): {loading: boolean; label: string; start(): voi
   const jobs = useJobs();
   const worker = useWorkerStatus();
   const mut = useStartVoice(slug);
-  const job = jobs.find((j) => j.kind === 'voice' && j.project === slug && ACTIVE(j));
-  const busyRender = jobs.some((j) => j.kind === 'render' && j.project === slug && ACTIVE(j));
+  const job = jobs.find((j) => j.kind === 'voice' && j.project === slug && isLive(j));
+  const busyRender = jobs.some((j) => j.kind === 'render' && j.project === slug && isLive(j));
   const loading = mut.isPending || !!job;
   const warm = worker.state !== 'ready' && (job?.progress ?? null) === null;
   const count = /\d+\s*\/\s*\d+/.exec(job?.step ?? '')?.[0].replace(/\s/g, '');
@@ -40,17 +38,17 @@ export function TopBar(): React.JSX.Element {
   const startRender = useStartRender(slug);
   const [confirm, setConfirm] = useState(false);
   const [askDelete, setAskDelete] = useState(false);
-  const deleting = !!detail.meta.deleting || jobs.some((j) => j.kind === 'delete-project' && j.project === slug && ACTIVE(j));
+  const deleting = !!detail.meta.deleting || jobs.some((j) => j.kind === 'delete-project' && j.project === slug && isLive(j));
   // only a delete job this Editor saw queued/running counts: a stale finished job must not redirect a re-created slug
   const seenDel = useRef(new Set<string>());
   useEffect(() => {
     for (const j of jobs) {
       if (j.kind !== 'delete-project' || j.project !== slug) continue;
-      if (ACTIVE(j)) seenDel.current.add(j.id);
+      if (isLive(j)) seenDel.current.add(j.id);
       else if (j.state === 'done' && seenDel.current.has(j.id)) void nav('/');
     }
   }, [jobs, slug, nav]);
-  const renderJob = jobs.find((j) => j.kind === 'render' && j.project === slug && ACTIVE(j));
+  const renderJob = jobs.find((j) => j.kind === 'render' && j.project === slug && isLive(j));
   const voiceBusy = voice.loading || deleting;
   const rendering = startRender.isPending || !!renderJob || deleting;
 

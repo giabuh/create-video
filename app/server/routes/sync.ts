@@ -9,7 +9,7 @@ export function syncRoutes({jobs}: Deps): Hono {
   app.get('/sync/status', async c => c.json(await syncStatus()));
   for (const mode of ['push', 'pull'] as const) {
     app.post(`/sync/${mode}`, c => {
-      if (jobs.list().some(j => j.kind === 'sync' && (j.state === 'queued' || j.state === 'running'))) throw new HttpError(409, 'Đang đồng bộ thư viện');
+      if (jobs.hasLive(j => j.kind === 'sync')) throw new HttpError(409, 'Đang đồng bộ thư viện');
       return c.json(jobs.enqueue({
         kind: 'sync', lane: 'io', ref: mode, project: null, cancellable: true,
         label: mode === 'push' ? 'Đẩy thư viện lên Drive' : 'Kéo thư viện từ Drive',

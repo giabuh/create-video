@@ -1,15 +1,22 @@
 """Print how many projects use each library media file, least-used first (prefer those for new reels)."""
-import json
 import re
 import sys
 from pathlib import Path
 
+from reel.config import load_json
+
+
+def iter_storyboards(root: Path):
+    """(path, storyboard dict) for every projects/*/storyboard.json."""
+    for sb in root.glob("projects/*/storyboard.json"):
+        yield sb, load_json(sb)
+
 
 def counts(root: Path) -> dict[str, int]:
-    index = json.loads((root / "library/media-index.json").read_text())
+    index = load_json(root / "library/media-index.json")
     used: dict[str, set[str]] = {n: set() for n in index}
-    for sb in root.glob("projects/*/storyboard.json"):
-        for scene in json.loads(sb.read_text()).get("scenes", []):
+    for sb, data in iter_storyboards(root):
+        for scene in data.get("scenes", []):
             for m in scene.get("media", []):
                 used.setdefault(m["src"], set()).add(sb.parent.name)
     return {n: len(p) for n, p in sorted(used.items(), key=lambda kv: len(kv[1]))}
@@ -19,8 +26,7 @@ def motion_combos(root: Path):
     """Return ({component/variant: project count} least-used first, (last project slug, its combos))."""
     used: dict[str, set[str]] = {}
     per: list[tuple[float, str, set[str]]] = []
-    for sb in root.glob("projects/*/storyboard.json"):
-        data = json.loads(sb.read_text())
+    for sb, data in iter_storyboards(root):
         layers = list(data.get("motion", [])) + [m for s in data.get("scenes", []) for m in s.get("motion", [])]
         combos = {f'{m["component"]}/{(m.get("props") or {}).get("variant", "default")}' for m in layers}
         for c in combos:
@@ -42,8 +48,8 @@ def transition_counts(root: Path) -> dict[str, int]:
     """Scene transition counts across storyboards, least used first; a missing value counts as cut; unused kinds show 0."""
     from reel.validate import TRANSITIONS
     n: dict[str, int] = dict.fromkeys(TRANSITIONS, 0)
-    for sb in root.glob("projects/*/storyboard.json"):
-        for scene in json.loads(sb.read_text()).get("scenes", []):
+    for _, data in iter_storyboards(root):
+        for scene in data.get("scenes", []):
             t = scene.get("transition") or "cut"
             n[t] = n.get(t, 0) + 1
     return dict(sorted(n.items(), key=lambda kv: (kv[1], kv[0])))

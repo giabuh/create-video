@@ -24,7 +24,6 @@ const MOTION = {...SHARED, ...VIDEO_MOTION}; // video keys are "<slug>/<Name>", 
 export const motionNames = (slug?: string): string[] =>
   [...Object.keys(SHARED), ...Object.keys(VIDEO_MOTION).filter((k) => slug !== undefined && k.startsWith(`${slug}/`))];
 export const motionTitle = (name: string): string => MOTION[name]?.title ?? name;
-export const motionDescription = (name: string): string | undefined => MOTION[name]?.description;
 
 function kindOf(p: JS): FieldKind {
   if (p.description === COLOR) return 'color';

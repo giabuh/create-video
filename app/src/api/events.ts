@@ -25,7 +25,9 @@ const setJobs = () => {
 /** Forget a job the server no longer knows (e.g. the API restarted mid-render). */
 export const dropJob = (id: string): void => { if (jobs.delete(id)) { jobs = new Map(jobs); setJobs(); } };
 export const useJobs = (): Job[] => useSyncExternalStore(subscribe, () => jobList);
-export const useJob = (id: string | null): Job | undefined => useJobs().find((j) => j.id === id);
+/** Ids of a project's finished voice/render jobs, joined: a primitive, so subscribers re-render only when one finishes (not on every progress tick). */
+export const useDoneJobIds = (slug: string): string =>
+  useSyncExternalStore(subscribe, () => jobList.filter((j) => j.project === slug && (j.kind === 'voice' || j.kind === 'render') && j.state === 'done').map((j) => j.id).join(','));
 export const useWorkerStatus = (): WorkerStatus => useSyncExternalStore(subscribe, () => worker);
 export const useConnection = (): Connection => useSyncExternalStore(subscribe, () => connection);
 
@@ -33,18 +35,21 @@ export const useConnection = (): Connection => useSyncExternalStore(subscribe, (
 let navigate: (to: string) => void = (to) => location.assign(to);
 export const setNavigate = (fn: (to: string) => void): void => { navigate = fn; };
 
+// Render chunks/temp files and TTS audio never feed the project queries (detail/summary read storyboard, timings, render-props, meta and reel-v*.mp4; prepare rewrites timings after audio).
+const NOISE = /(\.tmp(\.|$)|\.(aac|ts|wav)$|\.words\.json$)/;
+
 /** Maps a changed repo-relative path to the query keys it affects. */
 export function keysForPath(path: string): (readonly unknown[])[] {
   const p = path.split('/');
   switch (p[0]) {
-    case 'projects': return p[1] ? [qk.project(p[1]), qk.projects] : [qk.projects];
+    case 'projects': return !p[1] ? [qk.projects] : NOISE.test(path) ? [] : [qk.project(p[1]), qk.projects];
     case 'library': return [qk.library];
     case 'music': return [qk.music];
     case 'sfx': return [qk.sfx];
     case 'brands': return [qk.brands];
     case 'config.json': return [qk.config, qk.voices];
     case 'voices': return [p[1] === 'tries' ? qk.tries : qk.voices];
-    case 'studio': return p[1] === 'src' ? [qk.motion, qk.templates] : [];
+    case 'studio': return p[1] === 'src' ? [qk.templates] : [];
     default: return [];
   }
 }
@@ -70,6 +75,8 @@ async function offerReloadOnNewBuild(): Promise<void> {
 }
 
 const TERMINAL = new Set(['done', 'failed', 'cancelled']);
+/** Queued or running. */
+export const isLive = (j: Job): boolean => !TERMINAL.has(j.state);
 
 /** Server snapshot wins. Local live jobs it no longer lists are dropped; local finished ones stay. `finished` = jobs that ended while we were away. */
 export function mergeJobs(local: Map<string, Job>, snapshot: Job[]): {next: Map<string, Job>; finished: {job: Job; prev: Job}[]} {

@@ -8,7 +8,7 @@ import path from 'node:path';
 import {PathError, SLUG_RE, repoRoot, safeJoin} from '../paths.ts';
 import {readJson} from '../store.ts';
 import {readMeta} from '../versions.ts';
-import type {Config} from '../../shared/types.ts';
+import type {Config, Storyboard} from '../../shared/types.ts';
 
 export type WorkerLike = Pick<VoiceWorker, 'request' | 'status' | 'start' | 'stop'>;
 export type Deps = {bus: EventBus; jobs: JobQueue; worker: WorkerLike; ports: number[]; chat: ChatService};
@@ -43,8 +43,10 @@ export function plainName(s: string): string {
   if (!s || /[\\/\0]/.test(s) || s.startsWith('.')) throw new PathError(`bad name: ${JSON.stringify(s)}`);
   return s;
 }
-export const ingestBusy = (jobs: JobQueue): boolean => jobs.list().some(j => j.kind === 'ingest' && (j.state === 'queued' || j.state === 'running'));
+export const ingestBusy = (jobs: JobQueue): boolean => jobs.hasLive(j => j.kind === 'ingest');
 export const readConfigV = () => readJson<Config>(path.join(repoRoot(), 'config.json'));
+export const readStoryboard = (slug: string) => readJson<Storyboard>(safeJoin('projects', slug, 'storyboard.json'));
+export const readStoryboardOrNull = (slug: string) => readStoryboard(slug).catch(() => null);
 export const readConfig = async (): Promise<Config> => (await readConfigV()).data;
 /** Mutating routes call this: a project being deleted is read-only. */
 export async function needEditable(slug: string): Promise<void> {

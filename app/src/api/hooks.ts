@@ -6,10 +6,11 @@ import type {
 import {toast} from '../ui/index.ts';
 import {api, type HttpError} from './client.ts';
 import {dropJob} from './events.ts';
+import {toastSaveError} from './saveError.ts';
 
 export const qk = {
   projects: ['projects'], project: (slug: string) => ['project', slug] as const, library: ['library'], music: ['music'], sfx: ['sfx'], voices: ['voices'],
-  tries: ['tries'], drive: (slug: string) => ['drive', slug] as const, config: ['config'], brands: ['brands'], templates: ['templates'], motion: ['motion'], jobs: ['jobs'],
+  tries: ['tries'], drive: (slug: string) => ['drive', slug] as const, config: ['config'], brands: ['brands'], templates: ['templates'], jobs: ['jobs'],
 } as const;
 
 const useGet = <T>(key: readonly unknown[], path: string): UseQueryResult<T> => useQuery({queryKey: key, queryFn: ({signal}) => api<T>(path, {signal})});
@@ -41,6 +42,11 @@ export function useApprove(slug: string): UseMutationResult<{meta: ProjectMeta; 
   });
 }
 
+const useByIdMutation = (key: readonly unknown[], path: (id: string) => string, method: 'DELETE' | 'POST'): UseMutationResult<unknown, HttpError, string> => {
+  const qc = useQueryClient();
+  return useMutation<unknown, HttpError, string>({mutationFn: (id) => api(path(id), {method}), onSuccess: () => qc.invalidateQueries({queryKey: key})});
+};
+
 export const useLibrary = () => useGet<LibraryResponse>(qk.library, '/library');
 
 export function useSaveLibraryEntry(): UseMutationResult<{mtime: number}, HttpError, {name: string; entry: LibraryEntry; baseMtime: number}, {prev: LibraryResponse | undefined}> {
@@ -56,7 +62,7 @@ export function useSaveLibraryEntry(): UseMutationResult<{mtime: number}, HttpEr
     onSuccess: ({mtime}) => qc.setQueryData<LibraryResponse>(qk.library, (d) => d && {...d, mtime}),
     onError: (e, _v, ctx) => {
       if (ctx?.prev) qc.setQueryData(qk.library, ctx.prev);
-      toast(e.status === 409 ? {title: 'File vừa được sửa bên ngoài — đã tải lại', tone: 'info'} : e.status === 423 ? {title: 'Đang nạp media vào thư viện — thử lại sau khi xong', tone: 'info'} : {title: 'Không lưu được thư viện', description: e.message, tone: 'error'});
+      toastSaveError(e, 'Không lưu được thư viện');
       void invalidate(qc, qk.library);
     },
   });
@@ -64,22 +70,13 @@ export function useSaveLibraryEntry(): UseMutationResult<{mtime: number}, HttpEr
 export function useDeleteLibraryEntry(): UseMutationResult<void, HttpError, string> {
   const qc = useQueryClient();
   return useMutation({mutationFn: (name) => api(`/library/${enc(name)}`, {method: 'DELETE'}), onSuccess: () => invalidate(qc, qk.library),
-    onError: (e) => toast(e.status === 423 ? {title: 'Đang nạp media vào thư viện — thử lại sau khi xong', tone: 'info'} : {title: 'Không xoá được', description: e.message, tone: 'error'})});
-}
-export function useStartIngest(): UseMutationResult<Job, HttpError, void> {
-  return useMutation({mutationFn: post(() => '/ingest')});
+    onError: (e) => toastSaveError(e, 'Không xoá được', {conflict: false})});
 }
 
 export const useMusic = () => useGet<MusicFile[]>(qk.music, '/music');
 export const useSfx = () => useGet<MusicFile[]>(qk.sfx, '/sfx');
-export function useDeleteSfx(): UseMutationResult<unknown, HttpError, string> {
-  const qc = useQueryClient();
-  return useMutation({mutationFn: (name) => api(`/sfx/${enc(name)}`, {method: 'DELETE'}), onSuccess: () => qc.invalidateQueries({queryKey: qk.sfx})});
-}
-export function useDeleteMusic(): UseMutationResult<unknown, HttpError, string> {
-  const qc = useQueryClient();
-  return useMutation({mutationFn: (name) => api(`/music/${enc(name)}`, {method: 'DELETE'}), onSuccess: () => qc.invalidateQueries({queryKey: qk.music})});
-}
+export const useDeleteSfx = () => useByIdMutation(qk.sfx, (name) => `/sfx/${enc(name)}`, 'DELETE');
+export const useDeleteMusic = () => useByIdMutation(qk.music, (name) => `/music/${enc(name)}`, 'DELETE');
 export const useVoices = () => useGet<VoiceInfo[]>(qk.voices, '/voices');
 export const useTries = () => useGet<Tries | null>(qk.tries, '/voices/tries');
 export function useStartTry(): UseMutationResult<Job, HttpError, {voice: string; text: string; variants: Json[]}> {
@@ -103,21 +100,14 @@ export function useSaveBrand(): UseMutationResult<{mtime: number}, HttpError, {i
     onSuccess: ({mtime}, {id, brand}) => qc.setQueryData<BrandSummary[]>(qk.brands, (l) => l?.map((b) => (b.id === id ? {...b, brand, mtime} : b))),
   });
 }
-export function useDeleteBrand(): UseMutationResult<unknown, HttpError, string> {
-  const qc = useQueryClient();
-  return useMutation({mutationFn: (id) => api(`/brands/${enc(id)}`, {method: 'DELETE'}), onSuccess: () => qc.invalidateQueries({queryKey: qk.brands})});
-}
-export function useLogoCutout(): UseMutationResult<unknown, HttpError, string> {
-  const qc = useQueryClient();
-  return useMutation({mutationFn: (id) => api(`/brands/${enc(id)}/logo-cutout`, {method: 'POST'}), onSuccess: () => qc.invalidateQueries({queryKey: qk.brands})});
-}
+export const useDeleteBrand = () => useByIdMutation(qk.brands, (id) => `/brands/${enc(id)}`, 'DELETE');
+export const useLogoCutout = () => useByIdMutation(qk.brands, (id) => `/brands/${enc(id)}/logo-cutout`, 'POST');
 export function useCreateBrand(): UseMutationResult<BrandSummary, HttpError, string> {
   const qc = useQueryClient();
   return useMutation({mutationFn: (name) => api('/brands', {method: 'POST', body: {name}}), onSuccess: () => invalidate(qc, qk.brands)});
 }
 
 export const useTemplates = () => useGet<string[]>(qk.templates, '/templates');
-export const useMotionNames = () => useGet<string[]>(qk.motion, '/motion');
 
 export function useCancelJob(): UseMutationResult<Job, HttpError, string> {
   return useMutation({

@@ -5,7 +5,7 @@ import {repoRoot, safeJoin, slugify, SLUG_RE} from '../paths.ts';
 import {readJson, writeJsonAtomic} from '../store.ts';
 import type {BrandFile, BrandSummary} from '../../shared/types.ts';
 import {DEFAULT_ACCENT2, DEFAULT_SURFACE} from '../../shared/brandDefaults.ts';
-import {bodyOf, HttpError, isObj, mtimeField, readConfigV, slugParam} from './util.ts';
+import {bodyOf, HttpError, isObj, mtimeField, readConfigV, readStoryboardOrNull, slugParam} from './util.ts';
 import type {Deps} from './util.ts';
 
 const configFile = () => path.join(repoRoot(), 'config.json');
@@ -64,7 +64,7 @@ export function settingsRoutes(_deps: Deps): Hono {
     const id = slugParam(c.req.param('id'), 'brand id');
     if ((await readConfigV()).data.defaults.brand === id) throw new HttpError(409, 'Không xoá được brand mặc định');
     for (const d of await readdir(safeJoin('projects'), {withFileTypes: true}).catch(() => [])) {
-      const sb = await readJson<{brand?: string}>(safeJoin('projects', d.name, 'storyboard.json')).catch(() => null);
+      const sb = await readStoryboardOrNull(d.name);
       if (sb?.data.brand === id) throw new HttpError(409, `Dự án "${d.name}" đang dùng brand này`);
     }
     await readFile(brandFile(id)).catch(() => { throw new HttpError(404, 'brand not found'); });

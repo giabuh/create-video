@@ -1,13 +1,12 @@
 // style: split screen. Two stacked panels (media[0] top, media[1] bottom) with an accent divider; captions sit on the divider.
 // One media: it fills the top panel and the bottom panel is a brand-colored text panel.
 import React from 'react';
-import {AbsoluteFill, Img, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {Audio} from '@remotion/media';
 import {captionUnits} from '../../components/Captions';
-import {CtaCard} from '../../components/CtaCard';
 import {MediaShot} from '../../components/MediaShot';
 import {MotionLayer} from '../../components/MotionLayer';
-import {MusicTrack} from '../../components/MusicTrack';
+import {ReelTail} from '../../components/ReelTail';
 import {SceneTransition} from '../../components/SceneTransition';
 import {fitFontSize, useFontsLoaded} from '../../fit';
 import {fontFamily} from '../../fonts';
@@ -59,7 +58,6 @@ export const SplitCompare: React.FC<RenderProps> = (p) => {
   const {colors} = p.brand;
   const ts = p.transitionSeconds ?? 0.3;
   const tf = Math.round(ts * fps);
-  const ctaStart = p.scenes.reduce((s, sc) => s + sc.duration, 0);
   const topH = SPLIT - BAR / 2;
   return (
     <AbsoluteFill style={{backgroundColor: colors.background}}>
@@ -91,14 +89,9 @@ export const SplitCompare: React.FC<RenderProps> = (p) => {
                     <MotionLayer item={m} brand={p.brand} />
                   </Sequence>
                 ))}
-                {!two && sc.overlay && (
-                  <AbsoluteFill style={{top: SPLIT + BAR / 2 + 20, height: 130, alignItems: 'center', justifyContent: 'center'}}>
-                    <div style={{fontFamily, fontWeight: 800, fontSize: 72, color: colors.background, background: colors.accent, padding: '10px 36px', borderRadius: 16, maxWidth: '88%', textAlign: 'center'}}>{sc.overlay.text}</div>
-                  </AbsoluteFill>
-                )}
-                {two && sc.overlay && (
-                  <AbsoluteFill style={{top: 80, height: 100, alignItems: 'center', justifyContent: 'center'}}>
-                    <div style={{fontFamily, fontWeight: 800, fontSize: 56, color: colors.background, background: colors.accent, padding: '8px 30px', borderRadius: 14, maxWidth: '60%', textAlign: 'center'}}>{sc.overlay.text}</div>
+                {sc.overlay && (
+                  <AbsoluteFill style={{top: two ? 80 : SPLIT + BAR / 2 + 20, height: two ? 100 : 130, alignItems: 'center', justifyContent: 'center'}}>
+                    <div style={{fontFamily, fontWeight: 800, fontSize: two ? 56 : 72, color: colors.background, background: colors.accent, padding: two ? '8px 30px' : '10px 36px', borderRadius: two ? 14 : 16, maxWidth: two ? '60%' : '88%', textAlign: 'center'}}>{sc.overlay.text}</div>
                   </AbsoluteFill>
                 )}
                 <SplitCaption sc={sc} brand={p.brand} panel={!two} size={two ? p.captions.size : Math.round(p.captions.size * 1.3)}
@@ -109,25 +102,7 @@ export const SplitCompare: React.FC<RenderProps> = (p) => {
           </Sequence>
         );
       })}
-      {p.brand.logo && (
-        <AbsoluteFill><Img src={staticFile(p.brand.logo)} style={{position: 'absolute', top: 80, left: 60, width: 160}} /></AbsoluteFill>
-      )}
-      {p.cta && (
-        <Sequence name="cta" from={Math.round(ctaStart * fps)} durationInFrames={f(p.cta.duration)}>
-          <CtaCard cta={p.cta} brand={p.brand} bg={p.scenes[p.scenes.length - 1]?.media[0]} />
-        </Sequence>
-      )}
-      {(p.overlays ?? []).map((m, i) => (
-        <Sequence key={`overlay-${i}`} name={`track:${m.component}`} from={Math.round(m.start * fps)} durationInFrames={f(m.duration)}>
-          <MotionLayer item={m} brand={p.brand} />
-        </Sequence>
-      ))}
-      {(p.sfx ?? []).map((x, i) => (
-        <Sequence key={`sfx-${i}`} from={Math.round(x.start * fps)} name={`sfx:${x.src}`}>
-          <Audio src={staticFile(x.src)} volume={x.volume} />
-        </Sequence>
-      ))}
-      {p.music && <MusicTrack music={p.music} scenes={p.scenes} total={p.totalSeconds} />}
+      <ReelTail p={p} />
     </AbsoluteFill>
   );
 };

@@ -11,18 +11,18 @@ const ls = (dir: string) => readdir(dir).catch((e: NodeJS.ErrnoException) => { i
 export async function listVersions(slug: string, meta: ProjectMeta): Promise<VersionInfo[]> {
   const files = await ls(dirOf(slug));
   const set = new Set(files);
+  const mp4s = files.flatMap(f => { const m = /^reel-v(\d+)\.mp4$/.exec(f); return m ? [{f, m}] : []; });
+  const stats = await Promise.all(mp4s.map(({f}) => stat(safeJoin('projects', slug, f)).catch(() => null)));
   const out: VersionInfo[] = [];
-  for (const f of files) {
-    const m = /^reel-v(\d+)\.mp4$/.exec(f);
-    if (!m) continue;
+  mp4s.forEach(({f, m}, i) => {
     const name = `reel-v${m[1]}`;
-    const st = await stat(safeJoin('projects', slug, f)).catch(() => null);
-    if (!st) continue;
+    const st = stats[i];
+    if (!st) return;
     out.push({
       name, n: Number(m[1]), file: `projects/${slug}/${f}`, bytes: st.size, mtime: Math.floor(st.mtimeMs),
       kind: meta.renders[name]?.kind ?? null, hasSnapshot: set.has(`${name}.storyboard.json`), approved: meta.approved === name, published: meta.published?.[name] ?? null,
     });
-  }
+  });
   return out.sort((a, b) => b.n - a.n);
 }
 

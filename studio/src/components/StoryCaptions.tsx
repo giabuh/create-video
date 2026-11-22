@@ -6,6 +6,7 @@ import type {CaptionChunk, CaptionStyle, MediaItem, MotionItem} from '../types';
 import {captionUnits} from './Captions';
 import {cardSlot, collageSpan, findPunch, mediaCardRect} from './storyLayout';
 
+const NO_PUNCH: string[] = []; // stable default so the memo on `punch` holds
 const LH = 1.15;
 const FADE = 0.18;
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
@@ -24,7 +25,7 @@ const lineCount = (words: string[], size: number, avail: number, family: string)
 export const StoryCaptions: React.FC<{
   chunks: CaptionChunk[]; highlight: string[]; punch?: string[]; style: CaptionStyle; dark: boolean;
   footage?: boolean; motion?: MotionItem[]; media?: MediaItem[]; collage?: boolean; // media = the scene's framed (card) items
-}> = ({chunks, highlight, punch = [], style, dark, footage = false, motion = [], media = [], collage = false}) => {
+}> = ({chunks, highlight, punch = NO_PUNCH, style, dark, footage = false, motion = [], media = [], collage = false}) => {
   const frame = useCurrentFrame();
   const {fps, width, height} = useVideoConfig();
   const t = frame / fps;
@@ -41,15 +42,19 @@ export const StoryCaptions: React.FC<{
   const slot = over ?? free;
   const avail = width * 0.77, slotH = slot ? (slot.bottom - slot.top) * height : 0, maxH = Math.min(height * 0.48, slotH); // 77% = safe area x 8-85%
   const c = chunks.find((x) => t >= x.start && t < x.end);
-  const toks = c ? c.text.split(' ').filter(Boolean) : [];
-  const pn = c ? findPunch(c.text, punch) : null;
-  const giantText = pn ? toks.slice(pn.from, pn.from + pn.len).join(' ') : '';
-  const leadIdx = toks.map((_, i) => i).filter((i) => !pn || i < pn.from || i >= pn.from + pn.len);
-  const leadText = leadIdx.map((i) => toks[i]).join(' ');
+  // text splits depend on the active chunk only, not on the frame
+  const {toks, pn, giantText, leadIdx, units} = useMemo(() => {
+    const toks = c ? c.text.split(' ').filter(Boolean) : [];
+    const pn = c ? findPunch(c.text, punch) : null;
+    const giantText = pn ? toks.slice(pn.from, pn.from + pn.len).join(' ') : '';
+    const leadIdx = toks.map((_, i) => i).filter((i) => !pn || i < pn.from || i >= pn.from + pn.len);
+    const leadText = leadIdx.map((i) => toks[i]).join(' ');
+    return {toks, pn, giantText, leadIdx, units: captionUnits(leadText, highlight)};
+  }, [c, punch, highlight]);
   // lead: largest size fitting 3 lines in the free slot (2 lines, at most 40% of it, above a giant line), capped 96 px on a text card, 72 px over footage
   // giant: one line, up to 420 px, in what the lead leaves
   const fit = useMemo(() => {
-    const words = captionUnits(leadText, highlight).map((u) => u.text);
+    const words = units.map((u) => u.text);
     const cap = footage ? 72 : 96, lines = pn ? 2 : 3, hMax = pn ? maxH * 0.4 : maxH;
     let s = loaded ? cap : Math.round(style.size * (footage ? 1.1 : 1.5));
     while (loaded && words.length && s > 24 && (lineCount(words, s, avail, family) > lines || lineCount(words, s, avail, family) * s * LH > hMax)) s -= 2;
@@ -57,9 +62,8 @@ export const StoryCaptions: React.FC<{
     let g = 420;
     while (loaded && pn && g > 24 && (widthOf(giantText, g, 800, family) > avail || g * LH + leadH > maxH)) g -= 4;
     return {size: s, giant: pn ? g : 0};
-  }, [leadText, giantText, highlight, footage, style.size, loaded, avail, maxH, family, !!pn]);
+  }, [units, giantText, footage, style.size, loaded, avail, maxH, family, pn]);
   if (!c || !slot || (pn ? fit.giant : fit.size) < 40) return null; // no free slot, or text too small to read
-  const units = captionUnits(leadText, highlight);
   const nTok = toks.length;
   const timeOf = (i: number) => c.times?.[i] ?? c.start + ((c.end - c.start) * 0.8 * i) / Math.max(1, nTok);
   let tok = 0;

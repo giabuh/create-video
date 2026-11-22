@@ -28,7 +28,6 @@ export const longText = (title: string) => z.string().min(1).meta({title, ui: 't
 /** List of strings, one per line in the app. */
 export const lines = (title: string) => z.array(z.string()).min(1).meta({title, ui: 'lines'});
 export const num = (title: string, o: Num = {}) => bounded(o).meta(numMeta(title, o));
-export const optNum = (title: string, o: Num = {}) => bounded(o).optional().meta(numMeta(title, o));
 /** Number with a default (shown pre-filled in the app). */
 export const numDefault = (title: string, value: number, o: Num = {}) => bounded(o).default(value).meta(numMeta(title, o));
 export const color = (title: string) => zColor().optional().meta({title});

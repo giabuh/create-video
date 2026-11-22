@@ -3,7 +3,7 @@ import {Music as MusicIcon, Trash2} from 'lucide-react';
 import {useDeleteMusic, useMusic} from '../../api/hooks.ts';
 import {useUploads} from '../../api/upload.ts';
 import {AudioPlayer, ConfirmDialog, DropZone, IconButton, toast, EmptyState, ErrorState, Skeleton, fmtBytes} from '../../ui/index.ts';
-import {MUSIC_EXTS} from './exts.ts';
+import {MUSIC_EXTS} from '../../../shared/exts.ts';
 import {UploadRows} from './Uploads.tsx';
 import s from './Library.module.css';
 

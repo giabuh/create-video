@@ -1,6 +1,6 @@
 // One motion layer: places any registered component (full frame, preset band or free box), animates it in/out,
 // moves it along keyframes, and recolors it — the same for every component, so components only draw content.
-import React from 'react';
+import React, {useMemo} from 'react';
 import {AbsoluteFill, Easing, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
 import {MOTION} from '../motion/registry';
 import {VIDEO_MOTION} from '../videos';
@@ -92,10 +92,15 @@ export const withDefaults = (item: MotionItem): MotionItem => {
 export const MotionLayer: React.FC<{item: MotionItem; brand: Brand}> = ({item: raw, brand}) => {
   const frame = useCurrentFrame();
   const {fps, width, height} = useVideoConfig();
-  const it = withDefaults(raw);
+  const it = useMemo(() => withDefaults(raw), [raw]);
   const def = MOTION[it.component] ?? VIDEO_MOTION[it.component];
-  if (!def) throw new Error(`Unknown motion component "${it.component}" — add it to studio/src/motion/registry.ts or studio/src/videos/<slug>/index.ts`);
-  const props = parseMotionProps(it.component, def.schema, it.props);
+  // parsed once per props, not per frame; sorted keyframes: filter+stable sort in keyframeAt then keeps the order, same result
+  const props = useMemo(() => {
+    if (!def) throw new Error(`Unknown motion component "${it.component}" — add it to studio/src/motion/registry.ts or studio/src/videos/<slug>/index.ts`);
+    return parseMotionProps(it.component, def.schema, it.props);
+  }, [def, it.component, it.props]);
+  const keys = useMemo(() => [...it.keyframes].sort((x, y) => x.t - y.t), [it.keyframes]);
+  const layerBrand: FullBrand = useMemo(() => ({...brand, colors: {...BRAND_COLOR_DEFAULTS, ...brand.colors, ...(it.colors ?? {})}}), [brand, it.colors]);
   const C = def.component;
 
   const len = Math.max(1, Math.round(it.duration * fps));
@@ -105,8 +110,7 @@ export const MotionLayer: React.FC<{item: MotionItem; brand: Brand}> = ({item: r
   // the scrim eases in with (never ahead of) the content: an empty dark panel must not flash before the text arrives
   const scrimIn = interpolate(frame, [0, Math.max(1, (it.enter.type === 'none' ? 0 : it.enter.duration) * fps, SCRIM_IN * fps)], [0, 1],
     {...clamp, easing: Easing.inOut(Easing.cubic)});
-  const kf = keyframeAt(it.keyframes, frame / fps);
-  const layerBrand: FullBrand = {...brand, colors: {...BRAND_COLOR_DEFAULTS, ...brand.colors, ...(it.colors ?? {})}};
+  const kf = keyframeAt(keys, frame / fps);
 
   const transform = [
     kf.x || kf.y ? `translate(${(kf.x / 100) * width}px, ${(kf.y / 100) * height}px)` : '',

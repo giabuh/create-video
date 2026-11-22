@@ -5,7 +5,8 @@ import type {SaveState} from '../../api/autosave.ts';
 import {api} from '../../api/client.ts';
 import {useAutosave} from '../../api/autosave.ts';
 import {usePreview} from '../../api/hooks.ts';
-import {useJobs} from '../../api/events.ts';
+import {useDoneJobIds} from '../../api/events.ts';
+import {toastConflict} from '../../api/saveError.ts';
 import {toast} from '../../ui/index.ts';
 import {sceneStart, shouldAdopt} from './editorState.ts';
 
@@ -50,7 +51,7 @@ export function EditorProvider({slug, detail, children}: {slug: string; detail: 
     onSaved: (m) => { setBaseMtime(m); runPreview(); },
     onConflict: (cur) => {
       setStoryboard(cur.data); setBaseMtime(cur.mtime); runPreview(); // value and baseMtime together, see useAutosave
-      toast({title: 'File vừa được sửa bên ngoài — đã tải lại', tone: 'info'});
+      toastConflict();
     },
   });
 
@@ -64,13 +65,13 @@ export function EditorProvider({slug, detail, children}: {slug: string; detail: 
   useEffect(() => { if (!detail.renderProps && storyboard.scenes.length) runPreview(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // voice / render for this project finished: timings and stale list changed
-  const jobs = useJobs();
-  const seen = useRef<Map<string, string> | null>(null);
+  const done = useDoneJobIds(slug);
+  const seenDone = useRef<string | null>(null);
   useEffect(() => {
-    const prev = seen.current;
-    seen.current = new Map(jobs.map((j) => [j.id, j.state]));
-    if (prev && jobs.some((j) => j.project === slug && (j.kind === 'voice' || j.kind === 'render') && j.state === 'done' && prev.get(j.id) !== 'done')) runPreview();
-  }, [jobs, slug, runPreview]);
+    const prev = seenDone.current?.split(',');
+    seenDone.current = done;
+    if (prev && done.split(',').some((id) => id && !prev.includes(id))) runPreview();
+  }, [done, runPreview]);
 
   const seekToScene = useCallback((id: string) => {
     const t = sceneStart(preview.renderProps, id);

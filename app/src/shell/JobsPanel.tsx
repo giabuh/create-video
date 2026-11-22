@@ -3,11 +3,10 @@ import {Link} from 'react-router';
 import {Check, ChevronDown, Film, TriangleAlert, X} from 'lucide-react';
 import type {Job} from '../../shared/types.ts';
 import {useCancelJob} from '../api/hooks.ts';
-import {useJobs} from '../api/events.ts';
+import {isLive, useJobs} from '../api/events.ts';
 import {IconButton, ProgressBar, fmtClock, fmtPct} from '../ui/index.ts';
 import s from './JobsPanel.module.css';
 
-const live = (j: Job) => j.state === 'queued' || j.state === 'running';
 // where clicking a job takes you: the screen that shows its result
 function jobHref(j: Job): string | null {
   if (j.kind === 'try' || j.kind === 'voice-add') return '/voices';
@@ -17,7 +16,7 @@ function jobHref(j: Job): string | null {
   return j.kind === 'render' || j.kind === 'publish' || j.kind === 'drive-delete' ? `${p}/renders` : p;
 }
 
-export const useActiveJobCount = (): number => useJobs().filter(live).length;
+export const useActiveJobCount = (): number => useJobs().filter(isLive).length;
 
 function eta(sec: number | null): string | null {
   if (sec == null) return null;
@@ -74,8 +73,8 @@ function Finished({job}: {job: Job}): React.JSX.Element {
 export function JobsPanel(): React.JSX.Element {
   const jobs = useJobs();
   const [open, setOpen] = useState(false);
-  const active = jobs.filter(live);
-  const recent = jobs.filter((j) => !live(j)).slice(0, 8);
+  const active = jobs.filter(isLive);
+  const recent = jobs.filter((j) => !isLive(j)).slice(0, 8);
   return (
     <section className={s.panel} aria-label="Tác vụ">
       <h2 className={s.head}>Tác vụ đang chạy</h2>
