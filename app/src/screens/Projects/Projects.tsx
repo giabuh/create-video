@@ -4,7 +4,7 @@ import {Film, FolderPlus, MoreVertical, Plus} from 'lucide-react';
 import type {ProjectStatus, ProjectSummary} from '../../../shared/types.ts';
 import {useJobs} from '../../api/events.ts';
 import {useBrands, useCancelDelete, useCreateProject, useDeleteProject, useProjects, useTemplates, useVoices} from '../../api/hooks.ts';
-import {Button, Chip, Dialog, DropdownMenu, EmptyState, ErrorState, Field, IconButton, Input, NumberField, PageHeader, ProgressBar, Segmented, Select, Skeleton, VideoThumb, fmtRelTime, fmtSec, toast} from '../../ui/index.ts';
+import {Button, Chip, Dialog, DropdownMenu, EmptyState, ErrorState, Field, IconButton, Input, PageHeader, ProgressBar, Segmented, Select, Skeleton, VideoThumb, fmtRelTime, fmtSec, toast} from '../../ui/index.ts';
 import type {Tone} from '../../ui/index.ts';
 import {DeleteProjectDialog} from './DeleteProjectDialog.tsx';
 import s from './Projects.module.css';
@@ -84,24 +84,23 @@ function NewDialog({open, onOpenChange}: {open: boolean; onOpenChange(o: boolean
   const [tpl, setTpl] = useState<string | null>(null);
   const [brand, setBrand] = useState<string | null>(null);
   const [voice, setVoice] = useState<string | null>(null);
-  const [secs, setSecs] = useState<number | null>(30);
   const [format, setFormat] = useState<'doc' | 'ngang'>('doc');
   const [err, setErr] = useState<string>();
   // fall back to the server defaults (first entry marked default) until the user picks
   const tplV = tpl ?? templates.data?.[0] ?? null;
   const brandV = brand ?? brands.data?.find((b) => b.isDefault)?.id ?? brands.data?.[0]?.id ?? null;
   const voiceV = voice ?? voices.data?.find((v) => v.isDefault)?.name ?? voices.data?.[0]?.name ?? null;
-  const valid = name.trim() !== '' && (secs ?? 0) > 0;
+  const valid = name.trim() !== '';
   const submit = () => {
     if (!valid || create.isPending) return;
     setErr(undefined);
-    create.mutate({name: name.trim(), template: tplV ?? undefined, brand: brandV ?? undefined, voice: voiceV ?? undefined, targetSeconds: secs ?? 30, ...(tplV === 'explainer' ? {format} : {})}, {
+    create.mutate({name: name.trim(), template: tplV ?? undefined, brand: brandV ?? undefined, voice: voiceV ?? undefined, ...(tplV === 'explainer' ? {format} : {})}, {
       onSuccess: (p) => nav(`/p/${encodeURIComponent(p.slug)}`),
       onError: (e) => setErr(e.status === 409 ? 'Đã có dự án tên này' : e.message),
     });
   };
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} title="Dự án mới" description="Chọn mẫu, brand, giọng và thời lượng — rồi thêm cảnh trong trình sửa."
+    <Dialog open={open} onOpenChange={onOpenChange} title="Dự án mới" description="Chọn mẫu, brand và giọng — rồi bàn kịch bản với Claude trong trình sửa."
       footer={<><Button variant="ghost" onClick={() => onOpenChange(false)}>Huỷ</Button><Button variant="primary" loading={create.isPending} loadingText="Đang tạo…" disabled={!valid} onClick={submit}>Tạo dự án</Button></>}>
       <form className={s.form} onSubmit={(e) => { e.preventDefault(); submit(); }}>
         <Field label="Tên dự án" error={err} hint={name.trim() ? `Thư mục: projects/${slugify(name)}` : undefined}>
@@ -111,7 +110,6 @@ function NewDialog({open, onOpenChange}: {open: boolean; onOpenChange(o: boolean
         {tplV === 'explainer' && <Field label="Khổ"><Segmented aria-label="Khổ video" value={format} onChange={(v) => setFormat(v === 'ngang' ? 'ngang' : 'doc')} options={[{value: 'doc' as const, label: 'Dọc 9:16'}, {value: 'ngang' as const, label: 'Ngang 16:9'}]} /></Field>}
         <Field label="Brand"><Select value={brandV} onChange={setBrand} options={(brands.data ?? []).map((b) => ({value: b.id, label: b.brand.name || b.id}))} placeholder="Chọn brand" /></Field>
         <Field label="Giọng"><Select value={voiceV} onChange={setVoice} options={(voices.data ?? []).map((v) => ({value: v.name, label: cap(v.name)}))} placeholder="Chọn giọng" /></Field>
-        <Field label="Thời lượng mục tiêu (giây)"><NumberField value={secs} onChange={setSecs} min={5} max={120} /></Field>
         <button type="submit" hidden />
       </form>
     </Dialog>
@@ -135,7 +133,7 @@ export function ProjectsScreen(): React.JSX.Element {
   let body: React.JSX.Element;
   if (error) body = <ErrorState error={error} onRetry={() => void refetch()} />;
   else if (isPending) body = <div className={s.grid}>{[0, 1, 2, 3].map((i) => <Skeleton key={i} height={420} radius={14} />)}</div>;
-  else if (data.length === 0) body = <EmptyState icon={<FolderPlus size={28} />} title="Chưa có dự án nào" description="Tạo dự án đầu tiên: chọn mẫu, brand, giọng và thời lượng." action={newBtn} />;
+  else if (data.length === 0) body = <EmptyState icon={<FolderPlus size={28} />} title="Chưa có dự án nào" description="Tạo dự án đầu tiên: chọn mẫu, brand và giọng." action={newBtn} />;
   else body = (
     <>
       <div className={s.tools}>
@@ -146,7 +144,7 @@ export function ProjectsScreen(): React.JSX.Element {
       <div className={s.grid}>
         {shown.map((p) => <Card key={p.slug} p={p} />)}
         <button type="button" className={s.new} onClick={openNew}>
-          <Plus size={28} aria-hidden /><b>Tạo dự án mới</b><span>Chọn mẫu, brand, giọng và thời lượng — rồi thêm cảnh trong trình sửa</span>
+          <Plus size={28} aria-hidden /><b>Tạo dự án mới</b><span>Chọn mẫu, brand và giọng — rồi bàn kịch bản với Claude</span>
         </button>
       </div>
       {shown.length === 0 && <p className={s.sub}>Không có dự án khớp bộ lọc.</p>}

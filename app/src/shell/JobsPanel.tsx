@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react';
+import {Link} from 'react-router';
 import {Check, ChevronDown, Film, TriangleAlert, X} from 'lucide-react';
 import type {Job} from '../../shared/types.ts';
 import {useCancelJob} from '../api/hooks.ts';
@@ -7,6 +8,15 @@ import {IconButton, ProgressBar, fmtClock, fmtPct} from '../ui/index.ts';
 import s from './JobsPanel.module.css';
 
 const live = (j: Job) => j.state === 'queued' || j.state === 'running';
+// where clicking a job takes you: the screen that shows its result
+function jobHref(j: Job): string | null {
+  if (j.kind === 'try' || j.kind === 'voice-add') return '/voices';
+  if (j.kind === 'ingest' || j.kind === 'sync') return '/library';
+  if (!j.project || j.kind === 'delete-project') return null;
+  const p = `/p/${encodeURIComponent(j.project)}`;
+  return j.kind === 'render' || j.kind === 'publish' || j.kind === 'drive-delete' ? `${p}/renders` : p;
+}
+
 export const useActiveJobCount = (): number => useJobs().filter(live).length;
 
 function eta(sec: number | null): string | null {
@@ -29,13 +39,14 @@ function Running({job}: {job: Job}): React.JSX.Element {
   const queued = job.state === 'queued';
   const render = job.kind === 'render';
   const now = useNow(!queued);
+  const href = jobHref(job);
   const elapsed = !queued && job.startedAt ? fmtClock(Math.max(0, (now - job.startedAt) / 1000)) : null;
   const meta = [render ? null : job.project, queued ? (render ? 'Đang chờ render' : 'Đang chờ') : job.step, elapsed, queued ? null : eta(job.etaSeconds)].filter(Boolean).join(' · ');
   return (
     <li className={s.job}>
       <div className={s.row}>
         {render && <Film className={s.renderIcon} size={16} aria-hidden />}
-        <span className={s.title}>{job.label}</span>
+        {href ? <Link to={href} className={`${s.title} ${s.link}`} title={`Mở ${job.label}`}>{job.label}</Link> : <span className={s.title}>{job.label}</span>}
         {job.progress != null && !queued && <span className={s.pct}>{fmtPct(job.progress)}</span>}
         {job.cancellable && <IconButton label={`Huỷ ${job.label}`} size="sm" icon={<X size={16} />} disabled={cancel.isPending} onClick={() => cancel.mutate(job.id)} />}
       </div>

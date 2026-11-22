@@ -91,10 +91,15 @@ test('watch screen: player, scene strip, docked chat and the Sửa chỗ này ta
   const middle = scenes.nth(2);
   await middle.click();
   await expect(middle).toHaveAttribute('aria-current', 'true');
+  await expect.poll(async () => { // the strip follows the playhead: it sits mid-strip
+    const head = (await middle.getByTestId('timeline-playhead').boundingBox())!, track = (await strip.boundingBox())!;
+    return Math.abs(head.x + head.width / 2 - track.x - track.width / 2);
+  }).toBeLessThan(3);
+  await seek.press('ArrowRight'); // and keeps it there frame by frame, no jump
   await expect.poll(async () => {
-    const clip = (await middle.boundingBox())!, track = (await strip.boundingBox())!;
-    return Math.abs(clip.x + clip.width / 2 - track.x - track.width / 2);
-  }).toBeLessThan(2);
+    const head = (await middle.getByTestId('timeline-playhead').boundingBox())!, track = (await strip.boundingBox())!;
+    return Math.abs(head.x + head.width / 2 - track.x - track.width / 2);
+  }).toBeLessThan(3);
   const scroll = () => strip.evaluate((el) => ({left: el.scrollLeft, max: el.scrollWidth - el.clientWidth}));
   await seek.press('Home');
   await expect.poll(async () => (await scroll()).left).toBe(0);
@@ -103,6 +108,20 @@ test('watch screen: player, scene strip, docked chat and the Sửa chỗ này ta
     const {left, max} = await scroll();
     return Math.abs(max - left);
   }).toBeLessThan(2);
+  await seek.press('Home');
+  const play = player.getByRole('button', {name: 'Phát xem trước', exact: true});
+  const pause = player.getByRole('button', {name: 'Tạm dừng', exact: true});
+  await play.click();
+  await expect(pause).toBeVisible();
+  const range = (await seek.boundingBox())!;
+  await page.mouse.move(range.x + 8, range.y + range.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(range.x + range.width * .6, range.y + range.height / 2, {steps: 8});
+  await expect(play).toBeVisible();
+  await expect(scenes.first()).not.toHaveAttribute('aria-current', 'true');
+  await page.mouse.up();
+  await expect(pause).toBeVisible();
+  await pause.click();
   await player.screenshot({path: 'test-results/watch-player.png'});
 });
 

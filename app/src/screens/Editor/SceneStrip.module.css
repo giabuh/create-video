@@ -4,6 +4,7 @@
 }
 .chip {
   all: unset; position: relative; box-sizing: border-box; display: flex; flex-direction: column; gap: 3px;
+  container-type: inline-size;
   flex: 1 0 clamp(112px, calc(22px * var(--duration, 4)), 216px); max-width: 240px;
   border-radius: 5px; color: var(--text-2); cursor: pointer;
 }
@@ -23,10 +24,11 @@
 .info b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
 .dur { flex: none; color: var(--dim); font-variant-numeric: tabular-nums; }
 .playhead {
-  position: absolute; top: 0; bottom: calc(1.5 * var(--fs-xs) + 5px);
-  left: calc(4px + (100% - 8px) * var(--position)); width: 2px;
+  display: none; position: absolute; top: 0; bottom: calc(1.5 * var(--fs-xs) + 5px);
+  left: 4px; width: 2px; transform: translateX(calc((100cqw - 8px) * var(--position, 0)));
   background: var(--timeline-mark); box-shadow: 0 0 0 1px var(--dock); pointer-events: none;
 }
+.chip[aria-current='true'] .playhead { display: block; }
 .playhead::before {
   content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
   width: 8px; height: 10px; background: inherit;

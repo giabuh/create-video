@@ -34,7 +34,7 @@
 .seek { min-width: 24px; flex: 1; height: 28px; appearance: none; background: transparent; cursor: pointer; }
 .seek::-webkit-slider-runnable-track {
   height: 4px; border-radius: var(--r-pill);
-  background: linear-gradient(to right, var(--timeline-mark) var(--played), var(--line-strong) var(--played));
+  background: linear-gradient(to right, var(--timeline-mark) var(--played, 0%), var(--line-strong) var(--played, 0%));
 }
 .seek::-webkit-slider-thumb {
   appearance: none; width: 14px; height: 14px; margin-top: -5px;
