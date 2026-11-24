@@ -19,3 +19,8 @@ Mục đích: mỗi concept đã dùng (video, component, phản hồi của use
 | reference | Bảng đánh giá Google Maps đếm tăng + thẻ nổi tổng số | (video tham chiếu) | style bar |
 | reference | Lưới trích dẫn học viên, từng trích dẫn phóng to, gạch chân cụm chính | (video tham chiếu) | style bar |
 | reference | Khung chat "Tư vấn viên đang đồng hành" chọn lộ trình, rồi lưới quyền lợi | (video tham chiếu) | style bar |
+| 2026-11-24-tin-hoc-van-phong-giay | Thẻ giấy góc "Việc x/3" có chấm tiến độ + thẻ ghi chú trên footage (phong cách giấy) | 2026-11-24-tin-hoc-van-phong-giay/PaperNote | v1 "tạm ổn" |
+| 2026-11-24-tin-hoc-van-phong-giay | Trang giấy bảng tính: con trỏ "Bạn" gõ công thức, vòng tròn vẽ tay, tham chiếu tô màu trùng ô, thẻ tách phép tính, sửa số tự tính lại | 2026-11-24-tin-hoc-van-phong-giay/SheetMock + PaperPage | v1 "tạm ổn" |
+| 2026-11-24-tin-hoc-van-phong-giay | Cùng bảng tính thu nhỏ sang cạnh footage, ô âm tự tô đỏ (giữ liên tục vật thể) | 2026-11-24-tin-hoc-van-phong-giay/SheetMock | v1 "tạm ổn" |
+| 2026-11-24-tin-hoc-van-phong-giay | Trang văn bản: tiêu đề lộn xộn thành đều nhau, mục lục tự dựng | 2026-11-24-tin-hoc-van-phong-giay/DocMock (toc) | v1 "tạm ổn" |
+| 2026-11-24-tin-hoc-van-phong-giay | Thư mẫu ô «Tên» xoè thành chồng thư có tên riêng + bộ đếm ×50 | 2026-11-24-tin-hoc-van-phong-giay/DocMock (merge) | v1 "tạm ổn" |

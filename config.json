@@ -146,7 +146,8 @@
       "look": {
         "grain": 0,
         "scanlines": 0,
-        "logo": true
+        "logo": true,
+        "style": "paper"
       }
     }
   },

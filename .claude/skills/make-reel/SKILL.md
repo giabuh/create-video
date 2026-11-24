@@ -8,7 +8,7 @@ description: Make or revise a course-promo video (storyboard -> voice -> Remotio
 Follow CLAUDE.md rules. Steps:
 
 0. **Read first:** `brands/<brand>/facts.md` (use only confirmed facts), `taste.md`, `pronounce.md`, `wishlist.md`,
-   `docs/style/concepts.md`, `docs/style/expert-review.md`; for `explainer` also `docs/style/explainer.md`.
+   `docs/style/concepts.md`, `docs/style/expert-review.md`; for `explainer` also `docs/style/paper.md` (default look; `docs/style/explainer.md` for its principles and the `clean` look).
 1. **Media:** if `inbox/` has files, run `python3 tools/ingest.py` and describe the new entries in `library/media-index.json`.
 2. **Brief** (write it into the storyboard notes): audience, their pain, one promise, proof (confirmed facts), one concrete
    action at the end; plus course, offer, template, format (`explainer` only: dọc 1080x1920 or ngang 1920x1080), target
@@ -35,7 +35,7 @@ Follow CLAUDE.md rules. Steps:
 4. **Prepare:** `VieNeu-TTS/.venv/bin/python tools/prepare.py projects/<slug>`. Fix any reported errors.
    Over `targetSeconds` -> shorten `say` and rerun (only changed scenes re-synthesize).
 5. **Self-check:** render a still at the middle frame of each scene (2–3 for heavy-motion scenes) and look at every one;
-   for `explainer` critique them against `docs/style/explainer.md`. Then a fresh `worker-sonnet` reviewer reads the
+   for `explainer` critique them against `docs/style/paper.md`. Then a fresh `worker-sonnet` reviewer reads the
    storyboard + still sheet against `docs/style/expert-review.md` (brief, hook, muted viewing, proof, ad policy); fix its
    findings before rendering. `worker-haiku` may describe stills against a checklist or run the QA commands.
 6. **Render:** render `reel-v<N>.mp4` at full quality (no `--scale`). Then run the post-render check (CLAUDE.md rule 7:

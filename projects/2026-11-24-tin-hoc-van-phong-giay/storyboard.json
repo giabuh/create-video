@@ -1,0 +1,408 @@
+{
+  "template": "explainer",
+  "brand": "demo",
+  "voice": "phuong",
+  "video": {
+    "width": 1920,
+    "height": 1080
+  },
+  "look": {
+    "grain": 0,
+    "scanlines": 0,
+    "logo": true,
+    "style": "paper"
+  },
+  "music": {
+    "file": "Raising Me Higher - Ahjay Stelino.mp3"
+  },
+  "targetSeconds": 60,
+  "notes": {
+    "brief": "Video THỬ phong cách 'giấy / tạp chí' (tham chiếu: screencast 2026-11-24, phân tích trong hội thoại). Khoá: Tin học văn phòng (chung). Khán giả: người đi làm phải tổng hợp số liệu, soạn văn bản. Nỗi đau: cộng tay, sai một ô là dò lại. Lời hứa: để bảng tính/văn bản tự làm phần lặp lại. Bằng chứng: không dùng dữ kiện chưa xác nhận; chỉ minh hoạ kỹ năng (số trong bảng là Minh họa). CTA: nhắn tin để được tư vấn, KHÔNG ghi SĐT (user 2026-11-24). Ngang 1920x1080, ~60s, giọng phuong.",
+    "concepts": [
+      "s1: footage học viên làm bảng tính + thẻ giấy góc phải 'Việc 1/3 · Bảng tính tự tính' (chấm tiến độ) + thẻ trái 'Sai 1 ô → dò lại từ đầu'",
+      "s2: footage lớp + thẻ danh sách 'Tin học văn phòng: Bảng tính · Văn bản' (icon vẽ, không logo hãng)",
+      "s3: trang giấy 'Excel · bảng tính có công thức thật': con trỏ 'Bạn' gõ =B9-C9, vòng tròn vẽ tay quanh công thức, tham chiếu tô màu trùng viền ô, thẻ tách phép tính, sửa 1 số -> cột và tổng tự tính lại",
+      "s4: CÙNG bảng tính đó thu nhỏ sang phải cạnh footage (giữ liên tục), ô âm tự tô đỏ + vòng tròn vẽ tay",
+      "s5: footage học viên làm bảng tính + thẻ ghi chú 'Tự tay làm trên máy'",
+      "s6: footage bài tập Word + trang văn bản giấy bên phải: tiêu đề lộn xộn -> đều nhau, mục lục tự dựng; thẻ 'Việc 2/3 · Văn bản gọn gàng'",
+      "s7: một thư mẫu có ô «Tên» -> xoè ra chồng thư có tên khác nhau, bộ đếm 50; thẻ 'Việc 3/3 · Thư mời hàng loạt'",
+      "s8: footage + thẻ 'Nhắn tin · được tư vấn' -> CTA giấy"
+    ]
+  },
+  "scenes": [
+    {
+      "id": "s1",
+      "say": "Cuối tháng, bạn vẫn ngồi cộng tay từng cột số, sai một ô là phải dò lại từ đầu?",
+      "caption": "Cuối tháng, bạn vẫn ngồi cộng tay từng cột số, sai một ô là phải dò lại từ đầu?",
+      "media": [
+        {
+          "src": "video-ngang-hoc-vien-thuc-hanh-excel-va-word.mp4",
+          "from": 0,
+          "effect": "zoom-in"
+        }
+      ],
+      "pauseAfter": 0.5,
+      "motion": [
+        {
+          "backdrop": "none",
+          "component": "2026-11-24-tin-hoc-van-phong-giay/PaperNote",
+          "props": {
+            "variant": "note",
+            "chip": "Sai 1 ô",
+            "title": "→ dò lại từ đầu",
+            "icon": "warn",
+            "align": "left"
+          },
+          "box": {
+            "x": 3,
+            "y": 6,
+            "w": 32,
+            "h": 18
+          },
+          "at": "sai"
+        }
+      ]
+    },
+    {
+      "id": "s2",
+      "say": "Ở lớp tin học văn phòng của Tin Học Sao Việt, bạn học cách để bảng tính tự làm phần việc đó.",
+      "caption": "Ở lớp tin học văn phòng của Tin Học Sao Việt, bạn học cách để bảng tính tự làm phần việc đó.",
+      "media": [
+        {
+          "src": "video-ngang-hoc-vien-thuc-hanh-excel-va-word.mp4",
+          "from": 16.5,
+          "effect": "pan-right"
+        }
+      ],
+      "transition": "fade",
+      "pauseAfter": 0.5,
+      "motion": [
+        {
+          "component": "2026-11-24-tin-hoc-van-phong-giay/PaperNote",
+          "backdrop": "none",
+          "props": {
+            "variant": "step",
+            "chip": "Việc 1 / 3",
+            "title": "Bảng tính tự tính",
+            "icon": "sheet",
+            "step": 1,
+            "total": 3,
+            "align": "right"
+          },
+          "box": {
+            "x": 62,
+            "y": 17,
+            "w": 34,
+            "h": 18
+          },
+          "at": "bảng tính"
+        }
+      ]
+    },
+    {
+      "id": "s3",
+      "say": "Bạn gõ một công thức: còn lại bằng thu trừ chi. Mỗi ô trong công thức có một màu riêng, nhìn là biết số nào đi đâu. Sửa một con số, cả bảng tự tính lại.",
+      "caption": "Bạn gõ một công thức: còn lại = thu − chi. Mỗi ô trong công thức có một màu riêng, nhìn là biết số nào đi đâu. Sửa một con số, cả bảng tự tính lại.",
+      "transition": "wipe",
+      "pauseAfter": 0.8,
+      "motion": [
+        {
+          "component": "2026-11-24-tin-hoc-van-phong-giay/PaperPage",
+          "props": {
+            "title": "Excel",
+            "tag": "bảng tính có công thức thật",
+            "footer": "TIN HỌC SAO VIỆT · BẢNG TÍNH"
+          }
+        },
+        {
+          "component": "2026-11-24-tin-hoc-van-phong-giay/SheetMock",
+          "props": {
+            "rows": [
+              "1|40|31",
+              "2|42|30",
+              "3|38|41",
+              "4|45|32",
+              "5|44|35",
+              "6|46|34"
+            ],
+            "rowStart": 4,
+            "totalRow": true,
+            "formulaRow": 5,
+            "editRow": 5,
+            "editTo": 52,
+            "unit": "triệu đ",
+            "tag": "Minh họa",
+            "breakdown": true,
+            "cursorAt": 0.2,
+            "typeAt": 0.8,
+            "circleAt": 1.6,
+            "refsAt": 3.1,
+            "breakdownAt": 5.5,
+            "editAt": 7.3,
+            "condAt": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "s4",
+      "say": "Muốn biết tháng nào chi vượt thu? Đặt một điều kiện, ô nào âm là tự tô đỏ.",
+      "caption": "Muốn biết tháng nào chi vượt thu? Đặt một điều kiện, ô nào âm là tự tô đỏ.",
+      "media": [
+        {
+          "src": "video-ngang-hoc-vien-lam-trac-nghiem-va-excel.mp4",
+          "from": 0,
+          "effect": "zoom-in"
+        }
+      ],
+      "transition": "fade",
+      "pauseAfter": 1.0,
+      "motion": [
+        {
+          "backdrop": "none",
+          "component": "2026-11-24-tin-hoc-van-phong-giay/SheetMock",
+          "props": {
+            "rows": [
+              "1|40|31",
+              "2|42|30",
+              "3|38|41",
+              "4|45|32",
+              "5|44|35",
+              "6|46|34"
+            ],
+            "rowStart": 4,
+            "totalRow": true,
+            "formulaRow": 5,
+            "editRow": 5,
+            "editTo": 52,
+            "unit": "triệu đ",
+            "tag": "Minh họa",
+            "breakdown": false,
+            "cursorAt": -1,
+            "typeAt": 0,
+            "circleAt": -1,
+            "refsAt": 0,
+            "breakdownAt": -1,
+            "editAt": 0,
+            "condAt": 3.2
+          },
+          "box": {
+            "x": 50,
+            "y": 18,
+            "w": 44,
+            "h": 64
+          },
+          "keyframes": [
+            {
+              "t": 0,
+              "x": -22,
+              "y": 4,
+              "scale": 1.3
+            },
+            {
+              "t": 0.9,
+              "x": 0,
+              "y": 0,
+              "scale": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s5",
+      "say": "Những bảng như vậy, bạn sẽ tự tay làm trên máy.",
+      "caption": "Những bảng như vậy, bạn sẽ tự tay làm trên máy.",
+      "media": [
+        {
+          "src": "video-ngang-hoc-vien-thuc-hanh-excel-va-word.mp4",
+          "from": 12,
+          "effect": "pan-left"
+        }
+      ],
+      "transition": "slide",
+      "pauseAfter": 0.5,
+      "motion": [
+        {
+          "backdrop": "none",
+          "component": "2026-11-24-tin-hoc-van-phong-giay/PaperNote",
+          "props": {
+            "variant": "note",
+            "chip": "Thực hành",
+            "title": "Tự tay làm trên máy",
+            "icon": "calc",
+            "align": "left"
+          },
+          "box": {
+            "x": 3,
+            "y": 6,
+            "w": 32,
+            "h": 18
+          },
+          "at": "tự tay"
+        }
+      ]
+    },
+    {
+      "id": "s6",
+      "say": "Với văn bản cũng vậy: vài thao tác là tiêu đề đều nhau, mục lục tự cập nhật.",
+      "caption": "Với văn bản cũng vậy: vài thao tác là tiêu đề đều nhau, mục lục tự cập nhật.",
+      "media": [
+        {
+          "src": "video-ngang-hoc-vien-thuc-hanh-bai-tap-word.mp4",
+          "from": 0,
+          "effect": "zoom-in"
+        }
+      ],
+      "transition": "fade",
+      "pauseAfter": 1.0,
+      "motion": [
+        {
+          "backdrop": "none",
+          "component": "2026-11-24-tin-hoc-van-phong-giay/PaperNote",
+          "props": {
+            "variant": "step",
+            "chip": "Việc 2 / 3",
+            "title": "Văn bản gọn gàng",
+            "icon": "doc",
+            "step": 2,
+            "total": 3,
+            "align": "left"
+          },
+          "box": {
+            "x": 3,
+            "y": 6,
+            "w": 32,
+            "h": 18
+          },
+          "start": 0.2
+        },
+        {
+          "backdrop": "none",
+          "component": "2026-11-24-tin-hoc-van-phong-giay/DocMock",
+          "props": {
+            "variant": "toc",
+            "headings": [
+              "Giới thiệu",
+              "Số liệu quý",
+              "Kết luận"
+            ],
+            "styleAt": 2.13,
+            "tocAt": 3.35,
+            "tag": "Minh họa"
+          },
+          "box": {
+            "x": 52,
+            "y": 14,
+            "w": 40,
+            "h": 71
+          }
+        }
+      ]
+    },
+    {
+      "id": "s7",
+      "say": "Cần gửi thư mời cho năm mươi người? Soạn một mẫu, tên từng người tự điền vào.",
+      "caption": "Cần gửi thư mời cho 50 người? Soạn một mẫu, tên từng người tự điền vào.",
+      "media": [
+        {
+          "src": "video-ngang-hoc-vien-thuc-hanh-excel-va-word.mp4",
+          "from": 4,
+          "effect": "zoom-out"
+        }
+      ],
+      "transition": "wipe",
+      "pauseAfter": 1.0,
+      "motion": [
+        {
+          "backdrop": "none",
+          "component": "2026-11-24-tin-hoc-van-phong-giay/PaperNote",
+          "props": {
+            "variant": "step",
+            "chip": "Việc 3 / 3",
+            "title": "Thư mời hàng loạt",
+            "icon": "letter",
+            "step": 3,
+            "total": 3,
+            "align": "left"
+          },
+          "box": {
+            "x": 3,
+            "y": 6,
+            "w": 32,
+            "h": 18
+          },
+          "start": 0.2
+        },
+        {
+          "backdrop": "none",
+          "component": "2026-11-24-tin-hoc-van-phong-giay/DocMock",
+          "props": {
+            "variant": "merge",
+            "names": [
+              "Chị Lan",
+              "Anh Minh",
+              "Cô Hạnh",
+              "Anh Tuấn"
+            ],
+            "count": 50,
+            "fieldAt": 2.09,
+            "fanAt": 2.85,
+            "countAt": 3.5,
+            "tag": "Minh họa"
+          },
+          "box": {
+            "x": 52,
+            "y": 14,
+            "w": 40,
+            "h": 71
+          }
+        }
+      ]
+    },
+    {
+      "id": "s8",
+      "say": "Nếu ngày nào bạn cũng làm việc với bảng tính và văn bản, nhắn tin cho Tin Học Sao Việt để được tư vấn.",
+      "caption": "Nếu ngày nào bạn cũng làm việc với bảng tính và văn bản, nhắn tin cho Tin Học Sao Việt để được tư vấn.",
+      "media": [
+        {
+          "src": "video-ngang-hoc-vien-thuc-hanh-bai-tap-word.mp4",
+          "from": 4.9,
+          "effect": "zoom-out"
+        }
+      ],
+      "transition": "fade",
+      "pauseAfter": 0.6,
+      "motion": [
+        {
+          "backdrop": "none",
+          "component": "2026-11-24-tin-hoc-van-phong-giay/PaperNote",
+          "props": {
+            "variant": "note",
+            "chip": "Tin Học Sao Việt",
+            "title": "Nhắn tin để được tư vấn",
+            "icon": "chat",
+            "align": "left"
+          },
+          "box": {
+            "x": 3,
+            "y": 6,
+            "w": 32,
+            "h": 18
+          },
+          "at": "nhắn tin"
+        }
+      ]
+    }
+  ],
+  "cta": {
+    "title": "NHẮN TIN ĐỂ ĐƯỢC TƯ VẤN",
+    "duration": 3,
+    "phone": false,
+    "fanpage": false,
+    "address": false
+  },
+  "tts": {
+    "speed": 0.9
+  }
+}

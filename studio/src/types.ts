@@ -42,7 +42,7 @@ export type RenderProps = {
   template: string; fps: number; width: number; height: number;
   brand: Brand; captions: CaptionStyle; music: Music | null;
   scenes: Scene[]; cta: Cta | null; totalSeconds: number;
-  look?: {grain: number; scanlines: number; logo: boolean; mediaFrame?: MediaFrame; vignette?: number; grade?: boolean; progress?: boolean}; // story template: film grain / scan lines (0..1), logo on/off
+  look?: {grain: number; scanlines: number; logo: boolean; mediaFrame?: MediaFrame; vignette?: number; grade?: boolean; progress?: boolean; style?: 'paper' | 'clean'}; // story template: film grain / scan lines (0..1), logo on/off
   transitionSeconds?: number; // crossfade/slide length for scene and clip transitions
   sfx?: {src: string; start: number; volume: number; until?: number}[]; // sound effects; start is absolute seconds
   overlays?: MotionItem[]; // video-wide motion track; start is absolute (seconds from the beginning)

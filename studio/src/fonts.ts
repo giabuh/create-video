@@ -24,12 +24,22 @@ import pfLatinExt700 from './assets/fonts/playfair-display/playfair-display-lati
 import pfLatinExt800 from './assets/fonts/playfair-display/playfair-display-latin-ext-800-italic.woff2';
 import pfLatin700 from './assets/fonts/playfair-display/playfair-display-latin-700-italic.woff2';
 import pfLatin800 from './assets/fonts/playfair-display/playfair-display-latin-800-italic.woff2';
+import frVi700 from './assets/fonts/fraunces/fraunces-vietnamese-700-normal.woff2';
+import frLatinExt700 from './assets/fonts/fraunces/fraunces-latin-ext-700-normal.woff2';
+import frLatin700 from './assets/fonts/fraunces/fraunces-latin-700-normal.woff2';
+import jbVi700 from './assets/fonts/jetbrains-mono/jetbrains-mono-vietnamese-700-normal.woff2';
+import jbLatinExt700 from './assets/fonts/jetbrains-mono/jetbrains-mono-latin-ext-700-normal.woff2';
+import jbLatin700 from './assets/fonts/jetbrains-mono/jetbrains-mono-latin-700-normal.woff2';
 
 export const fontFamily = 'Be Vietnam Pro';
 /** Heading/number font (Barlow Condensed 800/900, uppercase), bundled like the body font. */
 export const headingFamily = 'Barlow Condensed';
 /** Serif display font for newspaper-style headlines (Playfair Display italic 700/800). */
 export const serifFamily = 'Playfair Display';
+/** Upright serif for the "paper" look titles (Fraunces 700, SIL OFL). */
+export const paperSerif = 'Fraunces';
+/** Mono for the "paper" look labels/chips (JetBrains Mono 700, SIL OFL). */
+export const paperMono = 'JetBrains Mono';
 
 const RANGES = {
   vietnamese: 'U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB',
@@ -61,4 +71,6 @@ export const fontsReady: Promise<unknown> = typeof FontFace === 'undefined'
     ...FILES.map(([subset, weight, url]) => loadFont({family: fontFamily, url, weight, style: 'normal', unicodeRange: RANGES[subset], format: 'woff2'})),
     ...HEADING_FILES.map(([subset, weight, url]) => loadFont({family: headingFamily, url, weight, style: 'normal', unicodeRange: RANGES[subset], format: 'woff2'})),
     ...SERIF_FILES.map(([subset, weight, url]) => loadFont({family: serifFamily, url, weight, style: 'italic', unicodeRange: RANGES[subset], format: 'woff2'})),
+    ...([['vietnamese', frVi700], ['latinExt', frLatinExt700], ['latin', frLatin700]] as const).map(([subset, url]) => loadFont({family: paperSerif, url, weight: '700', style: 'normal', unicodeRange: RANGES[subset], format: 'woff2'})),
+    ...([['vietnamese', jbVi700], ['latinExt', jbLatinExt700], ['latin', jbLatin700]] as const).map(([subset, url]) => loadFont({family: paperMono, url, weight: '700', style: 'normal', unicodeRange: RANGES[subset], format: 'woff2'})),
   ]);

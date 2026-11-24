@@ -41,7 +41,7 @@ Start a reel with the `/make-reel` skill.
    `defineMotion`. Draw content only (use `brand` colors, `layerSeconds` if it needs its length); placement, enter/exit,
    keyframes and colors come from the layer. Be creative per video: a new component is fine when the built-ins don't fit.
    Template `explainer`: write new components each video under `studio/src/videos/<slug>/` (see its README); the
-   style bar is `docs/style/explainer.md`.
+   style bar is `docs/style/paper.md` (default `look.style: "paper"`; `"clean"` = old look, `docs/style/explainer.md`).
 7. Before every draft: render one still per scene and look at it (overflow, covered faces, wrong shot), then get a fresh
    `worker-sonnet` expert review of the storyboard + still sheet against `docs/style/expert-review.md` and fix its findings.
    Landscape videos use `--platform youtube` / `--safe youtube` below instead of tiktok.

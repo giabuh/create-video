@@ -2,11 +2,13 @@
 import React from 'react';
 import {AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {fontFamily} from '../../fonts';
+import {PaperCanvas} from '../../paper/PaperCanvas';
+import {Chip, PAPER, PaperCard, Title} from '../../paper/paper';
 import type {Brand, Cta, MediaItem} from '../../types';
 
 const out = Easing.bezier(0.22, 1, 0.36, 1);
 
-export const ExplainerCta: React.FC<{cta: Cta; brand: Brand; bg?: MediaItem; centerY?: number}> = ({cta, brand}) => {
+export const ExplainerCta: React.FC<{cta: Cta; brand: Brand; bg?: MediaItem; centerY?: number; paper?: boolean}> = ({cta, brand, paper}) => {
   const frame = useCurrentFrame();
   const {fps, width, height} = useVideoConfig();
   const t = frame / fps;
@@ -15,6 +17,24 @@ export const ExplainerCta: React.FC<{cta: Cta; brand: Brand; bg?: MediaItem; cen
   const {primary, accent, background} = brand.colors;
   const card = p(0), a = p(0.3), b = p(0.5);
   const lines = [cta.fanpage, cta.address].filter(Boolean);
+  if (paper) {
+    return (
+      <AbsoluteFill style={{justifyContent: 'center', alignItems: 'center'}}>
+        <PaperCanvas width={width} height={height} />
+        <div style={{opacity: card, transform: `translateY(${(1 - card) * u * 0.04}px) rotate(-1deg)`}}>
+          <PaperCard u={u} pad={u * 0.05} style={{width: Math.min(width * 0.7, u * 1.1)}}>
+            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: u * 0.03, textAlign: 'center'}}>
+              {brand.logo && <Img src={staticFile(brand.logo)} style={{height: u * 0.14, maxWidth: '60%', objectFit: 'contain', opacity: a}} />}
+              <Title u={u} size={u * 0.06} style={{opacity: a}}>{cta.title || 'ĐĂNG KÝ NGAY'}</Title>
+              {cta.phone && <div style={{fontFamily: PAPER.mono, fontWeight: 700, fontSize: u * 0.05, color: PAPER.ink, opacity: b}}>{cta.phone}</div>}
+              {lines.map((l, i) => <div key={i} style={{fontFamily, fontSize: u * 0.03, color: PAPER.muted, opacity: b}}>{l}</div>)}
+              {brand.name && <Chip u={u} size={u * 0.026} style={{opacity: b}}>{brand.name}</Chip>}
+            </div>
+          </PaperCard>
+        </div>
+      </AbsoluteFill>
+    );
+  }
   return (
     <AbsoluteFill style={{background: `linear-gradient(160deg, ${background}, ${primary}22)`, fontFamily, justifyContent: 'center', alignItems: 'center'}}>
       <div style={{
