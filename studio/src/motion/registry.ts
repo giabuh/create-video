@@ -13,6 +13,7 @@ import {KineticText, KineticTextSchema} from './KineticText';
 import {LineChart, LineChartSchema} from './LineChart';
 import {LowerThird, LowerThirdSchema} from './LowerThird';
 import {Picture, PictureSchema} from './Picture';
+import {TitleCard, TitleCardSchema} from './TitleCard';
 import {PinLabel, PinLabelSchema} from './PinLabel';
 import {PriceTag, PriceTagSchema} from './PriceTag';
 import {MaxKinetic, MaxKineticSchema} from './MaxKinetic';
@@ -42,6 +43,7 @@ export const MOTION: Record<string, MotionDef> = {
   ProgressBar: defineMotion({component: ProgressBar, schema: ProgressBarSchema, title: 'Thanh tiến trình', description: 'Chạy hết chiều dài lớp — hợp với track toàn video'}),
   Ribbon: defineMotion({component: Ribbon, schema: RibbonSchema, title: 'Ruy băng', description: 'Băng màu gấp góc, chữ gõ vào, dòng phụ có chấm', ownsExit: true}),
   TwoTier: defineMotion({component: TwoTier, schema: TwoTierSchema, title: 'Thẻ hai tầng', description: 'Ô sáng ở trên, băng xéo màu ở dưới', ownsExit: true}),
+  TitleCard: defineMotion({component: TitleCard, schema: TitleCardSchema, title: 'Thẻ tiêu đề', description: 'Nhãn vàng và thẻ xanh đậm với tiêu đề lớn'}),
   PinLabel: defineMotion({component: PinLabel, schema: PinLabelSchema, title: 'Ghim vị trí', description: 'Ghim 📍 rơi xuống kèm chữ (địa điểm)', ownsExit: true}),
   GlossyPill: defineMotion({component: GlossyPill, schema: GlossyPillSchema, title: 'Nhãn bóng', description: 'Viên gradient viền sáng, vệt bóng quét qua, dòng phụ, sticker', ownsExit: true}),
   Callout: defineMotion({component: Callout, schema: CalloutSchema, title: 'Nhãn chỉ điểm', description: 'Ô chữ có đường kẻ chỉ vào người/vật', ownsExit: true}),

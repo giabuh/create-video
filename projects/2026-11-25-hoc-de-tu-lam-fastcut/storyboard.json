@@ -1,0 +1,386 @@
+{
+  "template": "fast-cut",
+  "brand": "demo",
+  "voice": "phuong",
+  "targetSeconds": 40,
+  "notes": "Mode B: lời thoại user dán, chép nguyên văn (chỉ đổi cách đọc số/tiếng Anh trong say). Brief — Khán giả: người muốn tự chạy quảng cáo Facebook (chủ shop, người bán hàng) nhưng sợ học xong vẫn không tự làm được. Nỗi đau: học toàn lý thuyết, không biết bắt đầu; chạy ads tốn tiền mà không biết sai đâu. Lời hứa: học để tự làm — kèm 1-1, thực hành trên chính sản phẩm của mình. Bằng chứng (facts.md đã xác nhận): kèm 1-1 tại lớp, thực hành trên sản phẩm/tài khoản học viên, trọn quy trình; SĐT 0876 929 145; lớp tại Thuận An, Dĩ An, Biên Hòa. Hành động: nhắn tin hoặc gọi 0876 929 145. Template fast-cut (bản thứ 2 cùng kịch bản, user 2026-11-25). Khoảnh khắc đặc trưng: GiantText 'HỌC ĐỂ TỰ LÀM'. Combo: Text -> KineticText + Stamp -> TwoTier + Checklist steps -> Checklist grid -> GiantText + GlossyPill + Ribbon SĐT -> CtaCard. Chuyển cảnh: cut/push/slide, cắt nhanh ~2s/shot.",
+  "tts": {
+    "speed": 1.06,
+    "pauseAfter": 0.2
+  },
+  "transition": {
+    "scene": "cut",
+    "media": "cut",
+    "duration": 0.35
+  },
+  "music": {
+    "file": "Close Up - Michael Ramir C.mp3",
+    "volume": 0.44,
+    "duckTo": 0.14,
+    "fadeOut": 1.5
+  },
+  "sfx": {
+    "volume": 0.36,
+    "minGap": 0.55
+  },
+  "cta": {
+    "title": "GIẢM 35% HỌC PHÍ",
+    "phone": "0876 929 145",
+    "fanpage": "Nhắn Zalo hoặc Fanpage",
+    "address": "Thuận An · Dĩ An · Biên Hòa",
+    "duration": 3.5
+  },
+  "scenes": [
+    {
+      "id": "so-hoc-xong",
+      "say": "Bạn muốn học quảng cáo Phây Búc, nhưng lại sợ... học xong vẫn không biết tự chạy?",
+      "caption": "Bạn muốn học quảng cáo Facebook, nhưng lại sợ… học xong vẫn không biết tự chạy?",
+      "highlight": [
+        "quảng cáo Facebook",
+        "không biết tự chạy"
+      ],
+      "media": [
+        {
+          "src": "video-doc-hoc-vien-nu-thuc-hanh-tin-hoc-van-phong.mp4",
+          "from": 0.3,
+          "duration": 1.6,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-doc-hoc-vien-nu-hoc-tren-laptop-ghi-chep.mp4",
+          "from": 0,
+          "duration": 1.4,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-hoc-vien-nam-thuc-hanh-excel.mp4",
+          "from": 1,
+          "effect": "zoom-in"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Text",
+          "props": {
+            "text": "HỌC XONG VẪN KHÔNG TỰ CHẠY ĐƯỢC?",
+            "size": 56,
+            "weight": "800",
+            "color": "#FFFFFF",
+            "background": "#E11D2E",
+            "radius": 14,
+            "align": "left",
+            "shadow": false,
+            "reveal": "pop",
+            "revealSeconds": 0.4
+          },
+          "box": {
+            "x": 6,
+            "y": 11.5,
+            "w": 84,
+            "h": 11
+          },
+          "start": 0,
+          "enter": "slide-right",
+          "backdrop": "none"
+        }
+      ]
+    },
+    {
+      "id": "ly-thuyet-ton-tien",
+      "transition": "push",
+      "say": "Sợ học toàn lý thuyết, đến lúc thực hành lại không biết bắt đầu từ đâu? Sợ chạy quảng cáo tốn tiền mà chẳng biết sai ở chỗ nào?",
+      "caption": "Sợ học toàn lý thuyết, đến lúc thực hành lại không biết bắt đầu từ đâu? Sợ chạy quảng cáo tốn tiền mà chẳng biết sai ở chỗ nào?",
+      "highlight": [
+        "toàn lý thuyết",
+        "bắt đầu từ đâu",
+        "tốn tiền",
+        "sai ở chỗ nào"
+      ],
+      "media": [
+        {
+          "src": "video-doc-giao-vien-giang-bai-tren-bang-lop-tin-hoc.mp4",
+          "from": 1,
+          "duration": 2.2,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-doc-lop-hoc-dong-hoc-vien-tai-phong-may.mp4",
+          "from": 5,
+          "duration": 1.8,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-hoc-vien-nu-deo-khau-trang-thuc-hanh-word-excel.mp4",
+          "from": 1,
+          "effect": "zoom-in"
+        }
+      ],
+      "motion": [
+        {
+          "component": "KineticText",
+          "props": {
+            "lines": [
+              "Toàn lý thuyết?",
+              "Không biết bắt đầu?"
+            ],
+            "size": 96,
+            "align": "left",
+            "fx": "words"
+          },
+          "box": {
+            "x": 6,
+            "y": 11,
+            "w": 80,
+            "h": 22
+          },
+          "at": "toàn lý thuyết",
+          "until": "Sợ chạy",
+          "backdrop": "scrim"
+        },
+        {
+          "component": "Stamp",
+          "props": {
+            "shape": "rect",
+            "main": "TỐN TIỀN?",
+            "size": 300
+          },
+          "box": {
+            "x": 20,
+            "y": 14,
+            "w": 60,
+            "h": 18
+          },
+          "at": "tốn tiền",
+          "backdrop": "none"
+        }
+      ]
+    },
+    {
+      "id": "kem-1-1-quy-trinh",
+      "transition": "cut",
+      "say": "Tại Tin Học Sao Việt, bạn được hướng dẫn một kèm một, thực hành ngay trên chính sản phẩm của mình. Từ tạo chiến dịch, chọn khách hàng, thiết lập ngân sách đến theo dõi và tối ưu quảng cáo.",
+      "caption": "Tại Tin Học Sao Việt, bạn được hướng dẫn 1 kèm 1, thực hành ngay trên chính sản phẩm của mình. Từ tạo chiến dịch, chọn khách hàng, thiết lập ngân sách đến theo dõi và tối ưu quảng cáo.",
+      "highlight": [
+        "Tin Học Sao Việt",
+        "1 kèm 1",
+        "sản phẩm của mình"
+      ],
+      "media": [
+        {
+          "src": "video-ngang-giang-vien-kem-hoc-vien-autocad.mp4",
+          "from": 0.5,
+          "duration": 2.4,
+          "effect": "none"
+        },
+        {
+          "src": "sv-facebook-giang-vien-trinh-bay.jpg",
+          "duration": 2,
+          "effect": "pan-left"
+        },
+        {
+          "src": "video-ngang-hoc-vien-thuc-hanh-do-hoa-va-excel.mp4",
+          "from": 4,
+          "duration": 2.2,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-hoc-vien-thuc-hanh-tai-phong-may-tuong-xanh.mp4",
+          "from": 3,
+          "effect": "zoom-in"
+        }
+      ],
+      "motion": [
+        {
+          "component": "TwoTier",
+          "props": {
+            "top": "KÈM 1-1 TẠI LỚP",
+            "bottom": "Thực hành trên sản phẩm của bạn",
+            "size": 58,
+            "fx": "typewriter",
+            "pace": "fast"
+          },
+          "box": {
+            "x": 6,
+            "y": 11,
+            "w": 84,
+            "h": 22
+          },
+          "at": "Tại",
+          "until": "của mình",
+          "backdrop": "none"
+        },
+        {
+          "component": "Checklist",
+          "props": {
+            "title": "TRỌN QUY TRÌNH",
+            "variant": "steps",
+            "items": [
+              "Tạo chiến dịch",
+              "Chọn khách hàng",
+              "Thiết lập ngân sách",
+              "Theo dõi & tối ưu"
+            ],
+            "itemsAt": [
+              "tạo chiến dịch",
+              "chọn khách",
+              "thiết lập",
+              "theo dõi"
+            ],
+            "size": 42,
+            "fx": "mask"
+          },
+          "box": {
+            "x": 5,
+            "y": 11,
+            "w": 82,
+            "h": 38
+          },
+          "at": "Từ tạo",
+          "backdrop": "none"
+        }
+      ]
+    },
+    {
+      "id": "tu-trien-khai",
+      "transition": "slide",
+      "say": "Mục tiêu không chỉ là hiểu Phây Búc Ét, mà là giúp bạn biết cách tự triển khai, đọc kết quả và điều chỉnh chiến dịch.",
+      "caption": "Mục tiêu không chỉ là hiểu Facebook Ads, mà là giúp bạn biết cách tự triển khai, đọc kết quả và điều chỉnh chiến dịch.",
+      "highlight": [
+        "tự triển khai",
+        "đọc kết quả",
+        "điều chỉnh"
+      ],
+      "media": [
+        {
+          "src": "sv-facebook-hoc-vien-thuc-hanh.jpg",
+          "duration": 2,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-ngang-hoc-vien-thuc-hanh-excel-va-word.mp4",
+          "from": 6,
+          "duration": 2,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-nhieu-hoc-vien-thuc-hanh-tin-hoc-van-phong.mp4",
+          "from": 8,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Checklist",
+          "props": {
+            "title": "KHÔNG CHỈ HIỂU, MÀ TỰ LÀM",
+            "variant": "grid",
+            "items": [
+              "Hiểu Ads",
+              "Tự triển khai",
+              "Đọc kết quả",
+              "Điều chỉnh"
+            ],
+            "itemsAt": [
+              "hiểu",
+              "triển khai",
+              "đọc kết quả",
+              "điều chỉnh"
+            ],
+            "size": 44,
+            "fx": "pop"
+          },
+          "box": {
+            "x": 5,
+            "y": 11,
+            "w": 82,
+            "h": 38
+          },
+          "at": "Mục tiêu",
+          "backdrop": "none"
+        }
+      ]
+    },
+    {
+      "id": "hoc-de-tu-lam",
+      "transition": "cut",
+      "say": "Đừng chỉ học để biết. Hãy học để tự làm! Nhắn tin ngay cho Tin Học Sao Việt hoặc gọi không tám bảy sáu, chín hai chín, một bốn năm để được tư vấn.",
+      "caption": "Đừng chỉ học để biết. Hãy học để tự làm! Nhắn tin ngay cho Tin Học Sao Việt hoặc gọi 0876 929 145 để được tư vấn.",
+      "highlight": [
+        "học để tự làm",
+        "Nhắn tin",
+        "0876 929 145"
+      ],
+      "media": [
+        {
+          "src": "video-ngang-toan-canh-lop-hoc-tin-hoc-buoi-toi.mp4",
+          "from": 3,
+          "duration": 2.4,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-ngang-giao-vien-huong-dan-lop-tin-hoc-dong-hoc-vien.mp4",
+          "from": 8,
+          "duration": 2.2,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-hoc-vien-thuc-hanh-tai-phong-may-tuong-xanh.mp4",
+          "from": 14,
+          "effect": "zoom-in"
+        }
+      ],
+      "motion": [
+        {
+          "component": "GiantText",
+          "props": {
+            "giant": "TỰ LÀM",
+            "caption": "Học để tự làm!",
+            "fx": "wave",
+            "pace": "fast"
+          },
+          "position": "full",
+          "at": "Hãy học",
+          "until": "Tin Học",
+          "backdrop": "scrim"
+        },
+        {
+          "component": "GlossyPill",
+          "props": {
+            "title": "NHẮN ZALO · FANPAGE",
+            "sub": "Zalo 0876 929 145",
+            "size": 44,
+            "fx": "pop",
+            "pace": "fast"
+          },
+          "box": {
+            "x": 8,
+            "y": 14,
+            "w": 76,
+            "h": 11
+          },
+          "at": "Tin Học",
+          "until": "gọi",
+          "backdrop": "none"
+        },
+        {
+          "component": "Ribbon",
+          "props": {
+            "title": "0876 929 145",
+            "sub": "Giảm 35% học phí",
+            "size": 80,
+            "fx": "typewriter",
+            "pace": "fast"
+          },
+          "box": {
+            "x": 6,
+            "y": 13,
+            "w": 80,
+            "h": 16
+          },
+          "at": "gọi",
+          "backdrop": "none"
+        }
+      ]
+    }
+  ]
+}

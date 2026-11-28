@@ -75,23 +75,24 @@ const Cta3D: React.FC<{cta: Cta; brand: Brand; logo: string}> = ({cta, brand, lo
       <div style={{position: 'absolute', left: width / 2 - 560, top: 150, opacity: 0.9, transform: `rotate(${t * 12}deg)`}}>
         <Star points={16} innerRadius={420} outerRadius={560} cornerRadius={10} fill={`${accent}17`} />
       </div>
-      <ThreeCanvas width={width} height={height * 0.5} style={{position: 'absolute', top: 120, left: 0}} camera={{position: [0, 0, 9], fov: 40}}>
+      <ThreeCanvas width={width} height={Math.round(height * 0.44)} style={{position: 'absolute', top: 100, left: 0}} camera={{position: [0, 0, 9], fov: 40}}>
         <ambientLight intensity={1.1} />
         <directionalLight position={[4, 6, 8]} intensity={2.2} />
         <pointLight position={[-6, -3, 5]} intensity={90} color={accent} />
         {tex && <Logo3D tex={tex} aspect={(tex.image as {width: number; height: number}).width / (tex.image as {width: number; height: number}).height} color={text} glow={text} />}
       </ThreeCanvas>
-      <div style={{position: 'absolute', left: 72, right: 72, top: 1090, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 44}}>
-        <div style={{position: 'relative', overflow: 'hidden', background: accent, color: background, fontSize: 60, fontWeight: 900, textAlign: 'center', padding: '38px 70px', borderRadius: 999, boxShadow: `0 16px 0 ${accent}99, 0 40px 90px rgba(0,0,0,.4)`,
+      {/* Keep button, phone and subtitle centered inside TikTok's 14% right and 22% bottom UI safe margins on 9:16. */}
+      <div style={{position: 'absolute', left: height > width ? 152 : 72, right: height > width ? 152 : 72, top: height > width ? 970 : 1090, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: height > width ? 32 : 44}}>
+        <div style={{position: 'relative', overflow: 'hidden', background: accent, color: background, fontSize: height > width ? 52 : 60, fontWeight: 900, textAlign: 'center', padding: height > width ? '30px 54px' : '38px 70px', borderRadius: 999, boxShadow: `0 16px 0 ${accent}99, 0 40px 90px rgba(0,0,0,.4)`,
           opacity: Math.min(1, btn * 3), transform: `scale(${(0.4 + 0.6 * btn) * pulse})`}}>
           {cta.title}
           <div style={{position: 'absolute', top: 0, bottom: 0, left: `${shine * 100}%`, width: '22%', background: 'linear-gradient(100deg, transparent, rgba(255,255,255,.65), transparent)', transform: 'skewX(-18deg)'}} />
         </div>
         {cta.phone && (
-          <div style={{fontFamily: headingFamily, fontWeight: 900, fontSize: 170, lineHeight: 1, whiteSpace: 'nowrap', color: text, letterSpacing: 2, opacity: phone, transform: `translateY(${(1 - phone) * 80}px)`, textShadow: `0 8px 0 ${primary}, 0 20px 50px rgba(0,0,0,.5)`}}>{phoneFmt(cta.phone)}</div>
+          <div style={{fontFamily: headingFamily, fontWeight: 900, fontSize: height > width ? 138 : 170, lineHeight: 1, whiteSpace: 'nowrap', color: text, letterSpacing: 2, opacity: phone, transform: `translateY(${(1 - phone) * 80}px)`, textShadow: `0 8px 0 ${primary}, 0 20px 50px rgba(0,0,0,.5)`}}>{phoneFmt(cta.phone)}</div>
         )}
         {[cta.fanpage, cta.address].filter(Boolean).map((l, i) => (
-          <div key={i} style={{fontSize: 48, fontWeight: 700, color: text, opacity: fb * 0.88, transform: `translateY(${(1 - fb) * 60}px)`}}>{l}</div>
+          <div key={i} style={{fontSize: height > width ? 42 : 48, fontWeight: 700, textAlign: 'center', color: text, opacity: fb * 0.88, transform: `translateY(${(1 - fb) * 60}px)`}}>{l}</div>
         ))}
       </div>
     </AbsoluteFill>

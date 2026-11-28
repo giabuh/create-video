@@ -68,4 +68,13 @@ Thêm: "Lộ trình phù hợp từng học viên", bước "Trình độ hiện
 
 ## Khóa Quảng cáo Facebook thực chiến
 - Số điện thoại tư vấn khóa marketing / quảng cáo Facebook: 0876 929 145 — `status: đã xác nhận` · `source: user, 2026-11-21`.
-- Nơi mở lớp: Bình Dương (Thuận An, Dĩ An) và Biên Hòa (Đồng Nai) — `status: đã xác nhận` · `source: user, 2026-11-21`.
+- Nơi mở lớp: Thuận An và Dĩ An (Bình Dương); không còn ghi Biên Hòa — `status: đã xác nhận` · `source: user, 2026-11-28`.
+- Thực hành trực tiếp trên sản phẩm/tài khoản của học viên tại lớp — `status: đã xác nhận` · `source: user, 2026-11-23`.
+- Giảng viên hướng dẫn kèm 1-1 ngay tại lớp — `status: đã xác nhận` · `source: user, 2026-11-23`.
+- Nội dung học trọn quy trình: chọn tệp khách, viết bài ads, đọc chỉ số & tối ưu ngân sách — `status: đã xác nhận` · `source: user, 2026-11-23`.
+- Ứng dụng AI hỗ trợ làm nội dung và tối ưu quảng cáo — `status: đã xác nhận` · `source: user, 2026-11-23`.
+- Học đến khi thành thạo, hỗ trợ sau khóa học — `status: đã xác nhận` · `source: user, 2026-11-23`.
+- Ưu đãi học phí: giảm 35% — `status: đã xác nhận` · `source: user, 2026-11-23`.
+- Nội dung học có: tạo chiến dịch, chọn khách hàng, thiết lập ngân sách, theo dõi và tối ưu quảng cáo; đọc kết quả và điều chỉnh chiến dịch — `status: đã xác nhận` · `source: user, 2026-11-25` (kịch bản user dán).
+- Kênh nhắn tin tư vấn: Zalo số 0876 929 145 và fanpage (chưa có tên/link fanpage) — `status: đã xác nhận` · `source: user, 2026-11-25`.
+- Được hiển thị ưu đãi giảm 35% học phí trên video "học để tự làm" — `status: đã xác nhận` · `source: user, 2026-11-25`.

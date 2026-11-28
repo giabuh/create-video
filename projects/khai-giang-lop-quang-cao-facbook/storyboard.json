@@ -1,0 +1,436 @@
+{
+  "template": "split-compare",
+  "brand": "demo",
+  "voice": "phuong",
+  "targetSeconds": 35,
+  "notes": "Brief — Khán giả: chủ shop / người bán hàng online và người mới muốn tự chạy quảng cáo Facebook tại Bình Dương, Đồng Nai. Nỗi đau: tự mò bấm quảng cáo theo cảm tính, đốt ngân sách mà không biết tiền đi đâu. Lời hứa: học thực chiến 1-1 ngay trên sản phẩm và tài khoản thật, ứng dụng AI viết bài, đọc chỉ số tối ưu ngân sách, học đến khi thành thạo và được hỗ trợ sau khóa. Bằng chứng (đã xác nhận trong facts.md): lớp Tin Học Sao Việt tại Thuận An, Dĩ An (Bình Dương) và Biên Hòa (Đồng Nai); SĐT 0876 929 145; ảnh/clip lớp học thực tế và giảng viên áo Sao Việt kèm 1-1. Hành động: gọi 0876 929 145 nhận lịch học và học phí. Không nêu ngày khai giảng/giá cố định/ưu đãi/fanpage vì chưa xác nhận. Concept: split-compare trên (Tự mò — mã màu đỏ) vs dưới (Học thực chiến Sao Việt — mã màu xanh navy/vàng) xuyên suốt 4 cảnh đầu, cảnh 5 chuyển 1-panel + bảng navy kết nối khai giảng & số điện thoại. Khoảnh khắc đặc trưng: MaxKinetic tag 'HỌC ĐẾN KHI THÀNH THẠO' ở cảnh 4.",
+  "tts": {
+    "speed": 1.03,
+    "pauseAfter": 0.25
+  },
+  "captions": {
+    "size": 56,
+    "maxWords": 6,
+    "highlightColor": "#FFD400",
+    "box": true
+  },
+  "music": {
+    "file": "Raising Me Higher - Ahjay Stelino.mp3",
+    "volume": 0.48,
+    "duckTo": 0.14,
+    "fadeOut": 1.4
+  },
+  "sfx": {
+    "volume": 0.35,
+    "minGap": 0.6,
+    "scene": "whoosh",
+    "cta": "impact"
+  },
+  "motion": [
+    {
+      "component": "ProgressBar",
+      "props": {
+        "thickness": 10,
+        "edge": "top"
+      },
+      "start": 0,
+      "end": "video",
+      "backdrop": "none",
+      "sfx": "none"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "hai-cach",
+      "say": "Chủ shop chạy quảng cáo Phây Búc: tự mò thì đốt tiền, học bài bản biết tiền đi đâu.",
+      "caption": "Chủ shop chạy quảng cáo Facebook: tự mò thì đốt tiền, học bài bản biết tiền đi đâu.",
+      "highlight": [
+        "Chủ shop",
+        "tự mò",
+        "đốt tiền",
+        "bài bản"
+      ],
+      "transition": "cut",
+      "media": [
+        {
+          "src": "sv-facebook-minh-hoa-mau-quang-cao.png",
+          "effect": "zoom-in"
+        },
+        {
+          "src": "sv-facebook-giang-vien-trinh-bay.jpg",
+          "effect": "zoom-in"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Text",
+          "props": {
+            "text": "CHỦ SHOP TỰ MÒ CHẠY ADS",
+            "size": 44,
+            "weight": "800",
+            "color": "#FFFFFF",
+            "background": "#E11D2E",
+            "radius": 14,
+            "align": "left",
+            "shadow": false,
+            "reveal": "scramble",
+            "revealSeconds": 0.45
+          },
+          "box": {
+            "x": 6,
+            "y": 11.5,
+            "w": 68,
+            "h": 6.5
+          },
+          "start": 0,
+          "enter": "pop",
+          "backdrop": "none"
+        },
+        {
+          "component": "Stamp",
+          "props": {
+            "shape": "rect",
+            "main": "ĐỐT TIỀN",
+            "size": 210
+          },
+          "box": {
+            "x": 38,
+            "y": 21,
+            "w": 46,
+            "h": 14
+          },
+          "at": "đốt tiền",
+          "backdrop": "none"
+        },
+        {
+          "component": "Text",
+          "props": {
+            "text": "HỌC BÀI BẢN TẠI SAO VIỆT",
+            "size": 44,
+            "weight": "800",
+            "color": "#0B1530",
+            "background": "#FFD400",
+            "radius": 14,
+            "align": "left",
+            "shadow": false,
+            "reveal": "pop",
+            "revealSeconds": 0.5
+          },
+          "box": {
+            "x": 6,
+            "y": 60,
+            "w": 72,
+            "h": 6.5
+          },
+          "at": "bài bản",
+          "enter": "slide-up",
+          "backdrop": "none"
+        }
+      ]
+    },
+    {
+      "id": "cam-tinh-vs-kem-1-1",
+      "say": "Người mới chạy theo cảm tính. Còn tại Sao Việt, bạn mang sản phẩm và tài khoản thật, giảng viên kèm một một.",
+      "caption": "Người mới chạy theo cảm tính. Còn tại Sao Việt, bạn mang sản phẩm và tài khoản thật, giảng viên kèm 1-1.",
+      "highlight": [
+        "Người mới",
+        "cảm tính",
+        "sản phẩm",
+        "kèm 1-1"
+      ],
+      "transition": "slide",
+      "media": [
+        {
+          "src": "video-ngang-hoc-vien-thuc-hanh-do-hoa-va-excel.mp4",
+          "from": 17.5,
+          "effect": "none"
+        },
+        {
+          "src": "video-ngang-hoc-vien-thuc-hanh-do-hoa-va-excel.mp4",
+          "from": 4.5,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Text",
+          "props": {
+            "text": "CHẠY ADS THEO CẢM TÍNH",
+            "size": 42,
+            "weight": "800",
+            "color": "#FFFFFF",
+            "background": "#E11D2E",
+            "radius": 14,
+            "align": "left",
+            "shadow": false,
+            "reveal": "words",
+            "revealSeconds": 0.5
+          },
+          "box": {
+            "x": 6,
+            "y": 11.5,
+            "w": 68,
+            "h": 6.5
+          },
+          "start": 0,
+          "enter": "fade",
+          "backdrop": "none"
+        },
+        {
+          "component": "Ribbon",
+          "props": {
+            "title": "KÈM 1-1 SẢN PHẨM THẬT",
+            "sub": "Trên tài khoản thật của bạn",
+            "size": 42,
+            "fx": "typewriter",
+            "pace": "fast"
+          },
+          "box": {
+            "x": 5,
+            "y": 58,
+            "w": 80,
+            "h": 14.5
+          },
+          "at": "Sao Việt",
+          "backdrop": "scrim",
+          "colors": {
+            "accent2": "#1E3A8A"
+          }
+        }
+      ]
+    },
+    {
+      "id": "quy-trinh-va-ai",
+      "say": "Chọn đúng tệp khách, dùng Ây Ai viết bài thu hút, đọc chỉ số, tối ưu ngân sách, ngay tại lớp.",
+      "caption": "Chọn đúng tệp khách, dùng AI viết bài thu hút, đọc chỉ số, tối ưu ngân sách, ngay tại lớp.",
+      "highlight": [
+        "tệp khách",
+        "AI",
+        "tối ưu ngân sách"
+      ],
+      "transition": "fade",
+      "media": [
+        {
+          "src": "35-trung-tam-tin-hoc-van-phong-q-7.jpg",
+          "effect": "zoom-in"
+        },
+        {
+          "src": "sv-facebook-minh-hoa-bao-cao.png",
+          "effect": "zoom-in"
+        }
+      ],
+      "motion": [
+        {
+          "component": "MaxSteps",
+          "props": {
+            "title": "LỘ TRÌNH THỰC CHIẾN",
+            "items": [
+              "Chọn đúng tệp khách",
+              "AI viết bài thu hút",
+              "Đọc số, tối ưu ngân sách"
+            ],
+            "itemsAt": [
+              "tệp khách",
+              "Ây Ai",
+              "chỉ số"
+            ],
+            "size": 46
+          },
+          "box": {
+            "x": 4,
+            "y": 10.5,
+            "w": 82,
+            "h": 30
+          },
+          "at": "Chọn đúng",
+          "backdrop": "none"
+        },
+        {
+          "component": "Text",
+          "props": {
+            "text": "ỨNG DỤNG AI · THỰC HÀNH TẠI LỚP",
+            "size": 40,
+            "weight": "800",
+            "color": "#0B1530",
+            "background": "#FFD400",
+            "radius": 14,
+            "align": "left",
+            "shadow": false,
+            "reveal": "pop",
+            "revealSeconds": 0.5
+          },
+          "box": {
+            "x": 6,
+            "y": 58.5,
+            "w": 76,
+            "h": 6.5
+          },
+          "at": "Ây Ai",
+          "enter": "slide-up",
+          "backdrop": "none"
+        }
+      ]
+    },
+    {
+      "id": "thanh-thao-va-co-so",
+      "say": "Bạn học đến khi thành thạo và vẫn có giảng viên hỗ trợ sau khóa học. Lớp đang mở tại Thuận An, Dĩ An và Biên Hòa.",
+      "caption": "Bạn học đến khi thành thạo và vẫn có giảng viên hỗ trợ sau khóa học. Lớp đang mở tại Thuận An, Dĩ An và Biên Hòa.",
+      "highlight": [
+        "thành thạo",
+        "hỗ trợ sau khóa học",
+        "Thuận An",
+        "Dĩ An",
+        "Biên Hòa"
+      ],
+      "transition": "slide",
+      "media": [
+        {
+          "src": "sv-facebook-hoc-vien-thuc-hanh.jpg",
+          "effect": "pan-left"
+        },
+        {
+          "src": "video-ngang-giao-vien-huong-dan-lop-tin-hoc-dong-hoc-vien.mp4",
+          "from": 11.0,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "MaxKinetic",
+          "props": {
+            "text": "HỌC ĐẾN KHI THÀNH THẠO",
+            "variant": "tag",
+            "size": 56
+          },
+          "box": {
+            "x": 5,
+            "y": 10.2,
+            "w": 80,
+            "h": 10.5
+          },
+          "at": "thành thạo",
+          "until": "Lớp",
+          "backdrop": "none"
+        },
+        {
+          "component": "Text",
+          "props": {
+            "text": "+ HỖ TRỢ SAU KHÓA HỌC",
+            "size": 38,
+            "weight": "800",
+            "color": "#0B1530",
+            "background": "#FFD400",
+            "radius": 12,
+            "align": "center",
+            "shadow": false,
+            "reveal": "mask",
+            "revealSeconds": 0.5
+          },
+          "box": {
+            "x": 12,
+            "y": 36.5,
+            "w": 64,
+            "h": 5.5
+          },
+          "at": "hỗ trợ",
+          "until": "Lớp",
+          "backdrop": "none"
+        },
+        {
+          "component": "PinLabel",
+          "props": {
+            "text": "Thuận An, Dĩ An, Biên Hòa",
+            "size": 46,
+            "fx": "pop",
+            "pace": "fast"
+          },
+          "box": {
+            "x": 5,
+            "y": 59,
+            "w": 80,
+            "h": 11
+          },
+          "at": "Thuận An",
+          "backdrop": "scrim"
+        }
+      ]
+    },
+    {
+      "id": "khai-giang-goi-ngay",
+      "say": "Lớp quảng cáo Phây Búc mới đang khai giảng. Gọi không tám bảy sáu, chín hai chín, một bốn năm, nhận lịch học và học phí.",
+      "caption": "Lớp quảng cáo Facebook mới đang khai giảng. Gọi 0876 929 145, nhận lịch học và học phí.",
+      "highlight": [
+        "khai giảng",
+        "0876 929 145",
+        "lịch học"
+      ],
+      "transition": "fade",
+      "overlay": {
+        "text": "LỚP FACEBOOK ADS"
+      },
+      "media": [
+        {
+          "src": "video-ngang-toan-canh-lop-hoc-tin-hoc-buoi-toi.mp4",
+          "from": 1.0,
+          "effect": "zoom-in"
+        }
+      ],
+      "motion": [
+        {
+          "component": "DateBadge",
+          "props": {
+            "label": "LỚP FACEBOOK ADS",
+            "date": "KHAI GIẢNG",
+            "sub": "Thuận An · Dĩ An · Biên Hòa",
+            "variant": "slab",
+            "width": 560,
+            "fx": "mask"
+          },
+          "box": {
+            "x": 11,
+            "y": 11.5,
+            "w": 68,
+            "h": 25
+          },
+          "at": "Lớp",
+          "until": {
+            "word": "khai giảng",
+            "offset": -0.08
+          },
+          "backdrop": "none"
+        },
+        {
+          "component": "MaxPhone",
+          "props": {
+            "groups": [
+              "0876",
+              "929",
+              "145"
+            ],
+            "itemsAt": [
+              "không tám",
+              "chín hai",
+              "một bốn"
+            ]
+          },
+          "box": {
+            "x": 5,
+            "y": 26,
+            "w": 80,
+            "h": 15
+          },
+          "at": "Gọi",
+          "backdrop": "none"
+        }
+      ]
+    }
+  ],
+  "cta": {
+    "title": "Gọi nhận lịch khai giảng",
+    "phone": "0876 929 145",
+    "fanpage": "Kèm 1-1 · Thực hành sản phẩm thật",
+    "address": "Thuận An · Dĩ An · Biên Hòa",
+    "duration": 3,
+    "logoSize": 340
+  }
+}

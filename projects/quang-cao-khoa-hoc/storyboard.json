@@ -1,0 +1,306 @@
+{
+  "template": "slideshow",
+  "brand": "demo",
+  "voice": "phuong",
+  "targetSeconds": 42,
+  "notes": "Brief — Khán giả: chủ shop, người bán hàng online và người mới muốn tự chạy quảng cáo Facebook tại Bình Dương (Thuận An, Dĩ An) và Biên Hòa (Đồng Nai). Nỗi đau: tự chạy quảng cáo theo cảm tính, ngân sách vơi dần mà không biết sửa từ đâu. Lời hứa: học thực chiến kèm 1-1 ngay trên sản phẩm và tài khoản thật, làm chủ trọn quy trình + ứng dụng AI, học đến khi thành thạo và được hỗ trợ sau khóa. Bằng chứng (đã xác nhận trong facts.md): lớp Tin Học Sao Việt tại Thuận An, Dĩ An (Bình Dương) và Biên Hòa (Đồng Nai); ưu đãi 35%; SĐT 0876 929 145; ảnh/clip lớp học thật và giảng viên Sao Việt kèm 1-1. Hành động: gọi 0876 929 145 nhận tư vấn lộ trình và ưu đãi 35%. Không nêu học phí gốc/ngày khai giảng/fanpage vì chưa xác nhận. Concept: editorial slideshow 5 chương (01/05 -> 05/05) trên khung 65% footage chậm mượt + 35% panel navy phụ đề mảnh nằm trên vùng UI đáy TikTok; motion tối giản nằm hoàn toàn trong vùng an toàn 65% trên. Khoảnh khắc đặc trưng: MaxKinetic slam 'HỌC ĐẾN KHI THÀNH THẠO' ở cảnh 04.",
+  "tts": {
+    "speed": 1.02,
+    "pauseAfter": 0.25
+  },
+  "transition": {
+    "scene": "fade",
+    "media": "fade",
+    "duration": 0.9
+  },
+  "captions": {
+    "size": 58,
+    "maxWords": 6,
+    "highlightColor": "#FFD400"
+  },
+  "music": {
+    "file": "Tears of Joy - Michael Ramir C.mp3",
+    "volume": 0.42,
+    "duckTo": 0.13,
+    "fadeOut": 1.5
+  },
+  "sfx": {
+    "volume": 0.28,
+    "minGap": 0.7,
+    "scene": "none",
+    "cta": "none"
+  },
+  "scenes": [
+    {
+      "id": "chay-theo-cam-tinh",
+      "say": "Tự chạy quảng cáo Phây Búc theo cảm tính, ngân sách vơi dần mà vẫn không biết cần sửa từ đâu?",
+      "caption": "Tự chạy quảng cáo Facebook theo cảm tính, ngân sách vơi dần mà vẫn không biết cần sửa từ đâu?",
+      "highlight": [
+        "theo cảm tính",
+        "không biết cần sửa từ đâu"
+      ],
+      "media": [
+        {
+          "src": "video-doc-hoc-vien-nu-hoc-tren-laptop-ghi-chep.mp4",
+          "from": 0.0,
+          "effect": "zoom-in"
+        }
+      ],
+      "motion": [
+        {
+          "component": "LowerThird",
+          "props": {
+            "title": "CHẠY ADS THEO CẢM TÍNH?",
+            "subtitle": "Ngân sách vơi dần mà không biết sửa từ đâu?",
+            "side": "left",
+            "bottom": 705,
+            "size": 42,
+            "fx": "mask"
+          },
+          "position": "full",
+          "at": "Tự chạy",
+          "exit": {
+            "type": "fade",
+            "duration": 0.3
+          },
+          "backdrop": "none"
+        }
+      ]
+    },
+    {
+      "id": "kem-1-1-san-pham-that",
+      "say": "Tại Tin Học Sao Việt, bạn học trên sản phẩm thật, chạy tài khoản thật, giảng viên kèm một một tại lớp.",
+      "caption": "Tại Tin Học Sao Việt, bạn học trên sản phẩm thật, chạy tài khoản thật, giảng viên kèm 1-1 tại lớp.",
+      "highlight": [
+        "sản phẩm thật",
+        "tài khoản thật",
+        "kèm 1-1"
+      ],
+      "media": [
+        {
+          "src": "sv-facebook-giang-vien-trinh-bay.jpg",
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-ngang-hoc-vien-thuc-hanh-do-hoa-va-excel.mp4",
+          "from": 4.2,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "TwoTier",
+          "props": {
+            "top": "THỰC HÀNH TRỰC TIẾP",
+            "bottom": "Trên sản phẩm & tài khoản của bạn",
+            "size": 44,
+            "fx": "pop",
+            "pace": "fast"
+          },
+          "box": {
+            "x": 6,
+            "y": 12,
+            "w": 78,
+            "h": 16
+          },
+          "at": "Tại",
+          "until": "sản phẩm thật",
+          "backdrop": "none"
+        },
+        {
+          "component": "Callout",
+          "props": {
+            "title": "KÈM 1-1 TẠI LỚP",
+            "sub1": "Cầm tay chỉ việc · Sửa bài ngay",
+            "labelX": 6,
+            "labelY": 13,
+            "targetX": 46,
+            "targetY": 39,
+            "size": 48,
+            "fx": "none",
+            "pace": "fast"
+          },
+          "position": "full",
+          "at": "tài khoản thật",
+          "backdrop": "none"
+        }
+      ]
+    },
+    {
+      "id": "lo-trinh-va-ai",
+      "say": "Học trọn quy trình từ chọn tệp khách, viết bài quảng cáo với trợ giúp của Ây Ai, đến đọc chỉ số và tự tối ưu ngân sách mỗi ngày.",
+      "caption": "Học trọn quy trình từ chọn tệp khách, viết bài quảng cáo với trợ giúp của AI, đến đọc chỉ số và tự tối ưu ngân sách mỗi ngày.",
+      "highlight": [
+        "trọn quy trình",
+        "AI",
+        "tối ưu ngân sách"
+      ],
+      "media": [
+        {
+          "src": "sv-facebook-hoc-vien-thuc-hanh.jpg",
+          "effect": "pan-right"
+        },
+        {
+          "src": "video-doc-lop-hoc-dong-hoc-vien-tai-phong-may.mp4",
+          "from": 24.5,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Checklist",
+          "props": {
+            "title": "TRỌN QUY TRÌNH THỰC CHIẾN",
+            "variant": "grid",
+            "items": [
+              "Chọn đúng tệp khách",
+              "Viết bài quảng cáo",
+              "Ứng dụng AI tối ưu",
+              "Đọc chỉ số & ngân sách"
+            ],
+            "itemsAt": [
+              "tệp khách",
+              "viết bài",
+              "Ây Ai",
+              "chỉ số"
+            ],
+            "size": 32,
+            "fx": "scramble"
+          },
+          "box": {
+            "x": 5,
+            "y": 40,
+            "w": 80,
+            "h": 24
+          },
+          "at": "trọn quy trình",
+          "backdrop": "none"
+        }
+      ]
+    },
+    {
+      "id": "hoc-den-khi-thanh-thao",
+      "say": "Không học lướt cho xong: bạn học đến khi thành thạo, và vẫn được hỗ trợ sau khóa học.",
+      "caption": "Không học lướt cho xong: bạn học đến khi thành thạo, và vẫn được hỗ trợ sau khóa học.",
+      "highlight": [
+        "học đến khi thành thạo",
+        "hỗ trợ",
+        "sau khóa học"
+      ],
+      "media": [
+        {
+          "src": "video-ngang-giao-vien-huong-dan-lop-tin-hoc-dong-hoc-vien.mp4",
+          "from": 11.0,
+          "effect": "zoom-in"
+        }
+      ],
+      "motion": [
+        {
+          "component": "MaxKinetic",
+          "props": {
+            "text": "HỌC ĐẾN KHI THÀNH THẠO",
+            "variant": "slam",
+            "size": 86
+          },
+          "box": {
+            "x": 5,
+            "y": 11.5,
+            "w": 80,
+            "h": 12.5
+          },
+          "at": "học đến",
+          "backdrop": "none"
+        },
+        {
+          "component": "GlossyPill",
+          "props": {
+            "title": "HỖ TRỢ SAU KHÓA HỌC",
+            "size": 44,
+            "fx": "words",
+            "pace": "fast"
+          },
+          "box": {
+            "x": 9,
+            "y": 51,
+            "w": 72,
+            "h": 11
+          },
+          "at": "và vẫn",
+          "backdrop": "none"
+        }
+      ]
+    },
+    {
+      "id": "uu-dai-va-dang-ky",
+      "say": "Lớp mở tại Thuận An, Dĩ An và Biên Hòa, đang có ưu đãi ba mươi lăm phần trăm. Gọi ngay không tám bảy sáu, chín hai chín, một bốn năm, nhận tư vấn lộ trình.",
+      "caption": "Lớp mở tại Thuận An, Dĩ An và Biên Hòa, đang có ưu đãi 35%. Gọi ngay 0876 929 145, nhận tư vấn lộ trình.",
+      "highlight": [
+        "Thuận An",
+        "Dĩ An",
+        "Biên Hòa",
+        "ưu đãi 35%",
+        "0876 929 145"
+      ],
+      "media": [
+        {
+          "src": "video-doc-giao-vien-giang-bai-tren-bang-lop-tin-hoc.mp4",
+          "from": 4.5,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-doc-lop-hoc-dong-hoc-vien-tai-phong-may.mp4",
+          "from": 0.5,
+          "effect": "zoom-out"
+        }
+      ],
+      "motion": [
+        {
+          "component": "PinLabel",
+          "props": {
+            "text": "Thuận An · Dĩ An · Biên Hòa",
+            "size": 52,
+            "fx": "none",
+            "pace": "fast"
+          },
+          "box": {
+            "x": 8,
+            "y": 49,
+            "w": 76,
+            "h": 13
+          },
+          "at": "Thuận An",
+          "until": "Biên Hòa",
+          "backdrop": "scrim"
+        },
+        {
+          "component": "OfferCard",
+          "props": {
+            "label": "KHÓA FACEBOOK ADS THỰC CHIẾN",
+            "title": "Ưu đãi 35% khóa học tại Sao Việt",
+            "highlight": "Ưu đãi 35%",
+            "stampTop": "ƯU ĐÃI",
+            "stampMain": "35%",
+            "stampBottom": "SAO VIỆT",
+            "variant": "card"
+          },
+          "box": {
+            "x": 2,
+            "y": 23,
+            "w": 84,
+            "h": 34
+          },
+          "at": "ưu đãi",
+          "backdrop": "none"
+        }
+      ]
+    }
+  ],
+  "cta": {
+    "title": "TƯ VẤN · ƯU ĐÃI 35%",
+    "phone": "0876 929 145",
+    "fanpage": "Kèm 1-1 · Thực hành sản phẩm thật",
+    "address": "Thuận An · Dĩ An · Biên Hòa",
+    "duration": 3.5,
+    "logoSize": 320
+  }
+}

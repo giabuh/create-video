@@ -13,7 +13,7 @@ import {fitFontSize, useFontsLoaded} from '../../fit';
 import {fontFamily} from '../../fonts';
 import type {CaptionChunk, MediaItem, RenderProps} from '../../types';
 
-const MEDIA_H = 0.7; // share of the frame height taken by the picture
+const MEDIA_H = 0.65; // share of the frame height taken by the picture (keeps bottom panel captions above TikTok's 22% UI bar)
 
 // gentler than the shared effects: ~5% zoom or a 2% drift over the clip
 const kenBurns = (e: MediaItem['effect'], p: number): string => {
@@ -99,17 +99,17 @@ export const Slideshow: React.FC<RenderProps> = (p) => {
       {p.scenes.map((sc, si) => (
         <Sequence key={`panel-${sc.id}`} name={`${sc.id} panel`} from={Math.round(sc.start * fps)} durationInFrames={f(sc.duration)}>
           <AbsoluteFill style={{top: mediaH, height: height - mediaH, backgroundColor: surface, alignItems: 'center'}}>
-            <div style={{marginTop: 44, width: 96, height: 3, borderRadius: 2, backgroundColor: colors.accent}} />
-            <div style={{marginTop: 22, fontFamily, fontWeight: 400, fontSize: 26, letterSpacing: '0.3em', color: ink, opacity: 0.7}}>
+            <div style={{marginTop: 22, width: 96, height: 3, borderRadius: 2, backgroundColor: colors.accent}} />
+            <div style={{marginTop: 14, fontFamily, fontWeight: 400, fontSize: 24, letterSpacing: '0.3em', color: ink, opacity: 0.7}}>
               {pad(si + 1)} / {pad(p.scenes.length)}
             </div>
-            <div style={{position: 'absolute', top: 130, left: 0, right: 0, height: 190, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+            <div style={{position: 'absolute', top: 84, left: 0, right: 0, height: 152, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
               <SlowCaption chunks={sc.captions} highlight={sc.highlight} size={Math.round(p.captions.size * 0.72)} color={ink} accent={hi} />
             </div>
           </AbsoluteFill>
         </Sequence>
       ))}
-      <ReelTail p={p} />
+      <ReelTail p={p} ctaCenter />
     </AbsoluteFill>
   );
 };

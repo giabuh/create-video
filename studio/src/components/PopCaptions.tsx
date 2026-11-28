@@ -25,10 +25,15 @@ export const PopCaptions: React.FC<{chunks: CaptionChunk[]; highlight: string[];
     return s;
   });
   const active = starts.reduce((a, s, i) => (t >= s ? i : a), 0);
-  const size = loaded ? fitFontSize({text: c.text, maxSize: 82, width: width * 0.84, height: 82 * 1.3 * 2 + 1, weight: 800, lineHeight: 1.3}) : 72;
+  const vertical = height > width;
+  // On 9:16 vertical video, reserve TikTok's left (5%) and right (14%) UI columns so no active word lands under icons.
+  const padL = vertical ? width * 0.06 : width * 0.06;
+  const padR = vertical ? width * 0.15 : width * 0.06;
+  const availW = width - padL - padR;
+  const size = loaded ? fitFontSize({text: c.text, maxSize: 80, width: availW * 0.94, height: 80 * 1.3 * 2 + 1, weight: 800, lineHeight: 1.3}) : 70;
   return (
-    <AbsoluteFill style={{justifyContent: 'flex-end', alignItems: 'center', paddingBottom: height * 0.27}}>
-      <div style={{fontFamily, fontWeight: 800, fontSize: size, lineHeight: 1.3, textAlign: 'center', maxWidth: '88%', textWrap: 'balance', opacity: Math.min(1, chunkIn * 3), transform: `translateY(${(1 - chunkIn) * 30}px)`}}>
+    <AbsoluteFill style={{justifyContent: 'flex-end', alignItems: 'center', paddingBottom: height * 0.27, paddingLeft: padL, paddingRight: padR, boxSizing: 'border-box'}}>
+      <div style={{fontFamily, fontWeight: 800, fontSize: size, lineHeight: 1.3, textAlign: 'center', maxWidth: '100%', textWrap: 'balance', opacity: Math.min(1, chunkIn * 3), transform: `translateY(${(1 - chunkIn) * 30}px)`}}>
         {units.map((u, i) => {
           const hit = spring({frame: Math.round((t - starts[i]) * fps), fps, config: {damping: 9, stiffness: 220}});
           const on = i === active;
