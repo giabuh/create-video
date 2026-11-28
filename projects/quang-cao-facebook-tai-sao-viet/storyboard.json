@@ -1,0 +1,372 @@
+{
+  "template": "max",
+  "brand": "demo",
+  "voice": "phuong",
+  "targetSeconds": 36,
+  "notes": "Brief — Khán giả: chủ shop, người bán hàng online và người mới muốn tự chạy quảng cáo Facebook tại Bình Dương (Thuận An, Dĩ An) và Biên Hòa (Đồng Nai). Nỗi đau: chủ shop đăng bài quảng cáo Facebook bị khách lướt qua trong tích tắc, tốn ngân sách mà không hiểu vì sao. Lời hứa: học thực chiến kèm 1-1 trực tiếp trên sản phẩm và tài khoản của học viên tại lớp, nắm trọn quy trình chạy ads kết hợp ứng dụng AI, học đến khi thành thạo và được hỗ trợ sau khóa học. Bằng chứng (đã xác nhận trong brands/demo/facts.md): Tin Học Sao Việt mở lớp tại Thuận An, Dĩ An (Bình Dương) và Biên Hòa (Đồng Nai); ưu đãi học phí giảm 35%; SĐT tư vấn 0876 929 145; ảnh và clip lớp học thực tế + giảng viên Sao Việt kèm 1-1 + bài giảng AI tại phòng máy. Hành động: gọi 0876 929 145 nhận tư vấn khóa học và ưu đãi giảm 35%. Không nêu học phí gốc, ngày khai giảng cụ thể, lộ trình riêng hay fanpage vì chưa xác nhận. Concept: template max nhịp nhanh, chuyển cảnh mix (push/cube/wipe/flip), mở đầu gọi thẳng Chủ shop + FeedPhone (minh họa) bài ads bị lướt qua -> Callout + GlossyPill kèm 1-1 sản phẩm thật -> Checklist bậc thang 3 bước + AI trên 3 shot dọc -> TwoTier + PinLabel 3 cơ sở trên ảnh lớp Facebook Ads -> khoảnh khắc đặc trưng light leak + MaxOffer starburst 35% + MaxPhone -> CtaCard3D. Cập nhật 2026-11-28: lớp chỉ tại Thuận An và Dĩ An, không nêu Biên Hòa.",
+  "tts": {
+    "speed": 1.04,
+    "pauseAfter": 0.22
+  },
+  "transition": {
+    "scene": "mix",
+    "media": "cut",
+    "duration": 0.45
+  },
+  "music": {
+    "file": "Raising Me Higher - Ahjay Stelino.mp3",
+    "volume": 0.44,
+    "duckTo": 0.14,
+    "fadeOut": 1.5
+  },
+  "sfx": {
+    "volume": 0.36,
+    "minGap": 0.55
+  },
+  "scenes": [
+    {
+      "id": "bi-luot-qua",
+      "say": "Bạn đăng bài lên Phây Búc mà chẳng ai thèm nhắn tin hỏi?",
+      "caption": "Bạn đăng bài lên Facebook mà chẳng ai thèm nhắn tin hỏi?",
+      "highlight": [
+        "Facebook",
+        "chẳng ai",
+        "nhắn tin"
+      ],
+      "media": [
+        {
+          "src": "video-doc-hoc-vien-nu-thuc-hanh-excel-tren-laptop.mp4",
+          "from": 0.5,
+          "duration": 1.7,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-doc-hoc-vien-nu-hoc-tren-laptop-ghi-chep.mp4",
+          "from": 0.0,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "TitleCard",
+          "props": {
+            "kicker": "Bạn đăng bài Facebook",
+            "title": "Chẳng ai thèm\nnhắn tin hỏi?",
+            "size": 68
+          },
+          "box": {
+            "x": 5,
+            "y": 11,
+            "w": 82,
+            "h": 17
+          },
+          "backdrop": "none",
+          "start": 0
+        },
+        {
+          "component": "FeedPhone",
+          "props": {
+            "mode": "scroll",
+            "page": "Shop của bạn",
+            "postText": "Chưa thấy ai nhắn tin...",
+            "image": "sv-facebook-minh-hoa-mau-quang-cao.png",
+            "demoTag": true
+          },
+          "box": {
+            "x": 38,
+            "y": 29,
+            "w": 46,
+            "h": 31
+          },
+          "at": "mà",
+          "backdrop": "none"
+        }
+      ]
+    },
+    {
+      "id": "kem-1-1-san-pham-that",
+      "say": "Ghé Sao Việt học quảng cáo Phây Búc nha. Có giảng viên ngồi kèm, chỉ ngay trên sản phẩm bạn đang bán.",
+      "caption": "Ghé Sao Việt học quảng cáo Facebook nha. Có giảng viên ngồi kèm, chỉ ngay trên sản phẩm bạn đang bán.",
+      "highlight": [
+        "Sao Việt",
+        "quảng cáo Facebook",
+        "ngồi kèm",
+        "sản phẩm"
+      ],
+      "mediaTransition": "fade",
+      "media": [
+        {
+          "src": "video-ngang-hoc-vien-thuc-hanh-do-hoa-va-excel.mp4",
+          "from": 3.8,
+          "duration": 3.28,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-hoc-vien-nam-thuc-hanh-excel.mp4",
+          "from": 0.5,
+          "effect": "zoom-in"
+        }
+      ],
+      "motion": [
+        {
+          "component": "TitleCard",
+          "props": {
+            "kicker": "Học tại Sao Việt",
+            "title": "Quảng cáo Facebook",
+            "size": 68
+          },
+          "box": {
+            "x": 5,
+            "y": 11,
+            "w": 82,
+            "h": 17
+          },
+          "backdrop": "none",
+          "at": "Ghé",
+          "until": "nha"
+        },
+        {
+          "component": "TitleCard",
+          "props": {
+            "kicker": "Kèm 1-1 tại lớp",
+            "title": "Có giảng viên\nngồi kèm",
+            "size": 68
+          },
+          "box": {
+            "x": 5,
+            "y": 11,
+            "w": 82,
+            "h": 17
+          },
+          "backdrop": "none",
+          "at": "Có giảng",
+          "until": "ngồi kèm"
+        },
+        {
+          "component": "TitleCard",
+          "props": {
+            "kicker": "Làm thật",
+            "title": "Ngay trên\nsản phẩm bạn bán",
+            "size": 68
+          },
+          "box": {
+            "x": 5,
+            "y": 11,
+            "w": 82,
+            "h": 17
+          },
+          "backdrop": "none",
+          "at": "chỉ ngay"
+        }
+      ]
+    },
+    {
+      "id": "quy-trinh-va-ai",
+      "say": "Chọn đúng tệp khách hàng, viết bài, xem chỉ số, chỉnh tiền chạy, học tới đâu làm tới đó, học cùng Ây Ai.",
+      "caption": "Chọn đúng tệp khách hàng, viết bài, xem chỉ số, chỉnh tiền chạy, học tới đâu làm tới đó, học cùng AI.",
+      "highlight": [
+        "đúng tệp khách hàng",
+        "học tới đâu làm tới đó",
+        "học cùng AI"
+      ],
+      "media": [
+        {
+          "src": "video-doc-lop-hoc-dong-hoc-vien-tai-phong-may.mp4",
+          "from": 0.0,
+          "duration": 2.65,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-lop-hoc-dong-hoc-vien-tai-phong-may.mp4",
+          "from": 24.8,
+          "duration": 1.58,
+          "effect": "none"
+        },
+        {
+          "src": "video-doc-nhieu-hoc-vien-thuc-hanh-tin-hoc-van-phong.mp4",
+          "from": 4.6,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "Checklist",
+          "props": {
+            "title": "HỌC CÙNG AI",
+            "variant": "steps",
+            "items": [
+              "Chọn đúng tệp khách hàng",
+              "Viết bài cùng AI",
+              "Xem số, chỉnh ngân sách"
+            ],
+            "itemsAt": [
+              "Chọn đúng",
+              "viết bài",
+              "xem chỉ số"
+            ],
+            "size": 50,
+            "fx": "mask"
+          },
+          "box": {
+            "x": 3,
+            "y": 11,
+            "w": 88,
+            "h": 36
+          },
+          "at": "Chọn",
+          "backdrop": "none"
+        }
+      ]
+    },
+    {
+      "id": "thanh-thao-co-so",
+      "say": "Học đến khi thành thạo, học xong vẫn được hỗ trợ. Lớp tại Thuận An và Dĩ An.",
+      "caption": "Học đến khi thành thạo, học xong vẫn được hỗ trợ. Lớp tại Thuận An và Dĩ An.",
+      "highlight": [
+        "thành thạo",
+        "hỗ trợ",
+        "Thuận An",
+        "Dĩ An"
+      ],
+      "media": [
+        {
+          "src": "video-ngang-giao-vien-huong-dan-lop-tin-hoc-dong-hoc-vien.mp4",
+          "from": 11.5,
+          "duration": 3.28,
+          "effect": "none"
+        },
+        {
+          "src": "sv-facebook-hoc-vien-thuc-hanh.jpg",
+          "effect": "pan-left"
+        }
+      ],
+      "motion": [
+        {
+          "component": "TwoTier",
+          "props": {
+            "top": "HỌC ĐẾN KHI THÀNH THẠO",
+            "bottom": "Hỗ trợ đồng hành sau khóa học",
+            "size": 46,
+            "fx": "typewriter",
+            "pace": "fast"
+          },
+          "box": {
+            "x": 6,
+            "y": 12,
+            "w": 78,
+            "h": 20
+          },
+          "at": "Học đến",
+          "until": "hỗ trợ",
+          "backdrop": "none",
+          "colors": {
+            "accent2": "#1E3A8A"
+          }
+        },
+        {
+          "component": "Checklist",
+          "props": {
+            "title": "Tại Bình Dương",
+            "items": [
+              "Thuận An",
+              "Dĩ An"
+            ],
+            "itemsAt": [
+              "Thuận",
+              "Dĩ"
+            ],
+            "size": 72,
+            "variant": "grid"
+          },
+          "box": {
+            "x": 2,
+            "y": 11,
+            "w": 86,
+            "h": 24
+          },
+          "at": "Lớp tại",
+          "backdrop": "none"
+        }
+      ]
+    },
+    {
+      "id": "uu-dai-goi-ngay",
+      "say": "Đang giảm ba mươi lăm phần trăm học phí. Gọi ngay không tám bảy sáu, chín hai chín, một bốn năm để được tư vấn.",
+      "caption": "Đang giảm 35% học phí. Gọi ngay 0876 929 145 để được tư vấn.",
+      "highlight": [
+        "giảm 35%",
+        "0876 929 145",
+        "tư vấn"
+      ],
+      "leak": true,
+      "media": [
+        {
+          "src": "video-doc-hoc-vien-thuc-hanh-tai-phong-may-tuong-xanh.mp4",
+          "from": 17.2,
+          "duration": 2.56,
+          "effect": "zoom-in"
+        },
+        {
+          "src": "video-ngang-toan-canh-lop-hoc-tin-hoc-buoi-toi.mp4",
+          "from": 1.5,
+          "effect": "none"
+        }
+      ],
+      "motion": [
+        {
+          "component": "MaxOffer",
+          "props": {
+            "part": "number",
+            "number": 35,
+            "suffix": "%",
+            "stampTop": "ƯU ĐÃI",
+            "stampBottom": "GIẢM HỌC PHÍ"
+          },
+          "box": {
+            "x": 8,
+            "y": 11.5,
+            "w": 74,
+            "h": 41
+          },
+          "at": "Đang",
+          "until": "học phí",
+          "backdrop": "none"
+        },
+        {
+          "component": "MaxPhone",
+          "props": {
+            "groups": [
+              "0876",
+              "929",
+              "145"
+            ],
+            "itemsAt": [
+              "không tám",
+              "chín hai",
+              "một bốn"
+            ]
+          },
+          "box": {
+            "x": 6,
+            "y": 18,
+            "w": 78,
+            "h": 16
+          },
+          "at": "Gọi",
+          "until": {
+            "word": "một bốn năm",
+            "offset": 0.6
+          },
+          "backdrop": "none"
+        }
+      ]
+    }
+  ],
+  "cta": {
+    "title": "GỌI NHẬN ƯU ĐÃI 35%",
+    "phone": "0876 929 145",
+    "fanpage": "Thuận An · Dĩ An",
+    "duration": 3.5,
+    "logoSize": 340
+  }
+}
